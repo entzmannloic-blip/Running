@@ -581,6 +581,21 @@ function s24Chart(splits){const n=splits.length,W=720,h=190,padL=8,padR=8,padT=2
   return `<svg viewBox="0 0 ${W} ${h}" class="chart-svg">${bars}<path d="${line}" fill="none" stroke="#ef4444" stroke-width="2" stroke-linejoin="round"/>${hrlab}
     <text x="${padL}" y="11" font-size="8.5" fill="#3b82f6" font-weight="700">▮ Allure /km</text><text x="${padL+74}" y="11" font-size="8.5" fill="#ef4444" font-weight="700">— FC moyenne /km</text></svg>`;
 }
+
+/* ===== REWIND hebdo ===== */
+let rwIdx=0,rwCur=null;
+function rwRender(){const r=rwCur;if(!r)return;const s=r.slides[rwIdx];
+  const prog=r.slides.map((_,i)=>`<div class="rw-seg ${i<=rwIdx?'done':''}"></div>`).join('');
+  const card=document.getElementById('rwcard');card.style.background=s.bg;
+  card.innerHTML=`<div class="rw-prog">${prog}</div><button class="rw-close" onclick="event.stopPropagation();rwClose()">\u2715</button>
+    <div class="rw-kicker">${s.kicker}</div><div class="rw-big">${s.big}</div><div class="rw-txt">${s.txt}</div>
+    <div class="rw-hint">tape pour continuer \u00b7 ${rwIdx+1}/${r.slides.length}</div>`;}
+function rwOpen(id){rwCur=REWINDS.find(x=>x.id===id);if(!rwCur)return;rwIdx=0;document.getElementById('rwoverlay').classList.add('on');document.body.style.overflow='hidden';rwRender();
+  try{localStorage.setItem('rw_seen',id);}catch(e){}}
+function rwNext(){if(!rwCur)return;if(rwIdx<rwCur.slides.length-1){rwIdx++;rwRender();}else rwClose();}
+function rwClose(){const o=document.getElementById('rwoverlay');if(o)o.classList.remove('on');document.body.style.overflow='';rwCur=null;}
+function rwAuto(){try{const last=REWINDS[REWINDS.length-1];if(last&&localStorage.getItem('rw_seen')!==last.id){setTimeout(()=>rwOpen(last.id),900);}}catch(e){}}
+
 function ouvrirSeanceS24(idx){const r=S24R.runs[idx];if(!r)return;segActif=null;
   topbar.innerHTML=`<button class="btn-nav" onclick="ouvrirSemaine(24)">‹ Retour semaine 24</button>${btnFermer}`;
   const metr=Object.entries(r.metriques).map(([k,v])=>`<div class="metrique"><div class="metrique-l">${k}</div><div class="metrique-v">${v}</div></div>`).join('');
@@ -633,6 +648,6 @@ function initBarre(se){const piste=document.getElementById('piste');if(!piste)re
     e.addEventListener('click',()=>{if(segActif)segActif.classList.remove('actif');if(segActif===e){segActif=null;pan.classList.remove('visible');return;}segActif=e;e.classList.add('actif');dnom.textContent=seg.nom;drole.textContent=seg.role;dgr.innerHTML=`<div><div class="di-label">Durée</div><div class="di-val">${fmt(seg.duree)}</div></div><div><div class="di-label">Bloc</div><div class="di-val">${seg.bloc}</div></div><div><div class="di-label">Début</div><div class="di-val">${fmt(seg.debut)}</div></div><div><div class="di-label">Fin</div><div class="di-val">${fmt(seg.fin)}</div></div>`;pan.classList.add('visible');});
     piste.appendChild(e);});
 }
-renderHeader();renderPlan();
+renderHeader();renderPlan();rwAuto();
 
 </script></body></html>
