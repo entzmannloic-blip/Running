@@ -351,6 +351,16 @@ body.nuit .vdj-cd{background:#7c2d1233}
 .vdj-cd-l{font-size:.82rem;color:#9a3412;font-weight:700}
 body.nuit .vdj-cd-l{color:#fdba74}
 .vdj-maj{text-align:center;font-size:.66rem;color:#94a3b8}
+.vdj-cd{display:flex;justify-content:space-around;align-items:center;gap:8px}
+.vdj-cd-item{text-align:center;flex:1;min-width:0}
+.vdj-cd-n{display:block;font-family:Georgia,serif;font-size:1.4rem;font-weight:800;color:#c2410c;line-height:1.1}
+.vdj-cd-l{font-size:.68rem;color:#9a3412;font-weight:700;line-height:1.2;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+body.nuit .vdj-cd-l{color:#fdba74}
+.vdj-cd-sep{width:1px;height:34px;background:#fed7aa;flex:0 0 auto}
+body.nuit .vdj-cd-sep{background:#7c2d12}
+.cal-x{cursor:pointer}
+.cal-x .cal-num{color:#475569}
+body.nuit .cal-x .cal-num{color:#94a3b8}
 </style></head>
 <body>
 <div class="accueil" style="padding-top:16px">
@@ -469,8 +479,11 @@ function renderHeader(){
     const _dist=(_se.metriques&&_se.metriques.Distance)?' · '+_se.metriques.Distance:'';
     _psCard=`<div class="vdj" onclick="ouvrirSeance(${_ps.wk},${_se.id})"><div class="vdj-lbl">Prochaine séance · ${_lbl}</div><div class="vdj-t">${_se.titre}</div><div class="vdj-s">${_se.type}${_dist} · S${_ps.wk}</div>${_fit}</div>`;
   }
-  let _cd='';const _nice=RACES.find(r=>/Nice/i.test(r.nom))||RACES[0];
-  if(_nice){const _dn=Math.max(0,Math.ceil((new Date(_nice.date)-_t)/86400000));_cd=`<div class="vdj-cd"><div class="vdj-cd-n">J-${_dn}</div><div class="vdj-cd-l">avant le ${_nice.nom}</div></div>`;}
+  let _cd='';
+  if(RACES&&RACES.length){
+    const _it=RACES.map(r=>{const _dn=Math.max(0,Math.ceil((new Date(r.date)-_t)/86400000));return `<div class="vdj-cd-item"><span class="vdj-cd-n">J-${_dn}</span><span class="vdj-cd-l">${r.nom}</span></div>`;}).join('<div class="vdj-cd-sep"></div>');
+    _cd=`<div class="vdj-cd">${_it}</div>`;
+  }
   const _maj=`<div class="vdj-maj">Données à jour au ${MAJ}</div>`;
   const _h=document.getElementById('hero');_h.style.display='flex';
   _h.innerHTML=`${_psCard}${_cd}<div class="hero-sem">${heroNow}${heroNext}</div>${_maj}`;
