@@ -147,7 +147,7 @@ function calHTML(){
   }
   return '<div class="cal-head"><button class="cal-nav" onclick="calNav(-1)">‹</button><div class="cal-title">'+MN[m]+' '+y+'</div><button class="cal-nav" onclick="calNav(1)">›</button></div>'+
     '<div class="cal-grid">'+cells+'</div>'+
-    '<div class="cal-legend"><span><i class="cal-lg cal-g"></i>Réalisé</span><span><i class="cal-lg cal-o"></i>Non réalisé</span><span><i class="cal-lg cal-x"></i>À venir</span><span style="opacity:.45;margin-left:auto">build 8</span></div>';
+    '<div class="cal-legend"><span><i class="cal-lg cal-g"></i>Réalisé</span><span><i class="cal-lg cal-o"></i>Non réalisé</span><span><i class="cal-lg cal-x"></i>À venir</span><span style="opacity:.45;margin-left:auto">build 9</span></div>';
 }
 function calNav(d){calMonth.setMonth(calMonth.getMonth()+d);const w=document.getElementById('cal-inner');if(w)w.innerHTML=calHTML();}
 
@@ -220,6 +220,24 @@ function renderTrophees(){
   return '<div class="tr-grid">'+cards+'</div><div class="tr-meta">'+meta+'</div>';
 }
 
+/* ===== Item 2 — Navigation dashboard (sections repliables + sous-nav collante) ===== */
+const DASH_GROUPS=[
+  {id:'cal',ic:'📅',t:"Aujourd'hui & calendrier"},
+  {id:'annee',ic:'🔥',t:'Année & trophées'},
+  {id:'saison',ic:'📊',t:'Saison en chiffres'},
+  {id:'coach',ic:'🧠',t:'Analyse du coach'},
+  {id:'charge',ic:'❤️',t:'Charge & physiologie'},
+  {id:'perf',ic:'🏆',t:'Performances & objectifs'},
+  {id:'profil',ic:'⛰️',t:'Profil & matériel'},
+];
+function dashGrpOpen(id){try{const v=localStorage.getItem('dash_grp_'+id);if(v===null)return id==='cal';return v==='1';}catch(e){return id==='cal';}}
+function dashNav(){return `<div class="dash-nav" id="dash-nav">${DASH_GROUPS.map(g=>`<button class="dnav-chip" data-g="${g.id}" onclick="dashJump('${g.id}')">${g.ic} ${g.t}</button>`).join('')}</div>`;}
+function dashApplyState(){DASH_GROUPS.forEach(g=>{const s=document.getElementById('grp-'+g.id);if(s)s.classList.toggle('open',dashGrpOpen(g.id));});}
+function dashToggle(id){const s=document.getElementById('grp-'+id);if(!s)return;const open=!s.classList.contains('open');s.classList.toggle('open',open);try{localStorage.setItem('dash_grp_'+id,open?'1':'0');}catch(e){}}
+function dashJump(id){const s=document.getElementById('grp-'+id);if(!s)return;if(!s.classList.contains('open')){s.classList.add('open');try{localStorage.setItem('dash_grp_'+id,'1');}catch(e){}}
+  const nav=document.getElementById('dash-nav');nav&&nav.querySelectorAll('.dnav-chip').forEach(c=>c.classList.toggle('actif',c.dataset.g===id));
+  const y=s.getBoundingClientRect().top+window.scrollY-(nav?nav.offsetHeight+58:64);window.scrollTo({top:y,behavior:'smooth'});}
+function dgrpHead(id,ic,t){return `<section class="dgrp" id="grp-${id}"><button class="dgrp-head" onclick="dashToggle('${id}')"><span class="dgrp-ic">${ic}</span><span class="dgrp-t">${t}</span><span class="dgrp-arr">▾</span></button><div class="dgrp-body">`;}
 function renderDash(){const el=document.getElementById('dash-contenu');
   const today=new Date();const cd=RACES.map(r=>Math.max(0,Math.ceil((new Date(r.date)-today)/86400000)));
   const allSe=Object.values(SEANCES_BY_WEEK).flat();const total=allSe.length;
@@ -254,13 +272,14 @@ function renderDash(){const el=document.getElementById('dash-contenu');
     const al=g.km>900?`<div class="shoe-alert">⚠ ${g.km} km — remplacement à envisager</div>`:'';
     return `<div><div class="shoe-row"><div class="shoe-name">${g.marque} ${g.modele}</div><div class="shoe-track"><div class="shoe-fill" style="width:${g.km/maxShKm*100}%;background:${col}"></div></div><div class="shoe-km">${g.km} km</div></div>${al}</div>`;}).join('');
 
-  el.innerHTML=`
+  el.innerHTML=dashNav()+dgrpHead('cal','📅',"Aujourd'hui & calendrier")+`
   <!-- 0. Calendrier -->
   <div class="kpi cal-block">
     <div class="kpi-t">🗓️ Calendrier d'entraînement</div>
     <div class="kpi-r">Clique un jour coloré pour ouvrir la séance. Vert : réalisé · Orange : prévu non réalisé · Gris : à venir.</div>
     <div id="cal-inner">${calHTML()}</div>
   </div>
+  </div></section>`+dgrpHead('annee','🔥','Année & trophées')+`
   <!-- 0b. Heatmap annuelle -->
   <div class="kpi">
     <div class="kpi-t">🔥 Ton année en un coup d'oeil</div>
@@ -274,6 +293,7 @@ function renderDash(){const el=document.getElementById('dash-contenu');
     <div class="kpi-t">🏆 Tes trophées 2026</div>
     ${renderTrophees()}
   </div>
+  </div></section>`+dgrpHead('saison','📊','Saison en chiffres')+`
   <!-- 1. Saison en chiffres -->
   <div class="kpi">
     <div class="kpi-t">📅 Ta saison 2026 en chiffres</div>
@@ -294,6 +314,7 @@ function renderDash(){const el=document.getElementById('dash-contenu');
     ${svgMonthly('sorties','#8b5cf6',v=>v)}</div>
   </div>
 
+  </div></section>`+dgrpHead('coach','🧠','Analyse du coach')+`
   <!-- 3. Analyse du coach : zone grise + consignes + journal -->
   <div class="kpi">
     <div class="kpi-t">🧠 L'analyse du coach</div>
@@ -310,6 +331,7 @@ function renderDash(){const el=document.getElementById('dash-contenu');
     ${JOURNAL.map(j=>`<div class="jour-item"><div class="jour-h">${j.sem} — ${j.theme}</div><div class="jour-x">${j.texte}</div></div>`).join('')}</div>
   </div>
 
+  </div></section>`+dgrpHead('charge','❤️','Charge & physiologie')+`
 <!-- 6. Zones FC + allures -->
   <div class="kpi">
     <div class="kpi-t">❤️ Zones FC & allures correspondantes</div>
@@ -334,6 +356,7 @@ function renderDash(){const el=document.getElementById('dash-contenu');
   <!-- 5. Volume hebdo -->
   <div class="kpi"><div class="kpi-t">📈 Ton volume — historique 28 semaines</div><div class="kpi-r">Tes vraies semaines Strava. Le plan prend le relais à la S25.</div>${delta(histKm)} ${chartLine(histKm,{color:'#3b82f6',labels:histLab,fmtY:v=>Math.round(v)+'km',annotate:true,h:150})}</div>
 
+  </div></section>`+dgrpHead('perf','🏆','Performances & objectifs')+`
   <!-- 7. Allures d'entraînement -->
   <div class="kpi"><div class="kpi-t">⏱️ Tes allures d'entraînement</div><div class="kpi-r">Dont le <strong>seuil 30</strong> (proche 10 km) et le <strong>seuil 60</strong> (proche semi). À recaler après le test 10 km (S31).</div><div class="allure-grid">${ALLURES.map(a=>`<div class="allure"><div class="allure-v">${a.val}</div><div class="allure-n">${a.nom}</div><div class="allure-s">${a.sub}</div></div>`).join('')}</div></div>
 
@@ -375,6 +398,7 @@ function renderDash(){const el=document.getElementById('dash-contenu');
     <div class="rev-coach" style="margin-top:14px">La stratégie : <strong>cibler 3h45 (5:20/km)</strong> et laisser le corps aller chercher 3h38-3h42 si tout va bien le jour J. L'erreur classique sur un premier marathon avec objectif ambitieux = partir sur la projection et exploser aux 35 km. Ici on part prudent et on accélère si le corps l'autorise.</div>
   </div>
 
+  </div></section>`+dgrpHead('profil','⛰️','Profil & matériel')+`
 <!-- 2. Profil de saison -->
   <div class="kpi"><div class="kpi-t">⛰️ Le profil de ta saison — plan S25→S53</div><div class="kpi-r">Ta périodisation vue comme une ascension : montée vers le pic 88 km (S42), la vallée USA, puis Nice et la SaintExpress. Touche un sommet pour ouvrir la semaine.</div>${svgMountain()}</div>
 
@@ -382,7 +406,9 @@ function renderDash(){const el=document.getElementById('dash-contenu');
   <!-- 10. Chaussures -->
   <div class="kpi"><div class="kpi-t">🥁 Rotation chaussures</div><div class="kpi-r">Rotation conseillée : récup/easy → Clifton & Gel Pulse (rare), longues → Novablast, qualité → Magic Speed, trail → Cascadia. Chaque séance du plan porte sa paire conseillée.</div>${shoes}</div>
 
+  </div></section>
   <p class="note-foot">Dashboard alimenté par ta vraie donnée Strava · Mis à jour à chaque séance logée</p>`;
+  dashApplyState();
 }
 
 /* ===== MODALE ===== */
