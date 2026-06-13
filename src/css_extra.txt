@@ -237,3 +237,22 @@ body.nuit .tr-s{color:#94a3b8}
 .tr-lock{position:absolute;top:8px;right:10px;font-size:.66rem;opacity:.55}
 .tr-meta{font-size:.82rem;color:#475569;line-height:1.7;background:#f8fafc;border-radius:12px;padding:13px 15px}
 body.nuit .tr-meta{background:#0f172a;color:#cbd5e1}
+/* ===== Item 1 — Records tombés (célébration PR) ===== */
+.prc{display:flex;align-items:center;gap:14px;margin-top:14px;padding:14px 16px;border-radius:14px;position:relative;overflow:hidden;
+  background:linear-gradient(120deg,#fffbeb 0%,#fef3c7 45%,#fde68a 100%);border:1px solid #fcd34d}
+.prc::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.65) 50%,transparent 70%);
+  transform:translateX(-120%);animation:prcShine 2.6s ease-in-out 1}
+@keyframes prcShine{to{transform:translateX(120%)}}
+.prc-burst{font-size:1.9rem;line-height:1;animation:prcPop .5s cubic-bezier(.2,1.4,.5,1) 1;flex-shrink:0}
+@keyframes prcPop{0%{transform:scale(0) rotate(-25deg);opacity:0}100%{transform:scale(1) rotate(0);opacity:1}}
+.prc-body{position:relative;z-index:1;min-width:0}
+.prc-titre{font-family:Georgia,serif;font-weight:700;font-size:1.02rem;color:#92400e;letter-spacing:.01em}
+.prc-row{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:3px;font-size:.82rem;color:#b45309;font-weight:600}
+.prc-n{font-weight:800;color:#92400e;font-size:.95rem}
+.prc-sep{opacity:.5}
+.prc-detail{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
+.prc-chip{font-size:.72rem;font-weight:700;color:#92400e;background:rgba(255,255,255,.6);border:1px solid #fcd34d;border-radius:99px;padding:3px 9px}
+body.nuit .prc{background:linear-gradient(120deg,#3a2e0b 0%,#4d3c0c 50%,#5c4708 100%);border-color:#a16207}
+body.nuit .prc-titre,body.nuit .prc-n{color:#fde68a}
+body.nuit .prc-row{color:#fcd34d}
+body.nuit .prc-chip{color:#fde68a;background:rgba(0,0,0,.25);border-color:#a16207}
