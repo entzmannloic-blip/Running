@@ -208,3 +208,18 @@ body.nuit .cal-x .cal-num{color:#94a3b8}
 button.cal-cell{appearance:none;-webkit-appearance:none;border:none;font:inherit;margin:0;width:100%;cursor:pointer;-webkit-tap-highlight-color:rgba(59,130,246,.35)}
 .cal-cell{min-height:42px}
 button.cal-cell:active{transform:scale(.93);transition:transform .05s}
+.hm-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:4px}
+.hm-months{display:flex;gap:3px;margin-bottom:4px}
+.hm-mlabel{width:13px;flex:0 0 13px;font-size:.58rem;color:#94a3b8;white-space:nowrap;overflow:visible}
+.hm-grid{display:flex;gap:3px}
+.hm-col{display:flex;flex-direction:column;gap:3px}
+.hm-cell{width:13px;height:13px;border:none;padding:0;margin:0;border-radius:3px;background:#eef2f6}
+button.hm-cell{cursor:pointer;-webkit-tap-highlight-color:rgba(59,130,246,.4)}
+.hm-out{visibility:hidden}
+.h0{background:#eef2f6}.h1{background:#bbf7d0}.h2{background:#4ade80}.h3{background:#16a34a}.h4{background:#14532d}
+body.nuit .h0{background:#1e293b}
+.hm-today{outline:2px solid #3b82f6;outline-offset:-2px}
+.hm-cap{margin-top:12px;font-size:.82rem;color:#475569;text-align:center}
+body.nuit .hm-cap{color:#cbd5e1}
+.hm-legend{display:flex;align-items:center;gap:4px;justify-content:flex-end;margin-top:10px;font-size:.66rem;color:#94a3b8}
+.hm-legend .hm-cell{width:11px;height:11px}
