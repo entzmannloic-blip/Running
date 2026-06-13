@@ -1,7 +1,7 @@
 const data=require("./data.json");
 global.SEMAINES=data.SEMAINES;global.HIST=data.HIST;global.POLAR=data.POLAR;global.GEAR=data.GEAR;
 global.PHASES=data.PHASES;global.COUL=data.COUL;global.RACES=data.RACES;global.RECORDS=data.RECORDS;
-global.PROFIL=data.PROFIL;global.VIGILANCE=data.VIGILANCE;global.S24R=data.S24R;global.ALLURES=data.ALLURES;global.ZONES_FC=data.ZONES_FC;global.ALLURES_COURSE=data.ALLURES_COURSE;global.MONTHLY=data.MONTHLY;global.SAISON2026=data.SAISON2026;global.ACWR_DATA=data.ACWR_DATA;global.RECORDS_PERF=data.RECORDS_PERF;global.JOURNAL=data.JOURNAL;global.REWINDS=data.REWINDS;global.MAJ=data.MAJ;global.localStorage={setItem(){},getItem(){return null}};global.SEANCES_BY_WEEK=data.SBW;
+global.PROFIL=data.PROFIL;global.VIGILANCE=data.VIGILANCE;global.S24R=data.S24R;global.ALLURES=data.ALLURES;global.ZONES_FC=data.ZONES_FC;global.ALLURES_COURSE=data.ALLURES_COURSE;global.MONTHLY=data.MONTHLY;global.SAISON2026=data.SAISON2026;global.ACWR_DATA=data.ACWR_DATA;global.RECORDS_PERF=data.RECORDS_PERF;global.JOURNAL=data.JOURNAL;global.REWINDS=data.REWINDS;global.MAJ=data.MAJ;global.HEATMAP=data.HEATMAP;global.localStorage={setItem(){},getItem(){return null}};global.SEANCES_BY_WEEK=data.SBW;
 const stub={addEventListener(){},classList:{add(){},remove(){},toggle(){return false}},style:{},scrollTop:0,set innerHTML(v){},get innerHTML(){return""},textContent:"",appendChild(){}};
 global.document={getElementById:()=>stub,addEventListener(){},body:{classList:{toggle(){return false},add(){}},style:{}},createElement:()=>stub};
 global.window={scrollTo(){}};
