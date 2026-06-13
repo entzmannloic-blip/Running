@@ -599,7 +599,7 @@ function rwOpen(id){rwCur=REWINDS.find(x=>x.id===id);if(!rwCur)return;rwIdx=0;do
   try{localStorage.setItem('rw_seen',id);}catch(e){}}
 function rwNext(){if(!rwCur)return;if(rwIdx<rwCur.slides.length-1){rwIdx++;rwRender();}else rwClose();}
 function rwClose(){const o=document.getElementById('rwoverlay');if(o)o.classList.remove('on');document.body.style.overflow='';rwCur=null;}
-function rwAuto(){try{const last=REWINDS[REWINDS.length-1];if(last&&localStorage.getItem('rw_seen')!==last.id){setTimeout(()=>rwOpen(last.id),900);}}catch(e){}}
+function rwAuto(){const last=REWINDS[REWINDS.length-1];if(!last)return;const d=new Date();if(d.getDay()!==1)return;/* 1 = lundi */const wk=isoWeek(d)+'-'+d.getFullYear();try{if(localStorage.getItem('rw_mon')===wk)return;localStorage.setItem('rw_mon',wk);}catch(e){}setTimeout(()=>rwOpen(last.id),900);}
 
 function ouvrirSeanceS24(idx){const r=S24R.runs[idx];if(!r)return;segActif=null;
   topbar.innerHTML=`<button class="btn-nav" onclick="ouvrirSemaine(24)">‹ Retour semaine 24</button>${btnFermer}`;
@@ -653,6 +653,6 @@ function initBarre(se){const piste=document.getElementById('piste');if(!piste)re
     e.addEventListener('click',()=>{if(segActif)segActif.classList.remove('actif');if(segActif===e){segActif=null;pan.classList.remove('visible');return;}segActif=e;e.classList.add('actif');dnom.textContent=seg.nom;drole.textContent=seg.role;dgr.innerHTML=`<div><div class="di-label">Durée</div><div class="di-val">${fmt(seg.duree)}</div></div><div><div class="di-label">Bloc</div><div class="di-val">${seg.bloc}</div></div><div><div class="di-label">Début</div><div class="di-val">${fmt(seg.debut)}</div></div><div><div class="di-label">Fin</div><div class="di-val">${fmt(seg.fin)}</div></div>`;pan.classList.add('visible');});
     piste.appendChild(e);});
 }
-renderHeader();renderPlan();
+renderHeader();renderPlan();rwAuto();
 
 </script></body></html>
