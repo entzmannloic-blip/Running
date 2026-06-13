@@ -362,6 +362,9 @@ body.nuit .vdj-cd-sep{background:#7c2d12}
 .cal-x{cursor:pointer}
 .cal-x .cal-num{color:#475569}
 body.nuit .cal-x .cal-num{color:#94a3b8}
+button.cal-cell{appearance:none;-webkit-appearance:none;border:none;font:inherit;margin:0;width:100%;cursor:pointer;-webkit-tap-highlight-color:rgba(59,130,246,.35)}
+.cal-cell{min-height:42px}
+button.cal-cell:active{transform:scale(.93);transition:transform .05s}
 </style></head>
 <body>
 <div class="accueil" style="padding-top:16px">
@@ -535,7 +538,7 @@ function calHTML(){
     const tdy=iso===todayISO?' cal-today':'';
     if(de.length){
       const e=de[0];
-      cells+='<div class="cal-cell cal-'+e.color+tdy+'" onclick="'+e.open+'" title="'+e.titre.replace(/"/g,'')+'"><span class="cal-num">'+day+'</span><span class="cal-dot"></span></div>';
+      cells+='<button type="button" class="cal-cell cal-'+e.color+tdy+'" onclick="'+e.open+'" title="'+e.titre.replace(/"/g,'')+'"><span class="cal-num">'+day+'</span><span class="cal-dot"></span></button>';
     }else{
       cells+='<div class="cal-cell'+tdy+'"><span class="cal-num cal-muted">'+day+'</span></div>';
     }
