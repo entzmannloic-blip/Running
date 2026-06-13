@@ -256,3 +256,29 @@ body.nuit .prc{background:linear-gradient(120deg,#3a2e0b 0%,#4d3c0c 50%,#5c4708 
 body.nuit .prc-titre,body.nuit .prc-n{color:#fde68a}
 body.nuit .prc-row{color:#fcd34d}
 body.nuit .prc-chip{color:#fde68a;background:rgba(0,0,0,.25);border-color:#a16207}
+/* ===== Item 2 — Navigation dashboard (sous-nav collante + sections repliables) ===== */
+.dash-nav{position:sticky;top:0;z-index:30;display:flex;gap:7px;overflow-x:auto;-webkit-overflow-scrolling:touch;
+  padding:10px 2px;margin:0 -2px 14px;background:var(--gris-fond);scrollbar-width:none;
+  box-shadow:0 6px 14px -10px rgba(15,23,42,.45)}
+.dash-nav::-webkit-scrollbar{display:none}
+.dnav-chip{flex:0 0 auto;font-size:.78rem;font-weight:700;color:var(--texte-deux);background:var(--blanc);
+  border:1px solid var(--gris-clair);border-radius:99px;padding:8px 13px;cursor:pointer;white-space:nowrap;transition:all .18s}
+.dnav-chip:hover{color:var(--texte);border-color:var(--gris)}
+.dnav-chip.actif{background:#1e293b;color:#fff;border-color:#1e293b;box-shadow:0 3px 9px rgba(15,23,42,.25)}
+body.nuit .dnav-chip.actif{background:#3b82f6;border-color:#3b82f6}
+.dgrp{margin-bottom:12px}
+.dgrp-head{width:100%;display:flex;align-items:center;gap:11px;background:var(--blanc);border:1px solid var(--gris-clair);
+  border-radius:var(--rayon-lg);padding:15px 18px;cursor:pointer;text-align:left;transition:border-color .18s,box-shadow .18s;color:var(--texte)}
+.dgrp-head:hover{border-color:var(--gris)}
+.dgrp.open .dgrp-head{border-bottom-left-radius:0;border-bottom-right-radius:0;border-color:var(--gris-clair);box-shadow:0 -1px 0 var(--gris-clair) inset}
+.dgrp-ic{font-size:1.15rem;line-height:1}
+.dgrp-t{font-family:Georgia,serif;font-size:1.05rem;font-weight:700;flex:1}
+.dgrp-arr{font-size:.95rem;color:var(--texte-trois);transition:transform .22s}
+.dgrp.open .dgrp-arr{transform:rotate(180deg)}
+.dgrp-body{display:none}
+.dgrp.open .dgrp-body{display:block;animation:dgrpIn .22s ease}
+@keyframes dgrpIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+/* à l'intérieur d'un groupe ouvert : les cartes .kpi s'enchaînent, coins du haut adoucis */
+.dgrp.open .dgrp-body>.kpi:first-child{border-top-left-radius:0;border-top-right-radius:0;border-top:none;margin-top:0}
+.dgrp.open .dgrp-body{border:1px solid var(--gris-clair);border-top:none;border-radius:0 0 var(--rayon-lg) var(--rayon-lg);padding:12px 12px 2px;background:var(--gris-fond)}
+.dgrp.open .dgrp-body>.kpi{margin-bottom:12px}
