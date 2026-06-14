@@ -429,6 +429,13 @@ for n,ss in WEEKS.items():
     if n==25:
         _f={1:"fit/S25-1-footing-lignes.fit",2:"fit/S25-2-footing-facile.fit",3:"fit/S25-3-allure-marathon.fit",4:"fit/S25-4-sortie-longue.fit"}
         for s in arr: s["fit"]=_f.get(s["num"])
+    elif 26<=n<=53:
+        _FT={"Seuil (puissance aérobie)":"seuil","Spécifique marathon":"allure-marathon",
+             "Sortie longue":"sortie-longue","Sortie longue spécifique":"sortie-longue",
+             "Côtes — force / économie":"cotes","Test / recalibrage":"test-10km"}
+        for s in arr:
+            _sl=_FT.get(s["type"])
+            if _sl: s["fit"]=f"fit/S{n}-{s['num']}-{_sl}.fit"
     SEANCES_BY_WEEK[str(n)]=arr
 
 META=[
