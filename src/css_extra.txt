@@ -282,3 +282,34 @@ body.nuit .dnav-chip.actif{background:#3b82f6;border-color:#3b82f6}
 .dgrp.open .dgrp-body>.kpi:first-child{border-top-left-radius:0;border-top-right-radius:0;border-top:none;margin-top:0}
 .dgrp.open .dgrp-body{border:1px solid var(--gris-clair);border-top:none;border-radius:0 0 var(--rayon-lg) var(--rayon-lg);padding:12px 12px 2px;background:var(--gris-fond)}
 .dgrp.open .dgrp-body>.kpi{margin-bottom:12px}
+/* ===== Item 4 — Projection marathon (boule de cristal) ===== */
+.cb{background:linear-gradient(165deg,#faf5ff 0%,#f3e8ff 60%,#ede9fe 100%);border-color:#ddd6fe;position:relative;overflow:hidden}
+body.nuit .cb{background:linear-gradient(165deg,#1e1b4b 0%,#172033 70%);border-color:#4c1d95}
+.cb-head{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+.cb-orb{font-size:1.8rem;line-height:1;filter:drop-shadow(0 0 8px rgba(139,92,246,.5));animation:cbFloat 3.4s ease-in-out infinite}
+@keyframes cbFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+.cb-big{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin:14px 0 4px}
+.cb-time{font-family:Georgia,serif;font-size:2.6rem;font-weight:700;color:#6d28d9;line-height:1;letter-spacing:-.01em}
+body.nuit .cb-time{color:#c4b5fd}
+.cb-delta{font-size:.86rem;color:var(--texte-deux)}
+.cb-gauge{margin:18px 0 6px}
+.cb-bar{position:relative;height:14px;border-radius:99px;background:linear-gradient(90deg,#22c55e 0%,#eab308 50%,#ef4444 100%);opacity:.92}
+.cb-fill{display:none}
+.cb-goal{position:absolute;top:-4px;height:22px;transform:translateX(-50%)}
+.cb-goal::before{content:"";position:absolute;left:50%;top:0;width:2px;height:22px;background:#0f172a;transform:translateX(-50%);border-radius:2px}
+.cb-goal span{position:absolute;top:-19px;left:50%;transform:translateX(-50%);font-size:.62rem;font-weight:800;color:#0f172a;white-space:nowrap}
+body.nuit .cb-goal::before{background:#e8eef7}body.nuit .cb-goal span{color:#e8eef7}
+.cb-needle{position:absolute;top:50%;transform:translate(-50%,-50%);width:18px;height:18px;border-radius:50%;background:#6d28d9;border:3px solid #fff;box-shadow:0 2px 8px rgba(109,40,217,.55);z-index:2}
+.cb-needle span{position:absolute;top:22px;left:50%;transform:translateX(-50%);font-size:.66rem;font-weight:800;color:#6d28d9;white-space:nowrap}
+body.nuit .cb-needle{border-color:#1e1b4b}body.nuit .cb-needle span{color:#c4b5fd}
+.cb-scale{display:flex;justify-content:space-between;margin-top:24px;font-size:.68rem;font-weight:700;color:var(--texte-trois)}
+.cb-clarte{font-size:.8rem;line-height:1.6;color:var(--texte-deux);background:rgba(255,255,255,.55);border:1px solid #ddd6fe;border-radius:12px;padding:11px 13px;margin-top:14px}
+body.nuit .cb-clarte{background:rgba(0,0,0,.22);border-color:#4c1d95}
+.cb-trend{margin-top:14px}
+.cb-src{margin-top:14px}
+.cb-src-t{font-size:.66rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--texte-trois);margin-bottom:8px}
+.cb-src-l{display:flex;justify-content:space-between;gap:10px;font-size:.82rem;padding:7px 0;border-bottom:1px solid var(--gris-clair)}
+.cb-src-v{font-weight:800;color:#6d28d9}
+body.nuit .cb-src-v{color:#c4b5fd}
+.cb-src-base{opacity:.7;font-style:italic}
+.cb-method{font-size:.7rem;color:var(--texte-trois);line-height:1.5;margin-top:13px;padding-top:11px;border-top:1px dashed var(--gris-clair)}
