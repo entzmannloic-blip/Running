@@ -147,7 +147,7 @@ function calHTML(){
   }
   return '<div class="cal-head"><button class="cal-nav" onclick="calNav(-1)">‹</button><div class="cal-title">'+MN[m]+' '+y+'</div><button class="cal-nav" onclick="calNav(1)">›</button></div>'+
     '<div class="cal-grid">'+cells+'</div>'+
-    '<div class="cal-legend"><span><i class="cal-lg cal-g"></i>Réalisé</span><span><i class="cal-lg cal-o"></i>Non réalisé</span><span><i class="cal-lg cal-x"></i>À venir</span><span style="opacity:.45;margin-left:auto">build 11</span></div>';
+    '<div class="cal-legend"><span><i class="cal-lg cal-g"></i>Réalisé</span><span><i class="cal-lg cal-o"></i>Non réalisé</span><span><i class="cal-lg cal-x"></i>À venir</span><span style="opacity:.45;margin-left:auto">build 12</span></div>';
 }
 function calNav(d){calMonth.setMonth(calMonth.getMonth()+d);const w=document.getElementById('cal-inner');if(w)w.innerHTML=calHTML();}
 
@@ -223,9 +223,9 @@ function renderTrophees(){
 /* ===== Item 2 — Navigation dashboard (sections repliables + sous-nav collante) ===== */
 const DASH_GROUPS=[
   {id:'cal',ic:'📅',t:"Aujourd'hui & calendrier"},
+  {id:'coach',ic:'🧠',t:'Analyse du coach'},
   {id:'annee',ic:'🔥',t:'Année & trophées'},
   {id:'saison',ic:'📊',t:'Saison en chiffres'},
-  {id:'coach',ic:'🧠',t:'Analyse du coach'},
   {id:'charge',ic:'❤️',t:'Charge & physiologie'},
   {id:'perf',ic:'🏆',t:'Performances & objectifs'},
   {id:'profil',ic:'⛰️',t:'Profil & matériel'},
@@ -332,6 +332,23 @@ function renderDash(){const el=document.getElementById('dash-contenu');
     <div class="kpi-r">Clique un jour coloré pour ouvrir la séance. Vert : réalisé · Orange : prévu non réalisé · Gris : à venir.</div>
     <div id="cal-inner">${calHTML()}</div>
   </div>
+  </div></section>`+dgrpHead('coach','🧠','Analyse du coach')+`
+  <!-- 3. Analyse du coach : zone grise + consignes + journal -->
+  <div class="kpi">
+    <div class="kpi-t">🧠 L'analyse du coach</div>
+    <div class="kpi-r">Ta répartition d'intensité réelle sur les 6 derniers mois — le diagnostic central de ta préparation.</div>
+    <div class="donut-wrap">${svgDonut(pol)}<div class="donut-leg">${pol.map(p=>`<div><i style="background:${p.color}"></i>${p.label} — <strong>${p.val}%</strong></div>`).join('')}</div></div>
+    <div class="rev-coach" style="margin-top:14px">
+      <strong>Le verdict :</strong> ${POLAR.gris}% de tes km en « zone grise » — ni assez lent pour récupérer, ni assez rapide pour progresser. C'est le problème n°1 à corriger.<br><br>
+      <strong>Tes 3 règles pour la prépa :</strong><br>
+      ① <strong>Footings faciles : ≥ 6:00/km</strong>, sans négocier. Si tu accélères sans le vouloir, c'est le réflexe zone grise.<br>
+      ② <strong>Qualité = 2 séances/semaine max</strong>, distinctes et délibérées (seuil, AM, côtes).<br>
+      ③ <strong>Facile vraiment facile, dur vraiment dur</strong> — la polarisation, c'est ça.
+    </div>
+    <div style="margin-top:14px"><div class="kpi-t" style="font-size:.88rem;margin-bottom:10px">📓 Journal du coach</div>
+    ${JOURNAL.map(j=>`<div class="jour-item"><div class="jour-h">${j.sem} — ${j.theme}</div><div class="jour-x">${j.texte}</div></div>`).join('')}</div>
+  </div>
+
   </div></section>`+dgrpHead('annee','🔥','Année & trophées')+`
   <!-- 0b. Heatmap annuelle -->
   <div class="kpi">
@@ -365,23 +382,6 @@ function renderDash(){const el=document.getElementById('dash-contenu');
     <div style="margin-top:14px">
     <div class="kpi-t" style="font-size:.88rem;margin-bottom:8px">Sorties par mois</div>
     ${svgMonthly('sorties','#8b5cf6',v=>v)}</div>
-  </div>
-
-  </div></section>`+dgrpHead('coach','🧠','Analyse du coach')+`
-  <!-- 3. Analyse du coach : zone grise + consignes + journal -->
-  <div class="kpi">
-    <div class="kpi-t">🧠 L'analyse du coach</div>
-    <div class="kpi-r">Ta répartition d'intensité réelle sur les 6 derniers mois — le diagnostic central de ta préparation.</div>
-    <div class="donut-wrap">${svgDonut(pol)}<div class="donut-leg">${pol.map(p=>`<div><i style="background:${p.color}"></i>${p.label} — <strong>${p.val}%</strong></div>`).join('')}</div></div>
-    <div class="rev-coach" style="margin-top:14px">
-      <strong>Le verdict :</strong> ${POLAR.gris}% de tes km en « zone grise » — ni assez lent pour récupérer, ni assez rapide pour progresser. C'est le problème n°1 à corriger.<br><br>
-      <strong>Tes 3 règles pour la prépa :</strong><br>
-      ① <strong>Footings faciles : ≥ 6:00/km</strong>, sans négocier. Si tu accélères sans le vouloir, c'est le réflexe zone grise.<br>
-      ② <strong>Qualité = 2 séances/semaine max</strong>, distinctes et délibérées (seuil, AM, côtes).<br>
-      ③ <strong>Facile vraiment facile, dur vraiment dur</strong> — la polarisation, c'est ça.
-    </div>
-    <div style="margin-top:14px"><div class="kpi-t" style="font-size:.88rem;margin-bottom:10px">📓 Journal du coach</div>
-    ${JOURNAL.map(j=>`<div class="jour-item"><div class="jour-h">${j.sem} — ${j.theme}</div><div class="jour-x">${j.texte}</div></div>`).join('')}</div>
   </div>
 
   </div></section>`+dgrpHead('charge','❤️','Charge & physiologie')+`
@@ -467,7 +467,7 @@ function renderDash(){const el=document.getElementById('dash-contenu');
 /* ===== MODALE ===== */
 const overlay=document.getElementById('overlay'),boite=document.getElementById('boite'),topbar=document.getElementById('topbar'),contenu=document.getElementById('contenu');
 let segActif=null;
-function ouvrir(){overlay.classList.add('ouverte');document.body.style.overflow='hidden';boite.scrollTop=0;}
+function ouvrir(){overlay.classList.add('ouverte');document.body.style.overflow='hidden';overlay.scrollTop=0;boite.scrollTop=0;}
 function fermer(){overlay.classList.remove('ouverte');document.body.style.overflow='';setTimeout(()=>{contenu.innerHTML='';topbar.innerHTML='';},300);}
 overlay.addEventListener('click',e=>{if(e.target===overlay)fermer()});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')fermer()});
