@@ -67,11 +67,6 @@ function prochaineSeance(){
 
 function renderHeader(){
   const cur=isoWeek(new Date());const sc=SEMAINES.find(s=>s.num===cur)||SEMAINES[0];
-  const nx=SEMAINES.find(s=>s.num===cur+1)||SEMAINES.find(s=>s.num===25);
-  let heroNow;
-  if(sc.statut==='courante'){const r=S24R.runs.length;heroNow=`<div class="hero-card hero-now" onclick="ouvrirSemaine(${sc.num})"><div class="hero-l">Cette semaine \u00b7 S${sc.num}</div><div class="hero-t">${sc.theme}</div><div class="hero-s">${r} sorties réalisées \u00b7 récupération post-Circaète \u2192</div></div>`;}
-  else{const ses=SEANCES_BY_WEEK[sc.num]||[];const f=ses.filter(x=>x.realise&&x.realise.statut!=='a_faire').length;heroNow=`<div class="hero-card hero-now" onclick="ouvrirSemaine(${sc.num})"><div class="hero-l">Cette semaine \u00b7 S${sc.num}</div><div class="hero-t">${sc.theme}</div><div class="hero-s">${f}/${ses.length} séances \u00b7 ${sc.km} km \u2192</div></div>`;}
-  const heroNext=nx?`<div class="hero-card hero-next" onclick="ouvrirSemaine(${nx.num})"><div class="hero-l">À suivre \u00b7 S${nx.num}</div><div class="hero-t" style="font-size:1.05rem">${nx.theme}</div><div class="hero-s">${nx.km} km \u00b7 ${nx.charge} \u2192</div></div>`:'';
   const _t=new Date();_t.setHours(0,0,0,0);
   const _ps=prochaineSeance();let _psCard='';
   if(_ps){
@@ -92,7 +87,8 @@ function renderHeader(){
   }
   const _maj=`<div class="vdj-maj">Données à jour au ${MAJ}</div>`;
   document.getElementById('cd-strip').innerHTML=_cd;
-  document.getElementById('hero-plan').innerHTML=`${_psCard}<div class="hero-sem">${heroNow}${heroNext}</div>`;
+  const _cw=`<button class="cw-link" onclick="jumpToWeek(${sc.num})"><span class="cw-pin">📍</span><span class="cw-txt">Tu es en <strong>S${sc.num} · ${sc.theme}</strong></span><span class="cw-arr">voir dans le plan →</span></button>`;
+  document.getElementById('hero-plan').innerHTML=`${_psCard}${_cw}`;
   document.getElementById('maj-foot').innerHTML=_maj;
   const _ab=document.getElementById('appbar');if(_ab&&document.documentElement)document.documentElement.style.setProperty('--appbar-h',_ab.offsetHeight+'px');
 }
@@ -103,7 +99,7 @@ function renderPlan(){const phasesEl=document.getElementById('phases');phasesEl.
     const cartes=sems.map(s=>{const ses=SEANCES_BY_WEEK[s.num]||[];const fait=ses.filter(x=>x.realise&&(x.realise.statut==='fait'||x.realise.statut==='partiel')).length;
       const cnt=s.num===24?`<div class="sem-km" style="margin-top:4px"><span>${S24R.runs.length} sorties · ${S24R.km} km réalisés</span></div>`:(ses.length?`<div class="sem-km" style="margin-top:4px"><span>${fait}/${ses.length} séances</span></div>`:'');
       const badge=s.statut==='courante'?`<div class="sem-statut st-courante">Courante</div>`:'';
-      return `<div class="sem-carte cliquable" onclick="ouvrirSemaine(${s.num})">${badge}<div class="sem-num">Semaine ${s.num}</div><div class="sem-theme">${s.theme}</div><div class="sem-km">${s.km} <span>km · ${s.charge}</span></div>${cnt}<div class="sem-barre"><div class="sem-barre-fill" style="width:${Math.min(100,s.km/88*100)}%;background:${ph.c}"></div></div></div>`;}).join('');
+      return `<div class="sem-carte cliquable" id="wk-${s.num}" onclick="ouvrirSemaine(${s.num})">${badge}<div class="sem-num">Semaine ${s.num}</div><div class="sem-theme">${s.theme}</div><div class="sem-km">${s.km} <span>km · ${s.charge}</span></div>${cnt}<div class="sem-barre"><div class="sem-barre-fill" style="width:${Math.min(100,s.km/88*100)}%;background:${ph.c}"></div></div></div>`;}).join('');
     bloc.innerHTML=`<div class="phase-entete"><div class="phase-puce" style="background:${ph.c}"></div><div class="phase-nom">${ph.nom}</div><div class="phase-sem">${ph.sem}</div></div><p class="phase-role">${ph.role}</p><div class="sem-grille">${cartes}</div>`;
     phasesEl.appendChild(bloc);});
 }
@@ -149,7 +145,7 @@ function calHTML(){
   }
   return '<div class="cal-head"><button class="cal-nav" onclick="calNav(-1)">‹</button><div class="cal-title">'+MN[m]+' '+y+'</div><button class="cal-nav" onclick="calNav(1)">›</button></div>'+
     '<div class="cal-grid">'+cells+'</div>'+
-    '<div class="cal-legend"><span><i class="cal-lg cal-g"></i>Réalisé</span><span><i class="cal-lg cal-o"></i>Non réalisé</span><span><i class="cal-lg cal-x"></i>À venir</span><span style="opacity:.45;margin-left:auto">build 13</span></div>';
+    '<div class="cal-legend"><span><i class="cal-lg cal-g"></i>Réalisé</span><span><i class="cal-lg cal-o"></i>Non réalisé</span><span><i class="cal-lg cal-x"></i>À venir</span><span style="opacity:.45;margin-left:auto">build 14</span></div>';
 }
 function calNav(d){calMonth.setMonth(calMonth.getMonth()+d);const w=document.getElementById('cal-inner');if(w)w.innerHTML=calHTML();}
 
@@ -241,6 +237,11 @@ function dashJump(id){const s=document.getElementById('grp-'+id);if(!s)return;if
   const ab=document.getElementById('appbar');const abh=ab?ab.offsetHeight:0;
   const y=s.getBoundingClientRect().top+window.scrollY-(abh+(nav?nav.offsetHeight:0)+10);window.scrollTo({top:y,behavior:'smooth'});}
 function dgrpHead(id,ic,t){return `<section class="dgrp" id="grp-${id}"><button class="dgrp-head" onclick="dashToggle('${id}')"><span class="dgrp-ic">${ic}</span><span class="dgrp-t">${t}</span><span class="dgrp-arr">▾</span></button><div class="dgrp-body">`;}
+function jumpToWeek(num){if(document.getElementById('vue-plan').style.display==='none')showTab('plan');
+  const el=document.getElementById('wk-'+num);if(!el)return;
+  const ab=document.getElementById('appbar');const abh=ab?ab.offsetHeight:0;
+  const y=el.getBoundingClientRect().top+window.scrollY-(abh+14);window.scrollTo({top:y,behavior:'smooth'});
+  el.classList.add('wk-flash');setTimeout(()=>el.classList.remove('wk-flash'),1700);}
 /* ===== Item 4 — Projection marathon « boule de cristal » ===== */
 function _pace2s(p){if(p==null)return null;const m=String(p).match(/(\d+):(\d+)/);return m?(+m[1]*60+ +m[2]):null;}
 function _s2hm(s){s=Math.round(s);const h=Math.floor(s/3600),m=Math.floor((s%3600)/60);return h+'h'+String(m).padStart(2,'0');}
