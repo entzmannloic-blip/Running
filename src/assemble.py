@@ -5,6 +5,7 @@ css+=open('/tmp/css_extra.txt').read()
 DATA_JS="".join(f"const {k}={json.dumps(data[v],ensure_ascii=False)};\n" for k,v in [
  ("PHASES","PHASES"),("COUL","COUL"),("SEMAINES","SEMAINES"),("GEAR","GEAR"),("RACES","RACES"),
  ("PROFIL","PROFIL"),("RECORDS","RECORDS"),("VIGILANCE","VIGILANCE"),("S24R","S24R"),("HIST","HIST"),("POLAR","POLAR"),
+ ("PROJ","PROJ"),
  ("ALLURES","ALLURES"),("ALLURES_COURSE","ALLURES_COURSE"),("MONTHLY","MONTHLY"),("SAISON2026","SAISON2026"),("ACWR_DATA","ACWR_DATA"),("RECORDS_PERF","RECORDS_PERF"),("JOURNAL","JOURNAL"),("REWINDS","REWINDS"),("ZONES_FC","ZONES_FC"),("SEANCES_BY_WEEK","SBW"),("MAJ","MAJ"),("HEATMAP","HEATMAP")])
 JS=open('/tmp/app.js').read()
 BODY=open('/tmp/body.html').read()
