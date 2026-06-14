@@ -87,12 +87,14 @@ function renderHeader(){
   }
   let _cd='';
   if(RACES&&RACES.length){
-    const _it=RACES.map(r=>{const _dn=Math.max(0,Math.ceil((new Date(r.date)-_t)/86400000));return `<div class="vdj-cd-item"><span class="vdj-cd-n">J-${_dn}</span><span class="vdj-cd-l">${r.nom}</span></div>`;}).join('<div class="vdj-cd-sep"></div>');
-    _cd=`<div class="vdj-cd">${_it}</div>`;
+    const _it=RACES.map(r=>{const _dn=Math.max(0,Math.ceil((new Date(r.date)-_t)/86400000));return `<span class="cds-item"><span class="cds-n">J-${_dn}</span><span class="cds-l">${r.nom}</span></span>`;}).join('');
+    _cd=`${_it}`;
   }
   const _maj=`<div class="vdj-maj">Données à jour au ${MAJ}</div>`;
-  const _h=document.getElementById('hero');_h.style.display='flex';
-  _h.innerHTML=`${_psCard}${_cd}<div class="hero-sem">${heroNow}${heroNext}</div>${_maj}`;
+  document.getElementById('cd-strip').innerHTML=_cd;
+  document.getElementById('hero-plan').innerHTML=`${_psCard}<div class="hero-sem">${heroNow}${heroNext}</div>`;
+  document.getElementById('maj-foot').innerHTML=_maj;
+  const _ab=document.getElementById('appbar');if(_ab&&document.documentElement)document.documentElement.style.setProperty('--appbar-h',_ab.offsetHeight+'px');
 }
 
 /* ===== PLAN ===== */
@@ -147,7 +149,7 @@ function calHTML(){
   }
   return '<div class="cal-head"><button class="cal-nav" onclick="calNav(-1)">‹</button><div class="cal-title">'+MN[m]+' '+y+'</div><button class="cal-nav" onclick="calNav(1)">›</button></div>'+
     '<div class="cal-grid">'+cells+'</div>'+
-    '<div class="cal-legend"><span><i class="cal-lg cal-g"></i>Réalisé</span><span><i class="cal-lg cal-o"></i>Non réalisé</span><span><i class="cal-lg cal-x"></i>À venir</span><span style="opacity:.45;margin-left:auto">build 12</span></div>';
+    '<div class="cal-legend"><span><i class="cal-lg cal-g"></i>Réalisé</span><span><i class="cal-lg cal-o"></i>Non réalisé</span><span><i class="cal-lg cal-x"></i>À venir</span><span style="opacity:.45;margin-left:auto">build 13</span></div>';
 }
 function calNav(d){calMonth.setMonth(calMonth.getMonth()+d);const w=document.getElementById('cal-inner');if(w)w.innerHTML=calHTML();}
 
@@ -236,7 +238,8 @@ function dashApplyState(){DASH_GROUPS.forEach(g=>{const s=document.getElementByI
 function dashToggle(id){const s=document.getElementById('grp-'+id);if(!s)return;const open=!s.classList.contains('open');s.classList.toggle('open',open);try{localStorage.setItem('dash_grp_'+id,open?'1':'0');}catch(e){}}
 function dashJump(id){const s=document.getElementById('grp-'+id);if(!s)return;if(!s.classList.contains('open')){s.classList.add('open');try{localStorage.setItem('dash_grp_'+id,'1');}catch(e){}}
   const nav=document.getElementById('dash-nav');nav&&nav.querySelectorAll('.dnav-chip').forEach(c=>c.classList.toggle('actif',c.dataset.g===id));
-  const y=s.getBoundingClientRect().top+window.scrollY-(nav?nav.offsetHeight+58:64);window.scrollTo({top:y,behavior:'smooth'});}
+  const ab=document.getElementById('appbar');const abh=ab?ab.offsetHeight:0;
+  const y=s.getBoundingClientRect().top+window.scrollY-(abh+(nav?nav.offsetHeight:0)+10);window.scrollTo({top:y,behavior:'smooth'});}
 function dgrpHead(id,ic,t){return `<section class="dgrp" id="grp-${id}"><button class="dgrp-head" onclick="dashToggle('${id}')"><span class="dgrp-ic">${ic}</span><span class="dgrp-t">${t}</span><span class="dgrp-arr">▾</span></button><div class="dgrp-body">`;}
 /* ===== Item 4 — Projection marathon « boule de cristal » ===== */
 function _pace2s(p){if(p==null)return null;const m=String(p).match(/(\d+):(\d+)/);return m?(+m[1]*60+ +m[2]):null;}
