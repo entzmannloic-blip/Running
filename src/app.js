@@ -150,7 +150,7 @@ function calHTML(){
   const _emptyCal=_mLogged?'':'<div class="empty-note"><span class="en-ic">🗓️</span><span>Aucune séance loguée sur ce mois pour l\'instant — les jours se colorent en <strong>vert</strong> dès que tu réalises une séance. Dis-moi « j\'ai fait la séance X de la semaine Y » et le mois prend vie.</span></div>';
   return '<div class="cal-head"><button class="cal-nav" onclick="calNav(-1)" aria-label="Mois précédent">‹</button><div class="cal-title">'+MN[m]+' '+y+'</div><button class="cal-nav" onclick="calNav(1)" aria-label="Mois suivant">›</button></div>'+
     '<div class="cal-grid">'+cells+'</div>'+
-    '<div class="cal-legend"><span><i class="cal-lg cal-g"></i>Réalisé</span><span><i class="cal-lg cal-o"></i>Non réalisé</span><span><i class="cal-lg cal-x"></i>À venir</span><span style="opacity:.45;margin-left:auto">build 15</span></div>'+_emptyCal;
+    '<div class="cal-legend"><span><i class="cal-lg cal-g"></i>Réalisé</span><span><i class="cal-lg cal-o"></i>Non réalisé</span><span><i class="cal-lg cal-x"></i>À venir</span><span style="opacity:.45;margin-left:auto">build 16</span></div>'+_emptyCal;
 }
 function calNav(d){calMonth.setMonth(calMonth.getMonth()+d);const w=document.getElementById('cal-inner');if(w)w.innerHTML=calHTML();}
 
@@ -544,12 +544,64 @@ function ouvrirSemaine(num){const s=SEMAINES.find(x=>x.num===num);const ph=PHASE
   const repPill=s.repartition&&s.repartition!=='—'?`<div class="sw-pill"><div class="sw-pill-l">Répartition</div><div class="sw-pill-v" style="font-size:.74rem">${s.repartition}</div></div>`:'';
   contenu.innerHTML=`<div class="sw-hero"><span class="sw-tag" style="background:${COUL[s.phase]}22;color:${COUL[s.phase]}">${ph.nom}</span><h2 class="sw-titre">Semaine ${s.num} — ${s.theme}</h2><p class="sw-sous">Semaine type · clique une séance</p><div class="sw-meta"><div class="sw-pill"><div class="sw-pill-l">Volume cible</div><div class="sw-pill-v">${s.km} km</div></div><div class="sw-pill"><div class="sw-pill-l">Réalisé</div><div class="sw-pill-v">${fait}/${seances.length} · ${realKm} km</div></div><div class="sw-pill"><div class="sw-pill-l">Charge</div><div class="sw-pill-v" style="font-size:.84rem">${s.charge}</div></div>${repPill}</div></div><div class="sw-corps"><div class="callout callout-obj">${s.objectif}</div><div class="sw-section">Séances de la semaine</div><div class="seance-liste">${liste}</div>${s.revue?`<div class="sw-section">Revue du coach — bilan de la semaine</div><div class="rev-coach">${s.revue}</div>`:`<div class="realise-empty" style="margin-top:18px"><strong>Revue de la semaine à venir.</strong> Quand la semaine sera bouclée, tu trouveras ici mon bilan complet : volume et charge vs prévu, adhérence, signaux à surveiller, et la décision pour la semaine suivante. Elle alimentera aussi le Journal du coach.</div>`}</div>`;ouvrir();
 }
+/* ===== Lot 2 — Logging réel des séances (persistance localStorage) ===== */
+const LOG_KEY='runlog_v1';
+function loadLogs(){try{return JSON.parse(localStorage.getItem(LOG_KEY)||'{}');}catch(e){return {};}}
+function saveLogs(o){try{localStorage.setItem(LOG_KEY,JSON.stringify(o));}catch(e){}}
+function logId(wk,id){return wk+'-'+id;}
+function findSeance(wk,id){return (SEANCES_BY_WEEK[wk]||[]).find(x=>String(x.id)===String(id));}
+function hydrateLogs(){const logs=loadLogs();Object.entries(logs).forEach(([k,r])=>{const i=k.indexOf('-');const wk=k.slice(0,i),id=k.slice(i+1);const se=findSeance(wk,id);if(se)se.realise=r;});}
+function _parseTime(t){if(!t)return null;const p=String(t).trim().split(':').map(x=>parseInt(x,10));if(!p.length||p.some(isNaN))return null;if(p.length===3)return p[0]*3600+p[1]*60+p[2];if(p.length===2)return p[0]*60+p[1];if(p.length===1)return p[0]*60;return null;}
+function computeAllure(km,temps){const s=_parseTime(temps);if(!s||!km)return '';const sk=s/km;const m=Math.floor(sk/60),x=Math.round(sk%60);return (x===60?(m+1)+':00':m+':'+String(x).padStart(2,'0'))+'/km';}
+let _pendingStatut='fait';
+function lfPickStatut(st){_pendingStatut=st;document.querySelectorAll('.lf-st').forEach(b=>b.classList.toggle('actif',b.dataset.st===st));}
+function lfToggle(wk,id){const f=document.getElementById('logform');if(!f)return;const open=f.style.display==='none';f.style.display=open?'block':'none';const b=document.getElementById('lf-toggle');if(b)b.textContent=open?'Masquer le formulaire':'✎ Logger / modifier le réalisé';if(open)f.scrollIntoView({behavior:_reduceMotion()?'auto':'smooth',block:'center'});}
+function _v(id){const e=document.getElementById(id);return e?e.value.trim():'';}
+function logSeance(wk,id){
+  const se=findSeance(wk,id);if(!se)return;
+  const km=parseFloat(_v('lf-km').replace(',','.'))||'';
+  const temps=_v('lf-temps');
+  const allure=(km&&temps)?computeAllure(km,temps):'';
+  const realise={statut:_pendingStatut,km:km,temps:temps,allure:allure,
+    fc_moy:parseInt(_v('lf-fcmoy'),10)||'',fc_max:parseInt(_v('lf-fcmax'),10)||'',
+    rpe_ressenti:_v('lf-rpe'),commentaire:_v('lf-comm'),
+    pr:parseInt(_v('lf-pr'),10)||0,ach:parseInt(_v('lf-ach'),10)||0,
+    revue:(se.realise&&se.realise.revue)||''};
+  const logs=loadLogs();logs[logId(wk,id)]=realise;saveLogs(logs);
+  se.realise=realise;
+  _afterLog(wk,id);
+}
+function unlogSeance(wk,id){const se=findSeance(wk,id);if(!se)return;const logs=loadLogs();delete logs[logId(wk,id)];saveLogs(logs);se.realise={statut:'a_faire'};_afterLog(wk,id);}
+function _afterLog(wk,id){renderHeader();renderPlan();if(document.getElementById('vue-dash').style.display!=='none')renderDash();ouvrirSeance(wk,id);setTimeout(()=>{const b=document.querySelector&&document.querySelector('.lf-save');if(b){b.textContent='Enregistré ✓';b.classList.add('lf-saved');setTimeout(()=>{if(b)b.textContent='Enregistrer';},1800);}},80);}
+function logForm(wk,se){
+  const r=se.realise||{statut:'a_faire'};const logged=r.statut!=='a_faire';
+  _pendingStatut=logged?r.statut:'fait';
+  const st=[['fait','Fait ✓'],['partiel','Partiel'],['manque','Manqué']].map(s=>`<button type="button" class="lf-st${_pendingStatut===s[0]?' actif':''}" data-st="${s[0]}" onclick="lfPickStatut('${s[0]}')">${s[1]}</button>`).join('');
+  const f=(id,lbl,val,ph,extra='')=>`<label class="lf-f"><span>${lbl}</span><input id="${id}" value="${val!=null&&val!==''?String(val).replace(/"/g,'&quot;'):''}" placeholder="${ph}" ${extra}></label>`;
+  return `<div class="lf-wrap">
+    <button type="button" class="lf-toggle" id="lf-toggle" onclick="lfToggle(${wk},${se.id})">${logged?'✎ Modifier le réalisé':'✎ Logger cette séance'}</button>
+    <div class="logform" id="logform" style="display:none">
+      <div class="lf-statut">${st}</div>
+      <div class="lf-grid">
+        ${f('lf-km','Distance (km)',r.km,'10,5','type="text" inputmode="decimal"')}
+        ${f('lf-temps','Temps',r.temps,'48:30 ou 1:24:30','type="text" inputmode="numeric"')}
+        ${f('lf-fcmoy','FC moy',r.fc_moy,'152','type="text" inputmode="numeric"')}
+        ${f('lf-fcmax','FC max',r.fc_max,'171','type="text" inputmode="numeric"')}
+        ${f('lf-rpe','RPE /10',r.rpe_ressenti,'6','type="text" inputmode="numeric"')}
+        ${f('lf-pr','Records perso',r.pr,'0','type="text" inputmode="numeric"')}
+        ${f('lf-ach','Trophées segment',r.ach,'0','type="text" inputmode="numeric"')}
+      </div>
+      <label class="lf-f lf-comm"><span>Commentaire</span><textarea id="lf-comm" placeholder="Ressenti, conditions, sensations…">${r.commentaire?String(r.commentaire).replace(/</g,'&lt;'):''}</textarea></label>
+      <div class="lf-hint">L'allure se calcule automatiquement depuis distance + temps. Les records/trophées déclenchent la célébration et la projection se réactualise.</div>
+      <div class="lf-actions"><button type="button" class="lf-save" onclick="logSeance(${wk},${se.id})">Enregistrer</button>${logged?`<button type="button" class="lf-clear" onclick="unlogSeance(${wk},${se.id})">Réinitialiser</button>`:''}</div>
+    </div></div>`;
+}
 function realiseBloc(num,se){const r=se.realise||{statut:'a_faire'};
-  if(r.statut==='a_faire')return `<div class="sd-section">Réalisé & revue du coach</div><div class="realise-empty"><strong>Séance pas encore réalisée.</strong> Quand tu me diras « j'ai fait la séance ${se.num} de la semaine ${num} », je remplirai ici le <strong>réalisé</strong> (Strava), ton <strong>ressenti</strong>, et ma <strong>revue du coach</strong> — ce qui a été bien fait, et surtout ce qu'il faut corriger.</div>`;
+  if(r.statut==='a_faire')return `<div class="sd-section">Réalisé & revue du coach</div><div class="realise-empty"><strong>Séance pas encore réalisée.</strong> Log-la ci-dessous dès que c'est fait — le calendrier, la boule de cristal et les records s'activent automatiquement.</div>${logForm(num,se)}`;
   const p=se.metriques;
   const prevu=`<div class="rvp-l"><span>Distance</span><span>${p.Distance||'—'}</span></div><div class="rvp-l"><span>Durée</span><span>${p['Durée']||p['Durée totale']||'—'}</span></div><div class="rvp-l"><span>Allure</span><span>${p.Allure||'—'}</span></div><div class="rvp-l"><span>FC</span><span>${p.FC||'—'}</span></div><div class="rvp-l"><span>RPE</span><span>${p.RPE||'—'}</span></div>`;
   const reb=`<div class="rvp-l"><span>Distance</span><span>${r.km?r.km+' km':'—'}</span></div><div class="rvp-l"><span>Temps</span><span>${r.temps||'—'}</span></div><div class="rvp-l"><span>Allure</span><span>${r.allure||'—'}</span></div><div class="rvp-l"><span>FC moy/max</span><span>${r.fc_moy?r.fc_moy+(r.fc_max?'/'+r.fc_max:''):'—'}</span></div><div class="rvp-l"><span>RPE ressenti</span><span>${r.rpe_ressenti||'—'}</span></div>`;
-  return `<div class="sd-section">Réalisé vs prévu — ${stChip(r.statut)}</div><div class="rvp"><div class="rvp-col"><h5>Prévu</h5>${prevu}</div><div class="rvp-col"><h5>Réalisé</h5>${reb}</div></div>${prCelebration(r)}${r.commentaire?`<div class="comm-user">« ${r.commentaire} »</div>`:''}<div class="sd-section">Revue du coach</div><div class="rev-coach">${r.revue||'—'}</div>`;
+  return `<div class="sd-section">Réalisé vs prévu — ${stChip(r.statut)}</div><div class="rvp"><div class="rvp-col"><h5>Prévu</h5>${prevu}</div><div class="rvp-col"><h5>Réalisé</h5>${reb}</div></div>${prCelebration(r)}${r.commentaire?`<div class="comm-user">« ${r.commentaire} »</div>`:''}<div class="sd-section">Revue du coach</div><div class="rev-coach">${r.revue||'—'}</div>${logForm(num,se)}`;
 }
 function ouvrirSeance(num,id){const se=(SEANCES_BY_WEEK[num]||[]).find(x=>x.id===id);if(!se)return;segActif=null;
   topbar.innerHTML=`<button class="btn-nav" onclick="ouvrirSemaine(${num})">‹ Retour semaine ${num}</button>${btnFermer}`;
@@ -567,4 +619,5 @@ function initBarre(se){const piste=document.getElementById('piste');if(!piste)re
     e.addEventListener('click',()=>{if(segActif)segActif.classList.remove('actif');if(segActif===e){segActif=null;pan.classList.remove('visible');return;}segActif=e;e.classList.add('actif');dnom.textContent=seg.nom;drole.textContent=seg.role;dgr.innerHTML=`<div><div class="di-label">Durée</div><div class="di-val">${fmt(seg.duree)}</div></div><div><div class="di-label">Bloc</div><div class="di-val">${seg.bloc}</div></div><div><div class="di-label">Début</div><div class="di-val">${fmt(seg.debut)}</div></div><div><div class="di-label">Fin</div><div class="di-val">${fmt(seg.fin)}</div></div>`;pan.classList.add('visible');});
     piste.appendChild(e);});
 }
-renderHeader();renderPlan();rwAuto();
+hydrateLogs();renderHeader();renderPlan();rwAuto();
+if('serviceWorker'in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
