@@ -396,7 +396,7 @@ body.nuit .tr-s{color:#94a3b8}
 body.nuit .tr-meta{background:#0f172a;color:#cbd5e1}
 /* ===== Item 1 — Records tombés (célébration PR) ===== */
 .prc{display:flex;align-items:center;gap:14px;margin-top:14px;padding:14px 16px;border-radius:14px;position:relative;overflow:hidden;
-  background:linear-gradient(120deg,#fffbeb 0%,#fef3c7 45%,#fde68a 100%);border:1px solid #fcd34d}
+  background:linear-gradient(135deg,#fffbeb 0%,#fef3c7 45%,#fde68a 100%);border:1px solid #fcd34d}
 .prc::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.65) 50%,transparent 70%);
   transform:translateX(-120%);animation:prcShine 2.6s ease-in-out 1}
 @keyframes prcShine{to{transform:translateX(120%)}}
@@ -409,7 +409,7 @@ body.nuit .tr-meta{background:#0f172a;color:#cbd5e1}
 .prc-sep{opacity:.5}
 .prc-detail{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
 .prc-chip{font-size:.72rem;font-weight:700;color:#92400e;background:rgba(255,255,255,.6);border:1px solid #fcd34d;border-radius:99px;padding:3px 9px}
-body.nuit .prc{background:linear-gradient(120deg,#3a2e0b 0%,#4d3c0c 50%,#5c4708 100%);border-color:#a16207}
+body.nuit .prc{background:linear-gradient(135deg,#3a2e0b 0%,#4d3c0c 50%,#5c4708 100%);border-color:#a16207}
 body.nuit .prc-titre,body.nuit .prc-n{color:#fde68a}
 body.nuit .prc-row{color:#fcd34d}
 body.nuit .prc-chip{color:#fde68a;background:rgba(0,0,0,.25);border-color:#a16207}
@@ -440,8 +440,8 @@ body.nuit .dnav-chip.actif{background:#3b82f6;border-color:#3b82f6}
 .dgrp.open .dgrp-body{border:1px solid var(--gris-clair);border-top:none;border-radius:0 0 var(--rayon-lg) var(--rayon-lg);padding:12px 12px 2px;background:var(--gris-fond)}
 .dgrp.open .dgrp-body>.kpi{margin-bottom:12px}
 /* ===== Item 4 — Projection marathon (boule de cristal) ===== */
-.cb{background:linear-gradient(165deg,#faf5ff 0%,#f3e8ff 60%,#ede9fe 100%);border-color:#ddd6fe;position:relative;overflow:hidden}
-body.nuit .cb{background:linear-gradient(165deg,#1e1b4b 0%,#172033 70%);border-color:#4c1d95}
+.cb{background:linear-gradient(135deg,#faf5ff 0%,#f3e8ff 60%,#ede9fe 100%);border-color:#ddd6fe;position:relative;overflow:hidden}
+body.nuit .cb{background:linear-gradient(135deg,#1e1b4b 0%,#172033 70%);border-color:#4c1d95}
 .cb-head{display:flex;align-items:center;gap:12px;margin-bottom:6px}
 .cb-orb{font-size:1.8rem;line-height:1;filter:drop-shadow(0 0 8px rgba(139,92,246,.5));animation:cbFloat 3.4s ease-in-out infinite}
 @keyframes cbFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
@@ -500,14 +500,30 @@ body.nuit .cds-l{color:#fdba74}
 body.nuit .cw-arr{color:#60a5fa}
 .wk-flash{animation:wkFlash 1.7s ease}
 @keyframes wkFlash{0%,100%{box-shadow:0 0 0 0 rgba(59,130,246,0)}18%{box-shadow:0 0 0 3px rgba(59,130,246,.55)}}
+/* ===== Lot 1 — Accessibilité ===== */
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}
+  .cb-orb{animation:none!important}
+}
+:focus-visible{outline:2px solid var(--bleu);outline-offset:2px;border-radius:8px}
+body.nuit :focus-visible{outline-color:#60a5fa}
+/* lien d'évitement clavier */
+.skip-link{position:absolute;left:-9999px;top:0;z-index:200;background:#1e293b;color:#fff;padding:10px 16px;border-radius:0 0 10px 0;font-weight:700;font-size:.85rem}
+.skip-link:focus{left:0}
+/* ===== Lot 1 — État vide réutilisable (ton boule de cristal) ===== */
+.empty-note{display:flex;gap:10px;align-items:flex-start;font-size:.8rem;line-height:1.55;color:var(--texte-deux);
+  background:var(--gris-fond);border:1px dashed var(--gris-clair);border-radius:12px;padding:11px 13px;margin-top:12px}
+.empty-note .en-ic{font-size:1rem;flex:0 0 auto;line-height:1.3}
+body.nuit .empty-note{background:#0f172a;border-color:#334155}
 </style></head>
 <body>
+<a href="#main" class="skip-link">Aller au contenu</a>
 <div class="accueil" style="padding-top:0">
   <div class="appbar" id="appbar">
     <div class="cds" id="cd-strip"></div>
     <div class="tabbar"><div class="tab actif" id="tab-plan" onclick="showTab('plan')">Préparation / Séances</div><div class="tab" id="tab-dash" onclick="showTab('dash')">Suivi des performances</div></div>
   </div>
-  <div id="vue-plan">
+  <div id="vue-plan"><span id="main"></span>
     <div id="hero-plan"></div>
     <div id="phases"></div>
     <p class="note-foot">Plan complet S25→S53. Dis-moi « j'ai fait la séance X de la semaine Y » et tout se met à jour.</p>
@@ -678,20 +694,25 @@ function calHTML(){
   const dow=['L','M','M','J','V','S','D'];
   let cells=dow.map(d=>'<div class="cal-dow">'+d+'</div>').join('');
   for(let i=0;i<start;i++)cells+='<div class="cal-cell cal-empty"></div>';
+  let _mLogged=false;
   for(let day=1;day<=ndays;day++){
     const iso=y+'-'+String(m+1).padStart(2,'0')+'-'+String(day).padStart(2,'0');
     const de=evs.filter(e=>e.iso===iso);
     const tdy=iso===todayISO?' cal-today':'';
     if(de.length){
       const e=de[0];
-      cells+='<button type="button" class="cal-cell cal-'+e.color+tdy+'" onclick="'+e.open+'" title="'+e.titre.replace(/"/g,'')+'"><span class="cal-num">'+day+'</span><span class="cal-dot"></span></button>';
+      if(e.color==='g'||e.color==='o')_mLogged=true;
+      const _stMap={g:'Réalisé',o:'Non réalisé',x:'À venir'};
+      const _albl=day+' '+MN[m]+' — '+(_stMap[e.color]||'')+' : '+e.titre.replace(/"/g,'');
+      cells+='<button type="button" class="cal-cell cal-'+e.color+tdy+'" onclick="'+e.open+'" aria-label="'+_albl+'" title="'+e.titre.replace(/"/g,'')+'"><span class="cal-num">'+day+'</span><span class="cal-dot"></span></button>';
     }else{
       cells+='<div class="cal-cell'+tdy+'"><span class="cal-num cal-muted">'+day+'</span></div>';
     }
   }
-  return '<div class="cal-head"><button class="cal-nav" onclick="calNav(-1)">‹</button><div class="cal-title">'+MN[m]+' '+y+'</div><button class="cal-nav" onclick="calNav(1)">›</button></div>'+
+  const _emptyCal=_mLogged?'':'<div class="empty-note"><span class="en-ic">🗓️</span><span>Aucune séance loguée sur ce mois pour l\'instant — les jours se colorent en <strong>vert</strong> dès que tu réalises une séance. Dis-moi « j\'ai fait la séance X de la semaine Y » et le mois prend vie.</span></div>';
+  return '<div class="cal-head"><button class="cal-nav" onclick="calNav(-1)" aria-label="Mois précédent">‹</button><div class="cal-title">'+MN[m]+' '+y+'</div><button class="cal-nav" onclick="calNav(1)" aria-label="Mois suivant">›</button></div>'+
     '<div class="cal-grid">'+cells+'</div>'+
-    '<div class="cal-legend"><span><i class="cal-lg cal-g"></i>Réalisé</span><span><i class="cal-lg cal-o"></i>Non réalisé</span><span><i class="cal-lg cal-x"></i>À venir</span><span style="opacity:.45;margin-left:auto">build 14</span></div>';
+    '<div class="cal-legend"><span><i class="cal-lg cal-g"></i>Réalisé</span><span><i class="cal-lg cal-o"></i>Non réalisé</span><span><i class="cal-lg cal-x"></i>À venir</span><span style="opacity:.45;margin-left:auto">build 15</span></div>'+_emptyCal;
 }
 function calNav(d){calMonth.setMonth(calMonth.getMonth()+d);const w=document.getElementById('cal-inner');if(w)w.innerHTML=calHTML();}
 
@@ -781,12 +802,13 @@ function dashToggle(id){const s=document.getElementById('grp-'+id);if(!s)return;
 function dashJump(id){const s=document.getElementById('grp-'+id);if(!s)return;if(!s.classList.contains('open')){s.classList.add('open');try{localStorage.setItem('dash_grp_'+id,'1');}catch(e){}}
   const nav=document.getElementById('dash-nav');nav&&nav.querySelectorAll('.dnav-chip').forEach(c=>c.classList.toggle('actif',c.dataset.g===id));
   const ab=document.getElementById('appbar');const abh=ab?ab.offsetHeight:0;
-  const y=s.getBoundingClientRect().top+window.scrollY-(abh+(nav?nav.offsetHeight:0)+10);window.scrollTo({top:y,behavior:'smooth'});}
+  const y=s.getBoundingClientRect().top+window.scrollY-(abh+(nav?nav.offsetHeight:0)+10);window.scrollTo({top:y,behavior:_reduceMotion()?'auto':'smooth'});}
 function dgrpHead(id,ic,t){return `<section class="dgrp" id="grp-${id}"><button class="dgrp-head" onclick="dashToggle('${id}')"><span class="dgrp-ic">${ic}</span><span class="dgrp-t">${t}</span><span class="dgrp-arr">▾</span></button><div class="dgrp-body">`;}
+function _reduceMotion(){return window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;}
 function jumpToWeek(num){if(document.getElementById('vue-plan').style.display==='none')showTab('plan');
   const el=document.getElementById('wk-'+num);if(!el)return;
   const ab=document.getElementById('appbar');const abh=ab?ab.offsetHeight:0;
-  const y=el.getBoundingClientRect().top+window.scrollY-(abh+14);window.scrollTo({top:y,behavior:'smooth'});
+  const y=el.getBoundingClientRect().top+window.scrollY-(abh+14);window.scrollTo({top:y,behavior:_reduceMotion()?'auto':'smooth'});
   el.classList.add('wk-flash');setTimeout(()=>el.classList.remove('wk-flash'),1700);}
 /* ===== Item 4 — Projection marathon « boule de cristal » ===== */
 function _pace2s(p){if(p==null)return null;const m=String(p).match(/(\d+):(\d+)/);return m?(+m[1]*60+ +m[2]):null;}
@@ -1021,7 +1043,7 @@ function ouvrir(){overlay.classList.add('ouverte');document.body.style.overflow=
 function fermer(){overlay.classList.remove('ouverte');document.body.style.overflow='';setTimeout(()=>{contenu.innerHTML='';topbar.innerHTML='';},300);}
 overlay.addEventListener('click',e=>{if(e.target===overlay)fermer()});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')fermer()});
-const btnFermer='<button class="btn-nav" onclick="fermer()">Fermer ✕</button>';
+const btnFermer='<button class="btn-nav" onclick="fermer()" aria-label="Fermer la fiche">Fermer ✕</button>';
 
 
 function s24Chart(splits){const n=splits.length,W=720,h=190,padL=8,padR=8,padT=26,padB=30;
