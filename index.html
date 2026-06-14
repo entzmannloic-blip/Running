@@ -572,6 +572,44 @@ body.nuit .theo-panel em{color:#60a5fa}
 .cd-line.cd-good{color:var(--texte-deux)}
 .cd-line strong{color:var(--texte)}
 .cd-foot{font-size:.7rem;color:var(--texte-trois);line-height:1.5;padding-top:11px;border-top:1px dashed var(--gris-clair);font-style:italic}
+/* ===== Panneau théorie & coaching (sheet par-dessus la fiche) ===== */
+.theo-btn-rich{display:flex;align-items:center;justify-content:center;gap:8px;background:linear-gradient(135deg,#1d4ed8,#3b82f6)}
+.theo-btn-arr{transition:transform .2s}
+.theo-btn-rich:hover .theo-btn-arr{transform:translateX(3px)}
+.theo-overlay{position:fixed;inset:0;z-index:150;background:rgba(15,23,42,.6);backdrop-filter:blur(6px);opacity:0;pointer-events:none;transition:opacity .25s;display:flex;align-items:flex-end;justify-content:center}
+.theo-overlay.ouverte{opacity:1;pointer-events:all}
+.theo-sheet{background:var(--gris-fond);width:100%;max-width:680px;max-height:94vh;border-radius:22px 22px 0 0;display:flex;flex-direction:column;transform:translateY(100%);transition:transform .32s cubic-bezier(.22,.68,0,1.1);overflow:hidden}
+.theo-overlay.ouverte .theo-sheet{transform:translateY(0)}
+.theo-sheet-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:20px 20px 16px;border-bottom:1px solid var(--gris-clair);background:var(--blanc)}
+.theo-kicker{font-size:.66rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--bleu)}
+.theo-sheet-titre{font-family:Georgia,serif;font-size:1.45rem;font-weight:700;color:var(--texte);margin-top:3px}
+.theo-close{flex:0 0 auto;width:36px;height:36px;border-radius:50%;border:1px solid var(--gris-clair);background:var(--gris-fond);color:var(--texte-deux);font-size:1rem;cursor:pointer;line-height:1}
+.theo-close:hover{border-color:var(--gris)}
+.theo-sheet-body{overflow-y:auto;-webkit-overflow-scrolling:touch;padding:18px 20px 30px}
+.theo-sec{margin-bottom:24px}
+.theo-sec-h{display:flex;align-items:center;gap:10px;font-family:Georgia,serif;font-weight:700;font-size:1.08rem;color:var(--texte);margin-bottom:10px;line-height:1.3}
+.theo-sec-n{flex:0 0 auto;width:24px;height:24px;border-radius:50%;background:var(--bleu);color:#fff;font-family:system-ui,sans-serif;font-size:.78rem;font-weight:800;display:flex;align-items:center;justify-content:center}
+.theo-sec-b p{font-size:.88rem;line-height:1.7;color:var(--texte-deux);margin:0 0 10px}
+.theo-sec-b p:last-child{margin-bottom:0}
+.theo-sec-b strong{color:var(--texte)}
+.theo-sec-b em{color:var(--bleu);font-style:italic}
+body.nuit .theo-sec-b em{color:#60a5fa}
+.theo-perso{background:#fff7ed;border-left:3px solid #f97316;border-radius:0 8px 8px 0;padding:11px 13px!important;font-size:.85rem!important}
+body.nuit .theo-perso{background:#7c2d1222}
+.theo-svg{display:block;width:100%;max-width:340px;margin:12px auto;background:var(--blanc);border:1px solid var(--gris-clair);border-radius:12px;padding:8px}
+.theo-tab{width:100%;border-collapse:collapse;margin:6px 0 4px;font-size:.84rem}
+.theo-tab th{text-align:left;padding:7px 10px;background:var(--gris-clair);color:var(--texte-deux);font-size:.72rem;text-transform:uppercase;letter-spacing:.04em}
+.theo-tab th:last-child{text-align:right}
+.theo-tab td{padding:8px 10px;border-bottom:1px solid var(--gris-clair);color:var(--texte)}
+.theo-tab td:last-child{text-align:right;font-weight:800;font-family:Georgia,serif}
+.theo-coachbox{background:linear-gradient(135deg,#faf5ff,#f0f9ff);border:1px solid #ddd6fe;border-radius:14px;padding:16px;margin-top:6px}
+body.nuit .theo-coachbox{background:linear-gradient(135deg,#1e1b4b,#0f1f3d);border-color:#4c1d95}
+.theo-coachbox-h{font-family:Georgia,serif;font-weight:700;font-size:.98rem;color:#6d28d9;margin-bottom:8px}
+body.nuit .theo-coachbox-h{color:#c4b5fd}
+.theo-coachbox p{font-size:.87rem;line-height:1.7;color:var(--texte-deux);margin:0}
+.theo-coachbox strong{color:var(--texte)}
+.theo-end{text-align:center;font-size:.8rem;color:var(--texte-trois);font-style:italic;margin-top:22px}
+.theo-end em{color:var(--bleu)}
 </style></head>
 <body>
 <a href="#main" class="skip-link">Aller au contenu</a>
@@ -590,6 +628,7 @@ body.nuit .theo-panel em{color:#60a5fa}
 </div>
 <div class="rw-overlay" id="rwoverlay"><div class="rw-card" id="rwcard" onclick="rwNext()"></div></div>
 <div class="modale-overlay" id="overlay"><div class="modale-boite" id="boite"><div class="modale-topbar" id="topbar"></div><div id="contenu"></div></div></div>
+<div class="theo-overlay" id="theoOverlay"><div class="theo-sheet" id="theoSheet"></div></div>
 
 <script>
 const PHASES=[{"id": "reprise", "nom": "Reprise", "c": "#22c55e", "sem": "S24 – S25", "role": "Digérer La Circaète puis relancer en douceur en corrigeant la zone grise."}, {"id": "general", "nom": "Développement général & aérobie", "c": "#3b82f6", "sem": "S26 – S31", "role": "Volume, polarisation, côtes en pyramide (force/économie), seuil, et benchmark 10 km pour recaler les allures."}, {"id": "seuil", "nom": "Seuil & spécifique (pré-USA)", "c": "#8b5cf6", "sem": "S32 – S35", "role": "Front-loader le seuil et l'allure marathon avant le voyage."}, {"id": "usa", "nom": "Maintien — Road trip USA", "c": "#94a3b8", "sem": "S36 – S39", "role": "Deload bien placé : courir quand possible, randos = temps de pied."}, {"id": "marathon", "nom": "Bloc spécifique marathon", "c": "#f97316", "sem": "S40 – S43", "role": "Ré-entrée progressive, une grosse séance spécifique par semaine, pic à 88 km avec la séance reine."}, {"id": "affutage", "nom": "Affûtage marathon", "c": "#eab308", "sem": "S44 – S45", "role": "Décharge progressive (Bosquet) : volume en baisse, intensité courte maintenue, fraîcheur pour le 8 nov."}, {"id": "transition", "nom": "Transition & bascule trail", "c": "#14b8a6", "sem": "S46 – S47", "role": "Récup marathon progressive puis réveil des jambes de trail."}, {"id": "saintexpress", "nom": "SaintExpress 45 km", "c": "#ef4444", "sem": "S48", "role": "Objectif B sur les acquis : nocturne, hivernal, au plaisir."}, {"id": "regen", "nom": "Régénération fin de saison", "c": "#94a3b8", "sem": "S49 – S53", "role": "Décompression, course libre, entretien de la base, cap vers 2027."}];
@@ -769,7 +808,7 @@ function calHTML(){
   const _emptyCal=_mLogged?'':'<div class="empty-note"><span class="en-ic">🗓️</span><span>Aucune séance loguée sur ce mois pour l\'instant — les jours se colorent en <strong>vert</strong> dès que tu réalises une séance. Dis-moi « j\'ai fait la séance X de la semaine Y » et le mois prend vie.</span></div>';
   return '<div class="cal-head"><button class="cal-nav" onclick="calNav(-1)" aria-label="Mois précédent">‹</button><div class="cal-title">'+MN[m]+' '+y+'</div><button class="cal-nav" onclick="calNav(1)" aria-label="Mois suivant">›</button></div>'+
     '<div class="cal-grid">'+cells+'</div>'+
-    '<div class="cal-legend"><span><i class="cal-lg cal-g"></i>Réalisé</span><span><i class="cal-lg cal-o"></i>Non réalisé</span><span><i class="cal-lg cal-x"></i>À venir</span><span style="opacity:.45;margin-left:auto">build 17</span></div>'+_emptyCal;
+    '<div class="cal-legend"><span><i class="cal-lg cal-g"></i>Réalisé</span><span><i class="cal-lg cal-o"></i>Non réalisé</span><span><i class="cal-lg cal-x"></i>À venir</span><span style="opacity:.45;margin-left:auto">build 18</span></div>'+_emptyCal;
 }
 function calNav(d){calMonth.setMonth(calMonth.getMonth()+d);const w=document.getElementById('cal-inner');if(w)w.innerHTML=calHTML();}
 
@@ -1099,6 +1138,7 @@ let segActif=null;
 function ouvrir(){overlay.classList.add('ouverte');document.body.style.overflow='hidden';overlay.scrollTop=0;boite.scrollTop=0;}
 function fermer(){overlay.classList.remove('ouverte');document.body.style.overflow='';setTimeout(()=>{contenu.innerHTML='';topbar.innerHTML='';},300);}
 overlay.addEventListener('click',e=>{if(e.target===overlay)fermer()});
+(function(){const to=document.getElementById('theoOverlay');if(to)to.addEventListener('click',e=>{if(e.target===to)closeTheory();});})();
 document.addEventListener('keydown',e=>{if(e.key==='Escape')fermer()});
 const btnFermer='<button class="btn-nav" onclick="fermer()" aria-label="Fermer la fiche">Fermer ✕</button>';
 
@@ -1264,13 +1304,16 @@ function seanceTag(se){const t=se.type||'';
   if(t.indexOf('EF')>=0||t.indexOf('Récup')>=0||t.indexOf('Endurance')>=0||t.indexOf('Footing')>=0)return 'ef';
   return null;}
 function theoToggle(){const p=document.getElementById('theo-panel');if(!p)return;const open=p.style.display==='none';p.style.display=open?'block':'none';const b=document.getElementById('theo-btn');if(b)b.textContent=open?'▲ Replier la théorie':'📖 La théorie pour progresser';}
-function coachAvant(se){const c=COACH_THEORY[seanceTag(se)];if(!c)return '';
+function coachAvant(num,se){const c=COACH_THEORY[seanceTag(se)];if(!c)return '';
+  const tag=seanceTag(se);const rich=RICH_THEORY[tag]&&String(num)==='25';
+  const theoBtn=rich
+    ? `<button type="button" class="theo-btn theo-btn-rich" onclick="openTheory(${num},${se.id})">📖 Théorie & coaching approfondi <span class="theo-btn-arr">→</span></button>`
+    : `<button type="button" class="theo-btn" id="theo-btn" onclick="theoToggle()">📖 La théorie pour progresser</button><div class="theo-panel" id="theo-panel" style="display:none"><div class="theo-tag">${c.nom} — la science</div>${c.theorie}</div>`;
   return `<div class="sd-section">🎓 Comprendre cette séance</div>
     <div class="cc-block">
       <div class="cc-item"><div class="cc-h">Pourquoi cette séance ?</div><div class="cc-txt">${c.pourquoi}</div></div>
       <div class="cc-item"><div class="cc-h">Comment l'exécuter ?</div><div class="cc-txt">${c.comment}</div></div>
-      <button type="button" class="theo-btn" id="theo-btn" onclick="theoToggle()">📖 La théorie pour progresser</button>
-      <div class="theo-panel" id="theo-panel" style="display:none"><div class="theo-tag">${c.nom} — la science</div>${c.theorie}</div>
+      ${theoBtn}
     </div>`;}
 /* --- Débrief après séance, calculé depuis les données loguées --- */
 function _pacesIn(str){if(!str)return[];const m=String(str).match(/\d+:\d{2}/g);return m?m.map(x=>{const[a,b]=x.split(':');return +a*60+ +b;}):[];}
@@ -1304,6 +1347,98 @@ function coachDebrief(num,se){
   const lines=find.map(f=>`<div class="cd-line cd-${f[1]}"><span class="cd-ic">${f[0]}</span><span>${f[2]}</span></div>`).join('');
   return `<div class="sd-section">📊 Débrief du coach</div><div class="cd-debrief">${lines}<div class="cd-foot">Lecture automatique de tes données. Pour une analyse fine d'une séance précise, parle-m'en — j'ajoute ma revue détaillée.</div></div>`;
 }
+/* ===== Schémas théoriques SVG (FCmax 192) ===== */
+function svgZonesFC(hi){
+  const Z=[['Z1','Récup / EF','<134','#22c55e'],['Z2','Endurance','134-154','#84cc16'],['Z3','Tempo / AM','154-167','#eab308'],['Z4','Seuil','167-177','#f97316'],['Z5','VO2max','>177','#ef4444']];
+  const w=300,bh=34,gap=4,x0=8;let bars='',labs='';const bw=(w-x0*2-gap*4)/5;
+  Z.forEach((z,i)=>{const x=x0+i*(bw+gap);const on=hi===i;bars+=`<rect x="${x}" y="14" width="${bw}" height="${bh}" rx="5" fill="${z[3]}" opacity="${on?1:.3}"/>${on?`<rect x="${x}" y="14" width="${bw}" height="${bh}" rx="5" fill="none" stroke="${z[3]}" stroke-width="2.5"/>`:''}`;labs+=`<text x="${x+bw/2}" y="62" text-anchor="middle" font-size="9" font-weight="700" fill="${on?z[3]:'#94a3b8'}">${z[0]}</text><text x="${x+bw/2}" y="73" text-anchor="middle" font-size="7.5" fill="#94a3b8">${z[2]}</text>`;});
+  return `<svg viewBox="0 0 ${w} 82" class="theo-svg" role="img" aria-label="Zones de fréquence cardiaque">${bars}${labs}</svg>`;
+}
+function svg8020(){
+  return `<svg viewBox="0 0 300 96" class="theo-svg" role="img" aria-label="Répartition polarisée 80/20">
+    <rect x="8" y="14" width="200" height="30" rx="5" fill="#22c55e"/><text x="108" y="33" text-anchor="middle" font-size="11" font-weight="800" fill="#fff">80 % FACILE</text>
+    <rect x="212" y="14" width="34" height="30" rx="5" fill="#f97316" opacity=".35"/>
+    <rect x="250" y="14" width="42" height="30" rx="5" fill="#ef4444"/><text x="271" y="33" text-anchor="middle" font-size="10" font-weight="800" fill="#fff">20 %</text>
+    <text x="229" y="58" text-anchor="middle" font-size="8" font-weight="700" fill="#f97316">zone grise</text>
+    <text x="229" y="68" text-anchor="middle" font-size="7.5" fill="#94a3b8">le piège</text>
+    <path d="M229 44 L229 50" stroke="#f97316" stroke-width="1.5"/>
+    <text x="108" y="86" text-anchor="middle" font-size="8" fill="#94a3b8">récupération + construction du moteur</text>
+    <text x="271" y="86" text-anchor="middle" font-size="8" fill="#94a3b8">stimulus</text>
+  </svg>`;
+}
+function svgGlycogen(){
+  return `<svg viewBox="0 0 300 130" class="theo-svg" role="img" aria-label="Glycogène et le mur">
+    <line x1="34" y1="10" x2="34" y2="100" stroke="#cbd5e1" stroke-width="1"/><line x1="34" y1="100" x2="292" y2="100" stroke="#cbd5e1" stroke-width="1"/>
+    <text x="6" y="20" font-size="8" fill="#94a3b8">100%</text><text x="14" y="103" font-size="8" fill="#94a3b8">0</text>
+    <text x="150" y="122" text-anchor="middle" font-size="8.5" fill="#94a3b8">distance (km) →</text>
+    <text x="18" y="60" font-size="8" fill="#94a3b8" transform="rotate(-90 18 60)">glycogène</text>
+    <rect x="210" y="10" width="82" height="90" fill="#ef4444" opacity=".08"/>
+    <text x="251" y="48" text-anchor="middle" font-size="9" font-weight="800" fill="#ef4444">LE MUR</text>
+    <path d="M34 14 C120 30, 180 78, 215 100" fill="none" stroke="#ef4444" stroke-width="2.5"/>
+    <text x="120" y="78" font-size="8" font-weight="700" fill="#ef4444">sans fueling</text>
+    <path d="M34 14 C140 28, 240 52, 292 64" fill="none" stroke="#22c55e" stroke-width="2.5"/>
+    <text x="200" y="44" font-size="8" font-weight="700" fill="#16a34a">avec fueling</text>
+    <text x="206" y="113" font-size="7.5" fill="#94a3b8">~30-32 km</text>
+  </svg>`;
+}
+function svgDerive(){
+  return `<svg viewBox="0 0 300 120" class="theo-svg" role="img" aria-label="Dérive cardiaque">
+    <line x1="30" y1="10" x2="30" y2="92" stroke="#cbd5e1" stroke-width="1"/><line x1="30" y1="92" x2="292" y2="92" stroke="#cbd5e1" stroke-width="1"/>
+    <text x="150" y="112" text-anchor="middle" font-size="8.5" fill="#94a3b8">temps →</text>
+    <line x1="30" y1="60" x2="292" y2="60" stroke="#3b82f6" stroke-width="2.5" stroke-dasharray="0"/>
+    <text x="200" y="54" font-size="8" font-weight="700" fill="#3b82f6">allure (constante)</text>
+    <path d="M30 50 C120 48, 200 38, 292 22" fill="none" stroke="#ef4444" stroke-width="2.5"/>
+    <text x="120" y="36" font-size="8" font-weight="700" fill="#ef4444">FC (qui monte)</text>
+    <text x="60" y="84" font-size="7.5" fill="#94a3b8">→ découplage = fatigue / chaleur / déshydratation</text>
+  </svg>`;
+}
+function svgLactate(){
+  return `<svg viewBox="0 0 300 120" class="theo-svg" role="img" aria-label="Courbe du lactate">
+    <line x1="30" y1="10" x2="30" y2="92" stroke="#cbd5e1" stroke-width="1"/><line x1="30" y1="92" x2="292" y2="92" stroke="#cbd5e1" stroke-width="1"/>
+    <text x="150" y="112" text-anchor="middle" font-size="8.5" fill="#94a3b8">intensité / allure →</text>
+    <text x="12" y="50" font-size="8" fill="#94a3b8" transform="rotate(-90 12 50)">lactate</text>
+    <path d="M30 86 C120 84, 170 78, 200 64 C225 52, 250 26, 285 14" fill="none" stroke="#8b5cf6" stroke-width="2.5"/>
+    <line x1="200" y1="14" x2="200" y2="92" stroke="#f97316" stroke-width="1.5" stroke-dasharray="4 3"/>
+    <text x="200" y="106" text-anchor="middle" font-size="8" font-weight="700" fill="#f97316">SEUIL</text>
+    <text x="95" y="78" font-size="7.5" fill="#16a34a">éliminé = tu tiens</text>
+    <text x="232" y="34" font-size="7.5" fill="#ef4444">s'accumule</text>
+  </svg>`;
+}
+/* ===== Panneau théorie & coaching approfondi (pilote S25) ===== */
+const RICH_THEORY={
+ ef:{titre:'Endurance fondamentale',icone:'🌱',sections:[
+   {h:'Le moteur aérobie, ta fondation',html:`<p>L'endurance fondamentale, c'est 80 % de ton volume et la base de <strong>toute</strong> ta performance. À cette intensité, tu construis le moteur : tu multiplies les <em>mitochondries</em> (les centrales énergétiques de tes muscles), tu densifies ton réseau de <em>capillaires</em> (plus d'oxygène livré à chaque foulée), et tu renforces ton cœur. Rien de spectaculaire séance par séance — mais c'est la somme de ces footings qui fait qu'en novembre tu tiendras 42 km.</p>`+svgZonesFC(0)+`<p>Sur un EF, tu vis dans la <strong>Z1-Z2</strong> : FC sous ~144 (75 % de tes 192 de FCmax). Pas plus.</p>`},
+   {h:'La polarisation 80/20',html:`<p>Les coureurs qui progressent le plus courent <strong>très facile la plupart du temps</strong>, et <strong>vraiment dur le reste</strong>. Le danger, c'est le milieu — la fameuse « zone grise » : ni assez lent pour récupérer et construire, ni assez rapide pour créer un vrai stimulus. Tu paies la fatigue d'un effort dur sans en récolter les bénéfices.</p>`+svg8020()+`<p class="theo-perso">📌 <strong>Pour toi, Loïc :</strong> ton analyse historique montrait <strong>53 % de tes km en zone grise</strong>. C'est ton chantier n°1. Sur tes footings, vise <strong>≥ 6:00/km</strong> et ne négocie pas, même si tu te sens bien — surtout si tu te sens bien.</p>`},
+   {h:'Apprendre à brûler les graisses',html:`<p>À basse intensité, ton corps puise majoritairement dans les <em>lipides</em> — un stock quasi illimité. Plus tu cours lentement et souvent, plus tu deviens efficace pour brûler du gras. L'enjeu : <strong>épargner ton glycogène</strong> (le carburant rapide mais limité). Un coureur qui oxyde bien les graisses tape le mur du marathon beaucoup plus tard. L'EF, c'est littéralement l'entraînement de cette filière.</p>`},
+   {h:'Le test de la parole',html:`<p>La meilleure jauge ne coûte rien : <strong>si tu peux tenir une conversation en phrases complètes, l'allure est bonne</strong>. Dès que tu haches tes phrases, tu es trop vite. Respire facilement par le nez, foulée souple et relâchée. Sur un EF tu dois finir <strong>frais</strong>, capable d'en refaire autant.</p>`},
+   {h:'Les 3 erreurs classiques',html:`<p><strong>1. L'ego du chrono.</strong> Courir « pas trop lent pour ne pas avoir honte » = zone grise garantie.<br><strong>2. Accélérer sur la fin.</strong> Finir vite un footing flatte, mais ajoute de la fatigue parasite.<br><strong>3. Sauter l'EF parce que « c'est juste un footing ».</strong> C'est la séance qui construit le plus, justement parce qu'elle est facile.</p>`}],
+   coach:`<p>Loïc, sur tes footings de reprise (S25), l'objectif n'est pas la distance ni l'allure : c'est de <strong>réinstaller le réflexe « facile = vraiment facile »</strong> après La Circaète. FC plafonnée à 144, allure ≥ 6:00/km. Les lignes droites du footing technique (S25-1) sont l'exception : 6 accélérations courtes et relâchées, juste pour réveiller la foulée — pas un travail de vitesse, jamais en force pour préserver ton dos.</p>`},
+ am:{titre:'Allure marathon',icone:'🎯',sections:[
+   {h:'La spécificité : t\'entraîner comme tu courses',html:`<p>Plus tu approches de Nice, plus l'entraînement doit <strong>ressembler à la course</strong>. Tenir précisément 5:20/km en séance apprend deux choses à ton corps : à ton <em>système nerveux</em>, le geste exact à cette allure ; à ton <em>métabolisme</em>, le bon mélange de carburants. C'est la définition de la spécificité — et c'est pour ça que ces séances montent en volume à mesure que la course approche.</p>`},
+   {h:'Le métabolisme à allure marathon',html:`<p>À 5:20/km, tu brûles un <strong>mélange de glucides et de graisses</strong>. Le glycogène (sucre stocké dans les muscles et le foie) est ton carburant rapide, mais limité : ~90 à 120 minutes de stock. Au-delà, si tu n'as pas rechargé, c'est la panne.</p>`+svgGlycogen()+`<p>D'où les deux parades que cette séance entraîne : mieux <strong>oxyder les graisses</strong> (pour épargner le glycogène) et <strong>apprendre à manger en courant</strong>.</p>`},
+   {h:'Le mur, expliqué',html:`<p>« Le mur » du marathon (souvent vers 30-35 km) n'est pas une faiblesse mentale : c'est <strong>l'épuisement du glycogène</strong>. Ton cerveau et tes muscles manquent brutalement de carburant rapide, l'allure s'effondre. La séance d'allure marathon, en répétant l'intensité exacte de la course, repousse ce seuil — et te force à roder ton plan nutrition.</p>`},
+   {h:'Pourquoi 5:20/km, à la seconde près',html:`<p>Pour viser <strong>3h45</strong>, il faut tenir <strong>5:20/km</strong>. L'erreur la plus coûteuse du marathon, c'est de partir 10 sec/km trop vite : tu « gagnes » 2 minutes au début que tu rends au prix de 5-6 minutes à la fin. Répéter 5:20 jusqu'à ce que ce soit gravé dans tes jambes, c'est ta meilleure assurance.</p><table class="theo-tab"><tr><th>Point</th><th>Temps cible</th></tr><tr><td>5 km</td><td>26:40</td></tr><tr><td>10 km</td><td>53:20</td></tr><tr><td>Semi (21,1)</td><td>1:52:30</td></tr><tr><td>30 km</td><td>2:40:00</td></tr><tr><td>Arrivée</td><td>3:45:00</td></tr></table>`},
+   {h:'La dérive cardiaque',html:`<p>Sur un effort prolongé, ta FC peut <strong>monter alors que ton allure reste constante</strong> : c'est le découplage. Plus il survient tôt, plus c'est un signal de fatigue, de chaleur ou de déshydratation.</p>`+svgDerive()+`<p class="theo-perso">📌 <strong>Pour toi :</strong> surveille ce découplage sur tes séances AM. S'il apparaît vite, c'est ton signal hydratation/électrolytes — exactement le mécanisme de La Circaète.</p>`}],
+   coach:`<p>Loïc, la S25-3 (1×4 km à allure marathon) est ta première vraie touche de spécificité du bloc. 4 km seulement, mais c'est un <strong>test de calibrage</strong> : est-ce que 5:20/km « coule » ou est-ce que ça force déjà ? Profites-en pour tester un gel (4Endurance ou Nduranz) même sur cette durée courte — c'est l'occasion de roder l'estomac. Au retour des USA, ces blocs AM passeront à 3×4 puis 2×6 km : c'est là que se jouera 3h45.</p>`},
+ longue:{titre:'Sortie longue',icone:'⛰️',sections:[
+   {h:'La séance reine',html:`<p>Si tu ne devais garder qu'une séance par semaine, ce serait celle-ci. Le marathon se gagne sur l'endurance, et l'endurance se construit sur la <strong>durée</strong>. La sortie longue étend tes réserves de glycogène, multiplie tes capillaires, renforce tendons et articulations dans la durée, et surtout muscle ta tête : rester efficace quand c'est long et que ça devient inconfortable.</p>`},
+   {h:'Glycogène, capillaires, durée',html:`<p>Passé ~90 minutes, ton corps s'adapte : il apprend à stocker plus de glycogène et à mieux brûler les graisses pour l'épargner. C'est l'adaptation clé du marathonien.</p>`+svgGlycogen()+`<p>C'est aussi pour ça que la durée compte plus que l'allure : courir lentement <strong>longtemps</strong> bat courir vite <strong>court</strong>.</p>`},
+   {h:'Le fueling, ton limiteur n°1',html:`<p class="theo-perso">📌 C'est <strong>ton</strong> point faible identifié. À La Circaète, tu t'es effondré au km 20-21 : pas par manque de jambes, mais par <strong>déficit d'eau et d'électrolytes</strong> par 26-31°C. Yannis t'a relancé avec une pastille de sodium.</p><p>La sortie longue est <em>l'</em>occasion de répéter ton plan, jamais de l'improviser le jour J :</p><p><strong>• Électrolytes :</strong> 1 pastille toutes les 45 min sur effort long ou par chaleur, sans attendre.<br><strong>• Hydratation :</strong> boire <strong>avant</strong> d'avoir soif (~500-600 ml/h).<br><strong>• Glucides :</strong> 1 gel testé toutes les 40-45 min (4Endurance Pro, Nduranz NRGY — déjà validés en training).<br><strong>• Règle d'or :</strong> rien de nouveau le jour de la course.</p>`},
+   {h:'L\'endurance mentale (la durabilité)',html:`<p>Au-delà du physique, la sortie longue entraîne ta <strong>durabilité</strong> : ta capacité à garder une foulée efficace quand la fatigue s'installe. Deux coureurs avec le même VO2max ne finissent pas pareil un marathon — c'est la durabilité qui les sépare. Et ça, ça ne se travaille qu'en accumulant des kilomètres fatigués.</p>`},
+   {h:'Le finish allure marathon',html:`<p>Quand la sortie longue se termine par quelques km à 5:20/km sur des jambes déjà entamées, tu répètes <strong>exactement le 35e km de Nice</strong>. C'est dur, c'est volontaire, et c'est ce qui fait la différence entre finir solide et marcher. Garde toujours du jus pour ce finish : tu dois le terminer en contrôle, pas cramé.</p>`}],
+   coach:`<p>Loïc, la S25-4 est une longue d'endurance pure (pas encore de finish AM, on est en reprise). Objectif : du temps de pied, FC ≤ 144, et surtout <strong>répéter le fueling</strong> dès maintenant même si tu n'as pas « besoin » — c'est un automatisme à réinstaller après ta défaillance de juin. Pars avec tes pastilles et un gel, et bois régulièrement dès le départ. Plus tard dans le bloc, ces longues iront jusqu'à 30 km avec 14 km de finish AM : la vraie séance reine de ta prépa.</p>`}
+};
+function theoryPanelHTML(tag){const T=RICH_THEORY[tag];if(!T)return '';
+  const secs=T.sections.map((s,i)=>`<div class="theo-sec"><div class="theo-sec-h"><span class="theo-sec-n">${i+1}</span>${s.h}</div><div class="theo-sec-b">${s.html}</div></div>`).join('');
+  return `<div class="theo-sheet-head"><div><div class="theo-kicker">Théorie & coaching · ${T.icone}</div><div class="theo-sheet-titre">${T.titre}</div></div><button class="theo-close" onclick="closeTheory()" aria-label="Fermer le panneau">✕</button></div>
+    <div class="theo-sheet-body" id="theoSheetBody">${secs}<div class="theo-coachbox"><div class="theo-coachbox-h">🧠 Le mot du coach — personnalisé</div>${T.coach}</div><div class="theo-end">Tu sais maintenant le <em>pourquoi</em> et le <em>comment</em>. Bonne séance, Loïc.</div></div>`;
+}
+function openTheory(num,id){const se=findSeance(num,id);if(!se)return;const tag=seanceTag(se);if(!RICH_THEORY[tag])return;
+  const ov=document.getElementById('theoOverlay'),sh=document.getElementById('theoSheet');
+  sh.innerHTML=theoryPanelHTML(tag);ov.classList.add('ouverte');document.body.style.overflow='hidden';
+  const b=document.getElementById('theoSheetBody');if(b)b.scrollTop=0;}
+function closeTheory(){const ov=document.getElementById('theoOverlay');ov.classList.remove('ouverte');
+  if(!document.getElementById('overlay').classList.contains('ouverte'))document.body.style.overflow='';}
 function ouvrirSeance(num,id){const se=(SEANCES_BY_WEEK[num]||[]).find(x=>x.id===id);if(!se)return;segActif=null;
   topbar.innerHTML=`<button class="btn-nav" onclick="ouvrirSemaine(${num})">‹ Retour semaine ${num}</button>${btnFermer}`;
   const metr=Object.entries(se.metriques).map(([k,v])=>`<div class="metrique"><div class="metrique-l">${k}</div><div class="metrique-v">${v}</div></div>`).join('');
@@ -1312,7 +1447,7 @@ function ouvrirSeance(num,id){const se=(SEANCES_BY_WEEK[num]||[]).find(x=>x.id==
   const leg=(se.segments?[...new Set(se.segments.map(s=>s.couleur))].map(c=>LEGMAP[c]||['#94a3b8',c]).map(x=>`<div class="legende-item"><div class="legende-puce" style="background:${x[0]}"></div>${x[1]}</div>`).join(''):se.legende.map(l=>`<div class="legende-item"><div class="legende-puce" style="background:${l.c}"></div>${l.l}</div>`).join(''));
   const coach=se.coach.map(c=>`<div class="coach-carte"><div class="coach-titre">${c.titre}</div><p class="coach-texte">${c.texte}</p></div>`).join('');
   const viz=se.segments?`<div class="sd-section">Visualisation chronologique</div><div class="viz-wrap"><div class="viz-entete"><span class="viz-label">Structure de la séance</span><span class="viz-hint">Clique un segment</span></div><div class="barre-scroll"><div class="barre-piste" id="piste"></div></div><div class="detail-panneau" id="dpan"><div class="detail-nom" id="dnom"></div><div class="detail-role" id="drole"></div><div class="detail-grille" id="dgr"></div></div></div>`:'';
-  contenu.innerHTML=`<div class="sd-hero"><div class="hero-badges"><span class="sd-badge" style="background:${se.accent}22;color:${se.accent}">${se.sport}</span>${catBadge(se.cat)}${stChip((se.realise||{}).statut||'a_faire')}</div><h2 class="sd-titre">${se.titre}</h2><p class="sd-sous">${se.sous}</p><div class="sd-metriques">${metr}</div>${se.chaussure?`<div class="shoe-chip">👟 Chaussure conseillée — ${se.chaussure}</div>`:''}${se.fit?`<a class="fit-btn" href="${se.fit}" download>⌚ Télécharger la séance</a>`:''}</div><div class="sd-corps"><div class="sd-section">Intensité ressentie (RPE)</div><div class="rpe-wrap"><div class="rpe-info"><div class="rpe-label">RPE</div><div class="rpe-val" style="color:${rpeColor(se.rpe)}">${se.rpe}<span style="font-size:.8rem;color:var(--texte-trois);font-weight:600">/10</span></div></div><div class="rpe-scale">${rpeScale(se.rpe)}</div></div><div class="sd-section">Objectif</div><div class="callout callout-obj">${se.objectif}</div>${coachAvant(se)}<div class="sd-section">Légende</div><div class="legende">${leg}</div><div class="sd-section">Déroulé</div><div class="struct">${struct}</div>${viz}<div class="sd-section">Bénéfices recherchés</div><div class="callout callout-ben">${se.benefices}</div><div class="sd-section">Conseil du coach</div><div class="coach-grille">${coach}</div>${se.nutrition?`<div class="sd-section">Nutrition de séance</div><div class="nutri"><div class="nutri-t">🍌 ${se.nutrition.titre}</div>${se.nutrition.items.map(i=>`<div class="nutri-l"><b>${i[0]}</b><span>${i[1]}</span></div>`).join('')}</div>`:''}<div class="sd-section">Points de vigilance</div><div class="callout callout-vig">${se.vigilance}</div>${realiseBloc(num,se)}</div>`;
+  contenu.innerHTML=`<div class="sd-hero"><div class="hero-badges"><span class="sd-badge" style="background:${se.accent}22;color:${se.accent}">${se.sport}</span>${catBadge(se.cat)}${stChip((se.realise||{}).statut||'a_faire')}</div><h2 class="sd-titre">${se.titre}</h2><p class="sd-sous">${se.sous}</p><div class="sd-metriques">${metr}</div>${se.chaussure?`<div class="shoe-chip">👟 Chaussure conseillée — ${se.chaussure}</div>`:''}${se.fit?`<a class="fit-btn" href="${se.fit}" download>⌚ Télécharger la séance</a>`:''}</div><div class="sd-corps"><div class="sd-section">Intensité ressentie (RPE)</div><div class="rpe-wrap"><div class="rpe-info"><div class="rpe-label">RPE</div><div class="rpe-val" style="color:${rpeColor(se.rpe)}">${se.rpe}<span style="font-size:.8rem;color:var(--texte-trois);font-weight:600">/10</span></div></div><div class="rpe-scale">${rpeScale(se.rpe)}</div></div><div class="sd-section">Objectif</div><div class="callout callout-obj">${se.objectif}</div>${coachAvant(num,se)}<div class="sd-section">Légende</div><div class="legende">${leg}</div><div class="sd-section">Déroulé</div><div class="struct">${struct}</div>${viz}<div class="sd-section">Bénéfices recherchés</div><div class="callout callout-ben">${se.benefices}</div><div class="sd-section">Conseil du coach</div><div class="coach-grille">${coach}</div>${se.nutrition?`<div class="sd-section">Nutrition de séance</div><div class="nutri"><div class="nutri-t">🍌 ${se.nutrition.titre}</div>${se.nutrition.items.map(i=>`<div class="nutri-l"><b>${i[0]}</b><span>${i[1]}</span></div>`).join('')}</div>`:''}<div class="sd-section">Points de vigilance</div><div class="callout callout-vig">${se.vigilance}</div>${realiseBloc(num,se)}</div>`;
   ouvrir();if(se.segments)initBarre(se);
 }
 function initBarre(se){const piste=document.getElementById('piste');if(!piste)return;const pan=document.getElementById('dpan'),dnom=document.getElementById('dnom'),drole=document.getElementById('drole'),dgr=document.getElementById('dgr');const total=se.segments[se.segments.length-1].fin;
