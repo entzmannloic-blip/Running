@@ -147,7 +147,7 @@ function calHTML(){
   }
   return '<div class="cal-head"><button class="cal-nav" onclick="calNav(-1)">‹</button><div class="cal-title">'+MN[m]+' '+y+'</div><button class="cal-nav" onclick="calNav(1)">›</button></div>'+
     '<div class="cal-grid">'+cells+'</div>'+
-    '<div class="cal-legend"><span><i class="cal-lg cal-g"></i>Réalisé</span><span><i class="cal-lg cal-o"></i>Non réalisé</span><span><i class="cal-lg cal-x"></i>À venir</span><span style="opacity:.45;margin-left:auto">build 10</span></div>';
+    '<div class="cal-legend"><span><i class="cal-lg cal-g"></i>Réalisé</span><span><i class="cal-lg cal-o"></i>Non réalisé</span><span><i class="cal-lg cal-x"></i>À venir</span><span style="opacity:.45;margin-left:auto">build 11</span></div>';
 }
 function calNav(d){calMonth.setMonth(calMonth.getMonth()+d);const w=document.getElementById('cal-inner');if(w)w.innerHTML=calHTML();}
 
@@ -238,6 +238,59 @@ function dashJump(id){const s=document.getElementById('grp-'+id);if(!s)return;if
   const nav=document.getElementById('dash-nav');nav&&nav.querySelectorAll('.dnav-chip').forEach(c=>c.classList.toggle('actif',c.dataset.g===id));
   const y=s.getBoundingClientRect().top+window.scrollY-(nav?nav.offsetHeight+58:64);window.scrollTo({top:y,behavior:'smooth'});}
 function dgrpHead(id,ic,t){return `<section class="dgrp" id="grp-${id}"><button class="dgrp-head" onclick="dashToggle('${id}')"><span class="dgrp-ic">${ic}</span><span class="dgrp-t">${t}</span><span class="dgrp-arr">▾</span></button><div class="dgrp-body">`;}
+/* ===== Item 4 — Projection marathon « boule de cristal » ===== */
+function _pace2s(p){if(p==null)return null;const m=String(p).match(/(\d+):(\d+)/);return m?(+m[1]*60+ +m[2]):null;}
+function _s2hm(s){s=Math.round(s);const h=Math.floor(s/3600),m=Math.floor((s%3600)/60);return h+'h'+String(m).padStart(2,'0');}
+function _s2hms(s){s=Math.round(s);const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),x=s%60;return h+'h'+String(m).padStart(2,'0')+':'+String(x).padStart(2,'0');}
+function _riegel(km,t){return t*Math.pow(42.195/km,1.07);}
+function marathonEquiv(se){
+  const r=se.realise;if(!r||(r.statut!=='fait'&&r.statut!=='partiel'))return null;
+  const t=se.type,sub=(se.metriques||{}).Type||'',pace=_pace2s(r.allure);
+  if(t==='Test / recalibrage'){
+    const km=parseFloat(String(r.km).replace(',','.'))||10;let tot=null;
+    if(r.temps&&/^\d{1,3}:\d{2}$/.test(String(r.temps).trim()))tot=_pace2s(r.temps);else if(pace)tot=pace*km;
+    if(!tot)return null;return{sec:_riegel(km,tot),w:3,label:`Test ${km} km`,sub:r.allure||r.temps};
+  }
+  if(!pace)return null;
+  if(t==='Spécifique marathon')return{sec:pace*1.015*42.195,w:2,label:'Allure marathon',sub:r.allure};
+  if(t==='Seuil (puissance aérobie)'){const f=sub==='Seuil 60'?1.06:1.12;return{sec:pace*f*42.195,w:1.5,label:sub||'Seuil',sub:r.allure};}
+  return null;
+}
+function marathonProjection(){
+  const q=[];Object.values(SEANCES_BY_WEEK).flat().forEach(se=>{const e=marathonEquiv(se);if(e){e.date=se.date;q.push(e);}});
+  q.sort((a,b)=>String(a.date||'').localeCompare(String(b.date||'')));
+  let num=PROJ.base,den=1;const trend=[PROJ.base];
+  q.forEach((e,i)=>{const w=e.w*(1+i*0.4);num+=e.sec*w;den+=w;trend.push(num/den);});
+  return{sec:num/den,n:q.length,sources:q,trend:trend};
+}
+function renderCrystalBall(){
+  const P=marathonProjection();const goal=PROJ.goal,gmin=PROJ.gmin,gmax=PROJ.gmax;
+  const clamp=v=>Math.max(0,Math.min(100,v));
+  const pos=clamp((P.sec-gmin)/(gmax-gmin)*100);
+  const goalPos=clamp((goal-gmin)/(gmax-gmin)*100);
+  const ahead=goal-P.sec;
+  const ahMin=Math.round(Math.abs(ahead)/60);
+  const deltaTxt=ahead>=0?`<strong style="color:#22c55e">${ahMin} min d\u2019avance</strong> sur l\u2019objectif 3h45`
+    :`<strong style="color:#f97316">+${ahMin} min</strong> au-dessus de 3h45`;
+  const deltaShort=ahead>=0?`${ahMin} min d'avance sur l'objectif 3h45`:`${ahMin} min au-dessus de 3h45 — le bloc va combler l'écart`;
+  let clarte;
+  if(P.n===0)clarte=`<div class="cb-clarte">🌫️ <strong>Boule encore voilée.</strong> La projection part de ta forme actuelle (${PROJ.base_label}). Elle s'affinera à chaque séance qualité loguée — le <strong>test 10 km de la S31</strong> sera le premier gros recalibrage, puis chaque seuil et chaque séance d'allure marathon.</div>`;
+  else clarte=`<div class="cb-clarte">🔮 <strong>${P.n} séance${P.n>1?'s':''} qualité intégrée${P.n>1?'s':''}.</strong> Plus tu logues de qualité, plus la projection se précise.</div>`;
+  const sources=P.n?`<div class="cb-src"><div class="cb-src-t">Ce qui nourrit la projection</div>${P.sources.map(s=>`<div class="cb-src-l"><span>${s.label}${s.sub?` · ${s.sub}`:''}</span><span class="cb-src-v">${_s2hm(s.sec)}</span></div>`).join('')}<div class="cb-src-l cb-src-base"><span>Forme de départ (référence)</span><span class="cb-src-v">${_s2hm(PROJ.base)}</span></div></div>`:'';
+  const trend=P.trend.length>=2?`<div class="cb-trend"><div class="cb-src-t">Affinage de la projection séance après séance</div>${chartLine(P.trend.map(v=>v/60),{color:'#8b5cf6',h:120,fmtY:v=>_s2hm(v*60),baseline:goal/60,annotate:true})}</div>`:'';
+  return `<div class="kpi cb">
+    <div class="cb-head"><span class="cb-orb">🔮</span><div><div class="kpi-t" style="margin:0">Projection marathon — boule de cristal</div><div class="kpi-r" style="margin:2px 0 0">Temps projeté sur Nice, recalculé à chaque séance qualité loguée.</div></div></div>
+    <div class="cb-big"><div class="cb-time">${_s2hm(P.sec)}</div><div class="cb-delta">${deltaTxt}</div></div>
+    <div class="cb-gauge">
+      <div class="cb-bar"><div class="cb-fill" style="width:${pos}%"></div>
+        <div class="cb-goal" style="left:${goalPos}%"><span>🎯 3h45</span></div>
+        <div class="cb-needle" style="left:${pos}%"><span>${_s2hm(P.sec)}</span></div></div>
+      <div class="cb-scale"><span>3h30</span><span>4h00</span></div>
+    </div>
+    ${clarte}${trend}${sources}
+    <div class="cb-method">Méthode : mélange pondéré de ta forme de départ et de tes séances qualité loguées — test 10 km via Riegel (exp. 1,07), allure marathon ×1,015, seuil 30 ×1,12 / seuil 60 ×1,06, projetés sur 42,195 km. Les séances récentes pèsent davantage.</div>
+  </div>`;
+}
 function renderDash(){const el=document.getElementById('dash-contenu');
   const today=new Date();const cd=RACES.map(r=>Math.max(0,Math.ceil((new Date(r.date)-today)/86400000)));
   const allSe=Object.values(SEANCES_BY_WEEK).flat();const total=allSe.length;
@@ -356,7 +409,7 @@ function renderDash(){const el=document.getElementById('dash-contenu');
   <!-- 5. Volume hebdo -->
   <div class="kpi"><div class="kpi-t">📈 Ton volume — historique 28 semaines</div><div class="kpi-r">Tes vraies semaines Strava. Le plan prend le relais à la S25.</div>${delta(histKm)} ${chartLine(histKm,{color:'#3b82f6',labels:histLab,fmtY:v=>Math.round(v)+'km',annotate:true,h:150})}</div>
 
-  </div></section>`+dgrpHead('perf','🏆','Performances & objectifs')+`
+  </div></section>`+dgrpHead('perf','🏆','Performances & objectifs')+renderCrystalBall()+`
   <!-- 7. Allures d'entraînement -->
   <div class="kpi"><div class="kpi-t">⏱️ Tes allures d'entraînement</div><div class="kpi-r">Dont le <strong>seuil 30</strong> (proche 10 km) et le <strong>seuil 60</strong> (proche semi). À recaler après le test 10 km (S31).</div><div class="allure-grid">${ALLURES.map(a=>`<div class="allure"><div class="allure-v">${a.val}</div><div class="allure-n">${a.nom}</div><div class="allure-s">${a.sub}</div></div>`).join('')}</div></div>
 
