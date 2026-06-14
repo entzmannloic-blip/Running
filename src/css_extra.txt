@@ -331,3 +331,15 @@ body.nuit .cds-l{color:#fdba74}
 .maj-foot{text-align:center;font-size:.66rem;color:var(--texte-trois);margin:26px 0 4px}
 .maj-foot .vdj-maj{color:var(--texte-trois)}
 @media(max-width:520px){.cds-item{max-width:none;flex:1 1 0;justify-content:center}}
+/* ===== Option 2 — mini-lien "semaine courante" + flash de la cible ===== */
+.cw-link{display:flex;align-items:center;gap:9px;width:100%;text-align:left;cursor:pointer;
+  background:var(--blanc);border:1px solid var(--gris-clair);border-radius:14px;padding:11px 14px;transition:border-color .18s,transform .15s}
+.cw-link:hover{border-color:var(--gris)}
+.cw-link:active{transform:scale(.99)}
+.cw-pin{font-size:.95rem;flex:0 0 auto}
+.cw-txt{font-size:.84rem;color:var(--texte-deux);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cw-txt strong{color:var(--texte);font-weight:800}
+.cw-arr{font-size:.72rem;font-weight:800;color:var(--bleu);flex:0 0 auto;white-space:nowrap}
+body.nuit .cw-arr{color:#60a5fa}
+.wk-flash{animation:wkFlash 1.7s ease}
+@keyframes wkFlash{0%,100%{box-shadow:0 0 0 0 rgba(59,130,246,0)}18%{box-shadow:0 0 0 3px rgba(59,130,246,.55)}}
