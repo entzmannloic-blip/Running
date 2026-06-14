@@ -239,7 +239,7 @@ body.nuit .tr-s{color:#94a3b8}
 body.nuit .tr-meta{background:#0f172a;color:#cbd5e1}
 /* ===== Item 1 — Records tombés (célébration PR) ===== */
 .prc{display:flex;align-items:center;gap:14px;margin-top:14px;padding:14px 16px;border-radius:14px;position:relative;overflow:hidden;
-  background:linear-gradient(120deg,#fffbeb 0%,#fef3c7 45%,#fde68a 100%);border:1px solid #fcd34d}
+  background:linear-gradient(135deg,#fffbeb 0%,#fef3c7 45%,#fde68a 100%);border:1px solid #fcd34d}
 .prc::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.65) 50%,transparent 70%);
   transform:translateX(-120%);animation:prcShine 2.6s ease-in-out 1}
 @keyframes prcShine{to{transform:translateX(120%)}}
@@ -252,7 +252,7 @@ body.nuit .tr-meta{background:#0f172a;color:#cbd5e1}
 .prc-sep{opacity:.5}
 .prc-detail{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
 .prc-chip{font-size:.72rem;font-weight:700;color:#92400e;background:rgba(255,255,255,.6);border:1px solid #fcd34d;border-radius:99px;padding:3px 9px}
-body.nuit .prc{background:linear-gradient(120deg,#3a2e0b 0%,#4d3c0c 50%,#5c4708 100%);border-color:#a16207}
+body.nuit .prc{background:linear-gradient(135deg,#3a2e0b 0%,#4d3c0c 50%,#5c4708 100%);border-color:#a16207}
 body.nuit .prc-titre,body.nuit .prc-n{color:#fde68a}
 body.nuit .prc-row{color:#fcd34d}
 body.nuit .prc-chip{color:#fde68a;background:rgba(0,0,0,.25);border-color:#a16207}
@@ -283,8 +283,8 @@ body.nuit .dnav-chip.actif{background:#3b82f6;border-color:#3b82f6}
 .dgrp.open .dgrp-body{border:1px solid var(--gris-clair);border-top:none;border-radius:0 0 var(--rayon-lg) var(--rayon-lg);padding:12px 12px 2px;background:var(--gris-fond)}
 .dgrp.open .dgrp-body>.kpi{margin-bottom:12px}
 /* ===== Item 4 — Projection marathon (boule de cristal) ===== */
-.cb{background:linear-gradient(165deg,#faf5ff 0%,#f3e8ff 60%,#ede9fe 100%);border-color:#ddd6fe;position:relative;overflow:hidden}
-body.nuit .cb{background:linear-gradient(165deg,#1e1b4b 0%,#172033 70%);border-color:#4c1d95}
+.cb{background:linear-gradient(135deg,#faf5ff 0%,#f3e8ff 60%,#ede9fe 100%);border-color:#ddd6fe;position:relative;overflow:hidden}
+body.nuit .cb{background:linear-gradient(135deg,#1e1b4b 0%,#172033 70%);border-color:#4c1d95}
 .cb-head{display:flex;align-items:center;gap:12px;margin-bottom:6px}
 .cb-orb{font-size:1.8rem;line-height:1;filter:drop-shadow(0 0 8px rgba(139,92,246,.5));animation:cbFloat 3.4s ease-in-out infinite}
 @keyframes cbFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
@@ -343,3 +343,18 @@ body.nuit .cds-l{color:#fdba74}
 body.nuit .cw-arr{color:#60a5fa}
 .wk-flash{animation:wkFlash 1.7s ease}
 @keyframes wkFlash{0%,100%{box-shadow:0 0 0 0 rgba(59,130,246,0)}18%{box-shadow:0 0 0 3px rgba(59,130,246,.55)}}
+/* ===== Lot 1 — Accessibilité ===== */
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}
+  .cb-orb{animation:none!important}
+}
+:focus-visible{outline:2px solid var(--bleu);outline-offset:2px;border-radius:8px}
+body.nuit :focus-visible{outline-color:#60a5fa}
+/* lien d'évitement clavier */
+.skip-link{position:absolute;left:-9999px;top:0;z-index:200;background:#1e293b;color:#fff;padding:10px 16px;border-radius:0 0 10px 0;font-weight:700;font-size:.85rem}
+.skip-link:focus{left:0}
+/* ===== Lot 1 — État vide réutilisable (ton boule de cristal) ===== */
+.empty-note{display:flex;gap:10px;align-items:flex-start;font-size:.8rem;line-height:1.55;color:var(--texte-deux);
+  background:var(--gris-fond);border:1px dashed var(--gris-clair);border-radius:12px;padding:11px 13px;margin-top:12px}
+.empty-note .en-ic{font-size:1rem;flex:0 0 auto;line-height:1.3}
+body.nuit .empty-note{background:#0f172a;border-color:#334155}
