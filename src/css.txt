@@ -59,7 +59,7 @@ body{font-family:system-ui,-apple-system,'Segoe UI',sans-serif;background:var(--
 /* MODALE */
 .modale-overlay{position:fixed;inset:0;background:rgba(15,23,42,.55);backdrop-filter:blur(5px);z-index:100;display:flex;align-items:flex-start;justify-content:center;padding:18px 12px 40px;overflow-y:auto;opacity:0;pointer-events:none;transition:opacity .25s}
 .modale-overlay.ouverte{opacity:1;pointer-events:all}
-.modale-boite{background:var(--gris-fond);border-radius:22px;width:100%;max-width:880px;overflow:hidden;box-shadow:0 24px 64px rgba(0,0,0,.22);transform:translateY(24px);transition:transform .3s cubic-bezier(.22,.68,0,1.15);margin:auto}
+.modale-boite{background:var(--gris-fond);border-radius:22px;width:100%;max-width:880px;overflow:hidden;box-shadow:0 24px 64px rgba(0,0,0,.22);transform:translateY(24px);transition:transform .3s cubic-bezier(.22,.68,0,1.15);margin:0 auto}
 .modale-overlay.ouverte .modale-boite{transform:translateY(0)}
 .modale-topbar{position:sticky;top:0;z-index:10;display:flex;justify-content:space-between;gap:10px;padding:14px 18px 0;background:var(--gris-fond)}
 .btn-nav{display:flex;align-items:center;gap:6px;font-size:.74rem;font-weight:700;letter-spacing:.03em;color:var(--texte-deux);background:var(--blanc);border:1px solid var(--gris-clair);border-radius:99px;padding:7px 14px;cursor:pointer;transition:.15s}
