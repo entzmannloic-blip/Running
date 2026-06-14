@@ -132,20 +132,25 @@ function calHTML(){
   const dow=['L','M','M','J','V','S','D'];
   let cells=dow.map(d=>'<div class="cal-dow">'+d+'</div>').join('');
   for(let i=0;i<start;i++)cells+='<div class="cal-cell cal-empty"></div>';
+  let _mLogged=false;
   for(let day=1;day<=ndays;day++){
     const iso=y+'-'+String(m+1).padStart(2,'0')+'-'+String(day).padStart(2,'0');
     const de=evs.filter(e=>e.iso===iso);
     const tdy=iso===todayISO?' cal-today':'';
     if(de.length){
       const e=de[0];
-      cells+='<button type="button" class="cal-cell cal-'+e.color+tdy+'" onclick="'+e.open+'" title="'+e.titre.replace(/"/g,'')+'"><span class="cal-num">'+day+'</span><span class="cal-dot"></span></button>';
+      if(e.color==='g'||e.color==='o')_mLogged=true;
+      const _stMap={g:'Réalisé',o:'Non réalisé',x:'À venir'};
+      const _albl=day+' '+MN[m]+' — '+(_stMap[e.color]||'')+' : '+e.titre.replace(/"/g,'');
+      cells+='<button type="button" class="cal-cell cal-'+e.color+tdy+'" onclick="'+e.open+'" aria-label="'+_albl+'" title="'+e.titre.replace(/"/g,'')+'"><span class="cal-num">'+day+'</span><span class="cal-dot"></span></button>';
     }else{
       cells+='<div class="cal-cell'+tdy+'"><span class="cal-num cal-muted">'+day+'</span></div>';
     }
   }
-  return '<div class="cal-head"><button class="cal-nav" onclick="calNav(-1)">‹</button><div class="cal-title">'+MN[m]+' '+y+'</div><button class="cal-nav" onclick="calNav(1)">›</button></div>'+
+  const _emptyCal=_mLogged?'':'<div class="empty-note"><span class="en-ic">🗓️</span><span>Aucune séance loguée sur ce mois pour l\'instant — les jours se colorent en <strong>vert</strong> dès que tu réalises une séance. Dis-moi « j\'ai fait la séance X de la semaine Y » et le mois prend vie.</span></div>';
+  return '<div class="cal-head"><button class="cal-nav" onclick="calNav(-1)" aria-label="Mois précédent">‹</button><div class="cal-title">'+MN[m]+' '+y+'</div><button class="cal-nav" onclick="calNav(1)" aria-label="Mois suivant">›</button></div>'+
     '<div class="cal-grid">'+cells+'</div>'+
-    '<div class="cal-legend"><span><i class="cal-lg cal-g"></i>Réalisé</span><span><i class="cal-lg cal-o"></i>Non réalisé</span><span><i class="cal-lg cal-x"></i>À venir</span><span style="opacity:.45;margin-left:auto">build 14</span></div>';
+    '<div class="cal-legend"><span><i class="cal-lg cal-g"></i>Réalisé</span><span><i class="cal-lg cal-o"></i>Non réalisé</span><span><i class="cal-lg cal-x"></i>À venir</span><span style="opacity:.45;margin-left:auto">build 15</span></div>'+_emptyCal;
 }
 function calNav(d){calMonth.setMonth(calMonth.getMonth()+d);const w=document.getElementById('cal-inner');if(w)w.innerHTML=calHTML();}
 
@@ -235,12 +240,13 @@ function dashToggle(id){const s=document.getElementById('grp-'+id);if(!s)return;
 function dashJump(id){const s=document.getElementById('grp-'+id);if(!s)return;if(!s.classList.contains('open')){s.classList.add('open');try{localStorage.setItem('dash_grp_'+id,'1');}catch(e){}}
   const nav=document.getElementById('dash-nav');nav&&nav.querySelectorAll('.dnav-chip').forEach(c=>c.classList.toggle('actif',c.dataset.g===id));
   const ab=document.getElementById('appbar');const abh=ab?ab.offsetHeight:0;
-  const y=s.getBoundingClientRect().top+window.scrollY-(abh+(nav?nav.offsetHeight:0)+10);window.scrollTo({top:y,behavior:'smooth'});}
+  const y=s.getBoundingClientRect().top+window.scrollY-(abh+(nav?nav.offsetHeight:0)+10);window.scrollTo({top:y,behavior:_reduceMotion()?'auto':'smooth'});}
 function dgrpHead(id,ic,t){return `<section class="dgrp" id="grp-${id}"><button class="dgrp-head" onclick="dashToggle('${id}')"><span class="dgrp-ic">${ic}</span><span class="dgrp-t">${t}</span><span class="dgrp-arr">▾</span></button><div class="dgrp-body">`;}
+function _reduceMotion(){return window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;}
 function jumpToWeek(num){if(document.getElementById('vue-plan').style.display==='none')showTab('plan');
   const el=document.getElementById('wk-'+num);if(!el)return;
   const ab=document.getElementById('appbar');const abh=ab?ab.offsetHeight:0;
-  const y=el.getBoundingClientRect().top+window.scrollY-(abh+14);window.scrollTo({top:y,behavior:'smooth'});
+  const y=el.getBoundingClientRect().top+window.scrollY-(abh+14);window.scrollTo({top:y,behavior:_reduceMotion()?'auto':'smooth'});
   el.classList.add('wk-flash');setTimeout(()=>el.classList.remove('wk-flash'),1700);}
 /* ===== Item 4 — Projection marathon « boule de cristal » ===== */
 function _pace2s(p){if(p==null)return null;const m=String(p).match(/(\d+):(\d+)/);return m?(+m[1]*60+ +m[2]):null;}
@@ -475,7 +481,7 @@ function ouvrir(){overlay.classList.add('ouverte');document.body.style.overflow=
 function fermer(){overlay.classList.remove('ouverte');document.body.style.overflow='';setTimeout(()=>{contenu.innerHTML='';topbar.innerHTML='';},300);}
 overlay.addEventListener('click',e=>{if(e.target===overlay)fermer()});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')fermer()});
-const btnFermer='<button class="btn-nav" onclick="fermer()">Fermer ✕</button>';
+const btnFermer='<button class="btn-nav" onclick="fermer()" aria-label="Fermer la fiche">Fermer ✕</button>';
 
 
 function s24Chart(splits){const n=splits.length,W=720,h=190,padL=8,padR=8,padT=26,padB=30;
