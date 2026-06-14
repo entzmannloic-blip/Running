@@ -273,7 +273,7 @@ body.nuit .allure,body.nuit .zfc-row{color:var(--texte)}
 .seance-shoe{font-size:.66rem;font-weight:700;color:#15803d;background:#f0fdf4;border:1px solid #bbf7d0;padding:2px 8px;border-radius:99px}
 body.nuit .seance-shoe{background:#0f2a1d;border-color:#1e4634;color:#86efac}
 /* ===== sélecteur d'onglets visible ===== */
-.tabbar{display:flex;background:var(--gris-clair);border-radius:99px;padding:5px;max-width:460px;margin:22px auto 30px;gap:4px;box-shadow:inset 0 1px 3px rgba(15,23,42,.06)}
+.tabbar{display:flex;background:var(--gris-clair);border-radius:99px;padding:5px;max-width:460px;margin:0 auto;gap:4px;box-shadow:inset 0 1px 3px rgba(15,23,42,.06)}
 .tab{flex:1;text-align:center;font-size:.94rem;font-weight:800;padding:13px 14px;border-radius:99px;cursor:pointer;color:var(--texte-deux);transition:all .2s}
 .tab:hover{color:var(--texte)}
 .tab.actif{background:#1e293b;color:#fff;box-shadow:0 3px 10px rgba(15,23,42,.28)}
@@ -339,7 +339,7 @@ body.nuit .cal-g{background:#14532d55}body.nuit .cal-o{background:#7c2d1255}body
 .cal-legend span{display:inline-flex;align-items:center;gap:5px}
 .cal-lg{width:11px;height:11px;border-radius:50%;display:inline-block}
 .cal-legend .cal-g{background:#22c55e}.cal-legend .cal-o{background:#f97316}.cal-legend .cal-x{background:#cbd5e1}
-#hero{flex-direction:column;gap:10px;margin-bottom:14px}
+#hero-plan{display:flex;flex-direction:column;gap:10px;margin:16px 0 18px}
 .vdj{background:linear-gradient(135deg,#0f172a,#1e3a5f);color:#fff;border-radius:18px;padding:18px 20px;cursor:pointer;box-shadow:0 8px 24px rgba(15,23,42,.3)}
 .vdj-lbl{font-size:.66rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#93c5fd;margin-bottom:6px}
 .vdj-t{font-family:Georgia,serif;font-size:1.28rem;font-weight:700;margin-bottom:3px;line-height:1.2}
@@ -414,7 +414,7 @@ body.nuit .prc-titre,body.nuit .prc-n{color:#fde68a}
 body.nuit .prc-row{color:#fcd34d}
 body.nuit .prc-chip{color:#fde68a;background:rgba(0,0,0,.25);border-color:#a16207}
 /* ===== Item 2 — Navigation dashboard (sous-nav collante + sections repliables) ===== */
-.dash-nav{position:sticky;top:0;z-index:30;display:flex;gap:7px;overflow-x:auto;-webkit-overflow-scrolling:touch;
+.dash-nav{position:sticky;top:var(--appbar-h,84px);z-index:30;display:flex;gap:7px;overflow-x:auto;-webkit-overflow-scrolling:touch;
   padding:10px 2px;margin:0 -2px 14px;background:var(--gris-fond);scrollbar-width:none;
   box-shadow:0 6px 14px -10px rgba(15,23,42,.45)}
 .dash-nav::-webkit-scrollbar{display:none}
@@ -470,14 +470,38 @@ body.nuit .cb-clarte{background:rgba(0,0,0,.22);border-color:#4c1d95}
 body.nuit .cb-src-v{color:#c4b5fd}
 .cb-src-base{opacity:.7;font-style:italic}
 .cb-method{font-size:.7rem;color:var(--texte-trois);line-height:1.5;margin-top:13px;padding-top:11px;border-top:1px dashed var(--gris-clair)}
+/* ===== Refonte navigation — bandeau collant (appbar) ===== */
+.appbar{position:sticky;top:0;z-index:50;background:var(--gris-fond);
+  padding:10px 0 12px;margin:0 0 4px;
+  box-shadow:0 8px 18px -12px rgba(15,23,42,.5)}
+.appbar::after{content:"";position:absolute;left:-16px;right:-16px;top:0;bottom:0;background:var(--gris-fond);z-index:-1}
+body.nuit .appbar,body.nuit .appbar::after{background:#0b1220}
+/* strip countdowns ultra-compact */
+.cds{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+.cds-item{display:inline-flex;align-items:center;gap:6px;background:#fff7ed;border:1px solid #fed7aa;border-radius:99px;padding:4px 11px;max-width:48%}
+body.nuit .cds-item{background:#7c2d1226;border-color:#7c2d12}
+.cds-n{font-family:Georgia,serif;font-weight:800;font-size:.82rem;color:#c2410c;flex:0 0 auto}
+body.nuit .cds-n{color:#fb923c}
+.cds-l{font-size:.72rem;font-weight:700;color:#9a3412;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+body.nuit .cds-l{color:#fdba74}
+/* horodatage en pied de page */
+.maj-foot{text-align:center;font-size:.66rem;color:var(--texte-trois);margin:26px 0 4px}
+.maj-foot .vdj-maj{color:var(--texte-trois)}
+@media(max-width:520px){.cds-item{max-width:none;flex:1 1 0;justify-content:center}}
 </style></head>
 <body>
-<div class="accueil" style="padding-top:16px">
-  <div id="hero" style="display:none"></div>
-  <div class="tabbar"><div class="tab actif" id="tab-plan" onclick="showTab('plan')">Préparation / Séances</div><div class="tab" id="tab-dash" onclick="showTab('dash')">Suivi des performances</div></div>
-  <div id="vue-plan"><div id="phases"></div>
-    <p class="note-foot">Plan complet S25→S53. Dis-moi « j'ai fait la séance X de la semaine Y » et tout se met à jour.</p></div>
+<div class="accueil" style="padding-top:0">
+  <div class="appbar" id="appbar">
+    <div class="cds" id="cd-strip"></div>
+    <div class="tabbar"><div class="tab actif" id="tab-plan" onclick="showTab('plan')">Préparation / Séances</div><div class="tab" id="tab-dash" onclick="showTab('dash')">Suivi des performances</div></div>
+  </div>
+  <div id="vue-plan">
+    <div id="hero-plan"></div>
+    <div id="phases"></div>
+    <p class="note-foot">Plan complet S25→S53. Dis-moi « j'ai fait la séance X de la semaine Y » et tout se met à jour.</p>
+  </div>
   <div id="vue-dash" style="display:none"><div id="dash-contenu"></div></div>
+  <div class="maj-foot" id="maj-foot"></div>
 </div>
 <div class="rw-overlay" id="rwoverlay"><div class="rw-card" id="rwcard" onclick="rwNext()"></div></div>
 <div class="modale-overlay" id="overlay"><div class="modale-boite" id="boite"><div class="modale-topbar" id="topbar"></div><div id="contenu"></div></div></div>
@@ -597,12 +621,14 @@ function renderHeader(){
   }
   let _cd='';
   if(RACES&&RACES.length){
-    const _it=RACES.map(r=>{const _dn=Math.max(0,Math.ceil((new Date(r.date)-_t)/86400000));return `<div class="vdj-cd-item"><span class="vdj-cd-n">J-${_dn}</span><span class="vdj-cd-l">${r.nom}</span></div>`;}).join('<div class="vdj-cd-sep"></div>');
-    _cd=`<div class="vdj-cd">${_it}</div>`;
+    const _it=RACES.map(r=>{const _dn=Math.max(0,Math.ceil((new Date(r.date)-_t)/86400000));return `<span class="cds-item"><span class="cds-n">J-${_dn}</span><span class="cds-l">${r.nom}</span></span>`;}).join('');
+    _cd=`${_it}`;
   }
   const _maj=`<div class="vdj-maj">Données à jour au ${MAJ}</div>`;
-  const _h=document.getElementById('hero');_h.style.display='flex';
-  _h.innerHTML=`${_psCard}${_cd}<div class="hero-sem">${heroNow}${heroNext}</div>${_maj}`;
+  document.getElementById('cd-strip').innerHTML=_cd;
+  document.getElementById('hero-plan').innerHTML=`${_psCard}<div class="hero-sem">${heroNow}${heroNext}</div>`;
+  document.getElementById('maj-foot').innerHTML=_maj;
+  const _ab=document.getElementById('appbar');if(_ab&&document.documentElement)document.documentElement.style.setProperty('--appbar-h',_ab.offsetHeight+'px');
 }
 
 /* ===== PLAN ===== */
@@ -657,7 +683,7 @@ function calHTML(){
   }
   return '<div class="cal-head"><button class="cal-nav" onclick="calNav(-1)">‹</button><div class="cal-title">'+MN[m]+' '+y+'</div><button class="cal-nav" onclick="calNav(1)">›</button></div>'+
     '<div class="cal-grid">'+cells+'</div>'+
-    '<div class="cal-legend"><span><i class="cal-lg cal-g"></i>Réalisé</span><span><i class="cal-lg cal-o"></i>Non réalisé</span><span><i class="cal-lg cal-x"></i>À venir</span><span style="opacity:.45;margin-left:auto">build 12</span></div>';
+    '<div class="cal-legend"><span><i class="cal-lg cal-g"></i>Réalisé</span><span><i class="cal-lg cal-o"></i>Non réalisé</span><span><i class="cal-lg cal-x"></i>À venir</span><span style="opacity:.45;margin-left:auto">build 13</span></div>';
 }
 function calNav(d){calMonth.setMonth(calMonth.getMonth()+d);const w=document.getElementById('cal-inner');if(w)w.innerHTML=calHTML();}
 
@@ -746,7 +772,8 @@ function dashApplyState(){DASH_GROUPS.forEach(g=>{const s=document.getElementByI
 function dashToggle(id){const s=document.getElementById('grp-'+id);if(!s)return;const open=!s.classList.contains('open');s.classList.toggle('open',open);try{localStorage.setItem('dash_grp_'+id,open?'1':'0');}catch(e){}}
 function dashJump(id){const s=document.getElementById('grp-'+id);if(!s)return;if(!s.classList.contains('open')){s.classList.add('open');try{localStorage.setItem('dash_grp_'+id,'1');}catch(e){}}
   const nav=document.getElementById('dash-nav');nav&&nav.querySelectorAll('.dnav-chip').forEach(c=>c.classList.toggle('actif',c.dataset.g===id));
-  const y=s.getBoundingClientRect().top+window.scrollY-(nav?nav.offsetHeight+58:64);window.scrollTo({top:y,behavior:'smooth'});}
+  const ab=document.getElementById('appbar');const abh=ab?ab.offsetHeight:0;
+  const y=s.getBoundingClientRect().top+window.scrollY-(abh+(nav?nav.offsetHeight:0)+10);window.scrollTo({top:y,behavior:'smooth'});}
 function dgrpHead(id,ic,t){return `<section class="dgrp" id="grp-${id}"><button class="dgrp-head" onclick="dashToggle('${id}')"><span class="dgrp-ic">${ic}</span><span class="dgrp-t">${t}</span><span class="dgrp-arr">▾</span></button><div class="dgrp-body">`;}
 /* ===== Item 4 — Projection marathon « boule de cristal » ===== */
 function _pace2s(p){if(p==null)return null;const m=String(p).match(/(\d+):(\d+)/);return m?(+m[1]*60+ +m[2]):null;}
