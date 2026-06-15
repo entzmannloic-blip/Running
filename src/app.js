@@ -88,9 +88,71 @@ function renderHeader(){
   const _maj=`<div class="vdj-maj">Données à jour au ${MAJ}</div>`;
   document.getElementById('cd-strip').innerHTML=_cd;
   const _cw=`<button class="cw-link" onclick="jumpToWeek(${sc.num})"><span class="cw-pin">📍</span><span class="cw-txt">Tu es en <strong>S${sc.num} · ${sc.theme}</strong></span><span class="cw-arr">voir dans le plan →</span></button>`;
-  document.getElementById('hero-plan').innerHTML=`${_psCard}${_cw}`;
+  document.getElementById('hero-plan').innerHTML=`${_psCard}${_cw}<div id="meteo-widget" class="meteo"><div class="meteo-loc">⏳ Météo…</div></div>`;
+  renderMeteo();
   document.getElementById('maj-foot').innerHTML=_maj;
   const _ab=document.getElementById('appbar');if(_ab&&document.documentElement)document.documentElement.style.setProperty('--appbar-h',_ab.offsetHeight+'px');
+}
+
+/* ===== Widget météo (accueil) — Open-Meteo, lieu fixé Lyon quai des Bons Enfants ===== */
+const METEO_LAT=45.76,METEO_LON=4.83,METEO_TTL=30*60*1000;
+function _meteoEmoji(c){
+  if(c===0)return'☀️';
+  if(c===1||c===2)return'⛅';
+  if(c===3)return'☁️';
+  if(c===45||c===48)return'🌫️';
+  if(c>=51&&c<=57)return'🌦️';
+  if((c>=61&&c<=67)||(c>=80&&c<=82))return'🌧️';
+  if((c>=71&&c<=77)||c===85||c===86)return'🌨️';
+  if(c>=95)return'⛈️';
+  return'🌡️';
+}
+function _meteoTip(app,rain,code){
+  /* priorité : chaleur (limiteur Circaète) > orage/pluie > froid */
+  if(app>=25)return{cls:'chaud',txt:'⚠️ Chaleur — électrolytes dès le départ, vise 600 ml/h.'};
+  if(code>=95)return{cls:'pluie',txt:'⛈️ Orage annoncé — prudence, prévois un repli.'};
+  if(rain>=60||(code>=61&&code<=67)||(code>=80&&code<=82))return{cls:'pluie',txt:'🌧️ Pluie probable — veste légère, attention aux appuis.'};
+  if(app<=4)return{cls:'froid',txt:'🧊 Froid — garde une couche, échauffe-toi progressivement.'};
+  return null;
+}
+function _meteoPaint(d){
+  const el=document.getElementById('meteo-widget');if(!el)return;
+  const tip=_meteoTip(d.app,d.rain,d.code);
+  const stale=d.stale?'<span class="meteo-stale">· hors-ligne</span>':'';
+  el.innerHTML=
+    '<div class="meteo-row">'+
+      '<span class="meteo-ico">'+_meteoEmoji(d.code)+'</span>'+
+      '<span class="meteo-temp">'+Math.round(d.app)+'°<small>ressenti</small></span>'+
+      '<span class="meteo-metrics">'+
+        '<span class="meteo-m">💨 '+Math.round(d.wind)+' km/h</span>'+
+        '<span class="meteo-m">🌧️ '+Math.round(d.rain)+'%</span>'+
+      '</span>'+
+    '</div>'+
+    (tip?'<div class="meteo-tip '+tip.cls+'">'+tip.txt+'</div>':'')+
+    '<div class="meteo-loc">📍 Lyon · quai des Bons Enfants '+stale+'</div>';
+}
+async function renderMeteo(){
+  let cached=null;
+  try{cached=JSON.parse(localStorage.getItem('meteo_cache')||'null');}catch(e){}
+  if(cached)_meteoPaint(Object.assign({},cached,{stale:Date.now()-cached.ts>METEO_TTL}));
+  if(cached&&Date.now()-cached.ts<METEO_TTL)return;
+  try{
+    const u='https://api.open-meteo.com/v1/forecast?latitude='+METEO_LAT+'&longitude='+METEO_LON+
+      '&current=apparent_temperature,weather_code,wind_speed_10m&hourly=precipitation_probability&forecast_days=1&timezone=Europe%2FParis';
+    const r=await fetch(u);if(!r.ok)throw 0;
+    const j=await r.json();
+    let rain=0;
+    if(j.hourly&&j.hourly.time&&j.current&&j.current.time){
+      const h=j.current.time.slice(0,13);
+      const idx=j.hourly.time.findIndex(t=>t.slice(0,13)===h);
+      rain=idx>=0?(j.hourly.precipitation_probability[idx]||0):0;
+    }
+    const d={ts:Date.now(),app:j.current.apparent_temperature,wind:j.current.wind_speed_10m,code:j.current.weather_code,rain:rain};
+    localStorage.setItem('meteo_cache',JSON.stringify(d));
+    _meteoPaint(d);
+  }catch(e){
+    if(!cached){const el=document.getElementById('meteo-widget');if(el)el.innerHTML='<div class="meteo-loc">🌡️ Météo indisponible hors-ligne</div>';}
+  }
 }
 
 /* ===== PLAN ===== */
@@ -150,7 +212,7 @@ function calHTML(){
   const _emptyCal=_mLogged?'':'<div class="empty-note"><span class="en-ic">🗓️</span><span>Aucune séance loguée sur ce mois pour l\'instant — les jours se colorent en <strong>vert</strong> dès que tu réalises une séance. Dis-moi « j\'ai fait la séance X de la semaine Y » et le mois prend vie.</span></div>';
   return '<div class="cal-head"><button class="cal-nav" onclick="calNav(-1)" aria-label="Mois précédent">‹</button><div class="cal-title">'+MN[m]+' '+y+'</div><button class="cal-nav" onclick="calNav(1)" aria-label="Mois suivant">›</button></div>'+
     '<div class="cal-grid">'+cells+'</div>'+
-    '<div class="cal-legend"><span><i class="cal-lg cal-g"></i>Réalisé</span><span><i class="cal-lg cal-o"></i>Non réalisé</span><span><i class="cal-lg cal-x"></i>À venir</span><span style="opacity:.45;margin-left:auto">build 24</span></div>'+_emptyCal;
+    '<div class="cal-legend"><span><i class="cal-lg cal-g"></i>Réalisé</span><span><i class="cal-lg cal-o"></i>Non réalisé</span><span><i class="cal-lg cal-x"></i>À venir</span><span style="opacity:.45;margin-left:auto">build 25</span></div>'+_emptyCal;
 }
 function calNav(d){calMonth.setMonth(calMonth.getMonth()+d);const w=document.getElementById('cal-inner');if(w)w.innerHTML=calHTML();}
 
