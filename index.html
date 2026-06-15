@@ -638,6 +638,24 @@ body.nuit .theo-sec.tts-reading{background:#2e1065}
 /* barre vocale dans la fiche séance */
 .tts-bar-seance{border-bottom:none;border:1px solid var(--gris-clair);border-radius:12px;margin-bottom:6px}
 body.nuit .tts-bar-seance{background:var(--gris-fond)}
+/* ===== Widget météo accueil ===== */
+.meteo{display:flex;flex-direction:column;gap:8px;width:100%;background:var(--blanc);border:1px solid var(--gris-clair);border-radius:14px;padding:11px 14px;margin-top:10px}
+.meteo-row{display:flex;align-items:center;gap:12px}
+.meteo-ico{font-size:1.5rem;flex:0 0 auto;line-height:1}
+.meteo-temp{font-family:Georgia,serif;font-size:1.35rem;font-weight:800;color:var(--texte);line-height:1}
+.meteo-temp small{font-size:.58rem;font-weight:700;color:var(--texte-trois);letter-spacing:.06em;text-transform:uppercase;display:block;margin-top:3px}
+.meteo-metrics{display:flex;align-items:center;gap:14px;margin-left:auto}
+.meteo-m{display:inline-flex;align-items:center;gap:5px;font-size:.84rem;font-weight:700;color:var(--texte-deux);white-space:nowrap}
+.meteo-loc{font-size:.66rem;color:var(--texte-trois);font-weight:600}
+.meteo-stale{color:var(--gris)}
+.meteo-tip{display:flex;align-items:center;gap:7px;font-size:.78rem;font-weight:700;line-height:1.25;border-radius:10px;padding:7px 10px}
+.meteo-tip.chaud{background:#fff7ed;color:#9a3412;border:1px solid #fed7aa}
+.meteo-tip.froid{background:#eff6ff;color:#1e40af;border:1px solid #bfdbfe}
+.meteo-tip.pluie{background:#f1f5f9;color:#334155;border:1px solid #cbd5e1}
+body.nuit .meteo{background:#1b2536;border-color:#334155}
+body.nuit .meteo-tip.chaud{background:#7c2d1226;border-color:#7c2d12;color:#fdba74}
+body.nuit .meteo-tip.froid{background:#1e3a5f33;border-color:#1e40af;color:#93c5fd}
+body.nuit .meteo-tip.pluie{background:#33415533;border-color:#475569;color:#cbd5e1}
 </style></head>
 <body>
 <a href="#main" class="skip-link">Aller au contenu</a>
@@ -774,9 +792,71 @@ function renderHeader(){
   const _maj=`<div class="vdj-maj">Données à jour au ${MAJ}</div>`;
   document.getElementById('cd-strip').innerHTML=_cd;
   const _cw=`<button class="cw-link" onclick="jumpToWeek(${sc.num})"><span class="cw-pin">📍</span><span class="cw-txt">Tu es en <strong>S${sc.num} · ${sc.theme}</strong></span><span class="cw-arr">voir dans le plan →</span></button>`;
-  document.getElementById('hero-plan').innerHTML=`${_psCard}${_cw}`;
+  document.getElementById('hero-plan').innerHTML=`${_psCard}${_cw}<div id="meteo-widget" class="meteo"><div class="meteo-loc">⏳ Météo…</div></div>`;
+  renderMeteo();
   document.getElementById('maj-foot').innerHTML=_maj;
   const _ab=document.getElementById('appbar');if(_ab&&document.documentElement)document.documentElement.style.setProperty('--appbar-h',_ab.offsetHeight+'px');
+}
+
+/* ===== Widget météo (accueil) — Open-Meteo, lieu fixé Lyon quai des Bons Enfants ===== */
+const METEO_LAT=45.76,METEO_LON=4.83,METEO_TTL=30*60*1000;
+function _meteoEmoji(c){
+  if(c===0)return'☀️';
+  if(c===1||c===2)return'⛅';
+  if(c===3)return'☁️';
+  if(c===45||c===48)return'🌫️';
+  if(c>=51&&c<=57)return'🌦️';
+  if((c>=61&&c<=67)||(c>=80&&c<=82))return'🌧️';
+  if((c>=71&&c<=77)||c===85||c===86)return'🌨️';
+  if(c>=95)return'⛈️';
+  return'🌡️';
+}
+function _meteoTip(app,rain,code){
+  /* priorité : chaleur (limiteur Circaète) > orage/pluie > froid */
+  if(app>=25)return{cls:'chaud',txt:'⚠️ Chaleur — électrolytes dès le départ, vise 600 ml/h.'};
+  if(code>=95)return{cls:'pluie',txt:'⛈️ Orage annoncé — prudence, prévois un repli.'};
+  if(rain>=60||(code>=61&&code<=67)||(code>=80&&code<=82))return{cls:'pluie',txt:'🌧️ Pluie probable — veste légère, attention aux appuis.'};
+  if(app<=4)return{cls:'froid',txt:'🧊 Froid — garde une couche, échauffe-toi progressivement.'};
+  return null;
+}
+function _meteoPaint(d){
+  const el=document.getElementById('meteo-widget');if(!el)return;
+  const tip=_meteoTip(d.app,d.rain,d.code);
+  const stale=d.stale?'<span class="meteo-stale">· hors-ligne</span>':'';
+  el.innerHTML=
+    '<div class="meteo-row">'+
+      '<span class="meteo-ico">'+_meteoEmoji(d.code)+'</span>'+
+      '<span class="meteo-temp">'+Math.round(d.app)+'°<small>ressenti</small></span>'+
+      '<span class="meteo-metrics">'+
+        '<span class="meteo-m">💨 '+Math.round(d.wind)+' km/h</span>'+
+        '<span class="meteo-m">🌧️ '+Math.round(d.rain)+'%</span>'+
+      '</span>'+
+    '</div>'+
+    (tip?'<div class="meteo-tip '+tip.cls+'">'+tip.txt+'</div>':'')+
+    '<div class="meteo-loc">📍 Lyon · quai des Bons Enfants '+stale+'</div>';
+}
+async function renderMeteo(){
+  let cached=null;
+  try{cached=JSON.parse(localStorage.getItem('meteo_cache')||'null');}catch(e){}
+  if(cached)_meteoPaint(Object.assign({},cached,{stale:Date.now()-cached.ts>METEO_TTL}));
+  if(cached&&Date.now()-cached.ts<METEO_TTL)return;
+  try{
+    const u='https://api.open-meteo.com/v1/forecast?latitude='+METEO_LAT+'&longitude='+METEO_LON+
+      '&current=apparent_temperature,weather_code,wind_speed_10m&hourly=precipitation_probability&forecast_days=1&timezone=Europe%2FParis';
+    const r=await fetch(u);if(!r.ok)throw 0;
+    const j=await r.json();
+    let rain=0;
+    if(j.hourly&&j.hourly.time&&j.current&&j.current.time){
+      const h=j.current.time.slice(0,13);
+      const idx=j.hourly.time.findIndex(t=>t.slice(0,13)===h);
+      rain=idx>=0?(j.hourly.precipitation_probability[idx]||0):0;
+    }
+    const d={ts:Date.now(),app:j.current.apparent_temperature,wind:j.current.wind_speed_10m,code:j.current.weather_code,rain:rain};
+    localStorage.setItem('meteo_cache',JSON.stringify(d));
+    _meteoPaint(d);
+  }catch(e){
+    if(!cached){const el=document.getElementById('meteo-widget');if(el)el.innerHTML='<div class="meteo-loc">🌡️ Météo indisponible hors-ligne</div>';}
+  }
 }
 
 /* ===== PLAN ===== */
@@ -836,7 +916,7 @@ function calHTML(){
   const _emptyCal=_mLogged?'':'<div class="empty-note"><span class="en-ic">🗓️</span><span>Aucune séance loguée sur ce mois pour l\'instant — les jours se colorent en <strong>vert</strong> dès que tu réalises une séance. Dis-moi « j\'ai fait la séance X de la semaine Y » et le mois prend vie.</span></div>';
   return '<div class="cal-head"><button class="cal-nav" onclick="calNav(-1)" aria-label="Mois précédent">‹</button><div class="cal-title">'+MN[m]+' '+y+'</div><button class="cal-nav" onclick="calNav(1)" aria-label="Mois suivant">›</button></div>'+
     '<div class="cal-grid">'+cells+'</div>'+
-    '<div class="cal-legend"><span><i class="cal-lg cal-g"></i>Réalisé</span><span><i class="cal-lg cal-o"></i>Non réalisé</span><span><i class="cal-lg cal-x"></i>À venir</span><span style="opacity:.45;margin-left:auto">build 24</span></div>'+_emptyCal;
+    '<div class="cal-legend"><span><i class="cal-lg cal-g"></i>Réalisé</span><span><i class="cal-lg cal-o"></i>Non réalisé</span><span><i class="cal-lg cal-x"></i>À venir</span><span style="opacity:.45;margin-left:auto">build 25</span></div>'+_emptyCal;
 }
 function calNav(d){calMonth.setMonth(calMonth.getMonth()+d);const w=document.getElementById('cal-inner');if(w)w.innerHTML=calHTML();}
 
@@ -1227,15 +1307,9 @@ function ouvrirSemaine(num){const s=SEMAINES.find(x=>x.num===num);const ph=PHASE
       <p class="note-foot" style="margin-top:24px">La reprise structurée démarre maintenant, en S25.</p></div>`;ouvrir();return;}
   const seances=SEANCES_BY_WEEK[num]||[];const fait=seances.filter(x=>x.realise&&(x.realise.statut==='fait'||x.realise.statut==='partiel')).length;const realKm=seances.reduce((a,x)=>a+((x.realise&&x.realise.km)||0),0);
   topbar.innerHTML=`<span></span>${btnFermer}`;
-  const _nextIdx=seances.findIndex(se=>(((se.realise||{}).statut)||'a_faire')==='a_faire');
-  const liste=seances.map((se,i)=>{const r=se.realise||{statut:'a_faire'};const st=r.statut||'a_faire';
-    const state=st==='fait'?'done':st==='partiel'?'partial':st==='manque'?'missed':(i===_nextIdx?'next':'todo');
-    const tags=[stChip(st),`<span class="seance-tag">${se.type}</span>`,catBadge(se.cat),`<span class="rpe-pill"><span class="rpe-dot" style="background:${rpeColor(se.rpe)}"></span>RPE ${se.rpe}</span>`];if(se.chaussure)tags.push(`<span class="seance-shoe">👟 ${se.chaussure.replace("ASICS ","").replace("HOKA ","").replace("Brooks ","")}</span>`);if(se.fit)tags.push('<span class="seance-fit">⌚ .fit</span>');if(se.opt)tags.push('<span class="seance-tag tag-opt">Optionnelle</span>');
+  const liste=seances.map(se=>{const r=se.realise||{statut:'a_faire'};const tags=[stChip(r.statut),`<span class="seance-tag">${se.type}</span>`,catBadge(se.cat),`<span class="rpe-pill"><span class="rpe-dot" style="background:${rpeColor(se.rpe)}"></span>RPE ${se.rpe}</span>`];if(se.chaussure)tags.push(`<span class="seance-shoe">👟 ${se.chaussure.replace("ASICS ","").replace("HOKA ","").replace("Brooks ","")}</span>`);if(se.fit)tags.push('<span class="seance-fit">⌚ .fit</span>');if(se.opt)tags.push('<span class="seance-tag tag-opt">Optionnelle</span>');
     const rs=r.km?`<div class="seance-desc" style="color:#15803d;font-weight:700;margin-top:3px">✓ ${r.km} km${r.allure?' · '+r.allure:''}</div>`:'';
-    const MARK={done:['✓','m-done'],partial:['◐','m-partial'],missed:['✕','m-missed'],next:['→','m-next'],todo:['','m-todo']}[state];
-    const bande=state==='done'?'#22c55e':state==='partial'?'#eab308':state==='missed'?'#94a3b8':se.accent;
-    const nb=state==='next'?'<span class="sc-next-badge">Prochaine</span>':'';
-    return `<div class="seance-carte sc-${state}" onclick="ouvrirSeance(${num},${se.id})"><div class="seance-bande" style="background:${bande}"></div><div class="seance-idx">Séance ${se.num}${nb}</div><div class="seance-info"><div class="seance-nom">${se.titre}</div><div class="seance-desc">${se.sous}</div>${rs}<div class="seance-tags">${tags.join('')}</div></div><div class="seance-mark ${MARK[1]}">${MARK[0]||'<span class="sc-dot"></span>'}</div></div>`;}).join('');
+    return `<div class="seance-carte" onclick="ouvrirSeance(${num},${se.id})"><div class="seance-bande" style="background:${se.accent}"></div><div class="seance-idx">Séance ${se.num}</div><div class="seance-info"><div class="seance-nom">${se.titre}</div><div class="seance-desc">${se.sous}</div>${rs}<div class="seance-tags">${tags.join('')}</div></div><div class="seance-fleche">›</div></div>`;}).join('');
   const repPill=s.repartition&&s.repartition!=='—'?`<div class="sw-pill"><div class="sw-pill-l">Répartition</div><div class="sw-pill-v" style="font-size:.74rem">${s.repartition}</div></div>`:'';
   contenu.innerHTML=`<div class="sw-hero"><span class="sw-tag" style="background:${COUL[s.phase]}22;color:${COUL[s.phase]}">${ph.nom}</span><h2 class="sw-titre">Semaine ${s.num} — ${s.theme}</h2><p class="sw-sous">Semaine type · clique une séance</p><div class="sw-meta"><div class="sw-pill"><div class="sw-pill-l">Volume cible</div><div class="sw-pill-v">${s.km} km</div></div><div class="sw-pill"><div class="sw-pill-l">Réalisé</div><div class="sw-pill-v">${fait}/${seances.length} · ${realKm} km</div></div><div class="sw-pill"><div class="sw-pill-l">Charge</div><div class="sw-pill-v" style="font-size:.84rem">${s.charge}</div></div>${repPill}</div></div><div class="sw-corps"><div class="callout callout-obj">${s.objectif}</div><div class="sw-section">Séances de la semaine</div><div class="seance-liste">${liste}</div>${s.revue?`<div class="sw-section">Revue du coach — bilan de la semaine</div><div class="rev-coach">${s.revue}</div>`:`<div class="realise-empty" style="margin-top:18px"><strong>Revue de la semaine à venir.</strong> Quand la semaine sera bouclée, tu trouveras ici mon bilan complet : volume et charge vs prévu, adhérence, signaux à surveiller, et la décision pour la semaine suivante. Elle alimentera aussi le Journal du coach.</div>`}</div>`;ouvrir();
 }
