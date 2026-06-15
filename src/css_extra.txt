@@ -453,3 +453,7 @@ body.nuit .theo-coachbox-h{color:#c4b5fd}
 .theo-coachbox strong{color:var(--texte)}
 .theo-end{text-align:center;font-size:.8rem;color:var(--texte-trois);font-style:italic;margin-top:22px}
 .theo-end em{color:var(--bleu)}
+/* ===== Cap sur la semaine suivante (bilan) ===== */
+.callout-cap{background:linear-gradient(135deg,#eff6ff 0%,#ecfdf5 100%);border:1px solid #bbf7d0;border-left:4px solid #22c55e;border-radius:0 12px 12px 0;font-size:.9rem;line-height:1.7;color:var(--texte-deux)}
+.callout-cap strong{color:var(--texte)}
+body.nuit .callout-cap{background:linear-gradient(135deg,#0f1f3d 0%,#0c2a1e 100%);border-color:#14532d;border-left-color:#22c55e}
