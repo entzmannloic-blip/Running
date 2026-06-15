@@ -478,3 +478,6 @@ body.nuit .tts-state{color:#c4b5fd}
 .theo-sec.tts-reading{background:#faf5ff;border-radius:12px;padding:12px;margin:0 -12px}
 body.nuit .theo-sec.tts-reading{background:#2e1065}
 @media (prefers-reduced-motion:reduce){.tts-eq i{animation:none;transform:scaleY(.7)}}
+/* barre vocale dans la fiche séance */
+.tts-bar-seance{border-bottom:none;border:1px solid var(--gris-clair);border-radius:12px;margin-bottom:6px}
+body.nuit .tts-bar-seance{background:var(--gris-fond)}
