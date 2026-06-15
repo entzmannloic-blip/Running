@@ -109,8 +109,9 @@ function _meteoEmoji(c){
 }
 function _meteoPaint(d){
   const el=document.getElementById('meteo-widget');if(!el)return;
-  /* temp réelle + ressentie pour contrôle de cohérence */
-  const tempStr=Math.round(d.temp)+'°'+(d.app!==undefined&&Math.round(d.app)!==Math.round(d.temp)?' <small>ressenti '+Math.round(d.app)+'°</small>':'');
+  /* fallback : anciens caches n'ont pas encore temp (temperature_2m) */
+  const t=(d.temp!==undefined&&!isNaN(+d.temp))?d.temp:d.app;
+  const tempStr=Math.round(t)+'°'+(d.app!==undefined&&Math.round(d.app)!==Math.round(t)?' <small>ressenti '+Math.round(d.app)+'°</small>':'');
   /* précipitations : mm dans l'heure + probabilité */
   const precipStr=(d.precip!==undefined?d.precip.toFixed(1)+' mm · ':'')+Math.round(d.rain)+'%';
   el.innerHTML=
@@ -126,8 +127,10 @@ function _meteoPaint(d){
 async function renderMeteo(){
   let cached=null;
   try{cached=JSON.parse(localStorage.getItem('meteo_cache')||'null');}catch(e){}
+  /* cache valide seulement si la structure inclut temp (sinon re-fetch immédiat) */
+  const cacheOk=cached&&cached.temp!==undefined&&Date.now()-cached.ts<METEO_TTL;
   if(cached)_meteoPaint(cached);
-  if(cached&&Date.now()-cached.ts<METEO_TTL)return;
+  if(cacheOk)return;
   try{
     const u='https://api.open-meteo.com/v1/forecast?latitude='+METEO_LAT+'&longitude='+METEO_LON+
       '&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m,precipitation'+
@@ -205,7 +208,7 @@ function calHTML(){
   const _emptyCal=_mLogged?'':'<div class="empty-note"><span class="en-ic">🗓️</span><span>Aucune séance loguée sur ce mois pour l\'instant — les jours se colorent en <strong>vert</strong> dès que tu réalises une séance. Dis-moi « j\'ai fait la séance X de la semaine Y » et le mois prend vie.</span></div>';
   return '<div class="cal-head"><button class="cal-nav" onclick="calNav(-1)" aria-label="Mois précédent">‹</button><div class="cal-title">'+MN[m]+' '+y+'</div><button class="cal-nav" onclick="calNav(1)" aria-label="Mois suivant">›</button></div>'+
     '<div class="cal-grid">'+cells+'</div>'+
-    '<div class="cal-legend"><span><i class="cal-lg cal-g"></i>Réalisé</span><span><i class="cal-lg cal-o"></i>Non réalisé</span><span><i class="cal-lg cal-x"></i>À venir</span><span style="opacity:.45;margin-left:auto">build 25</span></div>'+_emptyCal;
+    '<div class="cal-legend"><span><i class="cal-lg cal-g"></i>Réalisé</span><span><i class="cal-lg cal-o"></i>Non réalisé</span><span><i class="cal-lg cal-x"></i>À venir</span><span style="opacity:.45;margin-left:auto">build 26</span></div>'+_emptyCal;
 }
 function calNav(d){calMonth.setMonth(calMonth.getMonth()+d);const w=document.getElementById('cal-inner');if(w)w.innerHTML=calHTML();}
 
