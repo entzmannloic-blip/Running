@@ -486,16 +486,7 @@ body.nuit .tts-bar-seance{background:var(--gris-fond)}
 .meteo-row{display:flex;align-items:center;gap:12px}
 .meteo-ico{font-size:1.5rem;flex:0 0 auto;line-height:1}
 .meteo-temp{font-family:Georgia,serif;font-size:1.35rem;font-weight:800;color:var(--texte);line-height:1}
-.meteo-temp small{font-size:.58rem;font-weight:700;color:var(--texte-trois);letter-spacing:.06em;text-transform:uppercase;display:block;margin-top:3px}
+.meteo-temp small{font-family:system-ui,-apple-system,'Segoe UI',sans-serif;font-size:.65rem;font-weight:700;color:var(--texte-trois);letter-spacing:.04em;margin-left:4px}
 .meteo-metrics{display:flex;align-items:center;gap:14px;margin-left:auto}
 .meteo-m{display:inline-flex;align-items:center;gap:5px;font-size:.84rem;font-weight:700;color:var(--texte-deux);white-space:nowrap}
-.meteo-loc{font-size:.66rem;color:var(--texte-trois);font-weight:600}
-.meteo-stale{color:var(--gris)}
-.meteo-tip{display:flex;align-items:center;gap:7px;font-size:.78rem;font-weight:700;line-height:1.25;border-radius:10px;padding:7px 10px}
-.meteo-tip.chaud{background:#fff7ed;color:#9a3412;border:1px solid #fed7aa}
-.meteo-tip.froid{background:#eff6ff;color:#1e40af;border:1px solid #bfdbfe}
-.meteo-tip.pluie{background:#f1f5f9;color:#334155;border:1px solid #cbd5e1}
 body.nuit .meteo{background:#1b2536;border-color:#334155}
-body.nuit .meteo-tip.chaud{background:#7c2d1226;border-color:#7c2d12;color:#fdba74}
-body.nuit .meteo-tip.froid{background:#1e3a5f33;border-color:#1e40af;color:#93c5fd}
-body.nuit .meteo-tip.pluie{background:#33415533;border-color:#475569;color:#cbd5e1}
