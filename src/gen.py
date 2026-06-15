@@ -489,7 +489,7 @@ PHASES=[
 ]
 COUL={p["id"]:p["c"] for p in PHASES}
 GEAR=[
-  {"marque":"HOKA","modele":"Clifton 10","km":1083},
+  {"marque":"HOKA","modele":"Clifton 10","km":1093},
   {"marque":"ASICS","modele":"Novablast 5","km":486},
   {"marque":"ASICS","modele":"Gel Pulse 16","km":215},
   {"marque":"Brooks","modele":"Cascadia 19","km":196},
@@ -552,7 +552,7 @@ REWINDS=[{"id":"S24","titre":"Ta semaine 24","sous":"Récupération post-Circaè
  {"bg":"linear-gradient(160deg,#1e3a8a,#0c1c3d)","kicker":"LE MÉTRONOME","big":"172 ppm","txt":"Ta cadence n'a pas bougé d'un poil sur les 3 sorties. Régularité de machine."},
  {"bg":"linear-gradient(160deg,#9a3412,#431407)","kicker":"LE KM LE PLUS RAPIDE","big":"4:47","txt":"le 13e km de mardi… en pleine semaine de récup. On en a parlé. 😏"},
  {"bg":"linear-gradient(160deg,#134e4a,#042f2e)","kicker":"LA LEÇON DE LA SEMAINE","big":"📏","txt":"<strong>Un footing a une allure de début ET une allure de fin — la même.</strong><br>Mercredi et vendredi l'ont prouvé : FC plate, récup parfaite."},
- {"bg":"linear-gradient(160deg,#3b0764,#0f172a)","kicker":"LA STAR DE LA SEMAINE","big":"👟","txt":"ASICS Novablast 5 — 2 sorties, 26 km. La Clifton vous salue (1 083 km au compteur)."},
+ {"bg":"linear-gradient(160deg,#3b0764,#0f172a)","kicker":"LA STAR DE LA SEMAINE","big":"👟","txt":"ASICS Novablast 5 — 2 sorties, 26 km. La Clifton vous salue (1 093 km au compteur)."},
  {"bg":"linear-gradient(160deg,#14532d,#052e16)","kicker":"VERDICT DU COACH","big":"A−","txt":"Récup exemplaire, un seul écart (mardi). Zéro douleur, fraîcheur au top. <strong>Tu es prêt.</strong>"},
  {"bg":"linear-gradient(160deg,#b45309,#451a03)","kicker":"LA SUITE","big":"S25","txt":"Reprise & déblocage — 52 km, retour des séances structurées.<br><strong>La machine démarre lundi. 🚀</strong>"}]}]
 JOURNAL=[{"sem":"S24","theme":"Récupération post-Circaète","texte":S24_REALISE["revue"]}]
