@@ -29,11 +29,16 @@ def seg_to_step(seg, idx, last_idx, stype, sub):
     if kind=='active':
         if coul=='bleu':
             if stype.startswith('Côtes'):
-                target=None  # côte : pas de cible d'allure (effort/relief)
+                target=None  # côte : effort/relief, pas de cible d'allure
             elif stype=='Spécifique marathon' or stype.startswith('Sortie longue'):
                 target=SP_AM
+                # fiche exprime le bloc en km → encoder en distance pour cohérence montre/app
+                # durée bâtie depuis km_each*5.25*60 → conversion inverse exacte
+                dist_m = round(int(seg['duree']) / (5.25 * 60) * 1000)
+                dur = ('distance', dist_m)
             elif stype.startswith('Seuil'):
                 target=SP_S60 if sub=='Seuil 60' else SP_S30
+                # fiche exprime le bloc en minutes → garder en temps
         elif coul=='rouge':
             target=None  # test 10 km : effort libre
         elif coul=='violet':
