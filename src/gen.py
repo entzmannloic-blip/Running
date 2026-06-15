@@ -429,6 +429,10 @@ for n,ss in WEEKS.items():
     if n==25:
         _f={1:"fit/S25-1-footing-lignes.fit",2:"fit/S25-2-footing-facile.fit",3:"fit/S25-3-allure-marathon.fit",4:"fit/S25-4-sortie-longue.fit"}
         for s in arr: s["fit"]=_f.get(s["num"])
+        arr[0]["realise"]={"statut":"fait","km":10.25,"temps":"1h00","allure":"5:51/km","fc_moy":143,"fc_max":173,"rpe_ressenti":3,
+          "commentaire":"Footing facile 10 km en 1h + 6 lignes droites de 100 m (km 9-10 plus rapides).",
+          "pr":0,"ach":2,"pr_detail":["Segment Pont de la Guillotière","Segment Antonin Poncet & Pont de la Gui"],
+          "revue":"<strong>Reprise parfaitement exécutée.</strong> Les 8 premiers km tenus à 6:02/km de moyenne, FC moyenne à 142 (le plafond EF de 144 respecté) : c'est exactement la discipline qu'on visait après La Circaète. FC qui monte doucement de 133 à 144 sur l'heure — du cardiac drift normal sur une heure de course, aucune dérive parasite. <strong>Tu n'as pas couru en zone grise : c'est ça, la vraie victoire de la séance.</strong> Les 6 lignes droites ressortent nettement sur les km 9-10 (FC jusqu'à 173, soit ~90 % FCmax, 2 records de segment au passage) : le réveil neuromusculaire a bien eu lieu, et la foulée est restée propre (cadence 171, pas de sur-foulée). Un seul réglage pour la prochaine fois : tes km 9-10 affichent une FC moyenne autour de 160 sur le kilomètre <em>entier</em>, signe que les lignes droites étaient un peu enchaînées. Trottine très lentement 30-40 s entre chaque ligne pour laisser la FC redescendre — elles restent ainsi purement neuromusculaires, sans coût aérobie. Reste à confirmer que le dos et les jambes ont bien encaissé : si oui, c'est une reprise modèle. 👏"}
     elif 26<=n<=53:
         _FT={"Seuil (puissance aérobie)":"seuil","Spécifique marathon":"allure-marathon",
              "Sortie longue":"sortie-longue","Sortie longue spécifique":"sortie-longue",
