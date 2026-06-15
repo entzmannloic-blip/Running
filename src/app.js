@@ -150,7 +150,7 @@ function calHTML(){
   const _emptyCal=_mLogged?'':'<div class="empty-note"><span class="en-ic">🗓️</span><span>Aucune séance loguée sur ce mois pour l\'instant — les jours se colorent en <strong>vert</strong> dès que tu réalises une séance. Dis-moi « j\'ai fait la séance X de la semaine Y » et le mois prend vie.</span></div>';
   return '<div class="cal-head"><button class="cal-nav" onclick="calNav(-1)" aria-label="Mois précédent">‹</button><div class="cal-title">'+MN[m]+' '+y+'</div><button class="cal-nav" onclick="calNav(1)" aria-label="Mois suivant">›</button></div>'+
     '<div class="cal-grid">'+cells+'</div>'+
-    '<div class="cal-legend"><span><i class="cal-lg cal-g"></i>Réalisé</span><span><i class="cal-lg cal-o"></i>Non réalisé</span><span><i class="cal-lg cal-x"></i>À venir</span><span style="opacity:.45;margin-left:auto">build 21</span></div>'+_emptyCal;
+    '<div class="cal-legend"><span><i class="cal-lg cal-g"></i>Réalisé</span><span><i class="cal-lg cal-o"></i>Non réalisé</span><span><i class="cal-lg cal-x"></i>À venir</span><span style="opacity:.45;margin-left:auto">build 22</span></div>'+_emptyCal;
 }
 function calNav(d){calMonth.setMonth(calMonth.getMonth()+d);const w=document.getElementById('cal-inner');if(w)w.innerHTML=calHTML();}
 
@@ -478,7 +478,7 @@ function renderDash(){const el=document.getElementById('dash-contenu');
 const overlay=document.getElementById('overlay'),boite=document.getElementById('boite'),topbar=document.getElementById('topbar'),contenu=document.getElementById('contenu');
 let segActif=null;
 function ouvrir(){overlay.classList.add('ouverte');document.body.style.overflow='hidden';overlay.scrollTop=0;boite.scrollTop=0;}
-function fermer(){overlay.classList.remove('ouverte');document.body.style.overflow='';setTimeout(()=>{contenu.innerHTML='';topbar.innerHTML='';},300);}
+function fermer(){if(typeof ttsStop==='function')ttsStop();overlay.classList.remove('ouverte');document.body.style.overflow='';setTimeout(()=>{contenu.innerHTML='';topbar.innerHTML='';},300);}
 overlay.addEventListener('click',e=>{if(e.target===overlay)fermer()});
 (function(){const to=document.getElementById('theoOverlay');if(to)to.addEventListener('click',e=>{if(e.target===to)closeTheory();});})();
 document.addEventListener('keydown',e=>{if(e.key==='Escape')fermer()});
@@ -823,7 +823,7 @@ function closeTheory(){if(typeof ttsStop==='function')ttsStop();const ov=documen
   if(!document.getElementById('overlay').classList.contains('ouverte'))document.body.style.overflow='';}
 
 /* ===== Lecture vocale (Web Speech API, on-device, sans serveur) ===== */
-let _ttsChunks=[],_ttsI=0,_ttsOn=false,_ttsPaused=false,_ttsKeep=null,_ttsVoice=null;
+let _ttsChunks=[],_ttsI=0,_ttsOn=false,_ttsPaused=false,_ttsKeep=null,_ttsVoice=null,_ttsCtx=null,_ttsBarId='ttsBar';
 function _ttsPickVoice(){try{const vs=speechSynthesis.getVoices()||[];_ttsVoice=vs.find(v=>/fr-FR/i.test(v.lang)&&/(enhanced|premium|siri|amélie|amelie|thomas|audrey|aurélie|marie)/i.test(v.name))||vs.find(v=>/fr-FR/i.test(v.lang))||vs.find(v=>/^fr/i.test(v.lang))||null;}catch(e){_ttsVoice=null;}return _ttsVoice;}
 if(typeof window!=='undefined'&&'speechSynthesis' in window){try{speechSynthesis.onvoiceschanged=_ttsPickVoice;_ttsPickVoice();}catch(e){}}
 function _ttsClean(html){return String(html)
@@ -844,10 +844,10 @@ function _ttsBuildLesson(tag){const T=RICH_THEORY[tag],C=COACH_THEORY[tag],ch=[]
   if(C){add('Pourquoi cette séance. '+_ttsClean(C.pourquoi),-1);add('Comment l\u2019exécuter. '+_ttsClean(C.comment),-1);}
   T.sections.forEach((s,i)=>{add(s.h+'.',i);add(_ttsClean(s.html),i);});
   add('Le mot du coach. '+_ttsClean(T.coach),'coach');return ch;}
-function _ttsBar(state){const el=document.getElementById('ttsBar');if(!el)return;
+function _ttsBar(state){const el=document.getElementById(_ttsBarId);if(!el)return;
   if(state==='playing')el.innerHTML=`<button class="tts-btn" onclick="ttsPause()">⏸ Pause</button><button class="tts-btn tts-stop" onclick="ttsStop()">⏹ Stop</button><span class="tts-state"><span class="tts-eq"><i></i><i></i><i></i></span> Lecture en cours…</span>`;
   else if(state==='paused')el.innerHTML=`<button class="tts-btn tts-play" onclick="ttsResume()">▶︎ Reprendre</button><button class="tts-btn tts-stop" onclick="ttsStop()">⏹ Stop</button>`;
-  else el.innerHTML=`<button class="tts-btn tts-play" onclick="ttsPlay()">🔊 Écouter la leçon</button><span class="tts-hint">lecture vocale de toute la leçon</span>`;}
+  else{const sc=_ttsCtx&&_ttsCtx.t==='seance';el.innerHTML=sc?`<button class="tts-btn tts-play" onclick="ttsPlaySeance(${_ttsCtx.num},${_ttsCtx.id})">🔊 Lecture de la séance</button><span class="tts-hint">lecture vocale de la fiche, de haut en bas</span>`:`<button class="tts-btn tts-play" onclick="ttsPlay()">🔊 Écouter la leçon</button><span class="tts-hint">lecture vocale de toute la leçon</span>`;}}
 function _ttsHi(sec){try{document.querySelectorAll('.theo-sec,.theo-coachbox').forEach(e=>e.classList.remove('tts-reading'));}catch(e){}
   let el=null;if(sec==='coach')el=document.getElementById('tsec-coach');else if(typeof sec==='number'&&sec>=0)el=document.getElementById('tsec-'+sec);
   if(el){el.classList.add('tts-reading');try{el.scrollIntoView({behavior:'smooth',block:'center'});}catch(e){}}}
@@ -855,11 +855,27 @@ function _ttsNext(){if(!_ttsOn)return;if(_ttsI>=_ttsChunks.length){ttsStop();ret
   const ch=_ttsChunks[_ttsI];const u=new SpeechSynthesisUtterance(ch.txt);if(_ttsVoice)u.voice=_ttsVoice;u.lang='fr-FR';u.rate=0.97;u.pitch=1;
   u.onstart=()=>_ttsHi(ch.sec);u.onend=()=>{_ttsI++;if(_ttsOn&&!_ttsPaused)_ttsNext();};u.onerror=()=>{_ttsI++;if(_ttsOn&&!_ttsPaused)_ttsNext();};
   try{speechSynthesis.speak(u);}catch(e){}}
-function ttsPlay(){if(typeof window==='undefined'||!('speechSynthesis' in window))return;const tag=window._ttsTag;if(!tag||!RICH_THEORY[tag])return;
+function _ttsStart(chunks){if(typeof window==='undefined'||!('speechSynthesis' in window))return;
   try{speechSynthesis.cancel();}catch(e){}
-  _ttsChunks=_ttsBuildLesson(tag);_ttsI=0;_ttsOn=true;_ttsPaused=false;if(!_ttsVoice)_ttsPickVoice();_ttsBar('playing');
+  _ttsChunks=chunks||[];_ttsI=0;_ttsOn=true;_ttsPaused=false;if(!_ttsVoice)_ttsPickVoice();_ttsBar('playing');
   if(_ttsKeep)clearInterval(_ttsKeep);_ttsKeep=setInterval(()=>{if(_ttsOn&&!_ttsPaused){try{speechSynthesis.resume();}catch(e){}}},9000);
   _ttsNext();}
+function ttsPlay(){const tag=(typeof window!=='undefined')&&window._ttsTag;if(!tag||!RICH_THEORY[tag])return;_ttsCtx={t:'lesson'};_ttsBarId='ttsBar';_ttsStart(_ttsBuildLesson(tag));}
+function ttsPlaySeance(num,id){const se=findSeance(num,id);if(!se)return;_ttsCtx={t:'seance',num:num,id:id};_ttsBarId='ttsBarSeance';_ttsStart(_ttsBuildSeance(num,id));}
+function _ttsBuildSeance(num,id){const se=findSeance(num,id);if(!se)return [];const ch=[];
+  const add=(txt)=>{_ttsSentences(_ttsClean(txt)).forEach(s=>{if(s)ch.push({txt:s,sec:null});});};
+  add('Séance. '+se.titre+'. '+(se.sous||''));
+  if(se.metriques)add(Object.entries(se.metriques).map(([k,v])=>k+' '+v).join('. ')+'.');
+  add('Intensité ressentie. R P E '+se.rpe+' sur 10.');
+  add('Objectif. '+se.objectif);
+  const C=COACH_THEORY[seanceTag(se)];if(C){add('Pourquoi cette séance. '+C.pourquoi);add('Comment l\u2019exécuter. '+C.comment);}
+  if(se.struct&&se.struct.length){add('Déroulé.');se.struct.forEach(b=>add(b.nom+'. '+b.txt));}
+  if(se.benefices)add('Bénéfices recherchés. '+se.benefices);
+  if(se.coach&&se.coach.length){add('Conseil du coach.');se.coach.forEach(c=>add(c.titre+'. '+c.texte));}
+  if(se.nutrition&&se.nutrition.items)add('Nutrition de séance. '+se.nutrition.titre+'. '+se.nutrition.items.map(i=>i[0]+', '+i[1]).join('. '));
+  if(se.vigilance)add('Points de vigilance. '+se.vigilance);
+  const r=se.realise;if(r&&r.statut&&r.statut!=='a_faire'){const deb=coachDebrief(num,se);if(deb)add(deb);if(r.revue)add('Revue du coach. '+r.revue);}
+  return ch;}
 function ttsPause(){_ttsPaused=true;try{speechSynthesis.pause();}catch(e){}_ttsBar('paused');}
 function ttsResume(){_ttsPaused=false;_ttsBar('playing');try{speechSynthesis.resume();}catch(e){}try{if(!speechSynthesis.speaking)_ttsNext();}catch(e){}}
 function ttsStop(){_ttsOn=false;_ttsPaused=false;if(_ttsKeep){clearInterval(_ttsKeep);_ttsKeep=null;}try{speechSynthesis.cancel();}catch(e){}_ttsHi(null);_ttsBar('idle');}
@@ -890,7 +906,8 @@ function svgRiegel(){
     <text x="150" y="122" text-anchor="middle" font-size="7.5" fill="#94a3b8">un 10 km bien couru prédit ton marathon (Riegel, exp. 1,07)</text>
   </svg>`;
 }
-function ouvrirSeance(num,id){const se=(SEANCES_BY_WEEK[num]||[]).find(x=>x.id===id);if(!se)return;segActif=null;
+function ouvrirSeance(num,id){const se=(SEANCES_BY_WEEK[num]||[]).find(x=>x.id===id);if(!se)return;segActif=null;if(typeof ttsStop==='function')ttsStop();
+  const ttsBarSeance=(typeof window!=='undefined'&&'speechSynthesis' in window)?`<div class="tts-bar tts-bar-seance" id="ttsBarSeance"><button class="tts-btn tts-play" onclick="ttsPlaySeance(${num},${se.id})">🔊 Lecture de la séance</button><span class="tts-hint">lecture vocale de la fiche, de haut en bas</span></div>`:'';
   topbar.innerHTML=`<button class="btn-nav" onclick="ouvrirSemaine(${num})">‹ Retour semaine ${num}</button>${btnFermer}`;
   const metr=Object.entries(se.metriques).map(([k,v])=>`<div class="metrique"><div class="metrique-l">${k}</div><div class="metrique-v">${v}</div></div>`).join('');
   const struct=se.struct.map((b,i)=>{const c=(i===0||i===se.struct.length-1)?'#22c55e':se.accent;return `<div class="struct-ligne"><div class="struct-puce" style="background:${c}"></div><div class="struct-nom">${b.nom}</div><div class="struct-txt">${b.txt}</div></div>`;}).join('');
@@ -898,7 +915,7 @@ function ouvrirSeance(num,id){const se=(SEANCES_BY_WEEK[num]||[]).find(x=>x.id==
   const leg=(se.segments?[...new Set(se.segments.map(s=>s.couleur))].map(c=>LEGMAP[c]||['#94a3b8',c]).map(x=>`<div class="legende-item"><div class="legende-puce" style="background:${x[0]}"></div>${x[1]}</div>`).join(''):se.legende.map(l=>`<div class="legende-item"><div class="legende-puce" style="background:${l.c}"></div>${l.l}</div>`).join(''));
   const coach=se.coach.map(c=>`<div class="coach-carte"><div class="coach-titre">${c.titre}</div><p class="coach-texte">${c.texte}</p></div>`).join('');
   const viz=se.segments?`<div class="sd-section">Visualisation chronologique</div><div class="viz-wrap"><div class="viz-entete"><span class="viz-label">Structure de la séance</span><span class="viz-hint">Clique un segment</span></div><div class="barre-scroll"><div class="barre-piste" id="piste"></div></div><div class="detail-panneau" id="dpan"><div class="detail-nom" id="dnom"></div><div class="detail-role" id="drole"></div><div class="detail-grille" id="dgr"></div></div></div>`:'';
-  contenu.innerHTML=`<div class="sd-hero"><div class="hero-badges"><span class="sd-badge" style="background:${se.accent}22;color:${se.accent}">${se.sport}</span>${catBadge(se.cat)}${stChip((se.realise||{}).statut||'a_faire')}</div><h2 class="sd-titre">${se.titre}</h2><p class="sd-sous">${se.sous}</p><div class="sd-metriques">${metr}</div>${se.chaussure?`<div class="shoe-chip">👟 Chaussure conseillée — ${se.chaussure}</div>`:''}${se.fit?`<a class="fit-btn" href="${se.fit}" download>⌚ Télécharger la séance</a>`:''}</div><div class="sd-corps"><div class="sd-section">Intensité ressentie (RPE)</div><div class="rpe-wrap"><div class="rpe-info"><div class="rpe-label">RPE</div><div class="rpe-val" style="color:${rpeColor(se.rpe)}">${se.rpe}<span style="font-size:.8rem;color:var(--texte-trois);font-weight:600">/10</span></div></div><div class="rpe-scale">${rpeScale(se.rpe)}</div></div><div class="sd-section">Objectif</div><div class="callout callout-obj">${se.objectif}</div>${coachAvant(num,se)}<div class="sd-section">Légende</div><div class="legende">${leg}</div><div class="sd-section">Déroulé</div><div class="struct">${struct}</div>${viz}<div class="sd-section">Bénéfices recherchés</div><div class="callout callout-ben">${se.benefices}</div><div class="sd-section">Conseil du coach</div><div class="coach-grille">${coach}</div>${se.nutrition?`<div class="sd-section">Nutrition de séance</div><div class="nutri"><div class="nutri-t">🍌 ${se.nutrition.titre}</div>${se.nutrition.items.map(i=>`<div class="nutri-l"><b>${i[0]}</b><span>${i[1]}</span></div>`).join('')}</div>`:''}<div class="sd-section">Points de vigilance</div><div class="callout callout-vig">${se.vigilance}</div>${realiseBloc(num,se)}</div>`;
+  contenu.innerHTML=`<div class="sd-hero"><div class="hero-badges"><span class="sd-badge" style="background:${se.accent}22;color:${se.accent}">${se.sport}</span>${catBadge(se.cat)}${stChip((se.realise||{}).statut||'a_faire')}</div><h2 class="sd-titre">${se.titre}</h2><p class="sd-sous">${se.sous}</p><div class="sd-metriques">${metr}</div>${se.chaussure?`<div class="shoe-chip">👟 Chaussure conseillée — ${se.chaussure}</div>`:''}${se.fit?`<a class="fit-btn" href="${se.fit}" download>⌚ Télécharger la séance</a>`:''}</div><div class="sd-corps">${ttsBarSeance}<div class="sd-section">Intensité ressentie (RPE)</div><div class="rpe-wrap"><div class="rpe-info"><div class="rpe-label">RPE</div><div class="rpe-val" style="color:${rpeColor(se.rpe)}">${se.rpe}<span style="font-size:.8rem;color:var(--texte-trois);font-weight:600">/10</span></div></div><div class="rpe-scale">${rpeScale(se.rpe)}</div></div><div class="sd-section">Objectif</div><div class="callout callout-obj">${se.objectif}</div>${coachAvant(num,se)}<div class="sd-section">Légende</div><div class="legende">${leg}</div><div class="sd-section">Déroulé</div><div class="struct">${struct}</div>${viz}<div class="sd-section">Bénéfices recherchés</div><div class="callout callout-ben">${se.benefices}</div><div class="sd-section">Conseil du coach</div><div class="coach-grille">${coach}</div>${se.nutrition?`<div class="sd-section">Nutrition de séance</div><div class="nutri"><div class="nutri-t">🍌 ${se.nutrition.titre}</div>${se.nutrition.items.map(i=>`<div class="nutri-l"><b>${i[0]}</b><span>${i[1]}</span></div>`).join('')}</div>`:''}<div class="sd-section">Points de vigilance</div><div class="callout callout-vig">${se.vigilance}</div>${realiseBloc(num,se)}</div>`;
   ouvrir();if(se.segments)initBarre(se);
 }
 function initBarre(se){const piste=document.getElementById('piste');if(!piste)return;const pan=document.getElementById('dpan'),dnom=document.getElementById('dnom'),drole=document.getElementById('drole'),dgr=document.getElementById('dgr');const total=se.segments[se.segments.length-1].fin;
