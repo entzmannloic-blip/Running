@@ -1,4 +1,4 @@
-const CACHE='plan-v20';
+const CACHE='plan-v21';
 const SHELL=['./','./index.html','./manifest.json','./icon-192.png','./icon-512.png'];
 
 self.addEventListener('install',e=>{
