@@ -457,3 +457,24 @@ body.nuit .theo-coachbox-h{color:#c4b5fd}
 .callout-cap{background:linear-gradient(135deg,#eff6ff 0%,#ecfdf5 100%);border:1px solid #bbf7d0;border-left:4px solid #22c55e;border-radius:0 12px 12px 0;font-size:.9rem;line-height:1.7;color:var(--texte-deux)}
 .callout-cap strong{color:var(--texte)}
 body.nuit .callout-cap{background:linear-gradient(135deg,#0f1f3d 0%,#0c2a1e 100%);border-color:#14532d;border-left-color:#22c55e}
+/* ===== Lecture vocale ===== */
+.tts-bar{display:flex;align-items:center;gap:10px;padding:12px 20px;background:var(--blanc);border-bottom:1px solid var(--gris-clair);flex-wrap:wrap}
+.tts-btn{display:inline-flex;align-items:center;gap:6px;border:none;border-radius:10px;font-weight:700;font-size:.82rem;padding:9px 15px;cursor:pointer;background:var(--gris-clair);color:var(--texte-deux);transition:opacity .15s}
+.tts-btn:active{opacity:.8}
+.tts-btn.tts-play{background:linear-gradient(135deg,#6d28d9,#8b5cf6);color:#fff}
+.tts-btn.tts-stop{background:#fee2e2;color:#b91c1c}
+body.nuit .tts-btn{background:#1e293b;color:#cbd5e1}
+body.nuit .tts-btn.tts-stop{background:#7f1d1d;color:#fecaca}
+.tts-hint{font-size:.74rem;color:var(--texte-trois);font-style:italic}
+.tts-state{display:inline-flex;align-items:center;gap:8px;font-size:.78rem;font-weight:700;color:#6d28d9}
+body.nuit .tts-state{color:#c4b5fd}
+.tts-eq{display:inline-flex;align-items:flex-end;gap:2px;height:14px}
+.tts-eq i{width:3px;background:#8b5cf6;border-radius:2px;display:inline-block;height:13px;transform-origin:bottom;animation:ttsEq .9s ease-in-out infinite}
+.tts-eq i:nth-child(1){animation-delay:0s}
+.tts-eq i:nth-child(2){animation-delay:.25s}
+.tts-eq i:nth-child(3){animation-delay:.45s}
+@keyframes ttsEq{0%,100%{transform:scaleY(.35)}50%{transform:scaleY(1)}}
+.theo-sec.tts-reading,.theo-coachbox.tts-reading{box-shadow:0 0 0 2px #8b5cf6;transition:box-shadow .2s,background .2s}
+.theo-sec.tts-reading{background:#faf5ff;border-radius:12px;padding:12px;margin:0 -12px}
+body.nuit .theo-sec.tts-reading{background:#2e1065}
+@media (prefers-reduced-motion:reduce){.tts-eq i{animation:none;transform:scaleY(.7)}}
