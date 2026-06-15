@@ -614,6 +614,27 @@ body.nuit .theo-coachbox-h{color:#c4b5fd}
 .callout-cap{background:linear-gradient(135deg,#eff6ff 0%,#ecfdf5 100%);border:1px solid #bbf7d0;border-left:4px solid #22c55e;border-radius:0 12px 12px 0;font-size:.9rem;line-height:1.7;color:var(--texte-deux)}
 .callout-cap strong{color:var(--texte)}
 body.nuit .callout-cap{background:linear-gradient(135deg,#0f1f3d 0%,#0c2a1e 100%);border-color:#14532d;border-left-color:#22c55e}
+/* ===== Lecture vocale ===== */
+.tts-bar{display:flex;align-items:center;gap:10px;padding:12px 20px;background:var(--blanc);border-bottom:1px solid var(--gris-clair);flex-wrap:wrap}
+.tts-btn{display:inline-flex;align-items:center;gap:6px;border:none;border-radius:10px;font-weight:700;font-size:.82rem;padding:9px 15px;cursor:pointer;background:var(--gris-clair);color:var(--texte-deux);transition:opacity .15s}
+.tts-btn:active{opacity:.8}
+.tts-btn.tts-play{background:linear-gradient(135deg,#6d28d9,#8b5cf6);color:#fff}
+.tts-btn.tts-stop{background:#fee2e2;color:#b91c1c}
+body.nuit .tts-btn{background:#1e293b;color:#cbd5e1}
+body.nuit .tts-btn.tts-stop{background:#7f1d1d;color:#fecaca}
+.tts-hint{font-size:.74rem;color:var(--texte-trois);font-style:italic}
+.tts-state{display:inline-flex;align-items:center;gap:8px;font-size:.78rem;font-weight:700;color:#6d28d9}
+body.nuit .tts-state{color:#c4b5fd}
+.tts-eq{display:inline-flex;align-items:flex-end;gap:2px;height:14px}
+.tts-eq i{width:3px;background:#8b5cf6;border-radius:2px;display:inline-block;height:13px;transform-origin:bottom;animation:ttsEq .9s ease-in-out infinite}
+.tts-eq i:nth-child(1){animation-delay:0s}
+.tts-eq i:nth-child(2){animation-delay:.25s}
+.tts-eq i:nth-child(3){animation-delay:.45s}
+@keyframes ttsEq{0%,100%{transform:scaleY(.35)}50%{transform:scaleY(1)}}
+.theo-sec.tts-reading,.theo-coachbox.tts-reading{box-shadow:0 0 0 2px #8b5cf6;transition:box-shadow .2s,background .2s}
+.theo-sec.tts-reading{background:#faf5ff;border-radius:12px;padding:12px;margin:0 -12px}
+body.nuit .theo-sec.tts-reading{background:#2e1065}
+@media (prefers-reduced-motion:reduce){.tts-eq i{animation:none;transform:scaleY(.7)}}
 </style></head>
 <body>
 <a href="#main" class="skip-link">Aller au contenu</a>
@@ -812,7 +833,7 @@ function calHTML(){
   const _emptyCal=_mLogged?'':'<div class="empty-note"><span class="en-ic">🗓️</span><span>Aucune séance loguée sur ce mois pour l\'instant — les jours se colorent en <strong>vert</strong> dès que tu réalises une séance. Dis-moi « j\'ai fait la séance X de la semaine Y » et le mois prend vie.</span></div>';
   return '<div class="cal-head"><button class="cal-nav" onclick="calNav(-1)" aria-label="Mois précédent">‹</button><div class="cal-title">'+MN[m]+' '+y+'</div><button class="cal-nav" onclick="calNav(1)" aria-label="Mois suivant">›</button></div>'+
     '<div class="cal-grid">'+cells+'</div>'+
-    '<div class="cal-legend"><span><i class="cal-lg cal-g"></i>Réalisé</span><span><i class="cal-lg cal-o"></i>Non réalisé</span><span><i class="cal-lg cal-x"></i>À venir</span><span style="opacity:.45;margin-left:auto">build 20</span></div>'+_emptyCal;
+    '<div class="cal-legend"><span><i class="cal-lg cal-g"></i>Réalisé</span><span><i class="cal-lg cal-o"></i>Non réalisé</span><span><i class="cal-lg cal-x"></i>À venir</span><span style="opacity:.45;margin-left:auto">build 21</span></div>'+_emptyCal;
 }
 function calNav(d){calMonth.setMonth(calMonth.getMonth()+d);const w=document.getElementById('cal-inner');if(w)w.innerHTML=calHTML();}
 
@@ -1469,16 +1490,62 @@ const RICH_THEORY={
    coach:`<p>Loïc, SaintExpress est ton objectif <strong>plaisir</strong>, 3 semaines après Nice : aucune pression chrono, c'est l'expérience du nocturne hivernal et du relief. Ces séances trail construisent les jambes (force, descente) et rodent ta logistique de nuit (frontale, couches, fueling au froid). Reste prudent sur les descentes pour le dos, et traite chaque sortie comme une répétition de gestion d'effort longue durée. Le Pilat est ton terrain — profites-en.</p>`}
 };
 function theoryPanelHTML(tag){const T=RICH_THEORY[tag];if(!T)return '';
-  const secs=T.sections.map((s,i)=>`<div class="theo-sec"><div class="theo-sec-h"><span class="theo-sec-n">${i+1}</span>${s.h}</div><div class="theo-sec-b">${s.html}</div></div>`).join('');
+  const secs=T.sections.map((s,i)=>`<div class="theo-sec" id="tsec-${i}"><div class="theo-sec-h"><span class="theo-sec-n">${i+1}</span>${s.h}</div><div class="theo-sec-b">${s.html}</div></div>`).join('');
+  const ttsBar=(typeof window!=='undefined'&&'speechSynthesis' in window)?`<div class="tts-bar" id="ttsBar"><button class="tts-btn tts-play" onclick="ttsPlay()">🔊 Écouter la leçon</button><span class="tts-hint">lecture vocale de toute la leçon</span></div>`:'';
   return `<div class="theo-sheet-head"><div><div class="theo-kicker">Théorie & coaching · ${T.icone}</div><div class="theo-sheet-titre">${T.titre}</div></div><button class="theo-close" onclick="closeTheory()" aria-label="Fermer le panneau">✕</button></div>
-    <div class="theo-sheet-body" id="theoSheetBody">${secs}<div class="theo-coachbox"><div class="theo-coachbox-h">🧠 Le mot du coach — personnalisé</div>${T.coach}</div><div class="theo-end">Tu sais maintenant le <em>pourquoi</em> et le <em>comment</em>. Bonne séance, Loïc.</div></div>`;
+    ${ttsBar}
+    <div class="theo-sheet-body" id="theoSheetBody">${secs}<div class="theo-coachbox" id="tsec-coach"><div class="theo-coachbox-h">🧠 Le mot du coach — personnalisé</div>${T.coach}</div><div class="theo-end">Tu sais maintenant le <em>pourquoi</em> et le <em>comment</em>. Bonne séance, Loïc.</div></div>`;
 }
 function openTheory(num,id){const se=findSeance(num,id);if(!se)return;const tag=seanceTag(se);if(!RICH_THEORY[tag])return;
+  if(typeof ttsStop==='function')ttsStop();
   const ov=document.getElementById('theoOverlay'),sh=document.getElementById('theoSheet');
+  try{window._ttsTag=tag;}catch(e){}
   sh.innerHTML=theoryPanelHTML(tag);ov.classList.add('ouverte');document.body.style.overflow='hidden';
   const b=document.getElementById('theoSheetBody');if(b)b.scrollTop=0;}
-function closeTheory(){const ov=document.getElementById('theoOverlay');ov.classList.remove('ouverte');
+function closeTheory(){if(typeof ttsStop==='function')ttsStop();const ov=document.getElementById('theoOverlay');ov.classList.remove('ouverte');
   if(!document.getElementById('overlay').classList.contains('ouverte'))document.body.style.overflow='';}
+
+/* ===== Lecture vocale (Web Speech API, on-device, sans serveur) ===== */
+let _ttsChunks=[],_ttsI=0,_ttsOn=false,_ttsPaused=false,_ttsKeep=null,_ttsVoice=null;
+function _ttsPickVoice(){try{const vs=speechSynthesis.getVoices()||[];_ttsVoice=vs.find(v=>/fr-FR/i.test(v.lang)&&/(enhanced|premium|siri|amélie|amelie|thomas|audrey|aurélie|marie)/i.test(v.name))||vs.find(v=>/fr-FR/i.test(v.lang))||vs.find(v=>/^fr/i.test(v.lang))||null;}catch(e){_ttsVoice=null;}return _ttsVoice;}
+if(typeof window!=='undefined'&&'speechSynthesis' in window){try{speechSynthesis.onvoiceschanged=_ttsPickVoice;_ttsPickVoice();}catch(e){}}
+function _ttsClean(html){return String(html)
+  .replace(/<svg[\s\S]*?<\/svg>/gi,' ')
+  .replace(/<th[^>]*>/gi,' ').replace(/<\/th>/gi,' ')
+  .replace(/<td[^>]*>/gi,' ').replace(/<\/td>/gi,' : ')
+  .replace(/<tr[^>]*>/gi,' ').replace(/<\/tr>/gi,'. ')
+  .replace(/<br\s*\/?>/gi,'. ').replace(/<\/p>/gi,'. ').replace(/<\/div>/gi,'. ')
+  .replace(/<[^>]+>/g,' ')
+  .replace(/&nbsp;/gi,' ').replace(/&amp;/gi,' et ').replace(/&eacute;/gi,'é').replace(/&[a-z]+;/gi,' ')
+  .replace(/(\d):(\d{2}):(\d{2})/g,'$1 heures $2 minutes $3')
+  .replace(/(\d{1,2}):(\d{2})/g,'$1 minutes $2')
+  .replace(/\/km/gi,' par kilomètre').replace(/FCmax/gi,'fréquence cardiaque maximale').replace(/\bFC\b/g,'fréquence cardiaque').replace(/\bD\+/g,'dénivelé positif')
+  .replace(/\s+([.,:;!?])/g,'$1').replace(/\.(\s*\.)+/g,'. ').replace(/\s+/g,' ').trim();}
+function _ttsSentences(t){return t.split(/(?<=[.!?…])\s+/).reduce((acc,s)=>{s=s.trim();if(!s)return acc;if(s.length<=200){acc.push(s);return acc;}let cur='';s.split(/,\s*/).forEach(p=>{if((cur+p).length>180){if(cur)acc.push(cur.trim());cur=p;}else cur+=(cur?', ':'')+p;});if(cur)acc.push(cur.trim());return acc;},[]);}
+function _ttsBuildLesson(tag){const T=RICH_THEORY[tag],C=COACH_THEORY[tag],ch=[];const add=(txt,sec)=>{_ttsSentences(txt).forEach(s=>{if(s)ch.push({txt:s,sec});});};
+  add('Leçon du jour. '+T.titre+'.',-1);
+  if(C){add('Pourquoi cette séance. '+_ttsClean(C.pourquoi),-1);add('Comment l\u2019exécuter. '+_ttsClean(C.comment),-1);}
+  T.sections.forEach((s,i)=>{add(s.h+'.',i);add(_ttsClean(s.html),i);});
+  add('Le mot du coach. '+_ttsClean(T.coach),'coach');return ch;}
+function _ttsBar(state){const el=document.getElementById('ttsBar');if(!el)return;
+  if(state==='playing')el.innerHTML=`<button class="tts-btn" onclick="ttsPause()">⏸ Pause</button><button class="tts-btn tts-stop" onclick="ttsStop()">⏹ Stop</button><span class="tts-state"><span class="tts-eq"><i></i><i></i><i></i></span> Lecture en cours…</span>`;
+  else if(state==='paused')el.innerHTML=`<button class="tts-btn tts-play" onclick="ttsResume()">▶︎ Reprendre</button><button class="tts-btn tts-stop" onclick="ttsStop()">⏹ Stop</button>`;
+  else el.innerHTML=`<button class="tts-btn tts-play" onclick="ttsPlay()">🔊 Écouter la leçon</button><span class="tts-hint">lecture vocale de toute la leçon</span>`;}
+function _ttsHi(sec){try{document.querySelectorAll('.theo-sec,.theo-coachbox').forEach(e=>e.classList.remove('tts-reading'));}catch(e){}
+  let el=null;if(sec==='coach')el=document.getElementById('tsec-coach');else if(typeof sec==='number'&&sec>=0)el=document.getElementById('tsec-'+sec);
+  if(el){el.classList.add('tts-reading');try{el.scrollIntoView({behavior:'smooth',block:'center'});}catch(e){}}}
+function _ttsNext(){if(!_ttsOn)return;if(_ttsI>=_ttsChunks.length){ttsStop();return;}
+  const ch=_ttsChunks[_ttsI];const u=new SpeechSynthesisUtterance(ch.txt);if(_ttsVoice)u.voice=_ttsVoice;u.lang='fr-FR';u.rate=0.97;u.pitch=1;
+  u.onstart=()=>_ttsHi(ch.sec);u.onend=()=>{_ttsI++;if(_ttsOn&&!_ttsPaused)_ttsNext();};u.onerror=()=>{_ttsI++;if(_ttsOn&&!_ttsPaused)_ttsNext();};
+  try{speechSynthesis.speak(u);}catch(e){}}
+function ttsPlay(){if(typeof window==='undefined'||!('speechSynthesis' in window))return;const tag=window._ttsTag;if(!tag||!RICH_THEORY[tag])return;
+  try{speechSynthesis.cancel();}catch(e){}
+  _ttsChunks=_ttsBuildLesson(tag);_ttsI=0;_ttsOn=true;_ttsPaused=false;if(!_ttsVoice)_ttsPickVoice();_ttsBar('playing');
+  if(_ttsKeep)clearInterval(_ttsKeep);_ttsKeep=setInterval(()=>{if(_ttsOn&&!_ttsPaused){try{speechSynthesis.resume();}catch(e){}}},9000);
+  _ttsNext();}
+function ttsPause(){_ttsPaused=true;try{speechSynthesis.pause();}catch(e){}_ttsBar('paused');}
+function ttsResume(){_ttsPaused=false;_ttsBar('playing');try{speechSynthesis.resume();}catch(e){}try{if(!speechSynthesis.speaking)_ttsNext();}catch(e){}}
+function ttsStop(){_ttsOn=false;_ttsPaused=false;if(_ttsKeep){clearInterval(_ttsKeep);_ttsKeep=null;}try{speechSynthesis.cancel();}catch(e){}_ttsHi(null);_ttsBar('idle');}
 function svgCote(){
   return `<svg viewBox="0 0 300 120" class="theo-svg" role="img" aria-label="Course en côte : force et économie">
     <line x1="20" y1="100" x2="280" y2="100" stroke="#cbd5e1" stroke-width="1"/>
