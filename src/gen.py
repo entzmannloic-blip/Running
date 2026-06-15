@@ -470,7 +470,7 @@ META=[
 (52,'regen','Fêtes — entretien',38,'Légère','100 % facile',"Entretien léger pendant les fêtes."),
 (53,'regen','Bilan & 2027',30,'Légère','≈ 95 % facile',"Clôture de saison, bilan, pistes 2027."),
 ]
-SEMAINES=[{"num":n,"phase":p,"theme":t,"km":k,"statut":("courante" if n==24 else "ouverte"),"charge":c,"repartition":r,"objectif":o} for (n,p,t,k,c,r,o) in META]
+SEMAINES=[{"num":n,"phase":p,"theme":t,"km":k,"statut":"ouverte","charge":c,"repartition":r,"objectif":o} for (n,p,t,k,c,r,o) in META]
 
 PHASES=[
  {"id":'reprise',"nom":'Reprise',"c":GREEN,"sem":'S24 – S25',"role":"Digérer La Circaète puis relancer en douceur en corrigeant la zone grise."},
