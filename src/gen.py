@@ -551,7 +551,7 @@ GEAR=[
   {"marque":"Brooks","modele":"Cascadia 19","km":196},
   {"marque":"ASICS","modele":"Magic Speed 4","km":40},
 ]
-RACES=[{"nom":"Trail Déraille — Lac des Sapins","date":"2026-07-05"},{"nom":"Marathon de Nice","date":"2026-11-08"},{"nom":"SaintExpress 45 km","date":"2026-11-28"}]
+RACES=[{"nom":"Trail Déraille — Lac des Sapins","date":"2026-07-05"},{"nom":"Marathon de Nice","date":"2026-11-08"},{"nom":"SaintExpress","date":"2026-11-28"}]
 print("Semaines:",len(SEANCES_BY_WEEK)+1,"| Séances:",sum(len(v) for v in SEANCES_BY_WEEK.values()))
 import json as _j
 _hist=_j.load(open('/tmp/hist.json'))
