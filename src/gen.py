@@ -551,10 +551,60 @@ GEAR=[
   {"marque":"Brooks","modele":"Cascadia 19","km":196},
   {"marque":"ASICS","modele":"Magic Speed 4","km":40},
 ]
-RACES=[{"nom":"Trail Déraille — Lac des Sapins","date":"2026-07-05","dossier":"deraille"},{"nom":"Marathon de Nice","date":"2026-11-08"},{"nom":"SaintExpress","date":"2026-11-28"}]
+RACES=[{"nom":"Trail Déraille — Lac des Sapins","date":"2026-07-05","dossier":"deraille"},{"nom":"Marathon de Nice","date":"2026-11-08","dossier":"nice"},{"nom":"SaintExpress","date":"2026-11-28"}]
 
 # ===== DOSSIERS DE COURSE (modale au clic sur le badge) =====
 DOSSIERS={
+ "nice":{
+  "nom":"Marathon des Alpes-Maritimes Nice-Cannes",
+  "soustitre":"Promenade des Anglais, Nice → Boulevard de la Croisette, Cannes",
+  "date":"Dimanche 8 novembre 2026",
+  "depart":"Départ 8 h 00 · Promenade des Anglais (Nice) · Sas 3h45 disponible",
+  "format":"42,195 km · Point-à-point · Label FFA & World Athletics · ~15 000 coureurs",
+  "accent":"#f97316",
+  "stats":[["42,195","km"],["+70","D+ (m)"],["35","alt. max (m)"],["3 h 45","objectif"],["5:20/km","allure cible"]],
+  "intro":"Le 2ᵉ plus grand marathon de France après Paris. <strong>42,195 km quasi plats le long de la Méditerranée</strong>, de la Promenade des Anglais à la Croisette — vue mer permanente, palmiers, soleil de novembre. Route intégralement bitumée, D+ de seulement ~70 m : pas de dénivelé à gérer, pas de marche prévue. Tout l'enjeu est <strong>la gestion d'allure sur la durée</strong>. C'est ton Objectif A de la saison.",
+  "phrase":"3 h 45, soit <strong>5 min 20 / km</strong> du départ à l'arrivée. Le lièvre 3h45 est disponible — accroche-toi à lui jusqu'au km 30, puis gère selon tes jambes. Le seul piège : partir trop vite dans l'euphorie du départ.",
+  "profil":"Profil réel GPX officiel (marathon06.com). Course quasi plate au niveau de la mer. Deux légères ondulations : une petite bosse vers le km 15-18 (Cagnes / Villeneuve-Loubet, ~12 m) et <strong>la seule vraie bosse du parcours vers le km 25-28 (Antibes, ~35 m)</strong>. Cette montée est modeste mais peut surprendre à mi-course si tu n'es pas calé à l'effort. Retour au niveau de la mer à partir de Juan-les-Pins.",
+  "profil_dist":42.195,
+  "profil_pts":[11,8,9,10,14,8,9,9,9,5,6,11,11,9,5,4,4,6,7,7,3,2,5,5,4,5,4,6,12,12,10,7,4,10,7,10,11,6,4,5,3,4,3,3,4,6,3,5,5,4,3,8,15,13,7,12,6,6,6,7,7,9,9,16,7,10,7,28,33,28,19,11,6,5,4,4,5,5,5,12,8,8,10,5,2,3,4,5,3,13,16,15,22,17,19,15,14,6,5,5,8,7,3,7,4,10,7,6,4],
+  "segments":[
+    {"t":"1 · Nice — Saint-Laurent","km":"km 0 → 8","faire":"Départ Promenade des Anglais. Jambes fraîches, foule, adrénaline : <strong>le piège du marathon</strong>. Cible : 5:25/km au moins sur les 5 premiers km. Le lièvre 3h45 sera là — laisse-le légèrement partir devant si tu pars trop vite."},
+    {"t":"2 · Cagnes — Villeneuve-Loubet","km":"km 8 → 18","faire":"La Marina Baie des Anges vers le km 15. Légère ondulation, rien de méchant. <strong>Mi-course approche : gère à l'effort</strong>, pas au chrono. Si tu passes la demi à moins de 1h52, tu risques de payer après le km 30."},
+    {"t":"3 · Antibes — Juan-les-Pins","km":"km 20 → 30","faire":"La seule vraie bosse (km 25-28, ~35 m) — prends-la sans accélérer. Autour du km 20-21 tu franchis la demi-distance : moment de recalibrer. <strong>Le seuil critique du « mur » est entre le km 30 et 35</strong> — si tu arrives là fatigué, c'est que tu es parti trop vite."},
+    {"t":"4 · Golfe-Juan → Cannes","km":"km 30 → 42","faire":"C'est ici que la course se joue. Si tu as géré avant : tiens le 5:20/km et double les gens qui ont cramé. Si tu souffres : raccourcis légèrement la foulée, cadence haute, gel, et accroche-toi. La Croisette arrive — les marches rouges du Festival, c'est l'arrivée."}],
+  "plan":[
+    {"n":"1","tag":"CONSERVATEUR","c":"#f97316","titre":"Sortie de Nice — freiner l'ego","txt":"8h00 sur la Promenade des Anglais avec 15 000 coureurs. Les km 1-5 sont les plus dangereux du marathon : jambes fraîches, euphorie, public, faux-plats. Cible <strong>5:25 / km</strong> minimum sur les 5 premiers. Si tu passes le km 5 sous 26:30, tu es trop rapide.","fuel":"Gel dès 40 min de course (km 8 environ) sans attendre la faim. Ravito km 5 : eau."},
+    {"n":"2","tag":"GÉRER","c":"#ea580c","titre":"La longue ligne droite côtière","txt":"Km 8 à 20 : tenir le 5:20/km sans forcer. La côte Méditerranée est magnifique, ça peut aller vite — surveille ton allure. Passage de la demi vers 1h52 à 1h53 : si tu es en avance, lève le pied. Marathon = compétition contre soi-même, pas contre les coureurs autour.","fuel":"Gel km 16 environ. Ravitos km 10, 15, 20 : eau + boisson sucrée si dispo. Commence l'électrolyte."},
+    {"n":"3","tag":"VIGILANCE","c":"#dc2626","titre":"Antibes & le mur (km 25-35)","txt":"<strong>La section décisive.</strong> La bosse d'Antibes (km 25-28, max 35 m) peut faire accélérer le cœur si tu n'es pas attentif — régule. Puis km 30 : c'est là que les glucides s'épuisent et que les jambes commencent à parler. Ton mental et ton carburant doivent tenir. Cadence haute, foulée courte.","fuel":"Gel km 24 et gel km 32 — <strong>celui du km 32 est le plus important du marathon</strong>. Le caféiné ici si tu en as un."},
+    {"n":"4","tag":"POUSSER","c":"#f97316","titre":"La Croisette — vider le réservoir","txt":"Km 35-42 : si tu as bien géré, tu doubles du monde sur les derniers km. La Croisette de Cannes approche avec les marches rouges du Festival et le public. Laisse parler les émotions, accélère si tes jambes suivent. <strong>3h45 c'est à ta portée : ne lâche rien.</strong>","fuel":"Dernier gel km 37-38 si tu en as encore. Sinon eau seule pour les 5 derniers km."}],
+  "nutrition":{
+   "intro":"Marathon = moteur glycolytique. Sur 3h45, tu dois maintenir l'apport en glucides en continu — sans gel régulier, le mur du km 30 est inévitable. Plan : <strong>1 gel toutes les 35-40 min</strong> dès la 40ᵉ minute, soit 5-6 gels sur la course.",
+   "items":[
+     ["4Endurance Pro BCAA — Sour Cherry","30 g glucides · 191 mg sodium · BCAA","BASE — gels réguliers × 3-4"],
+     ["Nduranz NRGY 45 — Cherry","45 g glucides · 65 mg caféine","ARME — km 32 (mur potentiel)"],
+     ["Nduranz NRGY 45 — Coffee Amarena","45 g glucides · 130 mg caféine","ARME — km 37-38 (finale)"]],
+   "note":"Cible : <strong>50-60 g de glucides/h</strong>. Les ravitos proposent de la boisson sucrée (souvent STC Nutrition) : profites-en pour compléter entre les gels. Prends tes propres gels pour les moments critiques — ne compte pas sur ce qu'il y a sur les tables."},
+  "hydra":"<strong>Ravitaillements tous les 5 km</strong> (km 5-10-15-20-25-30-35-40) avec eau et boisson sucrée, toilettes aux mêmes points. En novembre sur la Riviera, temps frais (~12-16°C) : la soif sera moins urgente qu'en été, mais <strong>ne saute aucun ravito</strong>. Bois à chaque table même une petite gorgée. Électrolytes dans tes gels 4Endurance dès le km 8.",
+  "zones":[
+   ["Zone marathon","134 – 152","L'allure 3h45 doit tenir dans cette plage. Si FC &gt; 155 dans les 15 premiers km : tu pars trop vite."],
+   ["Dérive normale","152 – 162","Km 25-35 : la FC monte naturellement même à allure constante. Normal — maintiens l'effort, pas la FC."],
+   ["Danger","&gt; 162","Si FC &gt; 162 avant le km 20 : freine. Au-delà du km 35 avec mur enclenché : encaisse et maintiens."]],
+  "terrain":"Route bitumée 100%, large et sécurisée, traversant 7 communes. <strong>Chaussures :</strong> tes chaussures de route avec amorti — les Clifton 10 sont parfaites pour 42 km sur route. Oublie les Cascadia : route uniquement. <strong>Tenue :</strong> novembre en Côte d'Azur, départ 8h00 → 10-14°C. Bras longs au départ (ou brassière + bras jetables), tu enlèveras au km 5-10. <strong>Vent :</strong> côtier donc potentiellement présent. Si vent de face, colle à un groupe.",
+  "pratique":[
+   ["🚉 Logistique retour","Ton dossard = billet TER Nice-Cannes valable le jour J. Prévois où tu récupères tes affaires (service transfert de sacs disponible)."],
+   ["👟 Lièvre 3h45","Cherche le groupe 3h45 dans ton sas. Reste avec eux jusqu'au km 30 au moins — c'est ton GPS vivant."],
+   ["🏅 Dossard","Retrait au Running Expo, Nice, les jours précédant la course. Aucun dossard le matin du départ."],
+   ["🌡️ Météo novembre","Typiquement 10-16°C en matinée sur Nice. Conditions idéales pour un marathon — profite-en."],
+   ["📸 Photos","Service photo officiel sur le parcours. Souris au km 25 — tu seras encore frais."]],
+  "erreurs":[
+   "Partir trop vite — c'est l'erreur n°1 sur ce parcours. Tout le monde part trop vite sur les 5 premiers km.",
+   "Passer la demi sous 1h50 : si tu es à 1h48 à mi-course, tu vas payer cher entre le km 30 et 35.",
+   "Sauter des gels ou des ravitos en se sentant bien — c'est justement quand tu te sens bien qu'il faut manger.",
+   "Courir vite sur la bosse d'Antibes (km 25-28) : c'est une montée douce, pas une occasion de déborder.",
+   "Attendre la sensation de soif pour boire : bois à chaque ravito, même une gorgée.",
+   "Trop se fier à la FC en début de course : l'adrénaline du départ fait monter la FC même au repos. Pilote à l'allure."],
+  "sources":"Profil GPX officiel MAM 2026 (marathon06.com/2026/dl/MAM2026_parcours.gpx). D+ officiel ~70 m. Infos ravitaillements et lièvres : marathon06.com, finishers.com. Zones FC basées sur FCmax ~192 et objectif 3h45 (≈74 % FCmax en allure marathon). Météo : moyennes historiques Nice novembre (Météo-France)."},
  "deraille":{
   "nom":"Le Trail qui Déraille",
   "soustitre":"Lac des Sapins — Cublize (69), Beaujolais Vert",
