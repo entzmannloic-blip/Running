@@ -1,6 +1,6 @@
 
 import datetime as _dt
-RACE_DATES={"Course — Objectif A":"2026-11-08","Course — Objectif B":"2026-11-28"}
+RACE_DATES={"Course — Objectif A":"2026-11-08","Course — Objectif B":"2026-11-28","Trail — Objectif C":"2026-07-05"}
 def assign_days(arr):
     # Les jours suivent l'ordre des séances : séance 1 = premier jour, etc.
     # Sortie longue -> dimanche ; courses -> vraie date ; le reste réparti lundi->samedi dans l'ordre.
@@ -243,6 +243,31 @@ def trailsess(dist,dur,desc,focus,fill=60):
       legende=[{"c":GREEN,"l":"Facile"},{"c":TEAL,"l":"Trail / relief"}],
       coach=[{"titre":"La descente, c'est gratuit","texte":"On gagne du temps en descente sans coût cardiaque — à condition de l'avoir travaillée. Lâche les freins en sécurité."}])
 
+def deraille_prep(dist,dur,fill=66):
+    raw=[{"nom":"Échauffement","role":"15 min très souple sur plat avant le relief.","duree":900,"couleur":"vert","bloc":"—","hauteur":32},
+         {"nom":"Tempo vallonné 1/3","role":"12 min à l'effort course (vallonné) — gère à la sensation, pas au chrono.","duree":720,"couleur":"bleu","bloc":"×3","hauteur":80},
+         {"nom":"Récup 1","role":"3 min footing souple.","duree":180,"couleur":"orange","bloc":"—","hauteur":30},
+         {"nom":"Gel test ~35 min","role":"1er gel + gorgées électrolytes — on rode le protocole Déraille.","duree":120,"couleur":"violet","bloc":"⛽","hauteur":60},
+         {"nom":"Tempo vallonné 2/3","role":"12 min à l'effort course, relâché en descente.","duree":720,"couleur":"bleu","bloc":"×3","hauteur":80},
+         {"nom":"Récup 2","role":"3 min footing souple.","duree":180,"couleur":"orange","bloc":"—","hauteur":30},
+         {"nom":"Gel test ~70 min","role":"2e gel + électrolytes — vérifie la tolérance digestive à l'effort.","duree":120,"couleur":"violet","bloc":"⛽","hauteur":60},
+         {"nom":"Tempo vallonné 3/3","role":"10 min à l'effort course, finis propre.","duree":600,"couleur":"bleu","bloc":"×3","hauteur":80},
+         {"nom":"Retour au calme","role":"10 min souple + recharge.","duree":600,"couleur":"vert","bloc":"—","hauteur":28}]
+    sg=segs(raw); tot=sg[-1]["fin"]
+    return dict(titre="Prépa Déraille — tempo vallonné",type="Spécifique trail (vallonné)",sport="Trail",opt=False,accent=TEAL,fill=fill,
+      sous="Répétition grandeur nature : effort course sur le relief + protocole carburant/électrolytes.",
+      metriques={"Distance":f"~{dist} km","Durée":mmss(tot),"Allure":"à l'effort (vallonné)","FC":"jusqu'à Z3","RPE":"6","Type":"Spécifique trail"},
+      objectif="Préparer les jambes au relief roulant de la Déraille <strong>et roder le protocole nutrition</strong> (gels + électrolytes) qui t'a manqué à La Circaète. C'est ta vraie répétition avant le 5 juillet.",
+      struct=[{"nom":"Échauffement","txt":"15 min facile sur plat, sans forcer, avant d'attaquer le relief."},
+              {"nom":"Corps","txt":"3 blocs (12-12-10 min) à l'effort course sur terrain vallonné, récup 3 min footing entre les deux premiers. <strong>À l'effort, pas au chrono</strong> : en montée tu lèves le pied, en descente tu relâches. Cale 1 gel + électrolytes vers la 35ᵉ puis la 70ᵉ minute, exactement comme le jour J."},
+              {"nom":"Retour","txt":"10 min souple + recharge hydrique/électrolytes."}],
+      benefices="Spécificité du relief roulant, gestion d'effort en montée/descente, et surtout rodage du carburant — l'estomac s'entraîne autant que les jambes.",
+      vigilance="Le but n'est pas la vitesse mais la fluidité de l'effort et la digestion des gels. Si l'estomac proteste, note-le : on ajuste avant la course.",
+      legende=[{"c":GREEN,"l":"Facile / récup"},{"c":TEAL,"l":"Effort course — RPE 6"},{"c":VIOLET,"l":"Gel / électrolytes"}],
+      coach=[{"titre":"L'effort commande, pas la montre","texte":"Sur le vallonné, l'allure ne veut rien dire. Tu cales un effort « course soutenable » et tu laisses le terrain dicter la vitesse — c'est exactement la compétence à avoir le 5 juillet."},
+             {"titre":"Le test qui compte vraiment","texte":"La Circaète est tombée sur l'électrolyte. Ici tu valides le protocole dans les jambes, pas sur le papier : 2 gels, électrolytes en continu, et tu observes."}],
+      segments=sg)
+
 def race(kind):
     if kind=="marathon":
         return dict(titre="MARATHON DE NICE",type="Course — Objectif A",sport="Course à pied",opt=False,accent=ORANGE,fill=100,
@@ -257,6 +282,19 @@ def race(kind):
           legende=[{"c":BLUE,"l":"Allure marathon"},{"c":ORANGE,"l":"Course"}],
           coach=[{"titre":"Discipline des 10 premiers km","texte":"Si à mi-course tu te dis « je me retiens trop », c'est gagné. Héroïque au 15ᵉ = tu paieras au 35ᵉ."},
                  {"titre":"Le carburant ne se négocie pas","texte":"Même sans faim/soif : tu manges et bois au plan. La défaillance se prévient une heure avant de la sentir."}])
+    if kind=="deraille":
+        return dict(titre="TRAIL DÉRAILLE — LAC DES SAPINS",type="Trail — Objectif C",sport="Trail",opt=False,accent=TEAL,fill=100,
+          sous="24 km · ~900 m D+ · vallonné, roulant · course plaisir & test nutrition.",
+          metriques={"Distance":"24,05 km","D+":"~900 m","Allure":"à l'effort","FC":"gérée","RPE":"6-7","Type":"Trail vallonné"},
+          objectif="Course <strong>plaisir</strong> et laboratoire nutrition grandeur nature. Aucun enjeu chrono : on teste le protocole carburant/électrolytes sur 2h15-2h30 en conditions chaudes — la leçon de La Circaète appliquée.",
+          struct=[{"nom":"Gestion","txt":"Pars dans ta zone de confort : sur 900 m D+ roulant, c'est l'effort qui se gère, pas l'allure. Marche les raidillons s'il y en a, relâche en descente. FC sous 160-165 sur les 5 premiers km, ne te fais pas emporter par le départ de masse."},
+                  {"nom":"Carburant — LE point","txt":"Électrolytes dès le km 5 (pas km 15 comme à La Circaète), 1 gel toutes les 40-45 min dès la 40ᵉ minute. Bois à chaque ravito. En juillet, le froid ne masquera pas la soif : c'est la chaleur qui te piège, anticipe."},
+                  {"nom":"Plaisir","txt":"C'est une course « pour voir » : beaujolais vert, sentiers techniques, bonne ambiance. Savoure, observe ton corps, ramène des données propres pour Nice."}],
+          benefices="Un vrai test de ta gestion nutrition/électrolytes en course, sans l'enjeu d'un objectif — exactement le rodage qui manquait après La Circaète.",
+          vigilance="Ton côté compétiteur va te chatouiller sur les sentiers : tiens la consigne « plaisir + test ». Une Déraille bien gérée nourrit Nice ; un forcing inutile entame ta reprise.",
+          legende=[{"c":GREEN,"l":"Gestion / facile"},{"c":TEAL,"l":"Course trail — effort"}],
+          coach=[{"titre":"La course est un entraînement déguisé","texte":"Tu n'es pas là pour un chrono mais pour valider ton estomac sous contrainte. Si tu finis sans coup de moins-bien électrolytique, c'est une victoire qui vaut de l'or pour Nice."},
+                 {"titre":"Électrolytes : la leçon retenue","texte":"La Circaète est tombée là-dessus. Aujourd'hui tu prouves que le correctif fonctionne — dès le km 5, en continu, sans attendre la sensation."}])
     return dict(titre="SAINTEXPRESS 45 km",type="Course — Objectif B",sport="Trail nocturne",opt=False,accent=RED,fill=100,
       sous="45 km · 900 m D+ · nocturne, hivernal · au plaisir.",
       metriques={"Distance":"45 km","D+":"~900 m","Allure":P_TRAIL,"FC":"gérée","RPE":"7-8","Type":"Trail nuit"},
@@ -273,9 +311,10 @@ WEEKS={}
 def W(n,ss): WEEKS[n]=ss
 # Reprise
 W(25,[ef(10,65,strides=True), ef(9,55), mp(12,70,1,4,"Premier contact en douceur avec l'allure marathon."), longrun(18,110,heat=True,desc="Reconstruire l'endurance + roder le carburant."), renfo(opt=True)])
-# Développement général (PYRAMIDE intégrée)
-W(26,[ef(11,68,strides=True), ef(10,60), pyr_hills(30), longrun(19,115,heat=True), renfo(opt=False)])
-W(27,[ef(11,68,strides=True), ef(11,66), pyr_hills(45), longrun(20,120,mp_km=4,heat=True), renfo(opt=False)])
+# Allègement + prépa Déraille (course plaisir B, 5 juillet)
+W(26,[ef(11,66,strides=True), ef(9,55), deraille_prep(15,90), renfo(opt=True)])
+# Semaine de course — Trail Déraille au Lac des Sapins (dim. 5 juillet)
+W(27,[ef(8,48,strides=True), ef(7,45,recovery=True), ef(6,38,recovery=True), race("deraille")])
 W(28,[ef(12,72), thresh(12,68,2,8,"Découverte du seuil : 2 blocs courts."), ef(10,60,strides=True), longrun(22,135,mp_km=5,heat=True), renfo(opt=False)])
 W(29,[ef(10,60), thresh(10,58,2,6,"Seuil allégé, semaine de récup."), ef(10,60,strides=True), longrun(16,95,heat=True,desc="Longue raccourcie, on assimile."), renfo(opt=True)])
 W(30,[ef(12,72), thresh(13,75,3,8,"Seuil consolidé, 3 blocs."), pyr_hills(45), longrun(24,145,mp_km=6,heat=True), renfo(opt=False)])
@@ -373,7 +412,19 @@ def _duree_min(s):
     if m: return int(m.group(1))
     return 0
 def nutrition_for(s):
-    t=s["type"]; mins=_duree_min(s)
+    t=s["type"]; mins=_duree_min(s); titre=s.get("titre","")
+    if "Objectif C" in t:
+        return {"titre":"Protocole course Déraille — LE test grandeur nature","items":[
+            ("💧 Hydratation","flasques pleines au départ, recharge à chaque ravito — ne jamais attendre la soif"),
+            ("🧂 Électrolytes","dès le km 5 et en continu — c'est précisément ce qu'on corrige après La Circaète"),
+            ("⚡ Gels","1 gel toutes les 40-45 min dès la 40ᵉ min, aux produits déjà testés (mêmes marques que Nice)"),
+            ("🎯 Cible","50-70 g de glucides/h sur 2h15-2h30 — note tout, on en tire le protocole définitif de Nice")]}
+    if "Prépa Déraille" in titre:
+        return {"titre":"Répétition nutrition — avant la Déraille","items":[
+            ("💧 Hydratation","emporte le gilet, bois toutes les 15-20 min sans attendre la soif"),
+            ("🧂 Électrolytes","dans la flasque dès le départ — on installe l'automatisme qui a manqué à La Circaète"),
+            ("⚡ Gels","1er gel vers 35 min, 2e vers 70 min — exactement les produits du jour J"),
+            ("🎯 Cible","teste la tolérance digestive à l'effort : c'est la vraie raison de cette séance")]}
     if "Objectif A" in t:
         return {"titre":"Protocole course — rodé à l'identique en S42-S43","items":[
             ("💧 Hydratation","2-3 gorgées à chaque ravito (tous les 5 km), sans sauter le premier"),
@@ -436,6 +487,7 @@ for n,ss in WEEKS.items():
     elif 26<=n<=53:
         _FT={"Seuil (puissance aérobie)":"seuil","Spécifique marathon":"allure-marathon",
              "Sortie longue":"sortie-longue","Sortie longue spécifique":"sortie-longue",
+             "Spécifique trail (vallonné)":"deraille",
              "Côtes — force / économie":"cotes","Test / recalibrage":"test-10km"}
         for s in arr:
             _sl=_FT.get(s["type"])
@@ -445,8 +497,8 @@ for n,ss in WEEKS.items():
 META=[
 (24,'reprise','Récupération',28,'Légère','—',"Absorber La Circaète : repos actif, footings très faciles, mobilité du dos."),
 (25,'reprise','Reprise & déblocage',52,'Modérée','≈ 85 % facile · 15 % qualité légère',"Relancer une structure : ré-ancrer le vrai easy, vivacité, premier contact allure marathon, longue + carburant."),
-(26,'general','Pyramide + aérobie',62,'Modérée','≈ 85 % facile · 15 % qualité',"Vraie moyenne en facile, intro de la côte pyramide (force/économie, doux pour le dos)."),
-(27,'general','Pyramide complète + AM',66,'Modérée+','≈ 82 % facile · 18 % qualité',"Pyramide 1-2-3-2-1 × 45\", première longue avec finish allure marathon."),
+(26,'general','Allègement + prépa Déraille',35,'Allégée','≈ 78 % facile · 22 % spécifique',"Volume réduit, une séance spécifique vallonnée avec répétition nutrition : on prépare la Déraille sans entamer la reprise."),
+(27,'general','Semaine course — Déraille',45,'Course','—',"Affûtage court (3 footings) + Trail Déraille au Lac des Sapins le 5 juillet. Objectif C, plaisir & test nutrition. (21 km allégés + 24 km course.)"),
 (28,'general','Seuil découverte',70,'Soutenue','≈ 80 % facile · 20 % qualité',"Premier vrai seuil, longue qui s'allonge avec bloc AM."),
 (29,'general','Allègement',56,'Légère','≈ 85 % facile · 15 % qualité',"Récupération : on assimile, le dos respire."),
 (30,'general','Seuil + pyramide',72,'Soutenue','≈ 80 % facile · 20 % qualité',"Seuil 3 blocs, rappel pyramide, longue 24 km dont 6 AM."),
@@ -495,7 +547,7 @@ GEAR=[
   {"marque":"Brooks","modele":"Cascadia 19","km":196},
   {"marque":"ASICS","modele":"Magic Speed 4","km":40},
 ]
-RACES=[{"nom":"Marathon de Nice","date":"2026-11-08"},{"nom":"SaintExpress 45 km","date":"2026-11-28"}]
+RACES=[{"nom":"Trail Déraille — Lac des Sapins","date":"2026-07-05"},{"nom":"Marathon de Nice","date":"2026-11-08"},{"nom":"SaintExpress 45 km","date":"2026-11-28"}]
 print("Semaines:",len(SEANCES_BY_WEEK)+1,"| Séances:",sum(len(v) for v in SEANCES_BY_WEEK.values()))
 import json as _j
 _hist=_j.load(open('/tmp/hist.json'))
