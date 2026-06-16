@@ -169,18 +169,18 @@ def thresh(dist,dur,reps,minutes,desc,recup=3,fill=70):
       coach=[{"titre":"Seuil 30 vs Seuil 60","texte":"Seuil 30 = ce que tu tiendrais ~30 min (vif, proche 10 km). Seuil 60 = ce que tu tiendrais ~1 h (proche semi). Deux intensités, deux effets complémentaires."},
              {"titre":"Régularité","texte":"Le seuil se court au métronome : mieux vaut un poil trop lent et régulier que trop vite et en perdition."}],segments=work)
 
-def mp(dist,dur,blocs,km_each,desc,fill=78):
+def mp(dist,dur,blocs,km_each,desc,fill=78,warm_min=15,cool_min=10):
     blk=[]
     for i in range(blocs):
         blk.append({"nom":f"Bloc AM {i+1}/{blocs}","role":f"{km_each} km à allure marathon ({P_AM}).","duree":int(km_each*5.25*60),"couleur":"bleu","bloc":f"×{blocs}","hauteur":80})
         if i<blocs-1: blk.append({"nom":f"Récup {i+1}","role":"3 min footing.","duree":180,"couleur":"orange","bloc":"—","hauteur":30})
-    work=segs([{"nom":"Échauffement","role":"15 min facile.","duree":900,"couleur":"vert","bloc":"—","hauteur":34}]+blk+[{"nom":"Retour au calme","role":"10 min souple.","duree":600,"couleur":"vert","bloc":"—","hauteur":28}])
+    work=segs([{"nom":"Échauffement","role":f"{warm_min} min facile.","duree":warm_min*60,"couleur":"vert","bloc":"—","hauteur":34}]+blk+[{"nom":"Retour au calme","role":f"{cool_min} min souple.","duree":cool_min*60,"couleur":"vert","bloc":"—","hauteur":28}])
     return dict(titre=f"Allure marathon {blocs}×{km_each} km",type="Spécifique marathon",sport="Course à pied",opt=False,accent=BLUE,fill=fill,
       sous=desc,metriques={"Distance":f"~{dist} km","Durée":f"~{dur} min","Allure":P_AM,"FC":F_AM,"RPE":"6-7","Type":"Allure marathon"},
       objectif="Ancrer l'allure marathon cible (~5:15/km) jusqu'à ce qu'elle devienne automatique et économique.",
-      struct=[{"nom":"Échauffement","txt":"15 min facile + 2 lignes droites."},
+      struct=[{"nom":"Échauffement","txt":f"{warm_min} min facile + 2 lignes droites."},
               {"nom":"Corps","txt":f"{blocs} × {km_each} km à allure marathon ({P_AM}), récup 3 min footing. Allure « juste », fluide."},
-              {"nom":"Retour","txt":"10 min souple + recharge hydrique."}],
+              {"nom":"Retour","txt":f"{cool_min} min souple + recharge hydrique."}],
       benefices="Automatisation de l'allure cible, efficacité à cette vitesse, confiance pour le jour J.",
       vigilance="L'allure marathon doit sembler confortable. Si elle est dure aujourd'hui, c'est un signal — on en parle.",
       legende=[{"c":GREEN,"l":"Facile / récup"},{"c":BLUE,"l":"Allure marathon — RPE 6-7"}],
@@ -310,7 +310,7 @@ def race(kind):
 WEEKS={}
 def W(n,ss): WEEKS[n]=ss
 # Reprise
-W(25,[ef(10,65,strides=True), ef(9,55), mp(9,50,1,4,"Premier contact en douceur avec l'allure marathon."), longrun(18,110,heat=True,desc="Reconstruire l'endurance + roder le carburant."), renfo(opt=True)])
+W(25,[ef(10,65,strides=True), ef(9,55), mp(12,72,1,4,"Premier contact en douceur avec l'allure marathon.",warm_min=30,cool_min=20), longrun(18,110,heat=True,desc="Reconstruire l'endurance + roder le carburant."), renfo(opt=True)])
 # Allègement + prépa Déraille (course plaisir B, 5 juillet)
 W(26,[ef(11,66,strides=True), ef(9,55), deraille_prep(15,90), renfo(opt=True)])
 # Semaine de course — Trail Déraille au Lac des Sapins (dim. 5 juillet)
