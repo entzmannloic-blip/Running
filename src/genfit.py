@@ -13,7 +13,7 @@ SP_S60=('speed','5:00','4:50')     # seuil 60 ~4:55/km
 SP_EF=('speed','6:25','5:50')      # endurance facile
 
 NAME={"seuil":None,"allure-marathon":"Allure marathon","sortie-longue":"Sortie longue",
-      "cotes":"Cotes pyramide","test-10km":"Test 10km",
+      "cotes":"Cotes pyramide","test-10km":"Test 10km","deraille":"Prepa Deraille",
       "footing-lignes":"EF + lignes droites","footing-facile":"Footing facile"}
 
 def seg_to_step(seg, idx, last_idx, stype, sub):
