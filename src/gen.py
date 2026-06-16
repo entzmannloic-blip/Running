@@ -551,7 +551,7 @@ GEAR=[
   {"marque":"Brooks","modele":"Cascadia 19","km":196},
   {"marque":"ASICS","modele":"Magic Speed 4","km":40},
 ]
-RACES=[{"nom":"Trail Déraille — Lac des Sapins","date":"2026-07-05","dossier":"deraille"},{"nom":"Marathon de Nice","date":"2026-11-08","dossier":"nice"},{"nom":"SaintExpress","date":"2026-11-28"}]
+RACES=[{"nom":"Trail Déraille — Lac des Sapins","date":"2026-07-05","dossier":"deraille"},{"nom":"Marathon de Nice","date":"2026-11-08","dossier":"nice"},{"nom":"SaintExpress","date":"2026-11-28","dossier":"saintexpress"}]
 
 # ===== DOSSIERS DE COURSE (modale au clic sur le badge) =====
 DOSSIERS={
@@ -608,6 +608,59 @@ DOSSIERS={
    "Attendre la sensation de soif pour boire : bois à chaque ravito, même une gorgée.",
    "Trop se fier à la FC en début de course : l'adrénaline du départ fait monter la FC même au repos. Pilote à l'allure."],
   "sources":"Profil GPX officiel MAM 2026 (marathon06.com/2026/dl/MAM2026_parcours.gpx). D+ officiel ~70 m. Infos ravitaillements et lièvres : marathon06.com, finishers.com. Zones FC basées sur FCmax ~192 et objectif 3h45 (≈74 % FCmax en allure marathon). Météo : moyennes historiques Nice novembre (Météo-France)."},
+ "saintexpress":{
+  "nom":"SaintExpress 45 km",
+  "soustitre":"Sainte-Catherine (757 m) → Lyon · Halle Tony Garnier · Monts du Lyonnais",
+  "date":"Samedi 28 novembre 2026 — départ 23 h 00",
+  "depart":"Départ nocturne 23 h 00 · Sainte-Catherine (757 m) · 4 000 coureurs",
+  "format":"45 km · 900 m D+ · 1 400 m D− · SaintéLyon depuis 2010 · maratrail nocturne",
+  "accent":"#8b5cf6",
+  "stats":[["45","km"],["+900","D+ (m)"],["−1 400","D− (m)"],["757","alt. départ (m)"],["5h30–7h00","cible plaisir"]],
+  "intro":"Course emblématique de la SaintéLyon, depuis 2010. <strong>45 km de nuit complète</strong> dans les Monts du Lyonnais, de Sainte-Catherine à la Halle Tony Garnier de Lyon. Ce qui définit la SaintExpress : plus de descentes que de montées (1 400 m de D− pour 900 m de D+), un terrain <strong>60 % chemins / 40 % bitume</strong>, et surtout une <strong>nuit de fin novembre</strong> — froid, brouillard, pluie, verglas en bonus possible. La gestion de la fatigue nocturne et du froid sont les défis autant que le relief.",
+  "phrase":"<strong>Course plaisir, objectif B.</strong> Pas de chrono à aller chercher — tu viens de finir Nice 20 jours plus tôt, tu es encore en récupération. L'objectif : finir debout, bien équipé, en gérant le froid et le sommeil. L'expérience d'une vraie nuit en trail avant d'éventuellement tenter la SaintéLyon 80 km plus tard.",
+  "profil":"La course démarre haut (757 m) et finit bas (Lyon ~175 m). Le point culminant (~824 m) est atteint dès le km 3-4. La première section jusqu'à Saint-Genou le Camp (~km 14) est <strong>la plus technique et la plus accidentée</strong> : monotraces, pentes, forêt, descentes qui peuvent être piégeuses sur terrain humide ou gelé. Après Soucieu-en-Jarrest (~km 27), <strong>le profil devient plus roulant</strong>. Piège final : la <strong>montée des aqueducs de Beaunant</strong> (~km 40-41), redoutée par tous les coureurs car elle arrive sur jambes très fatiguées. Ensuite c'est Lyon.",
+  "profil_dist":45.0,
+  "profil_pts":[757,783,810,824,802,778,748,720,695,718,742,724,698,720,695,670,688,712,685,660,678,695,670,648,625,640,658,635,610,628,614,598,575,590,610,598,575,558,542,560,578,555,535,518,498,480,462,478,492,470,452,435,420,408,392,375,362,378,365,350,362,348,335,320,308,322,335,318,302,288,275,262,250,238,248,260,270,255,240,228,215,205,215,228,242,258,272,280,268,252,235,218,200,188,180,175],
+  "segments":[
+    {"t":"1 · Sainte-Catherine → Saint-Genou","km":"km 0 → 14","faire":"La section la plus <strong>technique et accidentée</strong> de tout le parcours. Départ nocturne sur pistes forestières pentues, monotraces — descentes piégeuses de nuit. Ici on gère sa frontale, ses appuis et son rythme : ne jamais forcer, laisser les jambes prendre confiance. FC ≤ 160 sur les montées."},
+    {"t":"2 · Saint-Genou → Soucieu-en-Jarrest","km":"km 14 → 27","faire":"Ravito 1 à Saint-Genou (~km 14). Section intermédiaire, encore technique, descentes importantes. C'est là que les quads commencent à accumuler la fatigue — <strong>c'est le vrai juge de paix de cette course.</strong> Foulée courte, cadence haute dans les descentes."},
+    {"t":"3 · Soucieu → Chaponost","km":"km 27 → 38","faire":"Ravito 2 à Soucieu (~km 27). <strong>Le profil devient plus roulant.</strong> Mentalement c'est mieux, physiquement les jambes sont entamées. Vers 1h-2h du matin : le creux circadien frappe. Caféine ici. On avance, on ne s'arrête pas."},
+    {"t":"4 · Aqueducs → Lyon","km":"km 38 → 45","faire":"La <strong>montée des aqueducs de Beaunant</strong> (~km 40-41) est redoutée : une bosse qui arrive sur jambes cuites, de nuit. Accepte-la, marche si nécessaire. Ensuite <strong>Lyon s'ouvre</strong> devant toi — descente, faubourgs, Halle Tony Garnier. Vide le réservoir sur les derniers km."}],
+  "plan":[
+    {"n":"1","tag":"GESTION NUIT","c":"#8b5cf6","titre":"Les 23h — gestion du départ nocturne","txt":"Départ à 23h sur terrain technique de nuit : le piège est de partir vite sur l'énergie du soir et des jambes fraîches. Mais la fatigue frappe fort vers 1h-3h du matin. <strong>Gérer comme une course longue dès le départ</strong>, pas comme un sprint de nuit. FC plafond 160 sur les montées.","fuel":"Dernier gel 20 min avant le départ. Flasques TA chargées dès Sainte-Catherine."},
+    {"n":"2","tag":"QUADS FIRST","c":"#dc2626","titre":"Préserver les quads — 1400 m de D−","txt":"La SaintExpress se gagne dans les descentes, mais se perd aussi là. <strong>1400 m de descente sur terrain technique de nuit</strong> : foulée courte, appuis rapides, regard 3-4 m devant la frontale. Ne jamais « laisser aller » en descente avant d'avoir reconnu le terrain.","fuel":"Gel toutes les 50-60 min (effort moins intense qu'en trail rapide). Hydratation régulière."},
+    {"n":"3","tag":"CAFÉINE NOCTURNE","c":"#ea580c","titre":"Le creux de nuit — 1h à 3h du matin","txt":"Entre 1h et 3h du matin, le rythme circadien crée un creux de vigilance même chez des coureurs reposés. <strong>C'est là que la caféine compte le plus.</strong> Elle ne te rendra pas plus rapide mais te gardera alerte sur les appuis techniques. C'est aussi là que les chutes arrivent.","fuel":"Nduranz Cherry (65 mg) en entrée de ce creux. Coffee Amarena (130 mg) si tu as un 2ᵉ coup de pompe vers les aqueducs."},
+    {"n":"4","tag":"FINISH","c":"#8b5cf6","titre":"Aqueducs → Lyon — ne lâche rien","txt":"La montée des aqueducs (~km 40) est la dernière embûche avant Lyon. <strong>Marche-la franchement</strong> si besoin — tout le monde marche. Ensuite la descente finale et les faubourgs lyonnais : c'est ton feu vert, relance, et la Halle Tony Garnier arrive.","fuel":"Dernier gel si tu en as encore. Sinon eau seule — tu peux finir."}],
+  "nutrition":{
+   "avant":"<strong>Après-midi (15h-16h) :</strong> repas glucidique léger (pâtes, riz, facile à digérer). Nap de 1h-2h si possible — c'est du capital pour la nuit. <strong>Dîner/pre-race (19h30-20h) :</strong> repas normal mais pas lourd — 3h avant le départ, c'est le timing parfait. 1 comprimé TA dans 500 ml d'eau. <strong>22h00-22h30 :</strong> encas léger (banane, barre de céréales, tartine) + café si tu tolères. Gilet HDV5 : 2 comprimés TA dans les flasques (~600 ml). <strong>22h40 :</strong> 1 gel non-caféiné (amorce).",
+   "intro":"Même architecture qu'à la Déraille — TA pour les électrolytes, gels non-caféinés pour le débit de base, Nduranz caféinés pour les moments critiques — mais sur <strong>5h30-7h de nuit</strong>, la caféine joue un rôle supplémentaire : la <strong>vigilance nocturne</strong>. C'est elle qui t'empêche de trébucher sur les appuis de 2h du matin.",
+   "items":[
+     ["TA Energy Electrolytes Tropical","350 mg Na · 80 mg K · 52 mg Mg / cpr","ÉLECTROLYTES — 2 cpr dans les flasques départ + 1 cpr à chaque ravito (TA est partenaire de la SaintéLyon !)"],
+     ["Gel non-caféiné (Aptonia ou équiv.)","~25-45 g glucides · 0 mg caféine","BASE — 1 avant le départ + 1 tous les 60-70 min en première moitié (km 7, km 14, km 21)"],
+     ["Nduranz NRGY 45 — Cherry","45 g glucides · 65 mg caféine","VEILLE NOCTURNE — vers 1h du matin (creux circadien, km ~30)"],
+     ["Nduranz NRGY 45 — Coffee Amarena","45 g glucides · 130 mg caféine","FINALE — km 38-40 (avant les aqueducs) · arrivée à Lyon"]],
+   "note":"Cible : <strong>40-50 g glucides/h</strong> (intensité moindre que la Déraille). Sur 5h30-7h, tu consommes 5-7 gels. <strong>Checkpoint critique :</strong> les ravitos TA (Saint-Genou ~km 14, Soucieu ~km 27) servent aussi de la boisson chaude — prends-en systématiquement, c'est chaud et ça recharge l'élan mental. Le gel Coffee Amarena avant les aqueducs (km 38) = pic caféine en pleine montée finale.",
+   "apres":"<strong>À l'arrivée Lyon (entre 4h30 et 6h du matin) :</strong> 1 comprimé TA dans 500 ml d'eau. Repas d'arrivée proposé par l'organisation (soupe, sandwiches). <strong>Le lendemain :</strong> récupération prioritaire — tu arrives 20 jours après Nice, les jambes auront encaissé deux gros efforts en moins d'un mois. 48-72h de repos complet, pas de footing récup avant 4-5 jours."},
+  "hydra":"<strong>Froid de novembre</strong> : la sensation de soif sera atténuée par le froid — c'est un piège. Boire à chaque ravito même sans soif. 2 comprimés TA dans les flasques au départ (~600 ml). Recharger systématiquement à chaque ravito avec 1 comprimé TA supplémentaire. Attention au gel des flasques si T° < 2°C — garde-les sous ta veste ou dans les poches internes du gilet. TA Energy est partenaire officiel de la SaintéLyon : leurs boissons seront probablement proposées aux ravitos.",
+  "zones":[
+   ["Confort nocturne","130 – 152","L'allure de référence pour la majeure partie du parcours. Sur terrain technique de nuit, cette zone est ta zone de survie."],
+   ["Montées","152 – 162","FC plafond 160 sur les montées — si tu dépasses, marche. La fatigue nocturne augmente la FC à intensité équivalente."],
+   ["Danger","&gt; 162","Avant km 30 de nuit = risque d'explosion. Passé les aqueducs sur les derniers km, tu peux déborder si les jambes suivent."]],
+  "terrain":"<strong>60 % chemins, 40 % bitume</strong> — le mix change plusieurs fois dans la course. Les premiers 27 km sont les plus techniques : single trails forestiers, descentes raides, possibles racines et cailloux glissants. Après Soucieu : plus de routes et chemins larges. <strong>Chaussures :</strong> une paire polyvalente trail-route est recommandée (ni trop trail pur ni route pur). Tes Cascadia 19 peuvent convenir mais s'useront vite sur le bitume — à toi de voir. <strong>Verglas :</strong> si T° < 0°C, des microspikes légers peuvent être utiles sur la première section.",
+  "pratique":[
+   ["🚌 Navette","Navettes officielles organisées vers Sainte-Catherine (depuis Lyon). Retrait des dossards : Halle Tony Garnier, vendredi 27/samedi 28 novembre."],
+   ["🔦 Frontale","Obligatoire. Prévoir <strong>batterie pleine + batteries de rechange</strong> (ou deuxième frontale). La nuit commence à 23h et tu arrives au lever du jour."],
+   ["🧥 Froid","Gants obligatoires, base-layer thermique, softshell ou coupe-vent. En novembre dans les Monts du Lyonnais, vise 0-8°C. Couverture de survie obligatoire."],
+   ["🎒 Matériel obligatoire","Frontale, couverture de survie, sifflet, réserve alimentaire, téléphone. Vérifie le règlement officiel."],
+   ["🏁 Arrivée","Halle Tony Garnier, Lyon. Repas d'arrivée pour tous les finishers. Prévoir quelqu'un pour t'attendre ou de quoi rentrer entre 4h et 6h du matin."]],
+  "erreurs":[
+   "Partir trop vite dans l'euphorie du départ de nuit — l'énergie du soir est trompeuse.",
+   "Sous-estimer le froid : même à 5°C en novembre, 6h de course de nuit en sueur ça refroidit vite à chaque arrêt.",
+   "Négliger la frontale : batterie qui meurt sur une descente technique de nuit = catastrophe.",
+   "Vouloir performer 20 jours après Nice — cette course se court en plaisir, pas en chrono.",
+   "Sauter les ravitos sans boire parce qu'on n'a pas soif : le froid masque la soif, le déshydratation arrive quand même.",
+   "Lâcher les appuis sur les descentes techniques — les chutes arrivent souvent sur la deuxième moitié, sur terrain connu mais sur jambes fatiguées."],
+  "sources":"Données : saintelyon.com (45 km, D+ 900 m, D- 1400 m, départ 23h00 Sainte-Catherine). Profil représentatif construit d'après l'architecture connue du tracé (GPX 2026 à venir sur le site officiel). Description du terrain : pacing-trail.fr, thepostrace.com. TA Energy est partenaire officiel de la SaintéLyon — leur boisson sera disponible aux ravitos."},
  "deraille":{
   "nom":"Le Trail qui Déraille",
   "soustitre":"Lac des Sapins — Cublize (69), Beaujolais Vert",
