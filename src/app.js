@@ -82,7 +82,9 @@ function renderHeader(){
   }
   let _cd='';
   if(RACES&&RACES.length){
-    const _it=RACES.map(r=>{const _dn=Math.max(0,Math.ceil((new Date(r.date)-_t)/86400000));return `<span class="cds-item"><span class="cds-n">J-${_dn}</span><span class="cds-l">${r.nom}</span></span>`;}).join('');
+    const _it=RACES.map(r=>{const _dn=Math.max(0,Math.ceil((new Date(r.date)-_t)/86400000));
+      if(r.dossier){return `<span class="cds-item cds-clic" role="button" tabindex="0" onclick="ouvrirDossier('${r.dossier}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();ouvrirDossier('${r.dossier}')}"><span class="cds-n">J-${_dn}</span><span class="cds-l">${r.nom}</span><span class="cds-go">›</span></span>`;}
+      return `<span class="cds-item"><span class="cds-n">J-${_dn}</span><span class="cds-l">${r.nom}</span></span>`;}).join('');
     _cd=`${_it}`;
   }
   const _maj=`<div class="vdj-maj">Données à jour au ${MAJ}</div>`;
@@ -208,7 +210,7 @@ function calHTML(){
   const _emptyCal=_mLogged?'':'<div class="empty-note"><span class="en-ic">🗓️</span><span>Aucune séance loguée sur ce mois pour l\'instant — les jours se colorent en <strong>vert</strong> dès que tu réalises une séance. Dis-moi « j\'ai fait la séance X de la semaine Y » et le mois prend vie.</span></div>';
   return '<div class="cal-head"><button class="cal-nav" onclick="calNav(-1)" aria-label="Mois précédent">‹</button><div class="cal-title">'+MN[m]+' '+y+'</div><button class="cal-nav" onclick="calNav(1)" aria-label="Mois suivant">›</button></div>'+
     '<div class="cal-grid">'+cells+'</div>'+
-    '<div class="cal-legend"><span><i class="cal-lg cal-g"></i>Réalisé</span><span><i class="cal-lg cal-o"></i>Non réalisé</span><span><i class="cal-lg cal-x"></i>À venir</span><span style="opacity:.45;margin-left:auto">build 30</span></div>'+_emptyCal;
+    '<div class="cal-legend"><span><i class="cal-lg cal-g"></i>Réalisé</span><span><i class="cal-lg cal-o"></i>Non réalisé</span><span><i class="cal-lg cal-x"></i>À venir</span><span style="opacity:.45;margin-left:auto">build 31</span></div>'+_emptyCal;
 }
 function calNav(d){calMonth.setMonth(calMonth.getMonth()+d);const w=document.getElementById('cal-inner');if(w)w.innerHTML=calHTML();}
 
@@ -575,6 +577,61 @@ function rwNext(){if(!rwCur)return;if(rwIdx<rwCur.slides.length-1){rwIdx++;rwRen
 function rwClose(){const o=document.getElementById('rwoverlay');if(o)o.classList.remove('on');document.body.style.overflow='';rwCur=null;}
 function rwAuto(){const last=REWINDS[REWINDS.length-1];if(!last)return;const d=new Date();if(d.getDay()!==1)return;/* 1 = lundi */const wk=isoWeek(d)+'-'+d.getFullYear();try{if(localStorage.getItem('rw_mon')===wk)return;localStorage.setItem('rw_mon',wk);}catch(e){}setTimeout(()=>rwOpen(last.id),900);}
 
+function dosProfilSVG(ac){
+  const pts=[330,360,520,470,610,520,680,560,700,540,640,565,690,520,560,420,360,330];
+  const W=600,H=130,pad=8,max=720,min=300;
+  const sx=i=>pad+i*(W-2*pad)/(pts.length-1);
+  const sy=v=>H-pad-(v-min)/(max-min)*(H-2*pad);
+  let d=`M ${sx(0).toFixed(0)} ${sy(pts[0]).toFixed(0)}`;
+  for(let i=1;i<pts.length;i++)d+=` L ${sx(i).toFixed(0)} ${sy(pts[i]).toFixed(0)}`;
+  const area=d+` L ${sx(pts.length-1).toFixed(0)} ${H-pad} L ${sx(0).toFixed(0)} ${H-pad} Z`;
+  return `<svg class="dos-prof" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" role="img" aria-label="Profil indicatif vallonné"><path d="${area}" fill="${ac}" opacity="0.13"/><path d="${d}" fill="none" stroke="${ac}" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/></svg><div class="dos-prof-cap">Profil indicatif — vallonné régulier (~37 m D+/km), boucle revenant à l'altitude de départ</div>`;
+}
+function ouvrirDossier(id){
+  const D=(typeof DOSSIERS!=='undefined')?DOSSIERS[id]:null; if(!D)return;
+  const ac=D.accent||'#0d9488';
+  const stats=D.stats.map(s=>`<div class="dos-stat"><div class="dos-stat-v">${s[0]}</div><div class="dos-stat-l">${s[1]}</div></div>`).join('');
+  const segs=D.segments.map(s=>`<div class="dos-seg"><div class="dos-seg-h"><span class="dos-seg-t">${s.t}</span><span class="dos-seg-km">${s.km}</span></div><div class="dos-seg-f">${s.faire}</div></div>`).join('');
+  const plan=D.plan.map(p=>`<div class="dos-plan" style="--pc:${p.c}"><div class="dos-plan-h"><span class="dos-plan-n">${p.n}</span><span class="dos-plan-titre">${p.titre}</span><span class="dos-plan-tag">${p.tag}</span></div><div class="dos-plan-txt">${p.txt}</div><div class="dos-plan-fuel">⛽ ${p.fuel}</div></div>`).join('');
+  const nut=D.nutrition.items.map(i=>`<div class="dos-nut"><div class="dos-nut-n">${i[0]}</div><div class="dos-nut-d">${i[1]}</div><div class="dos-nut-r">${i[2]}</div></div>`).join('');
+  const zones=D.zones.map(z=>`<div class="dos-zone"><span class="dos-zone-n">${z[0]}</span><span class="dos-zone-fc">${z[1]}</span><span class="dos-zone-o">${z[2]}</span></div>`).join('');
+  const prat=D.pratique.map(p=>`<div class="dos-prat"><div class="dos-prat-l">${p[0]}</div><div class="dos-prat-v">${p[1]}</div></div>`).join('');
+  const err=D.erreurs.map(e=>`<li>${e}</li>`).join('');
+  contenu.innerHTML=`
+   <div class="dos" style="--ac:${ac}">
+     <div class="dos-head">
+       <div class="dos-eyebrow">Dossier de course</div>
+       <h2 class="dos-nom">${D.nom}</h2>
+       <div class="dos-sous">${D.soustitre}</div>
+       <div class="dos-meta">${D.date} · ${D.format}<br>${D.depart}</div>
+     </div>
+     <div class="dos-stats">${stats}</div>
+     <div class="dos-intro">${D.intro}</div>
+     <div class="dos-phrase">${D.phrase}</div>
+     <h3 class="dos-h3">Le profil</h3>
+     ${dosProfilSVG(ac)}
+     <p class="dos-p">${D.profil}</p>
+     <h3 class="dos-h3">Le déroulé</h3>
+     ${segs}
+     <h3 class="dos-h3">Plan d'exécution</h3>
+     ${plan}
+     <h3 class="dos-h3">Nutrition — le cœur de cette course</h3>
+     <p class="dos-p">${D.nutrition.intro}</p>
+     ${nut}
+     <p class="dos-note">${D.nutrition.note}</p>
+     <div class="dos-hydra">💧 ${D.hydra}</div>
+     <h3 class="dos-h3">Zones d'effort (FC)</h3>
+     ${zones}
+     <h3 class="dos-h3">Terrain &amp; infos pratiques</h3>
+     <p class="dos-p">${D.terrain}</p>
+     ${prat}
+     <h3 class="dos-h3">Les erreurs à ne pas faire</h3>
+     <ul class="dos-err">${err}</ul>
+     <p class="dos-sources">${D.sources}</p>
+   </div>`;
+  topbar.innerHTML=`<span></span>${btnFermer}`;
+  ouvrir();
+}
 function ouvrirSeanceS24(idx){const r=S24R.runs[idx];if(!r)return;segActif=null;
   topbar.innerHTML=`<button class="btn-nav" onclick="ouvrirSemaine(24)">‹ Retour semaine 24</button>${btnFermer}`;
   const metr=Object.entries(r.metriques).map(([k,v])=>`<div class="metrique"><div class="metrique-l">${k}</div><div class="metrique-v">${v}</div></div>`).join('');
