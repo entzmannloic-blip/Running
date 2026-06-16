@@ -210,7 +210,7 @@ function calHTML(){
   const _emptyCal=_mLogged?'':'<div class="empty-note"><span class="en-ic">🗓️</span><span>Aucune séance loguée sur ce mois pour l\'instant — les jours se colorent en <strong>vert</strong> dès que tu réalises une séance. Dis-moi « j\'ai fait la séance X de la semaine Y » et le mois prend vie.</span></div>';
   return '<div class="cal-head"><button class="cal-nav" onclick="calNav(-1)" aria-label="Mois précédent">‹</button><div class="cal-title">'+MN[m]+' '+y+'</div><button class="cal-nav" onclick="calNav(1)" aria-label="Mois suivant">›</button></div>'+
     '<div class="cal-grid">'+cells+'</div>'+
-    '<div class="cal-legend"><span><i class="cal-lg cal-g"></i>Réalisé</span><span><i class="cal-lg cal-o"></i>Non réalisé</span><span><i class="cal-lg cal-x"></i>À venir</span><span style="opacity:.45;margin-left:auto">build 31</span></div>'+_emptyCal;
+    '<div class="cal-legend"><span><i class="cal-lg cal-g"></i>Réalisé</span><span><i class="cal-lg cal-o"></i>Non réalisé</span><span><i class="cal-lg cal-x"></i>À venir</span><span style="opacity:.45;margin-left:auto">build 32</span></div>'+_emptyCal;
 }
 function calNav(d){calMonth.setMonth(calMonth.getMonth()+d);const w=document.getElementById('cal-inner');if(w)w.innerHTML=calHTML();}
 
@@ -577,15 +577,23 @@ function rwNext(){if(!rwCur)return;if(rwIdx<rwCur.slides.length-1){rwIdx++;rwRen
 function rwClose(){const o=document.getElementById('rwoverlay');if(o)o.classList.remove('on');document.body.style.overflow='';rwCur=null;}
 function rwAuto(){const last=REWINDS[REWINDS.length-1];if(!last)return;const d=new Date();if(d.getDay()!==1)return;/* 1 = lundi */const wk=isoWeek(d)+'-'+d.getFullYear();try{if(localStorage.getItem('rw_mon')===wk)return;localStorage.setItem('rw_mon',wk);}catch(e){}setTimeout(()=>rwOpen(last.id),900);}
 
-function dosProfilSVG(ac){
-  const pts=[330,360,520,470,610,520,680,560,700,540,640,565,690,520,560,420,360,330];
-  const W=600,H=130,pad=8,max=720,min=300;
-  const sx=i=>pad+i*(W-2*pad)/(pts.length-1);
-  const sy=v=>H-pad-(v-min)/(max-min)*(H-2*pad);
-  let d=`M ${sx(0).toFixed(0)} ${sy(pts[0]).toFixed(0)}`;
-  for(let i=1;i<pts.length;i++)d+=` L ${sx(i).toFixed(0)} ${sy(pts[i]).toFixed(0)}`;
-  const area=d+` L ${sx(pts.length-1).toFixed(0)} ${H-pad} L ${sx(0).toFixed(0)} ${H-pad} Z`;
-  return `<svg class="dos-prof" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" role="img" aria-label="Profil indicatif vallonné"><path d="${area}" fill="${ac}" opacity="0.13"/><path d="${d}" fill="none" stroke="${ac}" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/></svg><div class="dos-prof-cap">Profil indicatif — vallonné régulier (~37 m D+/km), boucle revenant à l'altitude de départ</div>`;
+function dosProfilSVG(D,ac){
+  const pts=D.profil_pts; if(!pts||!pts.length)return '';
+  const n=pts.length,dist=D.profil_dist||24.06;
+  const W=620,H=172,padL=32,padR=10,padT=18,padB=20;
+  const plotW=W-padL-padR,plotH=H-padT-padB;
+  const mn=Math.min(...pts),mx=Math.max(...pts);
+  const lo=Math.floor((mn-15)/100)*100,hi=Math.ceil((mx+15)/100)*100;
+  const X=i=>padL+i/(n-1)*plotW, Y=v=>padT+plotH-(v-lo)/(hi-lo)*plotH;
+  let d=`M ${X(0).toFixed(1)} ${Y(pts[0]).toFixed(1)}`;
+  for(let i=1;i<n;i++)d+=` L ${X(i).toFixed(1)} ${Y(pts[i]).toFixed(1)}`;
+  const area=d+` L ${X(n-1).toFixed(1)} ${(padT+plotH).toFixed(1)} L ${X(0).toFixed(1)} ${(padT+plotH).toFixed(1)} Z`;
+  const yl=[lo,hi].map(v=>`<line x1="${padL}" y1="${Y(v).toFixed(1)}" x2="${W-padR}" y2="${Y(v).toFixed(1)}" class="dp-grid"/><text x="${padL-5}" y="${(Y(v)+3).toFixed(1)}" class="dp-ax" text-anchor="end">${v}</text>`).join('');
+  const xl=[0,8,16,24].map(km=>{const xx=padL+Math.min(km,dist)/dist*plotW;return `<text x="${xx.toFixed(1)}" y="${H-5}" class="dp-ax" text-anchor="middle">${km}</text>`;}).join('');
+  let mi=0;for(let i=0;i<n;i++)if(pts[i]>pts[mi])mi=i;
+  const sx=X(mi),sy=Y(pts[mi]);
+  const sum=`<circle cx="${sx.toFixed(1)}" cy="${sy.toFixed(1)}" r="3.4" fill="${ac}"/><text x="${sx.toFixed(1)}" y="${(sy-7).toFixed(1)}" class="dp-mk" text-anchor="middle">${pts[mi]} m</text>`;
+  return `<svg class="dos-prof" viewBox="0 0 ${W} ${H}" role="img" aria-label="Profil réel du parcours"><style>.dp-ax{font:600 9px system-ui;fill:#94a3b8}.dp-grid{stroke:#e2e8f0;stroke-width:1}.dp-mk{font:700 9.5px system-ui;fill:${ac}}</style>${yl}<path d="${area}" fill="${ac}" opacity="0.13"/><path d="${d}" fill="none" stroke="${ac}" stroke-width="2.4" stroke-linejoin="round"/>${sum}${xl}</svg><div class="dos-prof-cap">Profil réel (trace GPX officielle) · altitude (m) en ordonnée, distance (km) en abscisse · sommet 897 m vers le km 15</div>`;
 }
 function ouvrirDossier(id){
   const D=(typeof DOSSIERS!=='undefined')?DOSSIERS[id]:null; if(!D)return;
@@ -609,7 +617,7 @@ function ouvrirDossier(id){
      <div class="dos-intro">${D.intro}</div>
      <div class="dos-phrase">${D.phrase}</div>
      <h3 class="dos-h3">Le profil</h3>
-     ${dosProfilSVG(ac)}
+     ${dosProfilSVG(D,ac)}
      <p class="dos-p">${D.profil}</p>
      <h3 class="dos-h3">Le déroulé</h3>
      ${segs}
