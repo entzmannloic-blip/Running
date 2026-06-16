@@ -512,7 +512,7 @@ body.nuit .cds-go{color:#fb923c}
 .dos-intro strong,.dos-p strong,.dos-note strong,.dos-hydra strong{color:var(--texte);font-weight:700}
 .dos-phrase{font-size:.92rem;line-height:1.55;background:var(--gris-fond);border-left:4px solid var(--ac);border-radius:0 12px 12px 0;padding:13px 15px;color:var(--texte-deux);margin-bottom:6px}
 .dos-h3{font-family:Georgia,serif;font-size:1.18rem;font-weight:700;margin:26px 0 12px;padding-bottom:7px;border-bottom:2px solid var(--ac)}
-.dos-prof{width:100%;height:120px;display:block;background:var(--blanc);border:1px solid var(--gris-clair);border-radius:12px}
+.dos-prof{width:100%;height:auto;display:block;background:var(--blanc);border:1px solid var(--gris-clair);border-radius:12px}
 .dos-prof-cap{font-size:.72rem;color:var(--texte-trois);font-style:italic;margin:7px 2px 0}
 .dos-p{font-size:.9rem;line-height:1.6;color:var(--texte-deux);margin:12px 0}
 .dos-note{font-size:.86rem;line-height:1.55;color:var(--texte-deux);margin:12px 0;font-style:italic}
