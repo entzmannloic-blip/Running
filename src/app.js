@@ -208,7 +208,7 @@ function calHTML(){
   const _emptyCal=_mLogged?'':'<div class="empty-note"><span class="en-ic">🗓️</span><span>Aucune séance loguée sur ce mois pour l\'instant — les jours se colorent en <strong>vert</strong> dès que tu réalises une séance. Dis-moi « j\'ai fait la séance X de la semaine Y » et le mois prend vie.</span></div>';
   return '<div class="cal-head"><button class="cal-nav" onclick="calNav(-1)" aria-label="Mois précédent">‹</button><div class="cal-title">'+MN[m]+' '+y+'</div><button class="cal-nav" onclick="calNav(1)" aria-label="Mois suivant">›</button></div>'+
     '<div class="cal-grid">'+cells+'</div>'+
-    '<div class="cal-legend"><span><i class="cal-lg cal-g"></i>Réalisé</span><span><i class="cal-lg cal-o"></i>Non réalisé</span><span><i class="cal-lg cal-x"></i>À venir</span><span style="opacity:.45;margin-left:auto">build 26</span></div>'+_emptyCal;
+    '<div class="cal-legend"><span><i class="cal-lg cal-g"></i>Réalisé</span><span><i class="cal-lg cal-o"></i>Non réalisé</span><span><i class="cal-lg cal-x"></i>À venir</span><span style="opacity:.45;margin-left:auto">build 27</span></div>'+_emptyCal;
 }
 function calNav(d){calMonth.setMonth(calMonth.getMonth()+d);const w=document.getElementById('cal-inner');if(w)w.innerHTML=calHTML();}
 
@@ -506,10 +506,11 @@ function renderDash(){const el=document.getElementById('dash-contenu');
   <!-- 9. Objectifs course -->
   <div class="kpi">
     <div class="kpi-t">🎯 Objectifs course</div>
-    <div class="kpi-r">Deux objectifs, deux logiques différentes.</div>
+    <div class="kpi-r">Trois objectifs, trois logiques différentes.</div>
     <div class="dash-stats">
-      <div class="dstat" style="--accent:#f97316"><div class="dstat-l">J avant Nice</div><div class="dstat-v">J-${cd[0]}</div><div class="dstat-s">Marathon 8 nov. · objectif 3h45</div></div>
-      <div class="dstat" style="--accent:#8b5cf6"><div class="dstat-l">J avant SaintExpress</div><div class="dstat-v">J-${cd[1]}</div><div class="dstat-s">45 km night trail 28 nov.</div></div>
+      <div class="dstat" style="--accent:#14b8a6"><div class="dstat-l">J avant Déraille</div><div class="dstat-v">J-${cd[0]}</div><div class="dstat-s">Trail 24 km · 5 juil. · plaisir & test nutrition</div></div>
+      <div class="dstat" style="--accent:#f97316"><div class="dstat-l">J avant Nice</div><div class="dstat-v">J-${cd[1]}</div><div class="dstat-s">Marathon 8 nov. · objectif 3h45</div></div>
+      <div class="dstat" style="--accent:#8b5cf6"><div class="dstat-l">J avant SaintExpress</div><div class="dstat-v">J-${cd[2]}</div><div class="dstat-s">45 km night trail 28 nov.</div></div>
     </div>
     <div class="rec-grid" style="margin-top:12px">
       <div class="rec"><div class="rec-v">3h45</div><div class="rec-l">Marathon objectif</div><div class="rec-s">Nice · 8 nov.</div></div>
