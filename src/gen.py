@@ -310,7 +310,7 @@ def race(kind):
 WEEKS={}
 def W(n,ss): WEEKS[n]=ss
 # Reprise
-W(25,[ef(10,65,strides=True), ef(9,55), mp(12,70,1,4,"Premier contact en douceur avec l'allure marathon."), longrun(18,110,heat=True,desc="Reconstruire l'endurance + roder le carburant."), renfo(opt=True)])
+W(25,[ef(10,65,strides=True), ef(9,55), mp(9,50,1,4,"Premier contact en douceur avec l'allure marathon."), longrun(18,110,heat=True,desc="Reconstruire l'endurance + roder le carburant."), renfo(opt=True)])
 # Allègement + prépa Déraille (course plaisir B, 5 juillet)
 W(26,[ef(11,66,strides=True), ef(9,55), deraille_prep(15,90), renfo(opt=True)])
 # Semaine de course — Trail Déraille au Lac des Sapins (dim. 5 juillet)
