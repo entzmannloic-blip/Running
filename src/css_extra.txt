@@ -546,3 +546,11 @@ body.nuit .dos-hydra{background:#0e3a4233;border-color:#155e75;color:#a5f3fc}
 .dos-err li::marker{color:#dc2626}
 .dos-sources{font-size:.72rem;line-height:1.5;color:var(--texte-trois);font-style:italic;margin-top:22px;padding-top:14px;border-top:1px solid var(--gris-clair)}
 @media(max-width:430px){.dos-stats{grid-template-columns:repeat(3,1fr);row-gap:10px}.dos-nut{grid-template-columns:1fr;gap:3px}.dos-nut-r{text-align:left}}
+/* ===== Dossier : blocs avant/après course ===== */
+.dos-bloc{display:flex;gap:12px;border-radius:13px;padding:13px 15px;margin:12px 0;font-size:.86rem;line-height:1.55;color:var(--texte-deux)}
+.dos-av{background:#fefce8;border:1px solid #fde68a}
+.dos-ap{background:#f0fdf4;border:1px solid #bbf7d0}
+body.nuit .dos-av{background:#45340433;border-color:#92400e;color:#fde68a}
+body.nuit .dos-ap{background:#05260e33;border-color:#166534;color:#bbf7d0}
+.dos-bloc-ico{font-size:1.1rem;flex:0 0 auto;line-height:1.5}
+.dos-bloc strong{color:var(--texte);font-weight:800;display:block;margin-bottom:4px}
