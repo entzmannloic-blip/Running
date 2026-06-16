@@ -551,7 +551,58 @@ GEAR=[
   {"marque":"Brooks","modele":"Cascadia 19","km":196},
   {"marque":"ASICS","modele":"Magic Speed 4","km":40},
 ]
-RACES=[{"nom":"Trail Déraille — Lac des Sapins","date":"2026-07-05"},{"nom":"Marathon de Nice","date":"2026-11-08"},{"nom":"SaintExpress","date":"2026-11-28"}]
+RACES=[{"nom":"Trail Déraille — Lac des Sapins","date":"2026-07-05","dossier":"deraille"},{"nom":"Marathon de Nice","date":"2026-11-08"},{"nom":"SaintExpress","date":"2026-11-28"}]
+
+# ===== DOSSIERS DE COURSE (modale au clic sur le badge) =====
+DOSSIERS={
+ "deraille":{
+  "nom":"Le Trail qui Déraille",
+  "soustitre":"Lac des Sapins — Cublize (69), Beaujolais Vert",
+  "date":"Dimanche 5 juillet 2026",
+  "depart":"Départ ≈ 8 h 30 – 9 h 00 · Salle des sports de Cublize",
+  "format":"24 km solo · 5ᵉ manche du Trail Tour Beaujolais · organisé par Y’A.C.A. Courir",
+  "accent":"#0d9488",
+  "stats":[["24,05","km"],["+901","D+ (m)"],["−901","D− (m)"],["~330","alt. départ (m)"],["2 h 15–2 h 45","cible plaisir"]],
+  "intro":"Boucle vallonnée dans le Beaujolais Vert, autour du Lac des Sapins. <strong>Pas de grand pic isolé comme à La Circaète</strong> : ici c'est une succession de bosses courtes à moyennes en forêt et sur single, environ <strong>37 m de D+ par km</strong>. Roulant mais jamais vraiment plat — le relief est constant, jamais brutal. Quelques passages techniques (cailloux, racines, sentes étroites) entre sapins et genêts. Le D− égale le D+ : autant de descentes que de montées, toutes courtes.",
+  "phrase":"Course <strong>plaisir</strong>, et surtout ton laboratoire nutrition. Le seul vrai objectif : <strong>électrolytes dès le départ</strong> et zéro trou de carburant sur 2 h 30. La leçon de La Circaète, appliquée — pas un chrono à aller chercher.",
+  "profil":"Profil ondulé régulier, sans sommet marqué. Départ et arrivée au pied du lac (~330 m) ; le parcours grimpe dans les collines boisées par une série de bosses, puis redescend de la même hauteur. <strong>L'usure vient de la répétition</strong>, pas d'une longue ascension. Le piège n'est donc pas un mur, mais la tentation de courir chaque raidillon et de partir trop vite dans le peloton.",
+  "segments":[
+    {"t":"1 · Départ &amp; mise en route","km":"premier tiers","faire":"Départ de masse au lac, le single grimpe vite. Ne te fais pas emporter : FC ≤ 160, trouve ton rythme, laisse partir les emballés."},
+    {"t":"2 · Cœur vallonné","km":"tiers du milieu","faire":"Enchaînement de bosses en forêt. Marche active sur les raidillons, relâche en descente. Carburant régulier dès maintenant, pas plus tard."},
+    {"t":"3 · Bosses de fatigue","km":"dernier tiers","faire":"Le relief use, jambes entamées. Gère à l'effort, accepte de marcher les côtes. Électrolytes en continu — c'est là que ça s'est joué à La Circaète."},
+    {"t":"4 · Final roulant vers le lac","km":"fin","faire":"Retour roulant au Lac des Sapins. Si tu as géré avant, tu peux relancer et te faire plaisir sur la fin."}],
+  "plan":[
+    {"n":"1","tag":"CONSERVATEUR","c":"#16a34a","titre":"Freiner l'ego au départ","txt":"Départ de masse, jambes fraîches, enthousiasme : le piège classique. FC plafond 160, tu dois te sentir presque trop sage. Personne ne gagne sa course sur le premier km.","fuel":"Électrolytes dès le km 5 — pas au km 15 comme à La Circaète."},
+    {"n":"2","tag":"CONTRÔLÉ","c":"#ea580c","titre":"À l'effort, pas au chrono","txt":"Sur le vallonné, l'allure ne veut rien dire. Marche les raidillons aux sensations, relâche en descente (foulée courte, cadence haute). Vitesse gratuite, pas vitesse forcée.","fuel":"1 gel toutes les 40–45 min dès la 40ᵉ min. Profite des 3 ravitos pour recharger l'eau."},
+    {"n":"3","tag":"VIGILANCE","c":"#dc2626","titre":"Le piège chaleur de juillet","txt":"En juillet au Beaujolais, le froid ne masquera pas la soif comme en montagne — c'est la chaleur qui te piège. Anticipe : bois avant d'avoir soif, électrolytes systématiques.","fuel":"À chaque ravito : gourde remplie à fond, une bouchée de solide si l'estomac suit."},
+    {"n":"4","tag":"PLAISIR","c":"#0d9488","titre":"Lâcher un peu sur la fin","txt":"Si l'estomac a tenu et que les jambes répondent, relance sur le roulant final. Mais l'objectif reste le test nutrition réussi, pas le sprint — savoure l'arrivée au lac.","fuel":"Dernier gel si besoin pour la relance."}],
+  "nutrition":{
+    "intro":"Mêmes produits qu'à La Circaète et que pour Nice — on ne teste rien de neuf le jour J. Deux rôles : la <strong>base</strong> non caféinée riche en sodium (4Endurance) pour le débit et les électrolytes, les <strong>armes</strong> caféinées (Nduranz) sur la 2ᵉ moitié.",
+    "items":[
+      ["4Endurance Pro BCAA — Sour Cherry","30 g glucides · 500 mg BCAA · 191 mg sodium","BASE — ×3-4, électrolytes en continu"],
+      ["Nduranz NRGY 45 — Cherry","45 g glucides · 65 mg caféine","ARME — milieu de course"],
+      ["Nduranz NRGY 45 — Coffee Amarena","45 g glucides · 130 mg caféine","ARME — bosses de fatigue (2ᵉ moitié)"]],
+    "note":"Cible : <strong>50–60 g de glucides/h</strong> sur 2 h 15–2 h 45, soit ~5-6 gels. La caféine placée sur la seconde moitié, jamais au départ. Chaque gel avec quelques gorgées d'eau."},
+  "hydra":"<strong>3 ravitaillements</strong> sur le parcours (solide : fruits, fruits secs, gâteaux ; liquide : eau, jus, soda). En juillet, vise <strong>500–600 ml/h</strong> et recharge la gourde à chaque ravito sans exception. Le sodium des 4Endurance complète tes électrolytes — mets-en dans la flasque dès le départ. <strong>C'est LE point de cette course :</strong> ne jamais courir après l'hydratation, toujours avoir un coup d'avance.",
+  "zones":[
+    ["Endurance fond.","134 – 154","Croisière : faux-plats, descentes courues, plat roulant"],
+    ["Tempo / bascule","154 – 167","Montées : plafond 160. Au-delà → marche active, laisse la FC redescendre"],
+    ["Seuil +","&gt; 167","Réservé à la relance finale, jamais avant"]],
+  "terrain":"Single en forêt (terre, herbe, racines), roulant par endroits, avec des passages plus techniques sur cailloux et sentes étroites — pieds légers, regard devant. Rien d'alpin : on reste dans les collines boisées du Beaujolais Vert. <strong>Chaussures :</strong> tes Cascadia 19, bonne accroche pour le terrain sec et caillouteux de juillet.",
+  "pratique":[
+    ["🅿️ Départ / arrivée","Salle des sports de Cublize — parking, vestiaires, douches sur place"],
+    ["🥾 Bâtons","Autorisés. Utiles sur les raidillons, mais optionnels vu le D+ modéré"],
+    ["🏊 Après la course","Lac des Sapins : baignade possible — récup' active idéale par temps chaud"],
+    ["🎒 Matériel","Gilet HDV5 + flasques, électrolytes, 5-6 gels, casquette/visière (chaleur), crème anti-frottements"]],
+  "erreurs":[
+    "Partir trop vite sur l'enthousiasme du départ de masse — le relief te le fera payer plus tard.",
+    "Attendre d'avoir soif pour boire : en juillet, c'est déjà trop tard.",
+    "Oublier les électrolytes dès le départ — l'erreur exacte de La Circaète.",
+    "Vouloir performer : c'est une course plaisir et un test, pas un objectif chrono.",
+    "Courir tous les raidillons : la marche active est plus économique et te garde des jambes.",
+    "Zapper un ravito : recharge l'eau systématiquement, même si tu te sens bien."],
+  "sources":"Données : tracedetrail.fr (24,05 km / +901 m / −901 m), Trail Tour Beaujolais, organisateur Y’A.C.A. Courir, infos ravitaillements des éditions précédentes. Repères de profil indicatifs (pas de trace GPX perso comme pour La Circaète). Zones FC basées sur tes repères (FCmax ~192, bascule marche ~160) — ne remplacent pas un avis médical."}
+}
 print("Semaines:",len(SEANCES_BY_WEEK)+1,"| Séances:",sum(len(v) for v in SEANCES_BY_WEEK.values()))
 import json as _j
 _hist=_j.load(open('/tmp/hist.json'))
@@ -615,5 +666,5 @@ JOURNAL=[{"sem":"S24","theme":"Récupération post-Circaète","texte":S24_REALIS
 HEATMAP={"2026-01-03": 10.1, "2026-01-05": 11.2, "2026-01-06": 13.0, "2026-01-10": 21.6, "2026-01-12": 10.0, "2026-01-13": 11.3, "2026-01-14": 11.0, "2026-01-15": 14.1, "2026-01-16": 4.0, "2026-01-17": 11.1, "2026-01-20": 11.0, "2026-01-21": 21.1, "2026-01-22": 10.0, "2026-01-23": 3.5, "2026-01-26": 10.3, "2026-01-27": 11.5, "2026-01-28": 10.0, "2026-01-29": 18.2, "2026-01-31": 11.0, "2026-02-02": 14.0, "2026-02-03": 21.2, "2026-02-05": 8.9, "2026-02-06": 11.1, "2026-02-07": 12.1, "2026-02-08": 4.2, "2026-02-09": 20.4, "2026-02-10": 10.2, "2026-02-11": 11.8, "2026-02-16": 10.2, "2026-02-17": 20.0, "2026-02-18": 10.0, "2026-02-20": 10.6, "2026-02-21": 10.0, "2026-02-22": 11.8, "2026-02-23": 10.1, "2026-02-24": 2.5, "2026-02-25": 10.0, "2026-02-26": 12.5, "2026-02-27": 5.0, "2026-03-01": 4.4, "2026-03-02": 11.3, "2026-03-03": 18.0, "2026-03-04": 20.4, "2026-03-05": 17.1, "2026-03-07": 21.2, "2026-03-09": 17.0, "2026-03-10": 16.0, "2026-03-11": 10.0, "2026-03-12": 17.2, "2026-03-15": 4.2, "2026-03-16": 18.1, "2026-03-17": 13.0, "2026-03-18": 14.2, "2026-03-19": 21.2, "2026-03-20": 10.5, "2026-03-23": 13.0, "2026-03-24": 30.1, "2026-03-26": 15.0, "2026-03-27": 10.0, "2026-03-29": 15.0, "2026-03-30": 12.0, "2026-03-31": 13.0, "2026-04-01": 10.0, "2026-04-03": 14.3, "2026-04-04": 21.2, "2026-04-06": 18.6, "2026-04-07": 15.0, "2026-04-09": 24.7, "2026-04-10": 12.0, "2026-04-13": 18.0, "2026-04-14": 14.5, "2026-04-15": 15.1, "2026-04-16": 11.0, "2026-04-18": 30.1, "2026-04-19": 3.8, "2026-04-20": 13.0, "2026-04-21": 17.0, "2026-04-22": 16.0, "2026-04-24": 10.3, "2026-04-26": 4.0, "2026-04-27": 10.7, "2026-04-30": 3.6, "2026-05-01": 42.4, "2026-05-04": 13.0, "2026-05-06": 10.5, "2026-05-08": 11.1, "2026-05-09": 11.1, "2026-05-16": 8.4, "2026-05-18": 17.0, "2026-05-20": 10.0, "2026-05-21": 21.2, "2026-05-22": 22.2, "2026-05-27": 4.6, "2026-05-28": 4.0, "2026-05-29": 16.6, "2026-05-31": 10.0, "2026-06-01": 14.0, "2026-06-02": 12.0, "2026-06-06": 29.8, "2026-06-09": 16.0, "2026-06-10": 10.3, "2026-06-12": 10.0}
 _j.dump({"PHASES":PHASES,"COUL":COUL,"SEMAINES":SEMAINES,"SBW":SEANCES_BY_WEEK,"GEAR":GEAR,"RACES":RACES,
   "PROFIL":PROFIL,"PROJ":PROJ,"RECORDS":RECORDS,"VIGILANCE":VIGILANCE,"S24R":S24_REALISE,
-  "HIST":_hist["HIST"],"POLAR":_hist["POLAR"],"ALLURES":ALLURES,"ALLURES_COURSE":ALLURES_COURSE,"ZONES_FC":ZONES_FC,"MONTHLY":MONTHLY,"SAISON2026":SAISON2026,"ACWR_DATA":ACWR_DATA,"RECORDS_PERF":RECORDS_PERF,"JOURNAL":JOURNAL,"REWINDS":REWINDS,"MAJ":"16 juin 2026","HEATMAP":HEATMAP},open('/tmp/data.json','w'),ensure_ascii=False)
+  "HIST":_hist["HIST"],"POLAR":_hist["POLAR"],"ALLURES":ALLURES,"ALLURES_COURSE":ALLURES_COURSE,"ZONES_FC":ZONES_FC,"MONTHLY":MONTHLY,"SAISON2026":SAISON2026,"ACWR_DATA":ACWR_DATA,"RECORDS_PERF":RECORDS_PERF,"JOURNAL":JOURNAL,"REWINDS":REWINDS,"MAJ":"16 juin 2026","HEATMAP":HEATMAP,"DOSSIERS":DOSSIERS},open('/tmp/data.json','w'),ensure_ascii=False)
 print("OK")
