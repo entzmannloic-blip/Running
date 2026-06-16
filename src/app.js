@@ -210,7 +210,7 @@ function calHTML(){
   const _emptyCal=_mLogged?'':'<div class="empty-note"><span class="en-ic">🗓️</span><span>Aucune séance loguée sur ce mois pour l\'instant — les jours se colorent en <strong>vert</strong> dès que tu réalises une séance. Dis-moi « j\'ai fait la séance X de la semaine Y » et le mois prend vie.</span></div>';
   return '<div class="cal-head"><button class="cal-nav" onclick="calNav(-1)" aria-label="Mois précédent">‹</button><div class="cal-title">'+MN[m]+' '+y+'</div><button class="cal-nav" onclick="calNav(1)" aria-label="Mois suivant">›</button></div>'+
     '<div class="cal-grid">'+cells+'</div>'+
-    '<div class="cal-legend"><span><i class="cal-lg cal-g"></i>Réalisé</span><span><i class="cal-lg cal-o"></i>Non réalisé</span><span><i class="cal-lg cal-x"></i>À venir</span><span style="opacity:.45;margin-left:auto">build 35</span></div>'+_emptyCal;
+    '<div class="cal-legend"><span><i class="cal-lg cal-g"></i>Réalisé</span><span><i class="cal-lg cal-o"></i>Non réalisé</span><span><i class="cal-lg cal-x"></i>À venir</span><span style="opacity:.45;margin-left:auto">build 36</span></div>'+_emptyCal;
 }
 function calNav(d){calMonth.setMonth(calMonth.getMonth()+d);const w=document.getElementById('cal-inner');if(w)w.innerHTML=calHTML();}
 
@@ -624,10 +624,12 @@ function ouvrirDossier(id){
      <h3 class="dos-h3">Plan d'exécution</h3>
      ${plan}
      <h3 class="dos-h3">Nutrition — le cœur de cette course</h3>
+     ${D.nutrition.avant?`<div class="dos-bloc dos-av"><div class="dos-bloc-ico">🌅</div><div><strong>Avant la course</strong><br>${D.nutrition.avant}</div></div>`:''}
      <p class="dos-p">${D.nutrition.intro}</p>
      ${nut}
      <p class="dos-note">${D.nutrition.note}</p>
      <div class="dos-hydra">💧 ${D.hydra}</div>
+     ${D.nutrition.apres?`<div class="dos-bloc dos-ap"><div class="dos-bloc-ico">🔄</div><div><strong>Après la course</strong><br>${D.nutrition.apres}</div></div>`:''}
      <h3 class="dos-h3">Zones d'effort (FC)</h3>
      ${zones}
      <h3 class="dos-h3">Terrain &amp; infos pratiques</h3>
