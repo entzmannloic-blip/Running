@@ -478,6 +478,8 @@ for n,ss in WEEKS.items():
     for s in arr: s["nutrition"]=nutrition_for(s)
     date_for(arr, n)
     if n==25:
+        arr[3]["date"]="2026-06-18"   # sortie longue avancée au jeudi (départ vendredi chez parents)
+        arr[4]["realise"]={"statut":"manque","commentaire":"Skippé — week-end hors de Lyon, sortie longue avancée au jeudi."}
         _f={1:"fit/S25-1-footing-lignes.fit",2:"fit/S25-2-footing-facile.fit",3:"fit/S25-3-allure-marathon.fit",4:"fit/S25-4-sortie-longue.fit"}
         for s in arr: s["fit"]=_f.get(s["num"])
         arr[0]["realise"]={"statut":"fait","km":10.25,"temps":"1h00","allure":"5:51/km","fc_moy":143,"fc_max":173,"rpe_ressenti":3,
