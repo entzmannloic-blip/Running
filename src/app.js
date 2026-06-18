@@ -116,8 +116,8 @@ function _meteoPaint(d){
   const precipStr=(d.precip!==undefined?d.precip.toFixed(1)+' mm · ':'')+Math.round(d.rain)+'%';
   const tmaxOk=d.tomorrow_max!==undefined&&!isNaN(d.tomorrow_max);
   const demainHtml=tmaxOk?
-    '<div class="meteo-sep"></div><div class="meteo-demain"><span class="meteo-demain-lbl">Demain</span><div class="meteo-demain-val"><span class="meteo-demain-t">'+d.tomorrow_max+'°</span>'+
-    (d.tomorrow_max>33?'<span class="meteo-badge canicule">⚠️ Canicule</span>':d.tomorrow_max>28?'<span class="meteo-badge chaud">🌡️ Chaud</span>':'')+'</div></div>':'';
+    '<div class="meteo-demain">Demain&nbsp;&nbsp;<span class="meteo-demain-t">'+d.tomorrow_max+'°</span>'+
+    (d.tomorrow_max>33?'&nbsp;<span class="meteo-badge canicule">⚠️ Canicule</span>':d.tomorrow_max>28?'&nbsp;<span class="meteo-badge chaud">🌡️ Chaud</span>':'')+'</div>':'';
   const showChip=Math.round(t)>28||(tmaxOk&&d.tomorrow_max>28);
   const chipHtml=showChip?
     '<div class="wx-chip" onclick="openCreneaux()">'+
