@@ -669,7 +669,15 @@ function ouvrirSemaine(num){const s=SEMAINES.find(x=>x.num===num);const ph=PHASE
   topbar.innerHTML=`<span></span>${btnFermer}`;
   const liste=seances.map(se=>{const r=se.realise||{statut:'a_faire'};const tags=[stChip(r.statut),`<span class="seance-tag">${se.type}</span>`,catBadge(se.cat),`<span class="rpe-pill"><span class="rpe-dot" style="background:${rpeColor(se.rpe)}"></span>RPE ${se.rpe}</span>`];if(se.chaussure)tags.push(`<span class="seance-shoe">👟 ${se.chaussure.replace("ASICS ","").replace("HOKA ","").replace("Brooks ","")}</span>`);if(se.fit)tags.push('<span class="seance-fit">⌚ .fit</span>');if(se.opt)tags.push('<span class="seance-tag tag-opt">Optionnelle</span>');
     const rs=r.km?`<div class="seance-desc" style="color:#15803d;font-weight:700;margin-top:3px">✓ ${r.km} km${r.allure?' · '+r.allure:''}</div>`:'';
-    return `<div class="seance-carte${(r.statut==='fait'||r.statut==='partiel')?' sc-fait':''}" onclick="ouvrirSeance(${num},${se.id})"><div class="seance-bande" style="background:${se.accent}"></div><div class="seance-idx">Séance ${se.num}</div><div class="seance-info"><div class="seance-nom">${se.titre}</div><div class="seance-desc">${se.sous}</div>${rs}<div class="seance-tags">${tags.join('')}</div></div><div class="seance-fleche">›</div></div>`;}).join('');
+    const isDone=r.statut==='fait'||r.statut==='partiel';
+    const _today=new Date();_today.setHours(0,0,0,0);
+    const loggable=!isDone&&se.date&&new Date(se.date+'T00:00:00')<=_today;
+    const rightEl=isDone
+      ?`<div class="seance-fleche sc-check">✓</div>`
+      :loggable
+        ?`<button class="ql-btn" onclick="event.stopPropagation();ouvrirQuickLog(${num},${se.id})" aria-label="Loguer"><i class="ti ti-check"></i></button>`
+        :`<div class="seance-fleche">›</div>`;
+    return `<div class="seance-carte${isDone?' sc-fait':''}" id="sc-${num}-${se.id}" onclick="ouvrirSeance(${num},${se.id})"><div class="seance-bande" style="background:${se.accent}"></div><div class="seance-idx">Séance ${se.num}</div><div class="seance-info"><div class="seance-nom">${se.titre}</div><div class="seance-desc">${se.sous}</div>${rs}<div class="seance-tags">${tags.join('')}</div></div>${rightEl}</div>`;}).join('');
   const repPill=s.repartition&&s.repartition!=='—'?`<div class="sw-pill"><div class="sw-pill-l">Répartition</div><div class="sw-pill-v" style="font-size:.74rem">${s.repartition}</div></div>`:'';
   contenu.innerHTML=`<div class="sw-hero"><span class="sw-tag" style="background:${COUL[s.phase]}22;color:${COUL[s.phase]}">${ph.nom}</span><h2 class="sw-titre">Semaine ${s.num} — ${s.theme}</h2><p class="sw-sous">Semaine type · clique une séance</p><div class="sw-meta"><div class="sw-pill"><div class="sw-pill-l">Volume cible</div><div class="sw-pill-v">${s.km} km</div></div><div class="sw-pill"><div class="sw-pill-l">Réalisé</div><div class="sw-pill-v">${fait}/${seances.length} · ${realKm} km</div></div><div class="sw-pill"><div class="sw-pill-l">Charge</div><div class="sw-pill-v" style="font-size:.84rem">${s.charge}</div></div>${repPill}</div></div><div class="sw-corps"><div class="callout callout-obj">${s.objectif}</div><div class="sw-section">Séances de la semaine</div><div class="seance-liste">${liste}</div>${s.revue?`<div class="sw-section">Revue du coach — bilan de la semaine</div><div class="rev-coach">${s.revue}</div>`:`<div class="realise-empty" style="margin-top:18px"><strong>Revue de la semaine à venir.</strong> Quand la semaine sera bouclée, tu trouveras ici mon bilan complet : volume et charge vs prévu, adhérence, signaux à surveiller, et la décision pour la semaine suivante. Elle alimentera aussi le Journal du coach.</div>`}</div>`;ouvrir();
 }
@@ -724,6 +732,80 @@ function logForm(wk,se){
       <div class="lf-hint">L'allure se calcule automatiquement depuis distance + temps. Les records/trophées déclenchent la célébration et la projection se réactualise.</div>
       <div class="lf-actions"><button type="button" class="lf-save" onclick="logSeance(${wk},${se.id})">Enregistrer</button>${logged?`<button type="button" class="lf-clear" onclick="unlogSeance(${wk},${se.id})">Réinitialiser</button>`:''}</div>
     </div></div>`;
+}
+/* ===== Quick Log — bottom sheet depuis la liste semaine ===== */
+let _qlWk=null,_qlId=null;
+function ouvrirQuickLog(wk,id){
+  _qlWk=wk;_qlId=id;
+  const se=findSeance(wk,id);if(!se)return;
+  const r=se.realise||{};
+  document.getElementById('ql-titre').textContent=se.titre;
+  document.getElementById('ql-sous').textContent='S'+wk+' · Séance '+se.num;
+  const distNum=se.metriques&&se.metriques.Distance?parseFloat(se.metriques.Distance.replace(/[^0-9.,]/g,'').replace(',','.'))||'':'';
+  document.getElementById('ql-km').value=r.km||distNum||'';
+  document.getElementById('ql-temps').value=r.temps||'';
+  document.getElementById('ql-rpe').value=r.rpe_ressenti||'';
+  _qlCalc();
+  document.getElementById('ql-overlay').classList.add('open');
+  setTimeout(()=>document.getElementById('ql-km').focus(),220);
+}
+function fermerQuickLog(){document.getElementById('ql-overlay').classList.remove('open');}
+function _qlCalc(){
+  const km=parseFloat((document.getElementById('ql-km').value||'').replace(',','.'));
+  const t=document.getElementById('ql-temps').value;
+  const el=document.getElementById('ql-allure');
+  el.textContent=(km&&t)?computeAllure(km,t):'—';
+}
+function soumettreQuickLog(){
+  const km=parseFloat((document.getElementById('ql-km').value||'').replace(',','.'))||0;
+  if(!km)return;
+  const temps=document.getElementById('ql-temps').value||'';
+  const rpe=document.getElementById('ql-rpe').value||'';
+  const se=findSeance(_qlWk,_qlId);if(!se)return;
+  const allure=computeAllure(km,temps);
+  const ex=se.realise||{};
+  const realise={statut:'fait',km,temps,allure,
+    fc_moy:ex.fc_moy||'',fc_max:ex.fc_max||'',rpe_ressenti:rpe,
+    commentaire:ex.commentaire||'',pr:ex.pr||0,ach:ex.ach||0,revue:ex.revue||''};
+  const logs=loadLogs();logs[logId(_qlWk,_qlId)]=realise;saveLogs(logs);se.realise=realise;
+  fermerQuickLog();
+  // Mise à jour DOM immédiate de la carte
+  const card=document.getElementById('sc-'+_qlWk+'-'+_qlId);
+  if(card){
+    card.classList.add('sc-fait');
+    const b=card.querySelector('.ql-btn');
+    if(b)b.outerHTML='<div class="seance-fleche sc-check">✓</div>';
+    const nom=card.querySelector('.seance-nom');if(nom)nom.style.color='#15803d';
+    const info=card.querySelector('.seance-info');
+    if(info&&!info.querySelector('.ql-real'))
+      info.querySelector('.seance-desc').insertAdjacentHTML('afterend',
+        `<div class="seance-desc ql-real" style="color:#15803d;font-weight:700;margin-top:3px">✓ ${km} km${allure?' · '+allure:''}</div>`);
+  }
+  renderHeader();
+  const toast=document.getElementById('ql-toast');
+  if(toast){toast.classList.remove('ql-show');void toast.offsetWidth;toast.classList.add('ql-show');}
+}
+function initQuickLog(){
+  if(!document.body||typeof document.body.insertAdjacentHTML!=='function')return;
+  document.body.insertAdjacentHTML('beforeend',`
+<div id="ql-overlay" onclick="if(event.target===this)fermerQuickLog()">
+  <div id="ql-sheet">
+    <div class="ql-handle"></div>
+    <div id="ql-titre" class="ql-titre"></div>
+    <div id="ql-sous" class="ql-sous"></div>
+    <div class="ql-fields">
+      <label class="ql-label">Distance (km)<input id="ql-km" type="number" step="0.1" inputmode="decimal" oninput="_qlCalc()"></label>
+      <div class="ql-row2">
+        <label class="ql-label">Temps<input id="ql-temps" type="text" inputmode="numeric" placeholder="0:54:10" oninput="_qlCalc()"></label>
+        <label class="ql-label">Allure<div id="ql-allure" class="ql-allure-val">—</div></label>
+      </div>
+      <label class="ql-label">RPE (1-10)<input id="ql-rpe" type="number" min="1" max="10" inputmode="numeric"></label>
+    </div>
+    <button class="ql-submit" onclick="soumettreQuickLog()"><i class="ti ti-check"></i> Enregistrer</button>
+    <button class="ql-cancel" onclick="fermerQuickLog()">Annuler</button>
+  </div>
+</div>
+<div id="ql-toast" class="ql-toast">Séance enregistrée ✓</div>`);
 }
 function realiseBloc(num,se){const r=se.realise||{statut:'a_faire'};
   if(r.statut==='a_faire')return `<div class="sd-section">Réalisé & revue du coach</div><div class="realise-empty"><strong>Séance pas encore réalisée.</strong> Log-la ci-dessous dès que c'est fait — le calendrier, la boule de cristal et les records s'activent automatiquement.</div>${logForm(num,se)}`;
@@ -1049,5 +1131,5 @@ function initBarre(se){const piste=document.getElementById('piste');if(!piste)re
     e.addEventListener('click',()=>{if(segActif)segActif.classList.remove('actif');if(segActif===e){segActif=null;pan.classList.remove('visible');return;}segActif=e;e.classList.add('actif');dnom.textContent=seg.nom;drole.textContent=seg.role;dgr.innerHTML=`<div><div class="di-label">Durée</div><div class="di-val">${fmt(seg.duree)}</div></div><div><div class="di-label">Bloc</div><div class="di-val">${seg.bloc}</div></div><div><div class="di-label">Début</div><div class="di-val">${fmt(seg.debut)}</div></div><div><div class="di-label">Fin</div><div class="di-val">${fmt(seg.fin)}</div></div>`;pan.classList.add('visible');});
     piste.appendChild(e);});
 }
-hydrateLogs();renderHeader();renderPlan();rwAuto();
+hydrateLogs();initQuickLog();renderHeader();renderPlan();rwAuto();
 if('serviceWorker'in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
