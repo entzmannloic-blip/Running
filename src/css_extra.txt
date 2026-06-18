@@ -556,8 +556,10 @@ body.nuit .dos-ap{background:#05260e33;border-color:#166534;color:#bbf7d0}
 .dos-bloc strong{color:var(--texte);font-weight:800;display:block;margin-bottom:4px}
 /* ===== Séance réalisée — visuel vert fort ===== */
 .seance-carte.sc-fait{background:#f0fdf4;border:2px solid #22c55e}
+.seance-carte.sc-fait .seance-bande{background:#22c55e !important}
 .seance-carte.sc-fait .seance-nom{color:#15803d}
 .seance-carte.sc-fait .seance-fleche{color:#22c55e}
 body.nuit .seance-carte.sc-fait{background:#052e16;border-color:#16a34a}
+body.nuit .seance-carte.sc-fait .seance-bande{background:#16a34a !important}
 body.nuit .seance-carte.sc-fait .seance-nom{color:#4ade80}
 body.nuit .seance-carte.sc-fait .seance-fleche{color:#4ade80}
