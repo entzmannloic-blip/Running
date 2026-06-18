@@ -111,11 +111,19 @@ function _meteoEmoji(c){
 }
 function _meteoPaint(d){
   const el=document.getElementById('meteo-widget');if(!el)return;
-  /* fallback : anciens caches n'ont pas encore temp (temperature_2m) */
   const t=(d.temp!==undefined&&!isNaN(+d.temp))?d.temp:d.app;
   const tempStr=Math.round(t)+'°'+(d.app!==undefined&&Math.round(d.app)!==Math.round(t)?' <small>ressenti '+Math.round(d.app)+'°</small>':'');
-  /* précipitations : mm dans l'heure + probabilité */
   const precipStr=(d.precip!==undefined?d.precip.toFixed(1)+' mm · ':'')+Math.round(d.rain)+'%';
+  const tmaxOk=d.tomorrow_max!==undefined&&!isNaN(d.tomorrow_max);
+  const demainHtml=tmaxOk?
+    '<div class="meteo-sep"></div><div class="meteo-demain"><span class="meteo-demain-lbl">Demain</span><div class="meteo-demain-val"><span class="meteo-demain-t">'+d.tomorrow_max+'°</span>'+
+    (d.tomorrow_max>33?'<span class="meteo-badge canicule">⚠️ Canicule</span>':d.tomorrow_max>28?'<span class="meteo-badge chaud">🌡️ Chaud</span>':'')+'</div></div>':'';
+  const showChip=Math.round(t)>28||(tmaxOk&&d.tomorrow_max>28);
+  const chipHtml=showChip?
+    '<div class="wx-chip" onclick="openCreneaux()">'+
+      '<span class="wx-chip-ico">🌡️</span>'+
+      '<div class="wx-chip-body"><div class="wx-chip-title">Créneaux d\'entraînement</div><div class="wx-chip-sub">Meilleures heures aujourd\'hui et demain</div></div>'+
+      '<span class="wx-chip-arr">›</span></div>':'';
   el.innerHTML=
     '<div class="meteo-row">'+
       '<span class="meteo-ico">'+_meteoEmoji(d.code)+'</span>'+
@@ -124,7 +132,8 @@ function _meteoPaint(d){
         '<span class="meteo-m">💨 '+Math.round(d.wind)+' km/h</span>'+
         '<span class="meteo-m">🌧️ '+precipStr+'</span>'+
       '</span>'+
-    '</div>';
+    '</div>'+demainHtml+chipHtml;
+  if(d.hourly_today||d.hourly_tomorrow)window._wxHourly={today:d.hourly_today||[],tomorrow:d.hourly_tomorrow||[]};
 }
 async function renderMeteo(){
   let cached=null;
@@ -136,16 +145,24 @@ async function renderMeteo(){
   try{
     const u='https://api.open-meteo.com/v1/forecast?latitude='+METEO_LAT+'&longitude='+METEO_LON+
       '&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m,precipitation'+
-      '&hourly=precipitation_probability&forecast_days=1&timezone=Europe%2FParis';
+      '&hourly=temperature_2m,precipitation_probability&forecast_days=2&timezone=Europe%2FParis';
     const r=await fetch(u);if(!r.ok)throw 0;
     const j=await r.json();
-    let rain=0;
-    if(j.hourly&&j.hourly.time&&j.current&&j.current.time){
-      const h=j.current.time.slice(0,13);
-      const idx=j.hourly.time.findIndex(t=>t.slice(0,13)===h);
-      rain=idx>=0?(j.hourly.precipitation_probability[idx]||0):0;
+    const todayStr=new Date().toISOString().slice(0,10);
+    const tomorrowStr=new Date(Date.now()+86400000).toISOString().slice(0,10);
+    let rain=0;const hToday=[],hTomorrow=[];
+    if(j.hourly&&j.hourly.time){
+      const curH=j.current.time?j.current.time.slice(0,13):'';
+      j.hourly.time.forEach((tt,i)=>{
+        if(tt.slice(0,13)===curH)rain=j.hourly.precipitation_probability[i]||0;
+        const h=parseInt(tt.slice(11,13)),ds=tt.slice(0,10);
+        if(h>=5&&h<=22){const tp=Math.round(j.hourly.temperature_2m[i]);
+          if(ds===todayStr)hToday.push([h,tp]);
+          if(ds===tomorrowStr)hTomorrow.push([h,tp]);}
+      });
     }
-    const d={ts:Date.now(),temp:j.current.temperature_2m,app:j.current.apparent_temperature,wind:j.current.wind_speed_10m,code:j.current.weather_code,precip:j.current.precipitation||0,rain:rain};
+    const tMax=hTomorrow.length?Math.max(...hTomorrow.map(x=>x[1])):undefined;
+    const d={ts:Date.now(),temp:j.current.temperature_2m,app:j.current.apparent_temperature,wind:j.current.wind_speed_10m,code:j.current.weather_code,precip:j.current.precipitation||0,rain,tomorrow_max:tMax,hourly_today:hToday,hourly_tomorrow:hTomorrow};
     localStorage.setItem('meteo_cache',JSON.stringify(d));
     _meteoPaint(d);
   }catch(e){
@@ -681,7 +698,67 @@ function ouvrirSemaine(num){const s=SEMAINES.find(x=>x.num===num);const ph=PHASE
   const repPill=s.repartition&&s.repartition!=='—'?`<div class="sw-pill"><div class="sw-pill-l">Répartition</div><div class="sw-pill-v" style="font-size:.74rem">${s.repartition}</div></div>`:'';
   contenu.innerHTML=`<div class="sw-hero"><span class="sw-tag" style="background:${COUL[s.phase]}22;color:${COUL[s.phase]}">${ph.nom}</span><h2 class="sw-titre">Semaine ${s.num} — ${s.theme}</h2><p class="sw-sous">Semaine type · clique une séance</p><div class="sw-meta"><div class="sw-pill"><div class="sw-pill-l">Volume cible</div><div class="sw-pill-v">${s.km} km</div></div><div class="sw-pill"><div class="sw-pill-l">Réalisé</div><div class="sw-pill-v">${fait}/${seances.length} · ${realKm} km</div></div><div class="sw-pill"><div class="sw-pill-l">Charge</div><div class="sw-pill-v" style="font-size:.84rem">${s.charge}</div></div>${repPill}</div></div><div class="sw-corps"><div class="callout callout-obj">${s.objectif}</div><div class="sw-section">Séances de la semaine</div><div class="seance-liste">${liste}</div>${s.revue?`<div class="sw-section">Revue du coach — bilan de la semaine</div><div class="rev-coach">${s.revue}</div>`:`<div class="realise-empty" style="margin-top:18px"><strong>Revue de la semaine à venir.</strong> Quand la semaine sera bouclée, tu trouveras ici mon bilan complet : volume et charge vs prévu, adhérence, signaux à surveiller, et la décision pour la semaine suivante. Elle alimentera aussi le Journal du coach.</div>`}</div>`;ouvrir();
 }
-/* ===== Lot 2 — Logging réel des séances (persistance localStorage) ===== */
+/* ===== Créneaux météo — popup horaire ===== */
+function _wxStatus(t){
+  if(t<22)return{cls:'wx-ideal',lbl:'🟢 Idéal',c:'#22c55e'};
+  if(t<27)return{cls:'wx-ok',lbl:'🟡 OK',c:'#fbbf24'};
+  if(t<32)return{cls:'wx-dur',lbl:'🟠 Difficile',c:'#f97316'};
+  return{cls:'wx-evit',lbl:'🔴 Éviter',c:'#ef4444'};
+}
+function _wxReco(hrs){
+  const ideal=hrs.filter(([h,t])=>t<22);
+  const ok=hrs.filter(([h,t])=>t>=22&&t<27);
+  const mx=Math.max(...hrs.map(x=>x[1]));
+  const peak=(hrs.find(([h,t])=>t===mx)||[null])[0];
+  if(ideal.length)return`<strong>Fenêtre idéale :</strong> ${ideal[0][0]}h–${ideal[ideal.length-1][0]+1}h (< 22°C). Pic à ${mx}° vers ${peak}h — éviter impérativement.`;
+  if(ok.length)return`<strong>Acceptable :</strong> ${ok[0][0]}h–${ok[ok.length-1][0]+1}h avec hydratation renforcée. Pic à ${mx}° vers ${peak}h.`;
+  return`<strong>Journée très difficile.</strong> Pic à ${mx}°. Réduire ou reporter la séance au lendemain matin.`;
+}
+function _wxRenderTab(k){
+  const hrs=k==='today'?(window._wxHourly&&window._wxHourly.today):( window._wxHourly&&window._wxHourly.tomorrow);
+  if(!hrs||!hrs.length)return;
+  const mx=Math.max(...hrs.map(x=>x[1])),mn=Math.min(...hrs.map(x=>x[1]));
+  document.getElementById('wx-reco').innerHTML=_wxReco(hrs);
+  document.getElementById('wx-strip').innerHTML=hrs.map(([h,t])=>`<div class="wx-strip-seg" style="background:${_wxStatus(t).c}"></div>`).join('');
+  document.getElementById('wx-hours').innerHTML=hrs.map(([h,t])=>{
+    const s=_wxStatus(t);const p=mx===mn?50:((t-mn)/(mx-mn)*100).toFixed(0);const hi=s.cls==='wx-ideal'?' wx-hr-hi':'';
+    return`<div class="wx-hr${hi}"><span class="wx-hr-t">${h}h</span><div class="wx-hr-bw"><div class="wx-hr-b" style="width:${p}%;background:${s.c}"></div></div><span class="wx-hr-temp">${t}°</span><span class="wx-hr-tag ${s.cls}">${s.lbl}</span></div>`;
+  }).join('');
+}
+function openCreneaux(){
+  const data=window._wxHourly;if(!data)return;
+  const t0max=data.today.length?Math.max(...data.today.map(x=>x[1])):null;
+  const t1max=data.tomorrow.length?Math.max(...data.tomorrow.map(x=>x[1])):null;
+  const el0=document.getElementById('wx-t0'),el1=document.getElementById('wx-t1');
+  if(el0&&t0max)el0.textContent='Aujourd\'hui · '+t0max+'°';
+  if(el1&&t1max)el1.textContent='Demain · '+t1max+'°';
+  el0&&el0.classList.add('active');el1&&el1.classList.remove('active');
+  document.getElementById('wx-ov').classList.add('open');
+  _wxRenderTab('today');
+}
+function closeCreneaux(){document.getElementById('wx-ov').classList.remove('open');}
+function wxTab(k){
+  document.getElementById('wx-t0').classList.toggle('active',k==='today');
+  document.getElementById('wx-t1').classList.toggle('active',k==='tomorrow');
+  _wxRenderTab(k);
+}
+function initCreneaux(){
+  if(!document.body||typeof document.body.insertAdjacentHTML!=='function')return;
+  document.body.insertAdjacentHTML('beforeend',`
+<div id="wx-ov" onclick="if(event.target===this)closeCreneaux()">
+  <div id="wx-sheet">
+    <div class="wx-head">
+      <div class="wx-handle"></div>
+      <div class="wx-sheet-title">🌡️ Créneaux d'entraînement</div>
+      <div class="wx-tabs"><div class="wx-tab active" id="wx-t0" onclick="wxTab('today')">Aujourd'hui</div><div class="wx-tab" id="wx-t1" onclick="wxTab('tomorrow')">Demain</div></div>
+      <div class="wx-reco" id="wx-reco"></div>
+      <div class="wx-strip" id="wx-strip"></div>
+    </div>
+    <div class="wx-hours" id="wx-hours"></div>
+    <button class="wx-close" onclick="closeCreneaux()">Fermer</button>
+  </div>
+</div>`);}
+
 const LOG_KEY='runlog_v1';
 function loadLogs(){try{return JSON.parse(localStorage.getItem(LOG_KEY)||'{}');}catch(e){return {};}}
 function saveLogs(o){try{localStorage.setItem(LOG_KEY,JSON.stringify(o));}catch(e){}}
@@ -1131,5 +1208,5 @@ function initBarre(se){const piste=document.getElementById('piste');if(!piste)re
     e.addEventListener('click',()=>{if(segActif)segActif.classList.remove('actif');if(segActif===e){segActif=null;pan.classList.remove('visible');return;}segActif=e;e.classList.add('actif');dnom.textContent=seg.nom;drole.textContent=seg.role;dgr.innerHTML=`<div><div class="di-label">Durée</div><div class="di-val">${fmt(seg.duree)}</div></div><div><div class="di-label">Bloc</div><div class="di-val">${seg.bloc}</div></div><div><div class="di-label">Début</div><div class="di-val">${fmt(seg.debut)}</div></div><div><div class="di-label">Fin</div><div class="di-val">${fmt(seg.fin)}</div></div>`;pan.classList.add('visible');});
     piste.appendChild(e);});
 }
-hydrateLogs();initQuickLog();renderHeader();renderPlan();rwAuto();
+hydrateLogs();initQuickLog();initCreneaux();renderHeader();renderPlan();rwAuto();
 if('serviceWorker'in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
