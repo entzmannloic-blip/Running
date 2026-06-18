@@ -310,7 +310,7 @@ def race(kind):
 WEEKS={}
 def W(n,ss): WEEKS[n]=ss
 # Reprise
-W(25,[ef(10,65,strides=True), ef(9,55), mp(12,72,1,6,"Premier contact sérieux avec l'allure marathon — 6 km à tenir proprement.",cool_min=25), longrun(18,110,heat=True,desc="Reconstruire l'endurance + roder le carburant."), renfo(opt=True)])
+W(25,[ef(10,65,strides=True), ef(9,55), mp(12,72,1,6,"Premier contact sérieux avec l'allure marathon — 6 km à tenir proprement.",cool_min=25), longrun(18,110,heat=True,desc="Reconstruire l'endurance + roder le carburant."), ef(10,65)])
 # Allègement + prépa Déraille (course plaisir B, 5 juillet)
 W(26,[ef(11,66,strides=True), ef(9,55), deraille_prep(15,90), renfo(opt=True)])
 # Semaine de course — Trail Déraille au Lac des Sapins (dim. 5 juillet)
@@ -479,6 +479,8 @@ for n,ss in WEEKS.items():
     date_for(arr, n)
     if n==25:
         arr[3]["date"]="2026-06-18"   # sortie longue avancée au jeudi (départ vendredi chez parents)
+        arr[4]["opt"]=True
+        arr[4]["date"]="2026-06-20"   # footing optionnel samedi matin chez les parents
         arr[3]["realise"]={"statut":"fait","km":16.05,"temps":"1h28:33","allure":"5:31/km · dernier km 4:58","fc_moy":151,"fc_max":171,"rpe_ressenti":6,
           "commentaire":"16 km en 1h28m33 — 13,5 km à allure constante puis fast finish progressif (5:16 → 5:01 → 4:58/km). Départ 8h, canicule. TA 500ml + gel caféiné 50ᵉ min. 5 PRs.",
           "pr":5,"ach":6,"pr_detail":["You are my best view","Quais de Saône S-N","LY Joffre/Plessier tunnel côté Saône","LY Plessier/Joffre rive gauche","darse confluence nord"],
