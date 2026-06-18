@@ -28,7 +28,7 @@ CSS=open('/tmp/css.txt').read()
 P_REC="6:15-6:45/km"; P_EF="5:50-6:25/km"; P_AM="≈5:15/km"; P_SEUIL="≈4:50/km"; P_TRAIL="à l'effort"
 P_S30="≈4:40/km"; P_S60="≈4:55/km"; F_S30="172-180"; F_S60="166-174"
 F_REC="<140"; F_EF="135-150"; F_AM="152-163"; F_SEUIL="166-175"
-GREEN="#22c55e";BLUE="#3b82f6";ORANGE="#f97316";VIOLET="#8b5cf6";RED="#ef4444";YELLOW="#eab308";TEAL="#14b8a6"
+GREEN="#22c55e";EF_COLOR="#4ade80";BLUE="#3b82f6";ORANGE="#f97316";VIOLET="#8b5cf6";RED="#ef4444";YELLOW="#eab308";TEAL="#14b8a6"
 
 def segs(raw):
     t=0;out=[]
@@ -39,7 +39,7 @@ def mmss(sec): return f"{sec//60} min {sec%60:02d}" if sec%60 else f"{sec//60} m
 
 def ef(dist,dur,strides=False,opt=False,recovery=False,desc=None):
     if strides:
-        d=dict(titre="Footing facile + lignes droites",type="EF + technique",sport="Course à pied",opt=opt,accent=GREEN,fill=34,
+        d=dict(titre="Footing facile + lignes droites",type="EF + technique",sport="Course à pied",opt=opt,accent=EF_COLOR,fill=34,
           sous="EF facile et 6 lignes droites pour la vivacité.",
           metriques={"Distance":f"~{dist} km","Durée":f"~{dur} min","Allure":P_EF,"FC":F_EF,"RPE":"3-4","Type":"EF"},
           objectif="Volume aérobie <strong>vraiment facile</strong> + réveil neuromusculaire à moindre coût (lignes droites).",
@@ -55,7 +55,7 @@ def ef(dist,dur,strides=False,opt=False,recovery=False,desc=None):
                   {"nom":"Ligne droite 1/6","role":"100 m en accélération progressive relâchée — jamais en sprint.","duree":22,"couleur":"bleu","bloc":"×6","hauteur":78},{"nom":"Récup 1","role":"1 min marche ou trot très lent.","duree":60,"couleur":"orange","bloc":"—","hauteur":26},{"nom":"Ligne droite 2/6","role":"100 m en accélération progressive relâchée — jamais en sprint.","duree":22,"couleur":"bleu","bloc":"×6","hauteur":78},{"nom":"Récup 2","role":"1 min marche ou trot très lent.","duree":60,"couleur":"orange","bloc":"—","hauteur":26},{"nom":"Ligne droite 3/6","role":"100 m en accélération progressive relâchée — jamais en sprint.","duree":22,"couleur":"bleu","bloc":"×6","hauteur":78},{"nom":"Récup 3","role":"1 min marche ou trot très lent.","duree":60,"couleur":"orange","bloc":"—","hauteur":26},{"nom":"Ligne droite 4/6","role":"100 m en accélération progressive relâchée — jamais en sprint.","duree":22,"couleur":"bleu","bloc":"×6","hauteur":78},{"nom":"Récup 4","role":"1 min marche ou trot très lent.","duree":60,"couleur":"orange","bloc":"—","hauteur":26},{"nom":"Ligne droite 5/6","role":"100 m en accélération progressive relâchée — jamais en sprint.","duree":22,"couleur":"bleu","bloc":"×6","hauteur":78},{"nom":"Récup 5","role":"1 min marche ou trot très lent.","duree":60,"couleur":"orange","bloc":"—","hauteur":26},{"nom":"Ligne droite 6/6","role":"100 m en accélération progressive relâchée — jamais en sprint.","duree":22,"couleur":"bleu","bloc":"×6","hauteur":78},{"nom":"Récup 6","role":"1 min marche ou trot très lent.","duree":60,"couleur":"orange","bloc":"—","hauteur":26},
                   {"nom":"Retour au calme","role":"Décompression.","duree":300,"couleur":"vert","bloc":"—","hauteur":28}]))
     elif recovery:
-        d=dict(titre="Footing de récupération",type="Récupération active",sport="Course à pied",opt=opt,accent=GREEN,fill=22,
+        d=dict(titre="Footing de récupération",type="Récupération active",sport="Course à pied",opt=opt,accent=EF_COLOR,fill=22,
           sous="Très facile, circulation, on efface la fatigue.",
           metriques={"Distance":f"~{dist} km","Durée":f"~{dur} min","Allure":P_REC,"FC":F_REC,"RPE":"2-3","Type":"Récup"},
           objectif="Footing très facile pour récupérer activement, sans aucun objectif de performance.",
@@ -66,7 +66,7 @@ def ef(dist,dur,strides=False,opt=False,recovery=False,desc=None):
           legende=[{"c":GREEN,"l":"Récupération — RPE 2-3"}],
           coach=[{"titre":"Lent = utile","texte":"Une récup réussie est une récup qui ne ressemble pas à un entraînement."}])
     else:
-        d=dict(titre="Footing facile",type="EF aérobie",sport="Course à pied",opt=opt,accent=GREEN,fill=28,
+        d=dict(titre="Footing facile",type="EF aérobie",sport="Course à pied",opt=opt,accent=EF_COLOR,fill=28,
           sous="Volume aérobie pur, plat, facile.",
           metriques={"Distance":f"~{dist} km","Durée":f"~{dur} min","Allure":P_EF,"FC":F_EF,"RPE":"3","Type":"EF"},
           objectif="Du volume aérobie facile sur le plat — le socle polarisé qui rend la qualité efficace.",
@@ -218,7 +218,7 @@ def longrun(dist,dur,mp_km=0,fuel=True,desc=None,heat=False,fill=64):
     raw.append({"nom":"Retour au calme","role":"Marche + recharge.","duree":300,"couleur":"vert","bloc":"—","hauteur":28})
     vig="Pars volontairement lent : la longue se court sur la retenue. Fatigue marquée → réduis la distance mais ne supprime pas la séance."
     if heat: vig+=" Été : par forte chaleur, cours à la FC/sensation (pas au chrono) et renforce l'hydratation/électrolytes."
-    return dict(titre=("Sortie longue + allure marathon" if mp_km else "Sortie longue endurance"),type=("Sortie longue spécifique" if mp_km else "Sortie longue"),sport="Course à pied",opt=False,accent=(BLUE if mp_km else GREEN),fill=fill,
+    return dict(titre=("Sortie longue + allure marathon" if mp_km else "Sortie longue endurance"),type=("Sortie longue spécifique" if mp_km else "Sortie longue"),sport="Course à pied",opt=False,accent=(BLUE if mp_km else ORANGE),fill=fill,
       sous=desc or ("La séance clé — endurance + carburant."+(f" Finish {mp_km} km AM." if mp_km else "")),
       metriques={"Distance":f"~{dist} km tout compris","Durée":f"~{dur} min","Allure":(P_EF+" + AM" if mp_km else P_EF),"FC":F_EF,"RPE":("5-6" if mp_km else "4-5"),"Type":"Longue"},
       objectif=(("Endurance + spécificité : "+f"{mp_km} km à allure marathon en fin de longue" if mp_km else "Reconstruire/entretenir l'endurance fondamentale")+", et roder le carburant. <strong>Séance clé, non optionnelle.</strong>"),
