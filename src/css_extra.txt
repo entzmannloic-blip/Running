@@ -563,3 +563,28 @@ body.nuit .seance-carte.sc-fait{background:#052e16;border-color:#16a34a}
 body.nuit .seance-carte.sc-fait .seance-bande{background:#16a34a !important}
 body.nuit .seance-carte.sc-fait .seance-nom{color:#4ade80}
 body.nuit .seance-carte.sc-fait .seance-fleche{color:#4ade80}
+/* ===== Quick Log — bouton carte + bottom sheet ===== */
+.ql-btn{width:34px;height:34px;border-radius:50%;border:2px solid #22c55e;background:transparent;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#22c55e;font-size:15px;flex:0 0 34px;transition:background .15s}
+.ql-btn:hover,.ql-btn:active{background:#f0fdf4}
+.ql-btn:active{transform:scale(.92)}
+.sc-check{color:#22c55e;font-size:17px;font-weight:700}
+#ql-overlay{display:none;position:fixed;inset:0;background:rgba(15,23,42,.55);z-index:1000;align-items:flex-end}
+#ql-overlay.open{display:flex}
+#ql-sheet{background:var(--bg-card);border-radius:18px 18px 0 0;padding:20px 16px 28px;width:100%;animation:qlUp .22s ease}
+@keyframes qlUp{from{transform:translateY(60px);opacity:0}to{transform:none;opacity:1}}
+.ql-handle{width:36px;height:4px;background:var(--bord);border-radius:99px;margin:0 auto 16px}
+.ql-titre{font-size:16px;font-weight:700;color:var(--texte);margin-bottom:3px}
+.ql-sous{font-size:13px;color:var(--texte-deux);margin-bottom:16px}
+.ql-fields{display:flex;flex-direction:column;gap:12px}
+.ql-label{display:flex;flex-direction:column;gap:5px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--texte-deux)}
+.ql-label input{padding:9px 11px;border-radius:8px;border:.5px solid var(--bord-card);background:var(--gris-fond);font-size:14px;color:var(--texte);font-family:inherit;-webkit-appearance:none}
+.ql-row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ql-allure-val{padding:9px 11px;background:var(--gris-fond);border-radius:8px;border:.5px solid var(--bord-card);font-size:14px;font-weight:700;color:var(--texte)}
+.ql-submit{width:100%;padding:12px;border-radius:10px;background:#22c55e;border:none;color:#fff;font-size:14px;font-weight:700;cursor:pointer;margin-top:14px;display:flex;align-items:center;justify-content:center;gap:6px}
+.ql-submit:active{background:#16a34a}
+.ql-cancel{display:block;width:100%;padding:8px;border:none;background:transparent;color:var(--texte-deux);font-size:13px;cursor:pointer;margin-top:4px}
+.ql-toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#15803d;color:#fff;padding:9px 18px;border-radius:99px;font-size:13px;font-weight:700;display:none;z-index:1001;white-space:nowrap;pointer-events:none}
+.ql-toast.ql-show{display:block;animation:qlFt 2.8s ease forwards}
+@keyframes qlFt{0%{opacity:0;transform:translate(-50%,8px)}12%{opacity:1;transform:translate(-50%,0)}85%{opacity:1}100%{opacity:0}}
+body.nuit #ql-sheet{background:#1e293b}
+body.nuit .ql-label input,body.nuit .ql-allure-val{background:#0f172a;border-color:#334155;color:#f1f5f9}
