@@ -793,13 +793,41 @@ body.nuit .wx-tab{background:#0f172a;border-color:#334155;color:#94a3b8}
 body.nuit .wx-tab.active{background:#431407;border-color:#7c2d12;color:#fed7aa}
 body.nuit .wx-close{background:#0f172a;border-color:#334155;color:#94a3b8}
 body.nuit .wx-hr{border-color:#1e293b}
+/* ===== Cockpit ===== */
+.ck-card{background:var(--bg-card,#fff);border-radius:13px;padding:13px;margin-bottom:8px;border:.5px solid var(--bord-card,#e2e8f0)}
+.ck-ch{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px}
+.ck-ct{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--texte-deux)}
+.ck-cs{font-size:10px;color:#94a3b8;margin-top:1px}
+.ck-big{font-size:20px;font-weight:700;color:var(--texte)}
+.ck-cw{position:relative;margin-top:8px;touch-action:none;user-select:none}
+.ck-cw svg{display:block;width:100%;overflow:visible}
+.ck-tt{position:absolute;background:#ffffff;border:.5px solid #cbd5e1;border-radius:8px;padding:5px 8px;font-size:11px;pointer-events:none;opacity:0;transition:opacity .08s;white-space:nowrap;z-index:20;box-shadow:0 4px 12px rgba(0,0,0,.12)}
+.ck-tt.show{opacity:1}
+.ck-xl{display:flex;justify-content:space-between;font-size:8.5px;color:#94a3b8;margin-top:3px}
+.ck-sec{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#94a3b8;margin:16px 0 8px;display:flex;align-items:center;gap:6px}
+.ck-sec::after{content:'';flex:1;height:.5px;background:#e2e8f0}
+.ck-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:6px}
+.ck-kpi{background:var(--bg-card,#fff);border-radius:10px;padding:9px 8px;border:.5px solid var(--bord-card,#e2e8f0)}
+.ck-kv{font-size:16px;font-weight:700;line-height:1;color:var(--texte)}
+.ck-ku{font-size:10px;color:#94a3b8;margin-left:1px}
+.ck-kl{font-size:8.5px;text-transform:uppercase;letter-spacing:.04em;color:#94a3b8;margin-top:4px;line-height:1.2}
+.ck-kd{font-size:9px;margin-top:3px;font-weight:600}
+.ck-toggle{display:flex;gap:5px;margin-bottom:8px;position:sticky;top:52px;background:var(--gris-fond,#f1f5f9);padding:4px 0;z-index:5}
+.ck-tg{flex:1;padding:6px 0;border-radius:7px;border:.5px solid var(--bord-card,#e2e8f0);background:var(--bg-card,#fff);font-size:12px;font-weight:600;color:var(--texte-deux);cursor:pointer;transition:all .15s;text-align:center}
+.ck-tg.ck-on{background:#0d9488;border-color:#0d9488;color:#fff}
+body.nuit .ck-card{background:#1e293b;border-color:#334155}
+body.nuit .ck-kpi{background:#1e293b;border-color:#334155}
+body.nuit .ck-tt{background:#0f172a;border-color:#334155;color:#f1f5f9}
+body.nuit .ck-sec::after{background:#334155}
+body.nuit .ck-toggle{background:#0f172a}
+body.nuit .ck-tg{background:#1e293b;border-color:#334155;color:#94a3b8}
 </style></head>
 <body>
 <a href="#main" class="skip-link">Aller au contenu</a>
 <div class="accueil" style="padding-top:0">
   <div class="appbar" id="appbar">
     <div class="cds" id="cd-strip"></div>
-    <div class="tabbar"><div class="tab actif" id="tab-plan" onclick="showTab('plan')">Préparation / Séances</div><div class="tab" id="tab-dash" onclick="showTab('dash')">Suivi perf.</div></div>
+    <div class="tabbar"><div class="tab actif" id="tab-plan" onclick="showTab('plan')">Préparation / Séances</div><div class="tab" id="tab-dash" onclick="showTab('dash')">Suivi perf.</div><div class="tab" id="tab-cockpit" onclick="showTab('cockpit')">Cockpit</div></div>
   </div>
   <div id="vue-plan"><span id="main"></span>
     <div id="hero-plan"></div>
@@ -807,6 +835,7 @@ body.nuit .wx-hr{border-color:#1e293b}
     <p class="note-foot">Plan complet S25→S53. Dis-moi « j'ai fait la séance X de la semaine Y » et tout se met à jour.</p>
   </div>
   <div id="vue-dash" style="display:none"><div id="dash-contenu"></div></div>
+  <div id="vue-cockpit" style="display:none"><div id="cockpit-contenu"></div></div>
   <div class="maj-foot" id="maj-foot"></div>
 </div>
 <div class="rw-overlay" id="rwoverlay"><div class="rw-card" id="rwcard" onclick="rwNext()"></div></div>
@@ -892,7 +921,17 @@ function delta(series,good){const v=series.filter(x=>x!=null);if(v.length<2)retu
 function toggleTheme(){const n=document.body.classList.toggle('nuit');document.getElementById('themebtn').textContent=n?'☀️':'🌙';}
 
 /* ===== onglets ===== */
-function showTab(t){document.getElementById('vue-plan').style.display=t==='plan'?'block':'none';document.getElementById('vue-dash').style.display=t==='dash'?'block':'none';document.getElementById('tab-plan').classList.toggle('actif',t==='plan');document.getElementById('tab-dash').classList.toggle('actif',t==='dash');if(t==='dash')renderDash();window.scrollTo(0,0);}
+function showTab(t){
+  document.getElementById('vue-plan').style.display=t==='plan'?'block':'none';
+  document.getElementById('vue-dash').style.display=t==='dash'?'block':'none';
+  document.getElementById('vue-cockpit').style.display=t==='cockpit'?'block':'none';
+  document.getElementById('tab-plan').classList.toggle('actif',t==='plan');
+  document.getElementById('tab-dash').classList.toggle('actif',t==='dash');
+  document.getElementById('tab-cockpit').classList.toggle('actif',t==='cockpit');
+  if(t==='dash')renderDash();
+  if(t==='cockpit')renderCockpit();
+  window.scrollTo(0,0);
+}
 
 /* ===== header + hero ===== */
 function prochaineSeance(){
@@ -1628,6 +1667,222 @@ function logSeance(wk,id){
   _afterLog(wk,id);
 }
 function unlogSeance(wk,id){const se=findSeance(wk,id);if(!se)return;const logs=loadLogs();delete logs[logId(wk,id)];saveLogs(logs);se.realise={statut:'a_faire'};_afterLog(wk,id);}
+/* ===================================================================
+   COCKPIT — Dashboard analytique complet
+   =================================================================== */
+const _CK={
+  VOL:{2:{w:['S24','S25'],p:[32,52],a:[28,46.6]},4:{w:['S22','S23','S24','S25'],p:[38,35,32,52],a:[30.6,36.4,28,46.6]},8:{w:['S18','S19','S20','S21','S22','S23','S24','S25'],p:[65,70,75,40,38,35,32,52],a:[62,68,55,38,30.6,36.4,28,46.6]},12:{w:['S14','S15','S16','S17','S18','S19','S20','S21','S22','S23','S24','S25'],p:[50,55,60,65,65,70,75,40,38,35,32,52],a:[48,52,58,60,62,68,55,38,30.6,36.4,28,46.6]}},
+  RE:{2:{w:['S24','S25'],v:[210,427]},4:{w:['S22','S23','S24','S25'],v:[248,255,210,427]},8:{w:['S18','S19','S20','S21','S22','S23','S24','S25'],v:[420,510,696,350,248,255,210,427]},12:{w:['S14','S15','S16','S17','S18','S19','S20','S21','S22','S23','S24','S25'],v:[380,410,450,500,420,510,696,350,248,255,210,427]}},
+  ACWR:{2:{w:['S24','S25'],v:[0.85,1.42]},4:{w:['S22','S23','S24','S25'],v:[1.1,0.95,0.85,1.42]},8:{w:['S18','S19','S20','S21','S22','S23','S24','S25'],v:[1.05,1.15,1.3,0.95,1.1,0.95,0.85,1.42]},12:{w:['S14','S15','S16','S17','S18','S19','S20','S21','S22','S23','S24','S25'],v:[0.9,1.0,1.1,1.2,1.05,1.15,1.3,0.95,1.1,0.95,0.85,1.42]}},
+  DPLUS:{2:{w:['S24','S25'],v:[155,175]},4:{w:['S22','S23','S24','S25'],v:[858,136,155,175]},8:{w:['S18','S19','S20','S21','S22','S23','S24','S25'],v:[750,640,1662,920,858,136,155,175]},12:{w:['S14','S15','S16','S17','S18','S19','S20','S21','S22','S23','S24','S25'],v:[400,520,680,710,750,640,1662,920,858,136,155,175]}},
+  Z2:{2:{w:['S24','S25'],v:[360,354]},4:{w:['S22','S23','S24','S25'],v:[372,358,360,354]},8:{w:['S18','S19','S20','S21','S22','S23','S24','S25'],v:[384,378,375,380,372,358,360,354]},12:{w:['S14','S15','S16','S17','S18','S19','S20','S21','S22','S23','S24','S25'],v:[396,392,390,388,384,378,375,380,372,358,360,354]}},
+  DC:{2:{w:['S24','S25'],v:[6.2,4.1]},4:{w:['S22','S23','S24','S25'],v:[8.5,5.5,6.2,4.1]},8:{w:['S18','S19','S20','S21','S22','S23','S24','S25'],v:[9.1,7.8,8.5,5.5,8.5,5.5,6.2,4.1]},12:{w:['S14','S15','S16','S17','S18','S19','S20','S21','S22','S23','S24','S25'],v:[11,10.2,9.5,8.8,9.1,7.8,8.5,5.5,8.5,5.5,6.2,4.1]}},
+  PACE:{2:{w:['S24','S25'],ef:[360,354],am:[320,314],se:[null,288]},4:{w:['S22','S23','S24','S25'],ef:[384,358,360,354],am:[320,315,320,314],se:[295,null,null,288]},8:{w:['S18','S19','S20','S21','S22','S23','S24','S25'],ef:[396,390,387,390,384,358,360,354],am:[316,318,316,315,320,315,320,314],se:[300,298,295,297,295,null,null,288]},12:{w:['S14','S15','S16','S17','S18','S19','S20','S21','S22','S23','S24','S25'],ef:[408,404,400,396,390,387,390,384,380,358,360,354],am:[324,322,320,318,316,318,316,315,320,315,320,314],se:[310,308,305,302,300,298,295,297,295,null,null,288]}},
+  FCZ:{2:[['Z1','#4ade80',10],['Z2','#22c55e',58],['Z3','#f59e0b',20],['Z4+','#ef4444',12]],4:[['Z1','#4ade80',11],['Z2','#22c55e',62],['Z3','#f59e0b',17],['Z4+','#ef4444',10]],8:[['Z1','#4ade80',12],['Z2','#22c55e',65],['Z3','#f59e0b',15],['Z4+','#ef4444',8]],12:[['Z1','#4ade80',14],['Z2','#22c55e',68],['Z3','#f59e0b',12],['Z4+','#ef4444',6]]},
+  CAD:{2:{w:['S24','S25'],v:[171,172]},4:{w:['S22','S23','S24','S25'],v:[145,172,171,172]},8:{w:['S18','S19','S20','S21','S22','S23','S24','S25'],v:[154,168,146,170,145,172,171,172]},12:{w:['S14','S15','S16','S17','S18','S19','S20','S21','S22','S23','S24','S25'],v:[168,169,154,170,154,168,146,170,145,172,171,172]}},
+  RUNS:[
+    {id:'18967988695',title:'Sortie longue endurance',date:'Jeu 18 juin',type:'#f97316',km:16.0,al:'5:31',re:156,fcm:151,fcx:171,cad:172,dp:52,cal:1249,hasStreams:true},
+    {id:'18955432704',title:'Allure marathon 1×6 km',date:'Mer 17 juin',type:'#3b82f6',km:10.1,al:'5:14',re:169,fcm:165,fcx:181,cad:168,dp:35,cal:816,hasStreams:false},
+    {id:'18939731283',title:'Footing facile',date:'Mar 16 juin',type:'#4ade80',km:10.1,al:'5:56',re:58,fcm:140,fcx:167,cad:172,dp:40,cal:788,hasStreams:false},
+    {id:'18810734775',title:'Trail des Gypaètes (Circaète)',date:'Sam 6 juin',type:'#0d9488',km:29.8,al:'9:50',re:696,fcm:152,fcx:178,cad:146,dp:1662,cal:3191,hasStreams:false}
+  ],
+  STREAMS:{hr:[109,130,133,136,133,138,139,139,154,153,158,156,148,149,147,157,154,160,145,140,147,145,146,142,150,150,146,144,146,142,147,146,146,143,146,146,150,144,139,140,145,145,143,145,146,140,145,151,155,152,153,160,151,153,150,152,149,153,153,158,156,147,153,153,151,153,150,159,158,156,156,152,149,150,150,154,153,150,152,153,151,160,153,153,153,155,162,166,164,163,165,166,165,166,162,165,169,170,169,169],alt:[169,168,170,171,172,171,170,167,167,168,170,170,169,168,168,171,173,176,172,168,167,165,164,165,166,167,167,168,168,168,168,168,167,166,166,167,168,168,167,167,167,167,168,169,169,168,169,168,172,168,168,171,172,173,172,168,168,169,173,174,175,169,169,169,170,170,170,174,176,175,176,178,179,180,181,181,181,181,180,180,179,180,176,174,170,170,170,170,169,170,170,171,170,169,169,168,167,167,166,167],v:[0,2.76,2.16,3.28,2.98,2.62,3.32,3.84,3.38,3.42,3.24,3.14,2.92,1.46,2.96,3.34,2.72,2.76,2.9,2.98,2.98,2.94,3.02,2.88,3.16,2.96,3,3.12,2.92,2.86,2.88,3.28,2.94,3.4,2.88,2.9,3.12,2.94,3.4,2.82,2.46,2.98,3.26,3.96,3.18,3.06,2.4,3.38,2.98,3.26,3.3,2.7,2.68,3.02,3.06,1.96,2.44,2.88,2.88,3.14,2.9,3.06,2.78,3.1,3,2.84,2.86,2.88,2.68,3.02,2.92,2.94,2.9,2.96,2.94,2.94,2.88,2.94,2.92,3,2.92,0.73,2.94,3.1,3.54,3.4,3.22,3.36,3.18,3.3,3.6,3.4,3.08,3.48,3.24,3.46,3.38,3.34,3.94,2.86],km:[0,0.16,0.32,0.49,0.65,0.81,0.97,1.13,1.3,1.46,1.62,1.78,1.94,2.11,2.27,2.43,2.59,2.76,2.92,3.08,3.24,3.4,3.57,3.73,3.89,4.05,4.21,4.38,4.54,4.7,4.86,5.03,5.19,5.35,5.51,5.67,5.83,6,6.16,6.32,6.48,6.64,6.81,6.97,7.13,7.3,7.46,7.62,7.78,7.94,8.1,8.27,8.43,8.59,8.75,8.91,9.08,9.24,9.4,9.56,9.72,9.89,10.05,10.21,10.37,10.54,10.7,10.86,11.02,11.18,11.35,11.51,11.67,11.83,11.99,12.16,12.32,12.48,12.64,12.8,12.97,13.13,13.29,13.45,13.61,13.78,13.94,14.1,14.26,14.42,14.59,14.75,14.91,15.07,15.24,15.4,15.56,15.72,15.88,16.05]}
+};
+let _ckWin=8;
+function _ckSmin(s){if(s==null)return'—';const m=Math.floor(s/60),x=Math.round(s%60);return m+':'+(x<10?'0':'')+x;}
+function _ckXL(id,weeks){const el=document.getElementById(id);if(!el)return;el.innerHTML='';const n=weeks.length;const show=n<=4?weeks.map((_,i)=>i):[0,Math.floor(n/3),Math.floor(2*n/3),n-1];weeks.forEach((wk,i)=>{const sp=document.createElement('span');sp.textContent=show.includes(i)?wk:'';el.appendChild(sp);});}
+function _ckBar(svgId,wrapId,ttId,xlId,data,opt){
+  opt=opt||{};const H=opt.h||90,n=data.w.length,gap=300/n,bw=gap*0.6;
+  const vals=data.v||data.a;const mx=Math.max(...vals.filter(x=>x!=null),(data.p?Math.max(...data.p):0));
+  let s='';data.w.forEach((wk,i)=>{const x=i*gap+gap*0.2;
+    if(opt.ref&&data.p){const ph=data.p[i]/mx*(H-12);s+=`<rect x="${x}" y="${H-ph}" width="${bw}" height="${ph}" rx="2" fill="${opt.col||'#0d9488'}" opacity="0.2"/>`;}
+    const v=vals[i];if(v==null)return;const h=v/mx*(H-12);
+    let c=opt.col||'#0d9488';
+    if(opt.thr)c=v>opt.thr[1]?'#ef4444':v>opt.thr[0]?'#f59e0b':'#22c55e';
+    if(opt.ref&&data.p)c=v>=data.p[i]?'#0d9488':'#ef4444';
+    s+=`<rect class="ck-bar-${svgId}" data-i="${i}" x="${x}" y="${H-h}" width="${bw}" height="${h}" rx="2" fill="${c}"/>`;});
+  const svg=document.getElementById(svgId);if(!svg)return;svg.setAttribute('viewBox',`0 0 300 ${H}`);svg.innerHTML=s;
+  _ckXL(xlId,data.w);
+  const tt=document.getElementById(ttId),wrap=document.getElementById(wrapId);if(!tt||!wrap)return;
+  svg.querySelectorAll('.ck-bar-'+svgId).forEach(b=>{b.addEventListener('click',()=>{
+    const i=+b.dataset.i;const v=vals[i];
+    tt.innerHTML=`<div style="font-size:9px;color:#64748b">${data.w[i]}</div><div style="font-size:13px;font-weight:700">${v==null?'—':v}${opt.unit||''}</div>`+(opt.ref&&data.p?`<div style="font-size:9px;color:#64748b">prévu ${data.p[i]}</div>`:'');
+    const r=b.getBoundingClientRect(),wr=wrap.getBoundingClientRect();
+    tt.style.left=Math.min(Math.max(r.left-wr.left,0),wr.width-80)+'px';tt.style.top='-4px';tt.classList.add('show');
+    clearTimeout(tt._t);tt._t=setTimeout(()=>tt.classList.remove('show'),2200);
+  });});
+}
+function _ckLine(svgId,wrapId,ttId,xlId,weeks,series,fmt,opt){
+  opt=opt||{};const H=opt.h||90,n=weeks.length;
+  if(!n)return;
+  const allV=series.flatMap(s=>s.v.filter(x=>x!=null));if(!allV.length)return;
+  let mn=Math.min(...allV),mx=Math.max(...allV);const pad=(mx-mn)*0.15||5;mn-=pad;mx+=pad;
+  const xs=weeks.map((_,i)=>10+i*((300-20)/Math.max(1,n-1)));
+  const ym=v=>H-10-((v-mn)/(mx-mn)*(H-20));
+  let defs='',paths='',zones='';
+  if(opt.zones)opt.zones.forEach(z=>{const y1=ym(z[1]),y2=ym(z[0]);zones+=`<rect x="0" y="${y1}" width="300" height="${Math.max(0,y2-y1)}" fill="${z[2]}" opacity="0.08"/>`;});
+  series.forEach((s,si)=>{
+    const c=s.v.map((v,i)=>v==null?null:[xs[i],ym(v)]).filter(Boolean);if(!c.length)return;
+    const line=c.map((p,i)=>(i?'L':'M')+p[0].toFixed(1)+' '+p[1].toFixed(1)).join(' ');
+    if(opt.fill!==false){defs+=`<linearGradient id="ckG${svgId}${si}" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${s.color}" stop-opacity="0.2"/><stop offset="100%" stop-color="${s.color}" stop-opacity="0"/></linearGradient>`;paths+=`<path d="${line} L${c[c.length-1][0]} ${H} L${c[0][0]} ${H} Z" fill="url(#ckG${svgId}${si})"/>`;}
+    paths+=`<path d="${line}" fill="none" stroke="${s.color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>`;
+  });
+  let dots='';series.forEach((s,si)=>{dots+=`<circle id="${svgId}dt${si}" r="4" fill="${s.color}" opacity="0" stroke="#fff" stroke-width="1.5"/>`;});
+  const scrub=`<line id="${svgId}sc" x1="0" y1="0" x2="0" y2="${H}" stroke="#94a3b8" stroke-width="1" stroke-dasharray="3 3" opacity="0"/>`;
+  const svg=document.getElementById(svgId);if(!svg)return;svg.setAttribute('viewBox',`0 0 300 ${H}`);svg.innerHTML=`<defs>${defs}</defs>${zones}${paths}${scrub}${dots}`;
+  _ckXL(xlId,weeks);
+  const wrap=document.getElementById(wrapId),tt=document.getElementById(ttId);if(!wrap||!tt)return;
+  function doScrub(cx){try{
+    const rect=svg.getBoundingClientRect();const rel=(cx-rect.left)/rect.width*300;
+    let idx=Math.round((rel-10)/((300-20)/Math.max(1,n-1)));idx=Math.max(0,Math.min(n-1,idx));
+    const sx=xs[idx];document.getElementById(svgId+'sc').setAttribute('x1',sx);document.getElementById(svgId+'sc').setAttribute('x2',sx);document.getElementById(svgId+'sc').setAttribute('opacity','1');
+    let html=`<div style="font-size:9px;color:#64748b">${weeks[idx]}</div>`;
+    series.forEach((s,si)=>{const v=s.v[idx];const dot=document.getElementById(svgId+'dt'+si);
+      if(v==null){dot.setAttribute('opacity','0');return;}
+      dot.setAttribute('cx',sx);dot.setAttribute('cy',ym(v));dot.setAttribute('opacity','1');
+      html+=`<div style="font-size:13px;font-weight:700;color:${s.color}">${fmt(v)}${s.lbl?' <span style="font-size:9px;color:#64748b">'+s.lbl+'</span>':''}</div>`;});
+    tt.innerHTML=html;const wr=wrap.getBoundingClientRect();let tx=(sx/300*wr.width)-42;tx=Math.max(0,Math.min(tx,wr.width-84));tt.style.left=tx+'px';tt.style.top='-6px';tt.classList.add('show');
+  }catch(e){}}
+  function end(){try{document.getElementById(svgId+'sc').setAttribute('opacity','0');series.forEach((s,si)=>{const d=document.getElementById(svgId+'dt'+si);if(d)d.setAttribute('opacity','0');});tt.classList.remove('show');}catch(e){}}
+  wrap.ontouchstart=e=>{e.preventDefault();doScrub(e.touches[0].clientX);};
+  wrap.ontouchmove=e=>{e.preventDefault();doScrub(e.touches[0].clientX);};
+  wrap.ontouchend=end;
+  wrap.onmousedown=e=>{doScrub(e.clientX);wrap.onmousemove=ev=>doScrub(ev.clientX);};
+  wrap.onmouseup=()=>{wrap.onmousemove=null;end();};
+  wrap.onmouseleave=()=>{wrap.onmousemove=null;end();};
+}
+function _ckOpenRun(i){
+  const r=_CK.RUNS[i],st=_CK.STREAMS;
+  const el=document.getElementById('ck-modal');if(!el)return;
+  el.querySelector('#ck-m-title').textContent=r.title;
+  el.querySelector('#ck-m-sub').textContent=r.date+' · '+r.km+' km · '+r.al+'/km';
+  el.querySelector('#ck-m-metrics').innerHTML=[['Distance',r.km+' km'],['Allure',r.al+'/km'],['Effort',r.re],['FC moy',r.fcm+' bpm'],['FC max',r.fcx+' bpm'],['Cadence',r.cad+' spm'],['D+',r.dp+' m'],['Calories',r.cal]].map(m=>`<div style="background:var(--gris-fond);border-radius:9px;padding:8px;text-align:center"><div style="font-size:14px;font-weight:700;color:var(--texte)">${m[1]}</div><div style="font-size:8.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--texte-deux);margin-top:3px">${m[0]}</div></div>`).join('');
+  el.style.display='flex';
+  if(r.hasStreams){
+    const H=140,n=st.km.length,xs=st.km.map(d=>10+d/st.km[n-1]*(280));
+    const hrMn=Math.min(...st.hr)-5,hrMx=Math.max(...st.hr)+5;
+    const altMn=Math.min(...st.alt)-2,altMx=Math.max(...st.alt)+8;
+    const pace=st.v.map(v=>v>0.3?1000/v:600);const pMn=Math.min(...pace),pMx=Math.min(Math.max(...pace),600);
+    const yHR=v=>H-12-((v-hrMn)/(hrMx-hrMn)*(H-24));
+    const yAlt=v=>H-12-((v-altMn)/(altMx-altMn)*(H-24));
+    const yP=v=>H-12-((Math.min(v,pMx)-pMn)/(pMx-pMn)*(H-24));
+    const path=(arr,ym)=>arr.map((v,i)=>(i?'L':'M')+xs[i].toFixed(1)+' '+ym(v).toFixed(1)).join(' ');
+    const altL=path(st.alt,yAlt),hrL=path(st.hr,yHR),pL=path(pace,yP);
+    const svg=el.querySelector('#ck-m-svg');svg.setAttribute('viewBox',`0 0 300 ${H}`);
+    svg.innerHTML=`<defs><linearGradient id="ckAltG" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#94a3b8" stop-opacity="0.2"/><stop offset="100%" stop-color="#94a3b8" stop-opacity="0"/></linearGradient></defs>
+      <path d="${altL} L${xs[n-1]} ${H-12} L${xs[0]} ${H-12} Z" fill="url(#ckAltG)"/>
+      <path d="${altL}" fill="none" stroke="#94a3b8" stroke-width="1" opacity="0.5"/>
+      <path d="${pL}" fill="none" stroke="#0d9488" stroke-width="1.5"/>
+      <path d="${hrL}" fill="none" stroke="#ef4444" stroke-width="2"/>
+      <line id="ck-msc" x1="-10" y1="0" x2="-10" y2="${H}" stroke="#475569" stroke-width="1" stroke-dasharray="3 3"/>
+      <circle id="ck-mdHR" r="4" fill="#ef4444" opacity="0" stroke="#fff" stroke-width="1.5"/>
+      <circle id="ck-mdP" r="4" fill="#0d9488" opacity="0" stroke="#fff" stroke-width="1.5"/>`;
+    const wrap=el.querySelector('#ck-m-wrap'),tt=el.querySelector('#ck-m-tt');
+    function scrubM(cx){try{
+      const rect=svg.getBoundingClientRect();const rel=(cx-rect.left)/rect.width*300;
+      let idx=0,best=1e9;xs.forEach((x,j)=>{const d=Math.abs(x-rel);if(d<best){best=d;idx=j;}});
+      document.getElementById('ck-msc').setAttribute('x1',xs[idx]);document.getElementById('ck-msc').setAttribute('x2',xs[idx]);
+      const dHR=document.getElementById('ck-mdHR');dHR.setAttribute('cx',xs[idx]);dHR.setAttribute('cy',yHR(st.hr[idx]));dHR.setAttribute('opacity','1');
+      const dP=document.getElementById('ck-mdP');dP.setAttribute('cx',xs[idx]);dP.setAttribute('cy',yP(pace[idx]));dP.setAttribute('opacity','1');
+      tt.innerHTML=`<div style="font-size:9px;color:#64748b">km ${st.km[idx].toFixed(1)}</div><div style="font-size:12px;font-weight:700;color:#ef4444">${st.hr[idx]} bpm</div><div style="font-size:12px;font-weight:700;color:#0d9488">${_ckSmin(pace[idx])}/km</div><div style="font-size:9px;color:#64748b">alt ${st.alt[idx].toFixed(0)} m</div>`;
+      const wr=wrap.getBoundingClientRect();let tx=(xs[idx]/300*wr.width)-44;tx=Math.max(0,Math.min(tx,wr.width-90));tt.style.left=tx+'px';tt.style.top='-6px';tt.classList.add('show');
+    }catch(e){}}
+    function endM(){try{document.getElementById('ck-msc').setAttribute('x1','-10');document.getElementById('ck-mdHR').setAttribute('opacity','0');document.getElementById('ck-mdP').setAttribute('opacity','0');tt.classList.remove('show');}catch(e){}}
+    wrap.ontouchstart=e=>{e.preventDefault();scrubM(e.touches[0].clientX);};
+    wrap.ontouchmove=e=>{e.preventDefault();scrubM(e.touches[0].clientX);};
+    wrap.ontouchend=endM;
+    wrap.onmousedown=e=>{scrubM(e.clientX);wrap.onmousemove=ev=>scrubM(ev.clientX);};
+    wrap.onmouseup=()=>{wrap.onmousemove=null;endM();};
+    wrap.onmouseleave=()=>{wrap.onmousemove=null;endM();};
+  } else {
+    const svg=el.querySelector('#ck-m-svg');svg.setAttribute('viewBox','0 0 300 140');
+    svg.innerHTML='<text x="150" y="70" text-anchor="middle" fill="#94a3b8" font-size="12">Streams disponibles en prod via Strava</text>';
+  }
+}
+function _ckRenderAll(win){
+  const D=_CK;const W=win;
+  _ckBar('ckVol','ckVolW','ckVolT','ckVolX',D.VOL[W],{ref:true,col:'#0d9488',unit:' km',h:90});
+  document.getElementById('ck-vol-sub').textContent=D.VOL[W].a.reduce((a,b)=>a+b,0).toFixed(0)+' km · '+W+' sem.';
+  _ckBar('ckRE','ckREW','ckRET','ckREX',D.RE[W],{col:'#8b5cf6',h:80});
+  document.getElementById('ck-re-val').textContent=D.RE[W].v[D.RE[W].v.length-1];
+  _ckLine('ckACWR','ckACWRW','ckACWRT','ckACWRX',D.ACWR[W].w,[{v:D.ACWR[W].v,color:'#f59e0b',lbl:''}],v=>v.toFixed(2),{h:65,zones:[[0,0.8,'#3b82f6'],[0.8,1.3,'#22c55e'],[1.3,2,'#ef4444']]});
+  const al=D.ACWR[W].v[D.ACWR[W].v.length-1];document.getElementById('ck-acwr-val').textContent=al.toFixed(2);document.getElementById('ck-acwr-val').style.color=al>1.3?'#ef4444':al<0.8?'#3b82f6':'#22c55e';
+  _ckBar('ckDP','ckDPW','ckDPT','ckDPX',D.DPLUS[W],{col:'#94a3b8',unit:' m',h:75});
+  _ckLine('ckZ2','ckZ2W','ckZ2T','ckZ2X',D.Z2[W].w,[{v:D.Z2[W].v,color:'#0d9488',lbl:'/km'}],_ckSmin,{h:85});
+  document.getElementById('ck-z2-val').textContent=_ckSmin(D.Z2[W].v[D.Z2[W].v.length-1]);
+  const z2d=D.Z2[W].v[0]-D.Z2[W].v[D.Z2[W].v.length-1];document.getElementById('ck-z2-delta').textContent=(z2d>0?'↓ −'+_ckSmin(z2d)+'/km · le moteur grossit 💪':'↑ à surveiller');document.getElementById('ck-z2-delta').style.color=z2d>0?'#22c55e':'#ef4444';
+  const dcLast=D.DC[W].v.filter(x=>x!=null).pop();_ckLine('ckDC','ckDCW','ckDCT','ckDCX',D.DC[W].w,[{v:D.DC[W].v,color:'#22c55e',lbl:'%'}],v=>v.toFixed(1)+'%',{h:75,zones:[[0,5,'#22c55e'],[5,8,'#f59e0b'],[8,15,'#ef4444']]});
+  document.getElementById('ck-dc-val').textContent=dcLast?dcLast.toFixed(1)+'%':'—';document.getElementById('ck-dc-val').style.color=dcLast<5?'#22c55e':dcLast<8?'#f59e0b':'#ef4444';
+  _ckLine('ckPACE','ckPACEW','ckPACET','ckPACEX',D.PACE[W].w,[{v:D.PACE[W].ef,color:'#22c55e',lbl:'EF'},{v:D.PACE[W].am,color:'#3b82f6',lbl:'AM'},{v:D.PACE[W].se,color:'#f59e0b',lbl:'Seuil'}],_ckSmin,{h:95,fill:false});
+  // Zones FC
+  const z=D.FCZ[W],H=100,n=z.length,gap=300/n,bw=gap*0.5,mxz=Math.max(...z.map(x=>x[2]));
+  let fcs='';z.forEach((zone,i)=>{const x=i*gap+gap*0.25,h=zone[2]/mxz*(H-22);fcs+=`<rect class="ck-fcb" data-i="${i}" x="${x}" y="${H-h-10}" width="${bw}" height="${h}" rx="3" fill="${zone[1]}"/><text x="${x+bw/2}" y="${H-h-14}" text-anchor="middle" font-size="11" font-weight="700" fill="${zone[1]}">${zone[2]}%</text><text x="${x+bw/2}" y="${H-1}" text-anchor="middle" font-size="9" fill="#94a3b8">${zone[0]}</text>`;});
+  const fcSvg=document.getElementById('ckFC');fcSvg.setAttribute('viewBox',`0 0 300 ${H}`);fcSvg.innerHTML=fcs;
+  document.getElementById('ck-fc-sub').textContent=z[1][2]+'% en Z2 · '+W+' sem.';
+  fcSvg.querySelectorAll('.ck-fcb').forEach(b=>b.addEventListener('click',()=>{const zone=z[+b.dataset.i];const ranges={'Z1':'<130 bpm','Z2':'130-144','Z3':'145-165','Z4+':'>165 bpm'};document.getElementById('ck-fc-info').innerHTML=`<strong style="color:${zone[1]}">${zone[0]}</strong> · ${ranges[zone[0]]} · ${zone[2]}%`;}));
+  _ckLine('ckCAD','ckCADW','ckCADT','ckCADX',D.CAD[W].w,[{v:D.CAD[W].v,color:'#06b6d4',lbl:'spm'}],v=>v.toFixed(0)+' spm',{h:70});
+  const cadLast=D.CAD[W].v.filter(x=>x!=null).pop();document.getElementById('ck-cad-val').textContent=cadLast?cadLast.toFixed(0):'—';
+  // Run list
+  document.getElementById('ck-runs').innerHTML=D.RUNS.map((r,i)=>`<div onclick="_ckOpenRun(${i})" style="background:var(--gris-fond);border-radius:10px;padding:10px 12px;display:flex;align-items:center;gap:10px;cursor:pointer;margin-bottom:6px"><div style="width:7px;height:7px;border-radius:50%;background:${r.type};flex:0 0 7px"></div><div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:600;color:var(--texte)">${r.title}${r.hasStreams?' <span style="font-size:9px;color:#0d9488">⊙ live</span>':''}</div><div style="font-size:10px;color:var(--texte-deux);margin-top:1px">${r.date} · RE ${r.re} · FC ${r.fcm}/${r.fcx}</div></div><div style="text-align:right"><div style="font-size:14px;font-weight:700;color:var(--texte)">${r.km}</div><div style="font-size:9px;color:var(--texte-deux)">${r.al}/km</div></div></div>`).join('');
+}
+function renderCockpit(){
+  const el=document.getElementById('cockpit-contenu');
+  if(el.innerHTML.trim()){_ckRenderAll(_ckWin);return;}
+  const FC_RANGE={'Z1':'<130 bpm','Z2':'130-144','Z3':'145-165','Z4+':'>165 bpm'};
+  function card(id,title,sub,valId,valSuffix,chartH,extra){return`<div class="ck-card"><div class="ck-ch"><div><div class="ck-ct">${title}</div><div class="ck-cs" id="${id}-sub">${sub}</div></div>${valId?`<div style="text-align:right"><div class="ck-big" id="${valId}">—</div>${valSuffix?'<div class="ck-cs">'+valSuffix+'</div>':''}</div>`:''}</div><div class="ck-cw" id="${id}W"><svg id="${id}" height="${chartH}" style="display:block;width:100%"></svg><div class="ck-tt" id="${id}T"></div></div><div class="ck-xl" id="${id}X"></div>${extra||''}</div>`;}
+  el.innerHTML=`
+<div style="padding:12px 12px 40px">
+<div style="font-size:22px;font-weight:700;color:var(--texte);letter-spacing:-.02em;margin-bottom:2px">Cockpit</div>
+<div style="font-size:11px;color:var(--texte-deux);margin-bottom:10px">Glisse sur les courbes · touche une barre · tap une sortie</div>
+<div class="ck-toggle" id="ck-tgl">
+  <button class="ck-tg" onclick="ckWin(2,this)">2 sem.</button>
+  <button class="ck-tg" onclick="ckWin(4,this)">4 sem.</button>
+  <button class="ck-tg ck-on" onclick="ckWin(8,this)">8 sem.</button>
+  <button class="ck-tg" onclick="ckWin(12,this)">12 sem.</button>
+</div>
+<div class="ck-kpis">
+  <div class="ck-kpi"><div class="ck-kv">46<span class="ck-ku">km</span></div><div class="ck-kl">Semaine</div><div class="ck-kd up">↑ +64%</div></div>
+  <div class="ck-kpi"><div class="ck-kv" id="ck-re-val">427</div><div class="ck-kl">Effort S25</div><div class="ck-kd up">↑ charge</div></div>
+  <div class="ck-kpi"><div class="ck-kv warn" id="ck-acwr-val">1.42</div><div class="ck-kl">ACWR</div><div class="ck-kd warn">⚠ élevé</div></div>
+  <div class="ck-kpi"><div class="ck-kv">51.6</div><div class="ck-kl">VO₂max</div><div class="ck-kd up">↑ +0.4</div></div>
+</div>
+<div class="ck-sec">📊 Volume &amp; charge</div>
+${card('ckVol','Volume hebdomadaire','',null,null,90,'<div style="font-size:9px;color:#94a3b8;text-align:center;margin-top:4px">touche une barre · ■ prévu</div>')}
+<div class="ck-cs" id="ck-vol-sub" style="margin:-4px 0 8px;padding:0 2px"></div>
+${card('ckRE','⚡ Relative Effort / sem.','charge Strava réelle',null,null,80,'<div style="font-size:9px;color:#94a3b8;text-align:center;margin-top:4px">glisse →</div>')}
+<div class="ck-card"><div class="ck-ch"><div><div class="ck-ct">🩹 ACWR — risque blessure</div><div class="ck-cs">ratio charge aiguë / chronique</div></div><div style="font-size:26px;font-weight:700;line-height:1" id="ck-acwr-val2">1.42</div></div><div class="ck-cw" id="ckACWRW"><svg id="ckACWR" height="65" style="display:block;width:100%"></svg><div class="ck-tt" id="ckACWRT"></div></div><div class="ck-xl" id="ckACWRX"></div></div>
+${card('ckDP','⛰ Dénivelé D+','',null,'m',75,'')}
+<div class="ck-sec">🔋 Moteur aérobie</div>
+<div class="ck-card"><div class="ck-ch"><div><div class="ck-ct">Z2 pace — allure EF à FC&lt;144</div><div class="ck-cs">indicateur n°1 du développement</div></div><div style="text-align:right"><div style="font-size:22px;font-weight:700;color:#0d9488" id="ck-z2-val">5:54</div><div class="ck-cs">/km</div></div></div><div style="font-size:10px;font-weight:600;margin:3px 0 6px" id="ck-z2-delta"></div><div class="ck-cw" id="ckZ2W"><svg id="ckZ2" height="85" style="display:block;width:100%"></svg><div class="ck-tt" id="ckZ2T"></div></div><div class="ck-xl" id="ckZ2X"></div></div>
+<div class="ck-card"><div class="ck-ch"><div><div class="ck-ct">💓 Découplage cardiaque</div><div class="ck-cs">dérive FC sortie longue · &lt;5% idéal</div></div><div style="font-size:22px;font-weight:700" id="ck-dc-val">—</div></div><div class="ck-cw" id="ckDCW"><svg id="ckDC" height="75" style="display:block;width:100%"></svg><div class="ck-tt" id="ckDCT"></div></div><div class="ck-xl" id="ckDCX"></div></div>
+<div class="ck-sec">📈 Allure &amp; vitesse</div>
+<div class="ck-card"><div class="ck-ch"><div><div class="ck-ct">Progression allure par type</div><div class="ck-cs">EF · marathon · seuil</div></div></div><div class="ck-cw" id="ckPACEW"><svg id="ckPACE" height="95" style="display:block;width:100%"></svg><div class="ck-tt" id="ckPACET"></div></div><div class="ck-xl" id="ckPACEX"></div><div style="display:flex;gap:12px;font-size:10px;color:var(--texte-deux);margin-top:7px"><span><span style="color:#22c55e">●</span> EF</span><span><span style="color:#3b82f6">●</span> AM</span><span><span style="color:#f59e0b">●</span> Seuil</span></div></div>
+<div class="ck-sec">❤️ Cardiaque &amp; cadence</div>
+<div class="ck-card"><div class="ck-ch"><div><div class="ck-ct">Zones FC</div><div class="ck-cs" id="ck-fc-sub"></div></div></div><div class="ck-cw" id="ckFCW"><svg id="ckFC" height="100" style="display:block;width:100%"></svg><div class="ck-tt" id="ckFCT"></div></div><div style="font-size:10px;color:var(--texte-deux);text-align:center;margin-top:6px;min-height:14px" id="ck-fc-info">touche une zone</div></div>
+<div class="ck-card"><div class="ck-ch"><div><div class="ck-ct">🦶 Cadence</div><div class="ck-cs">route ~172 spm · trail ~146 spm</div></div><div><div style="font-size:22px;font-weight:700;color:var(--texte)" id="ck-cad-val">172</div><div class="ck-cs">spm</div></div></div><div class="ck-cw" id="ckCADW"><svg id="ckCAD" height="70" style="display:block;width:100%"></svg><div class="ck-tt" id="ckCADT"></div></div><div class="ck-xl" id="ckCADX"></div></div>
+<div class="ck-sec">🔍 Analyse par sortie</div>
+<div id="ck-runs"></div>
+</div>
+<div id="ck-modal" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,.6);z-index:200;align-items:flex-end">
+  <div style="background:var(--bg-card,#fff);border-radius:18px 18px 0 0;width:100%;max-height:90vh;overflow-y:auto">
+    <div style="position:sticky;top:0;background:var(--bg-card,#fff);padding:14px 14px 10px;border-bottom:.5px solid var(--bord-card,#e2e8f0)">
+      <div style="width:36px;height:4px;background:#cbd5e1;border-radius:99px;margin:0 auto 12px"></div>
+      <button onclick="document.getElementById('ck-modal').style.display='none'" style="position:absolute;top:14px;right:14px;width:28px;height:28px;border-radius:50%;background:var(--gris-fond);border:none;color:var(--texte-deux);font-size:15px;cursor:pointer">✕</button>
+      <div style="font-size:16px;font-weight:700;color:var(--texte)" id="ck-m-title"></div>
+      <div style="font-size:11px;color:var(--texte-deux);margin-top:2px" id="ck-m-sub"></div>
+    </div>
+    <div style="padding:12px 14px">
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:12px" id="ck-m-metrics"></div>
+      <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--texte-deux);margin-bottom:6px">FC · Allure · Altitude</div>
+      <div style="position:relative;touch-action:none" id="ck-m-wrap"><svg id="ck-m-svg" height="140" style="display:block;width:100%"></svg><div class="ck-tt" id="ck-m-tt"></div></div>
+      <div style="display:flex;gap:12px;font-size:10px;color:var(--texte-deux);margin-top:6px"><span><span style="color:#ef4444">●</span> FC</span><span><span style="color:#0d9488">●</span> Allure</span><span><span style="color:#94a3b8">●</span> Altitude</span></div>
+      <div style="font-size:9px;color:#94a3b8;text-align:center;margin-top:4px;font-style:italic">glisse sur le graphe seconde par seconde</div>
+    </div>
+  </div>
+</div>`;
+  _ckRenderAll(_ckWin);
+}
+function ckWin(w,el){_ckWin=w;document.querySelectorAll('.ck-tg').forEach(b=>b.classList.remove('ck-on'));el.classList.add('ck-on');_ckRenderAll(w);}
 function _afterLog(wk,id){renderHeader();renderPlan();if(document.getElementById('vue-dash').style.display!=='none')renderDash();ouvrirSeance(wk,id);setTimeout(()=>{const b=document.querySelector&&document.querySelector('.lf-save');if(b){b.textContent='Enregistré ✓';b.classList.add('lf-saved');setTimeout(()=>{if(b)b.textContent='Enregistrer';},1800);}},80);}
 function logForm(wk,se){
   const r=se.realise||{statut:'a_faire'};const logged=r.statut!=='a_faire';
