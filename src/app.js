@@ -930,10 +930,16 @@ function _ckOpenRun(i){
 }
 function _ckRenderAll(win){
   const D=_CK;const W=win;
+  // KPIs dynamiques
+  const totalKm=D.VOL[W].a.reduce((a,b)=>a+b,0);
+  const totalRE=D.RE[W].v.reduce((a,b)=>a+b,0);
+  const kmEl=document.getElementById('ck-km-val');if(kmEl){kmEl.textContent=totalKm.toFixed(0);}
+  const kmLbl=document.getElementById('ck-km-lbl');if(kmLbl){kmLbl.textContent=W+' semaines';}
+  const reLbl=document.getElementById('ck-re-lbl');if(reLbl){reLbl.textContent='Effort · '+W+' sem.';}
+  document.getElementById('ck-re-val').textContent=totalRE;
   _ckBar('ckVol','ckVolW','ckVolT','ckVolX',D.VOL[W],{ref:true,col:'#0d9488',unit:' km',h:90});
-  document.getElementById('ck-vol-sub').textContent=D.VOL[W].a.reduce((a,b)=>a+b,0).toFixed(0)+' km · '+W+' sem.';
+  document.getElementById('ck-vol-sub').textContent=totalKm.toFixed(0)+' km · '+W+' sem.';
   _ckBar('ckRE','ckREW','ckRET','ckREX',D.RE[W],{col:'#8b5cf6',h:80});
-  document.getElementById('ck-re-val').textContent=D.RE[W].v[D.RE[W].v.length-1];
   _ckLine('ckACWR','ckACWRW','ckACWRT','ckACWRX',D.ACWR[W].w,[{v:D.ACWR[W].v,color:'#f59e0b',lbl:''}],v=>v.toFixed(2),{h:65,zones:[[0,0.8,'#3b82f6'],[0.8,1.3,'#22c55e'],[1.3,2,'#ef4444']]});
   const al=D.ACWR[W].v[D.ACWR[W].v.length-1];document.getElementById('ck-acwr-val').textContent=al.toFixed(2);document.getElementById('ck-acwr-val').style.color=al>1.3?'#ef4444':al<0.8?'#3b82f6':'#22c55e';
   _ckBar('ckDP','ckDPW','ckDPT','ckDPX',D.DPLUS[W],{col:'#94a3b8',unit:' m',h:75});
@@ -970,8 +976,8 @@ function renderCockpit(){
   <button class="ck-tg" onclick="ckWin(12,this)">12 sem.</button>
 </div>
 <div class="ck-kpis">
-  <div class="ck-kpi"><div class="ck-kv">46<span class="ck-ku">km</span></div><div class="ck-kl">Semaine</div><div class="ck-kd up">↑ +64%</div></div>
-  <div class="ck-kpi"><div class="ck-kv" id="ck-re-val">427</div><div class="ck-kl">Effort S25</div><div class="ck-kd up">↑ charge</div></div>
+  <div class="ck-kpi"><div class="ck-kv" id="ck-km-val">—<span class="ck-ku">km</span></div><div class="ck-kl" id="ck-km-lbl">fenêtre</div><div class="ck-kd up">cumulé</div></div>
+  <div class="ck-kpi"><div class="ck-kv" id="ck-re-val">—</div><div class="ck-kl" id="ck-re-lbl">Effort</div><div class="ck-kd up">cumulé</div></div>
   <div class="ck-kpi"><div class="ck-kv warn" id="ck-acwr-val">1.42</div><div class="ck-kl">ACWR</div><div class="ck-kd warn">⚠ élevé</div></div>
   <div class="ck-kpi"><div class="ck-kv">51.6</div><div class="ck-kl">VO₂max</div><div class="ck-kd up">↑ +0.4</div></div>
 </div>
