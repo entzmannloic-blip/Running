@@ -2,7 +2,7 @@
 <div class="accueil" style="padding-top:0">
   <div class="appbar" id="appbar">
     <div class="cds" id="cd-strip"></div>
-    <div class="tabbar"><div class="tab actif" id="tab-plan" onclick="showTab('plan')">Préparation / Séances</div><div class="tab" id="tab-dash" onclick="showTab('dash')">Suivi perf.</div></div>
+    <div class="tabbar"><div class="tab actif" id="tab-plan" onclick="showTab('plan')">Préparation / Séances</div><div class="tab" id="tab-dash" onclick="showTab('dash')">Suivi perf.</div><div class="tab" id="tab-cockpit" onclick="showTab('cockpit')">Cockpit</div></div>
   </div>
   <div id="vue-plan"><span id="main"></span>
     <div id="hero-plan"></div>
@@ -10,6 +10,7 @@
     <p class="note-foot">Plan complet S25→S53. Dis-moi « j'ai fait la séance X de la semaine Y » et tout se met à jour.</p>
   </div>
   <div id="vue-dash" style="display:none"><div id="dash-contenu"></div></div>
+  <div id="vue-cockpit" style="display:none"><div id="cockpit-contenu"></div></div>
   <div class="maj-foot" id="maj-foot"></div>
 </div>
 <div class="rw-overlay" id="rwoverlay"><div class="rw-card" id="rwcard" onclick="rwNext()"></div></div>
