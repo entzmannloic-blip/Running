@@ -480,7 +480,12 @@ for n,ss in WEEKS.items():
     if n==25:
         arr[3]["date"]="2026-06-18"   # sortie longue avancée au jeudi (départ vendredi chez parents)
         arr[4]["opt"]=True
-        arr[4]["date"]="2026-06-20"   # footing optionnel samedi matin chez les parents
+        arr[4]["date"]="2026-06-19"   # couru vendredi 19 juin chez les parents (anticipé d'un jour)
+        arr[4]["realise"]={"statut":"fait","km":10.03,"temps":"59:30","allure":"5:56/km","fc_moy":144,"fc_max":165,"rpe_ressenti":4,
+          "commentaire":"10 km en 59:30 · départ 7h25 chez les parents · FC 144/165 · Clifton 10 · 0 PR.",
+          "pr":0,"ach":0,
+          "revue":"<strong>Mission accomplie — et S25 bouclée à 5/5.</strong> 7h25 du matin chez tes parents, 10 km sortis tranquillement avant la chaleur. C'est exactement le plan discuté : sortir tôt, rester facile, rentrer avant que ça tape. La discipline du timing en week-end hors domicile, c'est une compétence à part entière.<br><br>La FC moyenne à 144 bpm est en plein milieu de la zone Z2 (130-148) — c'est un EF presque parfait. Les 10 laps varient entre 5:45 et 6:06/km sans aucune accélération, sans envie de faire mieux. C'est exactement ce qu'on cherche sur une séance optionnelle de bonus : du volume aérobie pur, zéro coût cardiaque ou musculaire pour la semaine suivante.<br><br><strong>Bilan S25 : 5/5 · 56,6 km · semaine de reprise complète.</strong> Tu arrives en S26 (allègement pré-Déraille) avec des jambes qui tournent bien et une semaine de volume solide dans les pattes. La Déraille dans 16 jours se prépare dans de bonnes conditions.<br><br>Note Clifton (1 103 km) : parfaitement appropriée pour ce type de footing léger. Uniquement pour décrassages ≤ 10 km désormais."}
+
         arr[3]["realise"]={"statut":"fait","km":16.05,"temps":"1h28:33","allure":"5:31/km · dernier km 4:58","fc_moy":151,"fc_max":171,"rpe_ressenti":6,
           "commentaire":"16 km en 1h28m33 — 13,5 km à allure constante puis fast finish progressif (5:16 → 5:01 → 4:58/km). Départ 8h, canicule. TA 500ml + gel caféiné 50ᵉ min. 5 PRs.",
           "pr":5,"ach":6,"pr_detail":["You are my best view","Quais de Saône S-N","LY Joffre/Plessier tunnel côté Saône","LY Plessier/Joffre rive gauche","darse confluence nord"],
@@ -557,7 +562,7 @@ PHASES=[
 ]
 COUL={p["id"]:p["c"] for p in PHASES}
 GEAR=[
-  {"marque":"HOKA","modele":"Clifton 10","km":1093},
+  {"marque":"HOKA","modele":"Clifton 10","km":1103},
   {"marque":"ASICS","modele":"Novablast 5","km":502},
   {"marque":"ASICS","modele":"Gel Pulse 16","km":225},
   {"marque":"Brooks","modele":"Cascadia 19","km":196},
@@ -797,5 +802,5 @@ PALMARES=[
 ]
 _j.dump({"PHASES":PHASES,"COUL":COUL,"SEMAINES":SEMAINES,"SBW":SEANCES_BY_WEEK,"GEAR":GEAR,"RACES":RACES,
   "PROFIL":PROFIL,"PROJ":PROJ,"RECORDS":RECORDS,"VIGILANCE":VIGILANCE,"S24R":S24_REALISE,
-  "HIST":_hist["HIST"],"POLAR":_hist["POLAR"],"ALLURES":ALLURES,"ALLURES_COURSE":ALLURES_COURSE,"ZONES_FC":ZONES_FC,"MONTHLY":MONTHLY,"SAISON2026":SAISON2026,"ACWR_DATA":ACWR_DATA,"RECORDS_PERF":RECORDS_PERF,"JOURNAL":JOURNAL,"REWINDS":REWINDS,"MAJ":"18 juin 2026","HEATMAP":HEATMAP,"DOSSIERS":DOSSIERS,"PALMARES":PALMARES},open('/tmp/data.json','w'),ensure_ascii=False)
+  "HIST":_hist["HIST"],"POLAR":_hist["POLAR"],"ALLURES":ALLURES,"ALLURES_COURSE":ALLURES_COURSE,"ZONES_FC":ZONES_FC,"MONTHLY":MONTHLY,"SAISON2026":SAISON2026,"ACWR_DATA":ACWR_DATA,"RECORDS_PERF":RECORDS_PERF,"JOURNAL":JOURNAL,"REWINDS":REWINDS,"MAJ":"19 juin 2026","HEATMAP":HEATMAP,"DOSSIERS":DOSSIERS,"PALMARES":PALMARES},open('/tmp/data.json','w'),ensure_ascii=False)
 print("OK")
