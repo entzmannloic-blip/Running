@@ -892,7 +892,7 @@ body.nuit .sm-label input[type=date]{background:#0f172a;border-color:#334155;col
 <div class="accueil" style="padding-top:0">
   <div class="appbar" id="appbar">
     <div class="cds" id="cd-strip"></div>
-    <div class="tabbar"><div class="tab actif" id="tab-plan" onclick="showTab('plan')">Séances</div><div class="tab" id="tab-dash" onclick="showTab('dash')">Suivi perf.</div><div class="tab" id="tab-cockpit" onclick="showTab('cockpit')">Cockpit</div></div>
+    <div class="tabbar"><div class="tab actif" id="tab-plan" onclick="showTab('plan')">Séances</div><div class="tab" id="tab-dash" onclick="showTab('dash')">Suivi perf.</div><div class="tab" id="tab-cockpit" onclick="showTab('cockpit')">Cockpit</div><div class="tab" id="tab-palmares" onclick="showTab('palmares')">Palmarès</div></div>
   </div>
   <div id="vue-plan"><span id="main"></span>
     <div id="hero-plan"></div>
@@ -901,6 +901,7 @@ body.nuit .sm-label input[type=date]{background:#0f172a;border-color:#334155;col
   </div>
   <div id="vue-dash" style="display:none"><div id="dash-contenu"></div></div>
   <div id="vue-cockpit" style="display:none"><div id="cockpit-contenu"></div></div>
+  <div id="vue-palmares" style="display:none"><div id="palmares-contenu"></div></div>
   <div class="maj-foot" id="maj-foot"></div>
 </div>
 <div class="rw-overlay" id="rwoverlay"><div class="rw-card" id="rwcard" onclick="rwNext()"></div></div>
@@ -987,14 +988,13 @@ function toggleTheme(){const n=document.body.classList.toggle('nuit');document.g
 
 /* ===== onglets ===== */
 function showTab(t){
-  document.getElementById('vue-plan').style.display=t==='plan'?'block':'none';
-  document.getElementById('vue-dash').style.display=t==='dash'?'block':'none';
-  document.getElementById('vue-cockpit').style.display=t==='cockpit'?'block':'none';
-  document.getElementById('tab-plan').classList.toggle('actif',t==='plan');
-  document.getElementById('tab-dash').classList.toggle('actif',t==='dash');
-  document.getElementById('tab-cockpit').classList.toggle('actif',t==='cockpit');
+  ['plan','dash','cockpit','palmares'].forEach(id=>{
+    document.getElementById('vue-'+id).style.display=t===id?'block':'none';
+    document.getElementById('tab-'+id).classList.toggle('actif',t===id);
+  });
   if(t==='dash')renderDash();
   if(t==='cockpit')renderCockpit();
+  if(t==='palmares')renderPalmares();
   window.scrollTo(0,0);
 }
 
@@ -1819,6 +1819,62 @@ function logSeance(wk,id){
   _afterLog(wk,id);
 }
 function unlogSeance(wk,id){const se=findSeance(wk,id);if(!se)return;const logs=loadLogs();delete logs[logId(wk,id)];saveLogs(logs);se.realise={statut:'a_faire'};_afterLog(wk,id);}
+/* ===================================================================
+   PALMARÈS — Historique des courses officielles
+   =================================================================== */
+function renderPalmares(){
+  const el=document.getElementById('palmares-contenu');if(!el)return;
+  const P=(typeof PALMARES!=='undefined'?PALMARES:DATA.PALMARES)||[];
+  const types={'trail':'🏔️ Trail','trail_nuit':'🌙 Trail nuit','route':'🛣️ Route','semi':'🏃 Semi-marathon','marathon':'🏅 Marathon'};
+  const totalKm=P.reduce((a,p)=>a+p.distance,0);
+  const totalDplus=P.reduce((a,p)=>a+(p.dplus||0),0);
+  el.innerHTML=`<div style="padding:12px 12px 40px">
+<div style="font-size:22px;font-weight:700;color:var(--texte);letter-spacing:-.02em;margin-bottom:2px">Palmarès</div>
+<div style="font-size:11px;color:var(--texte-deux);margin-bottom:14px">Courses officielles terminées · résultats &amp; bilans</div>
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px">
+  <div style="background:var(--bg-card,#fff);border:.5px solid var(--bord-card,#e2e8f0);border-radius:12px;padding:10px;text-align:center"><div style="font-size:20px;font-weight:700;color:var(--texte)">${P.length}</div><div style="font-size:9px;text-transform:uppercase;letter-spacing:.05em;color:var(--texte-deux);margin-top:3px">Courses</div></div>
+  <div style="background:var(--bg-card,#fff);border:.5px solid var(--bord-card,#e2e8f0);border-radius:12px;padding:10px;text-align:center"><div style="font-size:20px;font-weight:700;color:var(--texte)">${totalKm.toFixed(0)}</div><div style="font-size:9px;text-transform:uppercase;letter-spacing:.05em;color:var(--texte-deux);margin-top:3px">km courus</div></div>
+  <div style="background:var(--bg-card,#fff);border:.5px solid var(--bord-card,#e2e8f0);border-radius:12px;padding:10px;text-align:center"><div style="font-size:20px;font-weight:700;color:var(--texte)">${(totalDplus/1000).toFixed(1)}k</div><div style="font-size:9px;text-transform:uppercase;letter-spacing:.05em;color:var(--texte-deux);margin-top:3px">D+ cumulé</div></div>
+</div>
+${P.slice().sort((a,b)=>b.date.localeCompare(a.date)).map((p,i)=>{
+  const typeLabel=types[p.type]||p.type;
+  const d=new Date(p.date+'T12:00:00');
+  const mois=['janv.','févr.','mars','avr.','mai','juin','juil.','août','sept.','oct.','nov.','déc.'];
+  const dateStr=d.getDate()+' '+mois[d.getMonth()]+' '+d.getFullYear();
+  const classGen=p.classement_gen?`<span style="font-size:11px;font-weight:600;padding:2px 7px;border-radius:99px;background:#eff6ff;color:#1d4ed8">#${p.classement_gen}${p.total_finishers?' / '+p.total_finishers:''} général</span>`:'';
+  const classCat=p.classement_cat?`<span style="font-size:11px;font-weight:600;padding:2px 7px;border-radius:99px;background:#f0fdf4;color:#15803d">#${p.classement_cat} cat.</span>`:'';
+  return`<div style="background:var(--bg-card,#fff);border:.5px solid var(--bord-card,#e2e8f0);border-radius:14px;margin-bottom:10px;overflow:hidden">
+    <div style="display:flex;align-items:stretch">
+      <div style="width:5px;background:${p.accent};flex:0 0 5px"></div>
+      <div style="padding:12px 13px;flex:1;min-width:0">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px">
+          <div>
+            <div style="font-size:11px;color:var(--texte-deux);margin-bottom:2px">${typeLabel} · ${dateStr}</div>
+            <div style="font-size:15px;font-weight:700;color:var(--texte);line-height:1.2">${p.nom}</div>
+            <div style="font-size:11px;color:var(--texte-deux);margin-top:1px">${p.lieu}</div>
+          </div>
+          <div style="text-align:right;flex:0 0 auto;margin-left:8px">
+            <div style="font-size:20px;font-weight:700;color:var(--texte)">${p.temps||'—'}</div>
+            <div style="font-size:10px;color:var(--texte-deux)">${p.allure?p.allure+'/km':''}</div>
+          </div>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px">
+          <span style="font-size:11px;font-weight:600;padding:2px 7px;border-radius:99px;background:var(--gris-fond,#f1f5f9);color:var(--texte-deux)">${p.distance} km</span>
+          <span style="font-size:11px;font-weight:600;padding:2px 7px;border-radius:99px;background:var(--gris-fond,#f1f5f9);color:var(--texte-deux)">D+ ${p.dplus} m</span>
+          ${p.fc_moy?`<span style="font-size:11px;font-weight:600;padding:2px 7px;border-radius:99px;background:#fee2e2;color:#b91c1c">❤️ ${p.fc_moy}/${p.fc_max}</span>`:''}
+          ${p.meteo?`<span style="font-size:11px;padding:2px 7px;border-radius:99px;background:var(--gris-fond,#f1f5f9);color:var(--texte-deux)">🌡️ ${p.meteo}</span>`:''}
+          ${classGen}${classCat}
+        </div>
+        ${p.chaussures?`<div style="font-size:11px;color:var(--texte-deux);margin-bottom:6px">👟 ${p.chaussures}</div>`:''}
+        <div style="font-size:12px;color:var(--texte-deux);line-height:1.55;background:var(--gris-fond,#f8fafc);border-radius:8px;padding:9px 10px">${p.bilan}</div>
+      </div>
+    </div>
+  </div>`;
+}).join('')}
+<div style="font-size:11px;color:var(--texte-deux);text-align:center;margin-top:8px;font-style:italic">Classements à compléter après chaque course · partage les résultats officiels</div>
+</div>`;
+}
+
 /* ===================================================================
    COCKPIT — Dashboard analytique complet
    =================================================================== */
