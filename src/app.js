@@ -78,6 +78,15 @@ function renderHeader(){
   const cur=isoWeek(new Date());const sc=SEMAINES.find(s=>s.num===cur)||SEMAINES[0];
   const _t=new Date();_t.setHours(0,0,0,0);
   const _ps=prochaineSeance();let _psCard='';
+  // Feature 2 — ajustement allure selon température
+  let _tempAdj='';
+  try{const mc=JSON.parse(localStorage.getItem('meteo_cache')||'null');
+    if(mc&&mc.temp!==undefined){
+      const _diff0=_ps?Math.round((_ps.d-_t)/86400000):0;
+      const refT=Math.round(_diff0<=1&&mc.tomorrow_max?mc.tomorrow_max:mc.temp);
+      if(refT>22){const adj=refT<26?10:refT<30?20:refT<34?30:40;
+        _tempAdj=`<div class="vdj-adj">🌡️ ${refT}° · allure cible <strong>+${adj}s/km</strong></div>`;}
+    }}catch(e){}
   if(_ps){
     const _diff=Math.round((_ps.d-_t)/86400000);
     const _J=['dimanche','lundi','mardi','mercredi','jeudi','vendredi','samedi'];
@@ -87,7 +96,7 @@ function renderHeader(){
     const _se=_ps.se;
     const _fit=_se.fit?`<a class="vdj-fit" href="${_se.fit}" download onclick="event.stopPropagation()">⌚ Télécharger la séance</a>`:'';
     const _dist=(_se.metriques&&_se.metriques.Distance)?' · '+_se.metriques.Distance:'';
-    _psCard=`<div class="vdj" onclick="ouvrirSeance(${_ps.wk},${_se.id})"><div class="vdj-lbl">Prochaine séance · ${_lbl}</div><div class="vdj-t">${_se.titre}</div><div class="vdj-s">${_se.type}${_dist} · S${_ps.wk}</div>${_fit}</div>`;
+    _psCard=`<div class="vdj" onclick="ouvrirSeance(${_ps.wk},${_se.id})"><div class="vdj-lbl">Prochaine séance · ${_lbl}</div><div class="vdj-t">${_se.titre}</div><div class="vdj-s">${_se.type}${_dist} · S${_ps.wk}</div>${_fit}${_tempAdj}</div>`;
   }
   let _cd='';
   if(RACES&&RACES.length){
@@ -99,7 +108,7 @@ function renderHeader(){
   const _maj=`<div class="vdj-maj">Données à jour au ${MAJ}</div>`;
   document.getElementById('cd-strip').innerHTML=_cd;
   const _cw=`<button class="cw-link" onclick="jumpToWeek(${sc.num})"><span class="cw-pin">📍</span><span class="cw-txt">Tu es en <strong>S${sc.num} · ${sc.theme}</strong></span><span class="cw-arr">voir dans le plan →</span></button>`;
-  document.getElementById('hero-plan').innerHTML=`${_psCard}${_cw}<div id="meteo-widget" class="meteo"><div class="meteo-loc">⏳ Météo…</div></div>`;
+  document.getElementById('hero-plan').innerHTML=`${_psCard}<div id="canicule-banner" style="display:none"></div>${_cw}<div id="meteo-widget" class="meteo"><div class="meteo-loc">⏳ Météo…</div></div>`;
   renderMeteo();
   document.getElementById('maj-foot').innerHTML=_maj;
   const _ab=document.getElementById('appbar');if(_ab&&document.documentElement)document.documentElement.style.setProperty('--appbar-h',_ab.offsetHeight+'px');
@@ -143,6 +152,10 @@ function _meteoPaint(d){
       '</span>'+
     '</div>'+demainHtml+chipHtml;
   if(d.hourly_today||d.hourly_tomorrow)window._wxHourly={today:d.hourly_today||[],tomorrow:d.hourly_tomorrow||[]};
+  // Feature 3 — bannière canicule auto
+  const canDays=d.canicule_days||0;
+  const canEl=document.getElementById('canicule-banner');
+  if(canEl){if(canDays>=3){canEl.innerHTML=`<span>☀️ <strong>Canicule</strong> · ${canDays}j chauds prévus</span><span class="can-tip">Sorties avant 8h30</span>`;canEl.style.display='flex';}else{canEl.style.display='none';}}
 }
 async function renderMeteo(){
   let cached=null;
@@ -154,7 +167,7 @@ async function renderMeteo(){
   try{
     const u='https://api.open-meteo.com/v1/forecast?latitude='+METEO_LAT+'&longitude='+METEO_LON+
       '&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m,precipitation'+
-      '&hourly=temperature_2m,precipitation_probability&forecast_days=2&timezone=Europe%2FParis';
+      '&hourly=temperature_2m,precipitation_probability&daily=temperature_2m_max&forecast_days=10&timezone=Europe%2FParis';
     const r=await fetch(u);if(!r.ok)throw 0;
     const j=await r.json();
     const todayStr=new Date().toISOString().slice(0,10);
@@ -171,7 +184,9 @@ async function renderMeteo(){
       });
     }
     const tMax=hTomorrow.length?Math.max(...hTomorrow.map(x=>x[1])):undefined;
-    const d={ts:Date.now(),temp:j.current.temperature_2m,app:j.current.apparent_temperature,wind:j.current.wind_speed_10m,code:j.current.weather_code,precip:j.current.precipitation||0,rain,tomorrow_max:tMax,hourly_today:hToday,hourly_tomorrow:hTomorrow};
+    let caniculeDays=0;
+    if(j.daily&&j.daily.temperature_2m_max){j.daily.temperature_2m_max.forEach(t=>{if(t>28)caniculeDays++;});}
+    const d={ts:Date.now(),temp:j.current.temperature_2m,app:j.current.apparent_temperature,wind:j.current.wind_speed_10m,code:j.current.weather_code,precip:j.current.precipitation||0,rain,tomorrow_max:tMax,hourly_today:hToday,hourly_tomorrow:hTomorrow,canicule_days:caniculeDays};
     localStorage.setItem('meteo_cache',JSON.stringify(d));
     _meteoPaint(d);
   }catch(e){
@@ -882,6 +897,35 @@ function logSeance(wk,id){
   _afterLog(wk,id);
 }
 function unlogSeance(wk,id){const se=findSeance(wk,id);if(!se)return;const logs=loadLogs();delete logs[logId(wk,id)];saveLogs(logs);se.realise={statut:'a_faire'};_afterLog(wk,id);}
+/* ===== Feature 1 — iOS Install Flow ===== */
+function _isPwa(){return(window.matchMedia&&window.matchMedia('(display-mode:standalone)').matches)||window.navigator.standalone===true;}
+function _isIos(){return/iPhone|iPod|iPad/i.test(navigator.userAgent)&&!window.MSStream;}
+function initInstall(){
+  if(!document.body||typeof document.body.insertAdjacentHTML!=='function')return;
+  if(_isPwa())return;
+  if(localStorage.getItem('install_dismissed')==='1')return;
+  if(!_isIos())return;
+  document.body.insertAdjacentHTML('beforeend',`
+<div id="install-banner"><span class="inst-ico">📲</span><span class="inst-txt">Installe l'app sur l'écran d'accueil</span><button class="inst-cta" onclick="openInstall()">Voir</button><button class="inst-x" onclick="dismissInstall()">✕</button></div>
+<div id="install-ov" onclick="if(event.target===this)closeInstall()">
+  <div class="inst-sheet">
+    <div class="inst-handle"></div>
+    <div class="inst-title">📲 Installer l'app</div>
+    <div class="inst-sub">3 étapes · 10 secondes</div>
+    <div class="inst-steps">
+      <div class="inst-step"><span class="inst-n">1</span><div><div class="inst-sl">Tape l'icône <strong>Partage</strong></div><div class="inst-ss">Le carré avec la flèche ↑ en bas de Safari</div></div></div>
+      <div class="inst-step"><span class="inst-n">2</span><div><div class="inst-sl">Sélectionne <strong>Ajouter à l'écran d'accueil</strong></div><div class="inst-ss">Fais défiler le menu si nécessaire</div></div></div>
+      <div class="inst-step"><span class="inst-n">3</span><div><div class="inst-sl">Tape <strong>Ajouter</strong> en haut à droite</div><div class="inst-ss">L'app apparaît directement sur l'écran</div></div></div>
+    </div>
+    <button class="inst-done" onclick="closeInstall();dismissInstall()">✓ C'est fait</button>
+    <button class="inst-later" onclick="closeInstall()">Plus tard</button>
+  </div>
+</div>`);
+}
+function openInstall(){const o=document.getElementById('install-ov');if(o)o.classList.add('open');}
+function closeInstall(){const o=document.getElementById('install-ov');if(o)o.classList.remove('open');}
+function dismissInstall(){localStorage.setItem('install_dismissed','1');const b=document.getElementById('install-banner');if(b)b.remove();}
+
 /* ===================================================================
    PALMARÈS — Historique des courses officielles
    =================================================================== */
@@ -1692,5 +1736,5 @@ function initBarre(se){const piste=document.getElementById('piste');if(!piste)re
     e.addEventListener('click',()=>{if(segActif)segActif.classList.remove('actif');if(segActif===e){segActif=null;pan.classList.remove('visible');return;}segActif=e;e.classList.add('actif');dnom.textContent=seg.nom;drole.textContent=seg.role;dgr.innerHTML=`<div><div class="di-label">Durée</div><div class="di-val">${fmt(seg.duree)}</div></div><div><div class="di-label">Bloc</div><div class="di-val">${seg.bloc}</div></div><div><div class="di-label">Début</div><div class="di-val">${fmt(seg.debut)}</div></div><div><div class="di-label">Fin</div><div class="di-val">${fmt(seg.fin)}</div></div>`;pan.classList.add('visible');});
     piste.appendChild(e);});
 }
-hydrateLogs();hydrateOverrides();initQuickLog();initCreneaux();initSessionMenu();renderHeader();renderPlan();rwAuto();
+hydrateLogs();hydrateOverrides();initQuickLog();initCreneaux();initSessionMenu();initInstall();renderHeader();renderPlan();rwAuto();
 if('serviceWorker'in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
