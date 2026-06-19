@@ -912,6 +912,11 @@ body.nuit .sm-label input[type=date]{background:#0f172a;border-color:#334155;col
 .can-tip{font-size:11px;font-weight:500;color:#ea580c;background:#ffedd5;padding:2px 8px;border-radius:99px}
 body.nuit #canicule-banner{background:#431407;border-color:#7c2d12;color:#fed7aa}
 body.nuit .can-tip{background:#7c2d12;color:#fed7aa}
+/* ===== Journal nutrition — quick log chips ===== */
+.ql-nutr{display:flex;gap:6px;flex-wrap:wrap;margin-top:5px}
+.ql-nc{font-size:12px;font-weight:600;padding:5px 10px;border-radius:99px;border:.5px solid var(--bord-card,#e2e8f0);background:var(--gris-fond,#f8fafc);color:var(--texte-deux);cursor:pointer;transition:all .15s;-webkit-tap-highlight-color:transparent}
+.ql-nc:active{transform:scale(.95)}
+.ql-nc.ql-nc-on{background:#dcfce7;border-color:#22c55e;color:#15803d}
 </style></head>
 <body>
 <a href="#main" class="skip-link">Aller au contenu</a>
@@ -1631,6 +1636,69 @@ const CK_SECS={deraille:[
     {id:'ta_apres',label:'1 cpr TA immédiatement à l\'arrivée',note:'Dans la poche short · ne pas oublier même euphorique'},
     {id:'vetements',label:'Vêtements chauds accessibles',note:'Le corps refroidit vite après l\'arrivée en altitude'}
   ]}
+],nice:[
+  {id:'equip',ico:'🎽',title:'Équipement',items:[
+    {id:'dossard',label:'Dossard / billet TER récupéré',note:'Le dossard vaut billet de train Nice · vérifier horaire'},
+    {id:'novablast',label:'Novablast 5 V (vertes) prêtes',note:'Chaussures de course fraîches · vérifier lacets et semelles'},
+    {id:'tenue',label:'Tenue marathon posée',note:'Short · t-shirt · manchons si froid matinal · casquette'},
+    {id:'garmin',label:'Garmin + ceinture chargés',note:'Profil marathon configuré · contact urgence · playlist'},
+    {id:'gels_kit',label:'Kit nutrition du matin préparé',note:'TA + gels dans poche accessible dès le départ'}
+  ]},
+  {id:'nutrition',ico:'⚡',title:'Nutrition J-0',items:[
+    {id:'ta_réveil',label:'2 cpr TA au réveil (5h)',note:'Avec grand verre d\'eau · avant le petit-déjeuner'},
+    {id:'ptidej',label:'Petit-déjeuner 3h avant départ',note:'Toast + banane + café · rien de nouveau · connu et testé'},
+    {id:'gel0',label:'1 gel Aptonia 15min avant le départ',note:'Dans les starting blocks · déclenche les réserves'},
+    {id:'gels',label:'Gels Aptonia km 8 · 16 · 24 prêts',note:'Poche droite accessible · 1 gel toutes les 8 bornes'},
+    {id:'cherry',label:'Nduranz Cherry km 32',note:'Anti-mur · NE PAS OUBLIER · 65mg caféine'},
+    {id:'amarena',label:'Nduranz Coffee Amarena km 38',note:'Relance finale · 130mg caféine · tout lâcher ensuite'}
+  ]},
+  {id:'logistique',ico:'🚂',title:'Logistique',items:[
+    {id:'ter',label:'Billet TER Nice confirmé',note:'Dossard = billet · horaire aller + retour validé'},
+    {id:'hébergement',label:'Hébergement J-1 confirmé',note:'Arriver la veille · pâtes le soir · calme garanti'},
+    {id:'expo',label:'Retrait dossard planifié',note:'Horaires expo à vérifier · dossard physique si nécessaire'},
+    {id:'vague',label:'Numéro de vague connu',note:'Vague 3h30-3h59 · arriver 45min avant le départ'}
+  ]},
+  {id:'stratégie',ico:'🧠',title:'Stratégie de course',items:[
+    {id:'allure',label:'5:20/km mémorisé = objectif 3h45',note:'Ne pas partir à 5:10 · les 5 premiers km sont toujours trop rapides'},
+    {id:'antibes',label:'Segment Antibes km 25-28 anticipé',note:'+35m D+ · ralentir à 5:30 · FC < 162 · ne pas paniquer'},
+    {id:'mur',label:'Plan anti-mur km 30-35 validé',note:'Cherry km 32 · penser technique · rester régulier'},
+    {id:'finish',label:'Relance km 38-42 mentalisée',note:'Amarena km 38 · si bien géré → donner le reste'}
+  ]},
+  {id:'recup',ico:'🛌',title:'Récupération',items:[
+    {id:'ta_arrivée',label:'1 cpr TA à l\'arrivée',note:'Dans la poche · avant même la médaille'},
+    {id:'vêtements',label:'Vêtements chauds dans sac remis',note:'Le corps chute vite après l\'effort · couche chaude immédiate'}
+  ]}
+],saintexpress:[
+  {id:'equip',ico:'🌙',title:'Équipement nuit',items:[
+    {id:'dossard',label:'Dossard récupéré',note:'Retrait sur site Sainte-Catherine · vérifier horaire'},
+    {id:'frontale1',label:'Frontale principale chargée',note:'Obligatoire · ≥ 200 lumens · batterie 100%'},
+    {id:'frontale2',label:'Frontale de secours',note:'Obligatoire · vérification batterie indépendante'},
+    {id:'gilet',label:'Gilet trail nuit complet',note:'Flasques · sifflet · couverture survie · trousse secours'},
+    {id:'cascadia',label:'Cascadia 19 (trail technique)',note:'Km 0-27 inconnu · trail technique nocturne'},
+    {id:'tenue_nuit',label:'Tenue nuit (0-5°C au départ)',note:'Départ 23h à 757m · manches longues + coupe-vent + gants'}
+  ]},
+  {id:'nutrition',ico:'⚡',title:'Nutrition (5h30–7h)',items:[
+    {id:'ta_gilet',label:'TA Electrolytes dans le gilet',note:'6+ cpr · TA partenaire officiel → aussi aux ravitos'},
+    {id:'gels_nuit',label:'2-3 gels Aptonia',note:'Non-caféinés · km ~5 et km ~15'},
+    {id:'cherry',label:'Nduranz Cherry km ~27 (Soucieu)',note:'~1h30 du matin · début terrain connu · 65mg caféine'},
+    {id:'amarena',label:'Nduranz Coffee Amarena km ~38',note:'Avant les aqueducs · dernier effort technique · 130mg'}
+  ]},
+  {id:'logistique',ico:'🗺️',title:'Logistique nuit',items:[
+    {id:'transport',label:'Transport Sainte-Catherine organisé',note:'757m · ~1h de Lyon · partir à 22h max'},
+    {id:'retour',label:'Retour Lyon planifié',note:'Arrivée ~5h-6h matin · transport ou attente organisée'},
+    {id:'contact',label:'Contact urgence informé',note:'Sainte-Catherine → Lyon · heure estimée d\'arrivée communiquée'}
+  ]},
+  {id:'stratégie',ico:'🧠',title:'Stratégie de course',items:[
+    {id:'terrain_inconnu',label:'Km 0-27 : terrain INCONNU · très prudent',note:'FC < 160 · marcher les montées dures · ne pas s\'emballer'},
+    {id:'terrain_connu',label:'Km 27-45 : terrain CONNU (relay 2022)',note:'Référence : 6:28/km · tu connais ce segment de nuit'},
+    {id:'lumière',label:'Gestion lumière planifiée',note:'Frontale sur la tête 100% du parcours · vérifier à mi-course'},
+    {id:'ravitos_ta',label:'Ravitos TA repérés',note:'TA partenaire officiel → électrolytes disponibles sur tout le parcours'}
+  ]},
+  {id:'recup',ico:'🌅',title:'Récupération J+0',items:[
+    {id:'ta_arrivée',label:'1 cpr TA immédiatement à l\'arrivée',note:'Arrivée ~5h-6h · corps épuisé · électrolytes en priorité'},
+    {id:'vêtements_chauds',label:'Vêtements très chauds à l\'arrivée',note:'Nuit froide · le corps refroidit instantanément à l\'arrêt'},
+    {id:'récup_j1',label:'J+1 : journée de repos complet',note:'Aucune reprise avant J+3 · protéines + sommeil'}
+  ]}
 ]};
 function _ckLoad(r){try{return JSON.parse(localStorage.getItem('ck_'+r)||'{}')}catch(e){return{};}}
 function _ckSave(r,s){localStorage.setItem('ck_'+r,JSON.stringify(s));}
@@ -2324,16 +2392,19 @@ function _qlCalc(){
   const el=document.getElementById('ql-allure');
   el.textContent=(km&&t)?computeAllure(km,t):'—';
 }
+function qlNutr(el){el.classList.toggle('ql-nc-on');}
 function soumettreQuickLog(){
   const km=parseFloat((document.getElementById('ql-km').value||'').replace(',','.'))||0;
   if(!km)return;
   const temps=document.getElementById('ql-temps').value||'';
   const rpe=document.getElementById('ql-rpe').value||'';
+  const nutr=Array.from(document.querySelectorAll('.ql-nc.ql-nc-on')).map(e=>e.dataset.n).join(', ');
   const se=findSeance(_qlWk,_qlId);if(!se)return;
   const allure=computeAllure(km,temps);
   const ex=se.realise||{};
   const realise={statut:'fait',km,temps,allure,
     fc_moy:ex.fc_moy||'',fc_max:ex.fc_max||'',rpe_ressenti:rpe,
+    nutrition:nutr||ex.nutrition||'',
     commentaire:ex.commentaire||'',pr:ex.pr||0,ach:ex.ach||0,revue:ex.revue||''};
   const logs=loadLogs();logs[logId(_qlWk,_qlId)]=realise;saveLogs(logs);se.realise=realise;
   fermerQuickLog();
@@ -2368,6 +2439,14 @@ function initQuickLog(){
         <label class="ql-label">Allure<div id="ql-allure" class="ql-allure-val">—</div></label>
       </div>
       <label class="ql-label">RPE (1-10)<input id="ql-rpe" type="number" min="1" max="10" inputmode="numeric"></label>
+      <div class="ql-label">Nutrition (optionnel)
+        <div class="ql-nutr" id="ql-nutr">
+          <div class="ql-nc" data-n="TA Electrolytes" onclick="qlNutr(this)">⚡ TA</div>
+          <div class="ql-nc" data-n="Gel Aptonia" onclick="qlNutr(this)">🟡 Gel</div>
+          <div class="ql-nc" data-n="Nduranz Cherry" onclick="qlNutr(this)">🍒 Cherry</div>
+          <div class="ql-nc" data-n="Nduranz Amarena" onclick="qlNutr(this)">☕ Amarena</div>
+        </div>
+      </div>
     </div>
     <button class="ql-submit" onclick="soumettreQuickLog()"><i class="ti ti-check"></i> Enregistrer</button>
     <button class="ql-cancel" onclick="fermerQuickLog()">Annuler</button>
