@@ -696,3 +696,36 @@ body.nuit .ck-prog,body.nuit .ck-sc{background:#1e293b;border-color:#334155}
 body.nuit .ck-pbw{background:#0f172a}
 body.nuit .ck-sb{background:#0f172a;color:#64748b}
 body.nuit .ck-item{border-color:#1e293b}
+/* ===== Move/Skip séance ===== */
+.seance-fleche-wrap{display:flex;align-items:center;gap:5px;padding:0 12px 0 4px;flex:0 0 auto}
+.sm-btn{width:28px;height:28px;border-radius:8px;border:.5px solid var(--bord-card,#e2e8f0);background:var(--gris-fond,#f8fafc);font-size:14px;font-weight:700;color:var(--texte-deux);cursor:pointer;display:flex;align-items:center;justify-content:center;letter-spacing:-.5px;flex:0 0 28px}
+.sm-btn:active{opacity:.7}
+.sc-skipped{background:#fefce8!important;border:1.5px dashed #fbbf24!important;opacity:.8}
+#sm-overlay,#sm-dp-ov,#sm-sk-ov{display:none;position:fixed;inset:0;background:rgba(15,23,42,.55);z-index:1000;align-items:flex-end}
+#sm-overlay.open,#sm-dp-ov.open,#sm-sk-ov.open{display:flex}
+.sm-sheet{background:#ffffff;border-radius:18px 18px 0 0;padding:20px 16px 28px;width:100%;animation:qlUp .22s ease}
+.sm-handle{width:36px;height:4px;background:#e2e8f0;border-radius:99px;margin:0 auto 14px}
+.sm-stitle{font-size:16px;font-weight:700;color:#0f172a;margin-bottom:3px}
+.sm-ssub{font-size:12px;color:#64748b;margin-bottom:14px}
+.sm-action{display:flex;align-items:center;gap:12px;width:100%;padding:12px 14px;border-radius:12px;border:.5px solid #e2e8f0;background:#f8fafc;margin-bottom:8px;cursor:pointer;text-align:left;transition:background .1s}
+.sm-action:active{background:#f1f5f9}
+.sm-aico{font-size:20px;flex:0 0 auto}
+.sm-al{font-size:14px;font-weight:600;color:#0f172a}
+.sm-as{font-size:11px;color:#64748b;margin-top:1px}
+.sm-aarr{font-size:16px;color:#94a3b8;margin-left:auto}
+.sm-label{display:flex;flex-direction:column;gap:5px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:#64748b;margin-bottom:14px}
+.sm-label input[type=date]{padding:10px 12px;border-radius:8px;border:.5px solid #e2e8f0;background:#f8fafc;font-size:14px;color:#0f172a;font-family:inherit;width:100%}
+.sm-reason{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;border:.5px solid #e2e8f0;background:#f8fafc;cursor:pointer;margin-bottom:7px}
+.sm-reason.sm-rsel{border-color:#0d9488;background:#f0fdf4}
+.sm-rdot{width:18px;height:18px;border-radius:50%;border:2px solid #cbd5e1;flex:0 0 18px;transition:all .15s}
+.sm-rsel .sm-rdot{background:#0d9488;border-color:#0d9488}
+.sm-rlbl{font-size:13px;color:#0f172a}
+.sm-confirm{width:100%;padding:12px;border-radius:10px;background:#0d9488;border:none;color:#fff;font-size:14px;font-weight:700;cursor:pointer;margin-top:4px}
+.sm-danger{background:#ef4444}
+.sm-cancel{display:block;width:100%;padding:9px;border:none;background:transparent;font-size:13px;color:#94a3b8;cursor:pointer;margin-top:6px}
+.sm-toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#0f172a;color:#fff;padding:9px 18px;border-radius:99px;font-size:13px;font-weight:600;display:none;z-index:1002;white-space:nowrap}
+.sm-toast.sm-show{display:block;animation:qlFt 2.8s ease forwards}
+body.nuit .sm-sheet{background:#1e293b}
+body.nuit .sm-stitle,.body.nuit .sm-al,.body.nuit .sm-rlbl{color:#f1f5f9}
+body.nuit .sm-action,.body.nuit .sm-reason{background:#0f172a;border-color:#334155}
+body.nuit .sm-label input[type=date]{background:#0f172a;border-color:#334155;color:#f1f5f9}
