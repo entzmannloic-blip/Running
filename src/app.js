@@ -769,17 +769,29 @@ function ouvrirSemaine(num){const s=SEMAINES.find(x=>x.num===num);const ph=PHASE
       <p class="note-foot" style="margin-top:24px">La reprise structurée démarre maintenant, en S25.</p></div>`;ouvrir();return;}
   const seances=SEANCES_BY_WEEK[num]||[];const fait=seances.filter(x=>x.realise&&(x.realise.statut==='fait'||x.realise.statut==='partiel')).length;const realKm=seances.reduce((a,x)=>a+((x.realise&&x.realise.km)||0),0);
   topbar.innerHTML=`<span></span>${btnFermer}`;
-  const liste=seances.map(se=>{const r=se.realise||{statut:'a_faire'};const tags=[stChip(r.statut),`<span class="seance-tag">${se.type}</span>`,catBadge(se.cat),`<span class="rpe-pill"><span class="rpe-dot" style="background:${rpeColor(se.rpe)}"></span>RPE ${se.rpe}</span>`];if(se.chaussure)tags.push(`<span class="seance-shoe">👟 ${se.chaussure.replace("ASICS ","").replace("HOKA ","").replace("Brooks ","")}</span>`);if(se.fit)tags.push('<span class="seance-fit">⌚ .fit</span>');if(se.opt)tags.push('<span class="seance-tag tag-opt">Optionnelle</span>');
-    const rs=r.km?`<div class="seance-desc" style="color:#15803d;font-weight:700;margin-top:3px">✓ ${r.km} km${r.allure?' · '+r.allure:''}</div>`:'';
+  const liste=seances.map(se=>{
+    const r=se.realise||{statut:'a_faire'};
+    const isSkipped=r.statut==='skipped';
     const isDone=r.statut==='fait'||r.statut==='partiel';
     const _today=new Date();_today.setHours(0,0,0,0);
-    const loggable=!isDone&&se.date&&new Date(se.date+'T00:00:00')<=_today;
+    const loggable=!isDone&&!isSkipped&&se.date&&new Date(se.date+'T00:00:00')<=_today;
+    const tags=[stChip(isSkipped?'skipped':r.statut),`<span class="seance-tag">${se.type}</span>`,catBadge(se.cat),`<span class="rpe-pill"><span class="rpe-dot" style="background:${rpeColor(se.rpe)}"></span>RPE ${se.rpe}</span>`];
+    if(se.chaussure)tags.push(`<span class="seance-shoe">👟 ${se.chaussure.replace("ASICS ","").replace("HOKA ","").replace("Brooks ","")}</span>`);
+    if(se.fit)tags.push('<span class="seance-fit">⌚ .fit</span>');
+    if(se.opt)tags.push('<span class="seance-tag tag-opt">Optionnelle</span>');
+    if(isSkipped&&r.reason)tags.push(`<span class="seance-tag" style="color:#92400e;background:#fef9c3">⏭ ${r.reason}</span>`);
+    const rs=r.km?`<div class="seance-desc" style="color:#15803d;font-weight:700;margin-top:3px">✓ ${r.km} km${r.allure?' · '+r.allure:''}</div>`:'';
+    const menuBtn=(!isDone&&!isSkipped)?`<button class="sm-btn" onclick="event.stopPropagation();openSM(${num},'${se.id}')">···</button>`:'';
     const rightEl=isDone
       ?`<div class="seance-fleche sc-check">✓</div>`
-      :loggable
-        ?`<div class="ql-btn"><i class="ti ti-check"></i></div>`
-        :`<div class="seance-fleche">›</div>`;
-    return `<div class="seance-carte${isDone?' sc-fait':''}" id="sc-${num}-${se.id}" onclick="${loggable?'ouvrirQuickLog('+num+','+se.id+')':'ouvrirSeance('+num+','+se.id+')'}"  ><div class="seance-bande" style="background:${se.accent}"></div><div class="seance-idx">Séance ${se.num}</div><div class="seance-info"><div class="seance-nom">${se.titre}</div><div class="seance-desc">${se.sous}</div>${rs}<div class="seance-tags">${tags.join('')}</div></div>${rightEl}</div>`;}).join('');
+      :isSkipped
+        ?`<div class="seance-fleche" style="color:#fbbf24;font-size:20px">—</div>`
+        :loggable
+          ?`<div class="ql-btn"><i class="ti ti-check"></i></div>${menuBtn}`
+          :menuBtn;
+    const cardClass=isDone?' sc-fait':isSkipped?' sc-skipped':'';
+    return `<div class="seance-carte${cardClass}" id="sc-${num}-${se.id}" onclick="${loggable?'ouvrirQuickLog('+num+','+se.id+')':'ouvrirSeance('+num+','+se.id+')'}"  ><div class="seance-bande" style="background:${se.accent}"></div><div class="seance-idx">Séance ${se.num}</div><div class="seance-info"><div class="seance-nom">${se.titre}</div><div class="seance-desc">${se.sous}</div>${rs}<div class="seance-tags">${tags.join('')}</div></div><div class="seance-fleche-wrap">${rightEl}</div></div>`;
+  }).join('');
   const repPill=s.repartition&&s.repartition!=='—'?`<div class="sw-pill"><div class="sw-pill-l">Répartition</div><div class="sw-pill-v" style="font-size:.74rem">${s.repartition}</div></div>`:'';
   contenu.innerHTML=`<div class="sw-hero"><span class="sw-tag" style="background:${COUL[s.phase]}22;color:${COUL[s.phase]}">${ph.nom}</span><h2 class="sw-titre">Semaine ${s.num} — ${s.theme}</h2><p class="sw-sous">Semaine type · clique une séance</p><div class="sw-meta"><div class="sw-pill"><div class="sw-pill-l">Volume cible</div><div class="sw-pill-v">${s.km} km</div></div><div class="sw-pill"><div class="sw-pill-l">Réalisé</div><div class="sw-pill-v">${fait}/${seances.length} · ${realKm} km</div></div><div class="sw-pill"><div class="sw-pill-l">Charge</div><div class="sw-pill-v" style="font-size:.84rem">${s.charge}</div></div>${repPill}</div></div><div class="sw-corps"><div class="callout callout-obj">${s.objectif}</div><div class="sw-section">Séances de la semaine</div><div class="seance-liste">${liste}</div>${s.revue?`<div class="sw-section">Revue du coach — bilan de la semaine</div><div class="rev-coach">${s.revue}</div>`:`<div class="realise-empty" style="margin-top:18px"><strong>Revue de la semaine à venir.</strong> Quand la semaine sera bouclée, tu trouveras ici mon bilan complet : volume et charge vs prévu, adhérence, signaux à surveiller, et la décision pour la semaine suivante. Elle alimentera aussi le Journal du coach.</div>`}</div>`;ouvrir();
 }
@@ -1098,6 +1110,111 @@ ${card('ckDP','⛰ Dénivelé D+','',null,'m',75,'')}
   _ckRenderAll(_ckWin);
 }
 function ckWin(w,el){_ckWin=w;document.querySelectorAll('.ck-tg').forEach(b=>b.classList.remove('ck-on'));el.classList.add('ck-on');_ckRenderAll(w);}
+/* ===== Déplacer / Skipper séance ===== */
+const SM_REASONS=['Fatigue / récupération','Contrainte agenda','Météo défavorable','Repos actif choisi'];
+let _smWk=null,_smId=null,_smReason=null;
+function _smOvKey(wk,id){return wk+'-'+id;}
+function _smLoad(){try{return JSON.parse(localStorage.getItem('session_overrides')||'{}')}catch(e){return{};}}
+function _smSave(o){localStorage.setItem('session_overrides',JSON.stringify(o));}
+function hydrateOverrides(){
+  const ovs=_smLoad();
+  Object.entries(ovs).forEach(([k,ov])=>{
+    const i=k.indexOf('-');const wk=k.slice(0,i),id=k.slice(i+1);
+    const se=findSeance(wk,id);if(!se)return;
+    if(ov.action==='move'&&ov.newDate)se.date=ov.newDate;
+    if(ov.action==='skip')se.realise={statut:'skipped',reason:ov.reason};
+  });
+}
+function _smFmtDate(d){
+  const dt=new Date(d+'T12:00:00');
+  const j=['dim','lun','mar','mer','jeu','ven','sam'];
+  const m=['jan','fév','mar','avr','mai','juin','juil','août','sep','oct','nov','déc'];
+  return j[dt.getDay()]+' '+dt.getDate()+' '+m[dt.getMonth()];
+}
+function openSM(wk,id){
+  _smWk=wk;_smId=id;
+  const se=findSeance(wk,id);if(!se)return;
+  const ov=_smLoad();
+  document.getElementById('sm-title').textContent=se.titre;
+  document.getElementById('sm-sub').textContent='S'+wk+' · Séance '+se.num+(se.date?' · '+_smFmtDate(se.date):'');
+  document.getElementById('sm-overlay').classList.add('open');
+}
+function closeSM(){document.getElementById('sm-overlay').classList.remove('open');}
+function openSMMove(){
+  closeSM();
+  const se=findSeance(_smWk,_smId);if(!se)return;
+  document.getElementById('sm-dp-sub').textContent=se.titre;
+  const inp=document.getElementById('sm-dp-input');
+  inp.value=se.date||'';
+  if(se.date){
+    const d=new Date(se.date+'T12:00:00');const dow=d.getDay()||7;
+    const mon=new Date(d);mon.setDate(d.getDate()-(dow-1));
+    const sun=new Date(mon);sun.setDate(mon.getDate()+6);
+    inp.min=mon.toISOString().slice(0,10);inp.max=sun.toISOString().slice(0,10);
+  }
+  document.getElementById('sm-dp-ov').classList.add('open');
+}
+function closeSMDate(){document.getElementById('sm-dp-ov').classList.remove('open');}
+function openSMSkip(){
+  closeSM();_smReason=null;
+  const se=findSeance(_smWk,_smId);if(!se)return;
+  document.getElementById('sm-sk-sub').textContent=se.titre+' · S'+_smWk;
+  document.getElementById('sm-sk-reasons').innerHTML=SM_REASONS.map((r,i)=>`<div class="sm-reason" id="smr${i}" onclick="selSMReason(${i},'${r}')"><div class="sm-rdot"></div><span class="sm-rlbl">${r}</span></div>`).join('');
+  document.getElementById('sm-sk-ov').classList.add('open');
+}
+function closeSMSkip(){document.getElementById('sm-sk-ov').classList.remove('open');}
+function selSMReason(i,r){_smReason=r;document.querySelectorAll('.sm-reason').forEach((el,j)=>el.classList.toggle('sm-rsel',i===j));}
+function confirmSMMove(){
+  const d=document.getElementById('sm-dp-input').value;if(!d)return;
+  const ovs=_smLoad();const k=_smOvKey(_smWk,_smId);
+  ovs[k]=Object.assign(ovs[k]||{},{action:'move',newDate:d});
+  _smSave(ovs);closeSMDate();
+  hydrateOverrides();renderHeader();renderPlan();
+  _smToast('Séance déplacée au '+_smFmtDate(d));
+}
+function confirmSMSkip(){
+  if(!_smReason)return;
+  const ovs=_smLoad();ovs[_smOvKey(_smWk,_smId)]={action:'skip',reason:_smReason};
+  _smSave(ovs);closeSMSkip();
+  hydrateOverrides();renderHeader();renderPlan();
+  _smToast('Séance passée — '+_smReason.toLowerCase());
+}
+function _smToast(msg){const t=document.getElementById('sm-toast');if(!t)return;t.textContent=msg;t.classList.remove('sm-show');void t.offsetWidth;t.classList.add('sm-show');}
+function initSessionMenu(){
+  if(!document.body||typeof document.body.insertAdjacentHTML!=='function')return;
+  document.body.insertAdjacentHTML('beforeend',`
+<div id="sm-overlay" onclick="if(event.target===this)closeSM()">
+  <div class="sm-sheet">
+    <div class="sm-handle"></div>
+    <div class="sm-stitle" id="sm-title"></div>
+    <div class="sm-ssub" id="sm-sub"></div>
+    <button class="sm-action" onclick="openSMMove()"><span class="sm-aico">📅</span><div><div class="sm-al">Déplacer cette séance</div><div class="sm-as">Choisir une autre date</div></div><span class="sm-aarr">›</span></button>
+    <button class="sm-action" onclick="openSMSkip()"><span class="sm-aico">⏭</span><div><div class="sm-al">Passer cette séance</div><div class="sm-as">Fatigue, agenda, météo…</div></div><span class="sm-aarr">›</span></button>
+    <button class="sm-cancel" onclick="closeSM()">Annuler</button>
+  </div>
+</div>
+<div id="sm-dp-ov" onclick="if(event.target===this)closeSMDate()">
+  <div class="sm-sheet">
+    <div class="sm-handle"></div>
+    <div class="sm-stitle">Déplacer la séance</div>
+    <div class="sm-ssub" id="sm-dp-sub"></div>
+    <label class="sm-label">Nouvelle date<input type="date" id="sm-dp-input"></label>
+    <button class="sm-confirm" onclick="confirmSMMove()">Déplacer</button>
+    <button class="sm-cancel" onclick="closeSMDate()">Annuler</button>
+  </div>
+</div>
+<div id="sm-sk-ov" onclick="if(event.target===this)closeSMSkip()">
+  <div class="sm-sheet">
+    <div class="sm-handle"></div>
+    <div class="sm-stitle">Passer cette séance</div>
+    <div class="sm-ssub" id="sm-sk-sub"></div>
+    <div id="sm-sk-reasons"></div>
+    <button class="sm-confirm sm-danger" onclick="confirmSMSkip()">Confirmer — passer la séance</button>
+    <button class="sm-cancel" onclick="closeSMSkip()">Annuler</button>
+  </div>
+</div>
+<div id="sm-toast" class="sm-toast"></div>`);
+}
 function _afterLog(wk,id){renderHeader();renderPlan();if(document.getElementById('vue-dash').style.display!=='none')renderDash();ouvrirSeance(wk,id);setTimeout(()=>{const b=document.querySelector&&document.querySelector('.lf-save');if(b){b.textContent='Enregistré ✓';b.classList.add('lf-saved');setTimeout(()=>{if(b)b.textContent='Enregistrer';},1800);}},80);}
 function logForm(wk,se){
   const r=se.realise||{statut:'a_faire'};const logged=r.statut!=='a_faire';
@@ -1520,5 +1637,5 @@ function initBarre(se){const piste=document.getElementById('piste');if(!piste)re
     e.addEventListener('click',()=>{if(segActif)segActif.classList.remove('actif');if(segActif===e){segActif=null;pan.classList.remove('visible');return;}segActif=e;e.classList.add('actif');dnom.textContent=seg.nom;drole.textContent=seg.role;dgr.innerHTML=`<div><div class="di-label">Durée</div><div class="di-val">${fmt(seg.duree)}</div></div><div><div class="di-label">Bloc</div><div class="di-val">${seg.bloc}</div></div><div><div class="di-label">Début</div><div class="di-val">${fmt(seg.debut)}</div></div><div><div class="di-label">Fin</div><div class="di-val">${fmt(seg.fin)}</div></div>`;pan.classList.add('visible');});
     piste.appendChild(e);});
 }
-hydrateLogs();initQuickLog();initCreneaux();renderHeader();renderPlan();rwAuto();
+hydrateLogs();hydrateOverrides();initQuickLog();initCreneaux();initSessionMenu();renderHeader();renderPlan();rwAuto();
 if('serviceWorker'in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
