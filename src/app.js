@@ -622,6 +622,79 @@ function dosProfilSVG(D,ac){
   const sum=`<circle cx="${sx.toFixed(1)}" cy="${sy.toFixed(1)}" r="3.4" fill="${ac}"/><text x="${sx.toFixed(1)}" y="${(sy-7).toFixed(1)}" class="dp-mk" text-anchor="middle">${pts[mi]} m</text>`;
   return `<svg class="dos-prof" viewBox="0 0 ${W} ${H}" role="img" aria-label="Profil réel du parcours"><style>.dp-ax{font:600 9px system-ui;fill:#94a3b8}.dp-grid{stroke:#e2e8f0;stroke-width:1}.dp-mk{font:700 9.5px system-ui;fill:${ac}}</style>${yl}<path d="${area}" fill="${ac}" opacity="0.13"/><path d="${d}" fill="none" stroke="${ac}" stroke-width="2.4" stroke-linejoin="round"/>${sum}${xl}</svg><div class="dos-prof-cap">Profil réel (trace GPX officielle) · altitude (m) en ordonnée, distance (km) en abscisse · sommet 897 m vers le km 15</div>`;
 }
+/* ===== Checklist J-7 par course ===== */
+const CK_SECS={deraille:[
+  {id:'equip',ico:'🎒',title:'Équipement',items:[
+    {id:'dossard',label:'Dossard récupéré',note:'À retirer sur place le matin dès 7h30'},
+    {id:'gilet',label:'Gilet HDV5 préparé',note:'Flasques 2×500ml · sifflet · couverture de survie obligatoire'},
+    {id:'cascadia',label:'Cascadia 19 vérifiées',note:'Lacets · semelles · pas de nouveauté le jour J'},
+    {id:'tenue',label:'Tenue de course posée',note:'Short · t-shirt technique · casquette · crème solaire'},
+    {id:'garmin',label:'Garmin chargé + contact urgence',note:'Fenix 6 Pro · ceinture cardiaque Decathlon chargée'}
+  ]},
+  {id:'nutrition',ico:'⚡',title:'Nutrition & hydratation',items:[
+    {id:'ta_tube',label:'TA Electrolytes — tube complet',note:'Min. 6 cpr · 2 départ + 1 ravito km 8 + 1 après'},
+    {id:'gels_apto',label:'2 gels non-caféinés Aptonia',note:'Km 0 dans gilet + km 8 ravito ou gilet'},
+    {id:'cherry',label:'1 Nduranz Cherry 65mg',note:'Km 13-14 — pic d\'effort montée finale'},
+    {id:'amarena',label:'1 Nduranz Coffee Amarena 130mg',note:'Km 20-21 — relance pour la descente finale'},
+    {id:'ptidej',label:'Petit-déjeuner J-0 planifié',note:'Pâtes la veille · toast + œuf le matin · 1 cpr TA 1h avant'}
+  ]},
+  {id:'logistique',ico:'🗺️',title:'Logistique',items:[
+    {id:'transport',label:'Transport organisé',note:'Lac des Sapins — Valsonne 69170 · ~1h de Lyon'},
+    {id:'horaire',label:'Heure de départ vague connue',note:'Consulter site officiel · départ prévu ~9h'},
+    {id:'ravitos',label:'Ravitos repérés',note:'2 ravitos sur le parcours · km ~8 et ~15'},
+    {id:'dropbag',label:'Sac de récupération préparé',note:'Vêtements chauds · chaussures · snack post-course'}
+  ]},
+  {id:'technique',ico:'🧠',title:'Stratégie de course',items:[
+    {id:'plan_relu',label:'Plan d\'exécution relu',note:'4 étapes · montée progressive · pas de départ trop vite'},
+    {id:'allures',label:'Allures cibles mémorisées',note:'~9:30/km montée · flotter en descente · FC max 165'},
+    {id:'electro',label:'Protocole électrolytes mémorisé',note:'2 cpr départ + 1 cpr ravito km 8 · toujours avec eau'},
+    {id:'cafeine',label:'Protocole caféine mémorisé',note:'Cherry km 13 · Amarena km 20 · pas avant'}
+  ]},
+  {id:'recup',ico:'🛌',title:'Récupération J+0',items:[
+    {id:'ta_apres',label:'1 cpr TA immédiatement à l\'arrivée',note:'Dans la poche short · ne pas oublier même euphorique'},
+    {id:'vetements',label:'Vêtements chauds accessibles',note:'Le corps refroidit vite après l\'arrivée en altitude'}
+  ]}
+]};
+function _ckLoad(r){try{return JSON.parse(localStorage.getItem('ck_'+r)||'{}')}catch(e){return{};}}
+function _ckSave(r,s){localStorage.setItem('ck_'+r,JSON.stringify(s));}
+function ckToggle(race,id){const s=_ckLoad(race);s[id]=!s[id];_ckSave(race,s);_ckRender(race);}
+function ckToggleSec(race,id){const s=_ckLoad(race);s['_o_'+id]=s['_o_'+id]===false?true:false;_ckSave(race,s);_ckRender(race);}
+function ckReset(race){if(confirm('Réinitialiser la checklist ?')){_ckSave(race,{});_ckRender(race);}}
+function _ckRender(race){
+  const secs=CK_SECS[race];if(!secs)return;
+  const st=_ckLoad(race);
+  const total=secs.reduce((a,s)=>a+s.items.length,0);
+  const done=secs.reduce((a,s)=>a+s.items.filter(it=>st[it.id]).length,0);
+  const pb=document.getElementById('ck-pb');if(pb)pb.style.width=(done/total*100)+'%';
+  const pc=document.getElementById('ck-pc');if(pc)pc.textContent=done+'/'+total;
+  const ps=document.getElementById('ck-ps');if(ps)ps.textContent=done===total?'Tout est prêt ✓':(total-done)+' item'+(total-done>1?'s':'')+' restant'+(total-done>1?'s':'');
+  const ad=document.getElementById('ck-ad');if(ad)ad.style.display=done===total?'block':'none';
+  const el=document.getElementById('ck-secs');if(!el)return;
+  el.innerHTML=secs.map(sec=>{
+    const sd=sec.items.filter(it=>st[it.id]).length,all=sd===sec.items.length,open=st['_o_'+sec.id]!==false;
+    return`<div class="ck-sc"><div class="ck-sh" onclick="ckToggleSec('${race}','${sec.id}')">
+      <span class="ck-si">${sec.ico}</span><span class="ck-st">${sec.title}</span>
+      <span class="ck-sb ${all?'ck-sbd':''}">${sd}/${sec.items.length}</span>
+      <span class="ck-sa ${open?'ck-sao':''}">›</span></div>
+    ${open?`<div class="ck-is">${sec.items.map(it=>`<div class="ck-item" onclick="ckToggle('${race}','${it.id}')">
+      <div class="ck-chk ${st[it.id]?'ck-on':''}">${st[it.id]?'✓':''}</div>
+      <div class="ck-itx"><div class="ck-il ${st[it.id]?'ck-ild':''}">${it.label}</div>
+      ${it.note?`<div class="ck-in">${it.note}</div>`:''}</div></div>`).join('')}</div>`:''}
+    </div>`;
+  }).join('');
+}
+function renderChecklistHTML(race){
+  if(!CK_SECS[race])return'';
+  const total=CK_SECS[race].reduce((a,s)=>a+s.items.length,0);
+  return`<h3 class="dos-h3">✅ Checklist J-7</h3>
+    <div class="ck-prog"><div class="ck-ph"><span class="ck-ptit">Préparation course</span><span class="ck-pc" id="ck-pc">0/${total}</span></div>
+      <div class="ck-pbw"><div class="ck-pb" id="ck-pb" style="width:0%"></div></div>
+      <div class="ck-ps" id="ck-ps">${total} items à valider</div></div>
+    <div class="ck-done" id="ck-ad" style="display:none">✅&nbsp;&nbsp;<strong>Tout est prêt !</strong> Bonne course 💪</div>
+    <div id="ck-secs"></div>
+    <button class="ck-rst" onclick="ckReset('${race}')">↺ Réinitialiser</button>`;
+}
+
 function ouvrirDossier(id){
   const D=(typeof DOSSIERS!=='undefined')?DOSSIERS[id]:null; if(!D)return;
   const ac=D.accent||'#0d9488';
@@ -665,9 +738,11 @@ function ouvrirDossier(id){
      <h3 class="dos-h3">Les erreurs à ne pas faire</h3>
      <ul class="dos-err">${err}</ul>
      <p class="dos-sources">${D.sources}</p>
+     ${renderChecklistHTML(id)}
    </div>`;
   topbar.innerHTML=`<span></span>${btnFermer}`;
   ouvrir();
+  if(CK_SECS[id])_ckRender(id);
 }
 function ouvrirSeanceS24(idx){const r=S24R.runs[idx];if(!r)return;segActif=null;
   topbar.innerHTML=`<button class="btn-nav" onclick="ouvrirSemaine(24)">‹ Retour semaine 24</button>${btnFermer}`;
