@@ -755,3 +755,8 @@ body.nuit .sm-label input[type=date]{background:#0f172a;border-color:#334155;col
 .can-tip{font-size:11px;font-weight:500;color:#ea580c;background:#ffedd5;padding:2px 8px;border-radius:99px}
 body.nuit #canicule-banner{background:#431407;border-color:#7c2d12;color:#fed7aa}
 body.nuit .can-tip{background:#7c2d12;color:#fed7aa}
+/* ===== Journal nutrition — quick log chips ===== */
+.ql-nutr{display:flex;gap:6px;flex-wrap:wrap;margin-top:5px}
+.ql-nc{font-size:12px;font-weight:600;padding:5px 10px;border-radius:99px;border:.5px solid var(--bord-card,#e2e8f0);background:var(--gris-fond,#f8fafc);color:var(--texte-deux);cursor:pointer;transition:all .15s;-webkit-tap-highlight-color:transparent}
+.ql-nc:active{transform:scale(.95)}
+.ql-nc.ql-nc-on{background:#dcfce7;border-color:#22c55e;color:#15803d}
