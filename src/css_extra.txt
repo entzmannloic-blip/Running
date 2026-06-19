@@ -729,3 +729,29 @@ body.nuit .sm-sheet{background:#1e293b}
 body.nuit .sm-stitle,.body.nuit .sm-al,.body.nuit .sm-rlbl{color:#f1f5f9}
 body.nuit .sm-action,.body.nuit .sm-reason{background:#0f172a;border-color:#334155}
 body.nuit .sm-label input[type=date]{background:#0f172a;border-color:#334155;color:#f1f5f9}
+/* ===== Feature 1 — iOS Install ===== */
+#install-banner{position:fixed;bottom:0;left:0;right:0;background:#0f172a;color:#f1f5f9;padding:10px 14px;display:flex;align-items:center;gap:8px;z-index:900;font-size:13px}
+.inst-ico{font-size:18px;flex:0 0 auto}
+.inst-txt{flex:1;font-weight:500}
+.inst-cta{padding:5px 12px;border-radius:7px;background:#0d9488;border:none;color:#fff;font-size:12px;font-weight:700;cursor:pointer;flex:0 0 auto}
+.inst-x{width:26px;height:26px;border-radius:50%;background:#1e293b;border:none;color:#64748b;font-size:14px;cursor:pointer;flex:0 0 26px}
+#install-ov{display:none;position:fixed;inset:0;background:rgba(15,23,42,.6);z-index:1002;align-items:flex-end}
+#install-ov.open{display:flex}
+.inst-sheet{background:#fff;border-radius:18px 18px 0 0;padding:20px 16px 32px;width:100%;animation:qlUp .22s ease}
+.inst-handle{width:36px;height:4px;background:#e2e8f0;border-radius:99px;margin:0 auto 16px}
+.inst-title{font-size:18px;font-weight:700;color:#0f172a;margin-bottom:3px}
+.inst-sub{font-size:12px;color:#64748b;margin-bottom:18px}
+.inst-steps{display:flex;flex-direction:column;gap:14px;margin-bottom:20px}
+.inst-step{display:flex;align-items:flex-start;gap:12px}
+.inst-n{width:28px;height:28px;border-radius:50%;background:#0d9488;color:#fff;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;flex:0 0 28px}
+.inst-sl{font-size:14px;font-weight:600;color:#0f172a;margin-bottom:2px}
+.inst-ss{font-size:11px;color:#64748b}
+.inst-done{width:100%;padding:12px;border-radius:10px;background:#0d9488;border:none;color:#fff;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:8px}
+.inst-later{display:block;width:100%;padding:8px;border:none;background:transparent;font-size:13px;color:#94a3b8;cursor:pointer}
+/* ===== Feature 2 — Ajustement allure ===== */
+.vdj-adj{margin-top:7px;font-size:12px;color:#fff;background:rgba(249,115,22,.25);border-radius:7px;padding:5px 9px;display:inline-block}
+/* ===== Feature 3 — Bannière canicule auto ===== */
+#canicule-banner{display:none;justify-content:space-between;align-items:center;background:#fff7ed;border:.5px solid #fed7aa;border-radius:10px;padding:8px 12px;margin-bottom:8px;font-size:12px;font-weight:600;color:#c2410c}
+.can-tip{font-size:11px;font-weight:500;color:#ea580c;background:#ffedd5;padding:2px 8px;border-radius:99px}
+body.nuit #canicule-banner{background:#431407;border-color:#7c2d12;color:#fed7aa}
+body.nuit .can-tip{background:#7c2d12;color:#fed7aa}
