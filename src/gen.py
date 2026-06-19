@@ -548,6 +548,10 @@ META=[
 (53,'regen','Bilan & 2027',30,'Légère','≈ 95 % facile',"Clôture de saison, bilan, pistes 2027."),
 ]
 SEMAINES=[{"num":n,"phase":p,"theme":t,"km":k,"statut":"ouverte","charge":c,"repartition":r,"objectif":o} for (n,p,t,k,c,r,o) in META]
+# Revues de semaine post-bilan
+_S25_REVUE="<p>La semaine de reprise que tu devais faire. Pas celle que tu espérais peut-être, mais celle qu'il fallait — et tu l'as exécutée proprement.</p><p><strong>Ce qui ressort avant tout : la gestion de la chaleur.</strong> Quatre séances sur cinq démarrées entre 7h25 et 8h30. L'écart entre la s3 (FC 165/181, subi à midi par 30°C) et les quatre autres (FC 140-151, maîtrisé) dit tout sur l'importance de l'horaire. Ce n'est pas une variable de confort, c'est une variable de performance.</p><p><strong>La progression dans la semaine est nette.</strong> S1/S2 très faciles (FC 140-143, moteur en veille). S3 qualité tenue en conditions difficiles, 6 km à 5:14/km. S4 sortie longue avec <strong>fast finish à 4:58/km sur le dernier kilomètre</strong> — sub-5 min au 4e jour consécutif en canicule. S5 bonus parfait à 7h25 chez les parents, FC 144 en plein cœur de la Z2, rien dépensé.</p><p><strong>Ce que cette semaine confirme pour la Déraille (J-16) :</strong> tu n'es pas en reprise, tu es en forme. La résistance à la fatigue est là. S26 est allégée par conception — laisse-la être légère, la séance clé c'est mercredi.</p>"
+for _s in SEMAINES:
+    if _s["num"]==25: _s["revue"]=_S25_REVUE
 
 PHASES=[
  {"id":'reprise',"nom":'Reprise',"c":GREEN,"sem":'S24 – S25',"role":"Digérer La Circaète puis relancer en douceur en corrigeant la zone grise."},
