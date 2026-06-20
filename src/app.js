@@ -185,7 +185,8 @@ function renderHeader(){
       return `<span class="cds-item"><span class="cds-n">J-${_dn}</span><span class="cds-l">${r.nom}</span></span>`;}).join('');
     _cd=`${_it}`;
   }
-  const _maj=`<div class="vdj-maj">Données à jour au ${MAJ}</div>`;
+  const _latestBuild=(typeof CHANGELOG!=='undefined'&&CHANGELOG.length)?CHANGELOG[0].build:'—';
+  const _maj=`<div class="vdj-maj">Données à jour au ${MAJ}<button id="build-badge" onclick="openVersionPanel()">Build ${_latestBuild}</button></div>`;
   document.getElementById('cd-strip').innerHTML=_cd;
   const _cw=`<button class="cw-link" onclick="jumpToWeek(${sc.num})"><span class="cw-pin">📍</span><span class="cw-txt">Tu es en <strong>S${sc.num} · ${sc.theme}</strong></span><span class="cw-arr">voir dans le plan →</span></button>`;
   document.getElementById('hero-plan').innerHTML=`${_psCard}${_formeBar}<div id="canicule-banner" style="display:none"></div>${_cw}<div id="meteo-widget" class="meteo"><div class="meteo-loc">⏳ Météo…</div></div>`;
@@ -1074,16 +1075,6 @@ function initVersionPanel(){
   if(!document.body||typeof document.body.insertAdjacentHTML!=='function')return;
   const cl=(typeof CHANGELOG!=='undefined'?CHANGELOG:[])||[];
   const latest=cl[0]||{build:'—',date:'—'};
-  // Badge dans le footer
-  const foot=document.getElementById('maj-foot');
-  if(foot){
-    const btn=document.createElement('button');
-    btn.id='build-badge';
-    btn.textContent='Build '+latest.build;
-    btn.onclick=openVersionPanel;
-    foot.appendChild(btn);
-  }
-  // Overlay
   document.body.insertAdjacentHTML('beforeend',`
 <div id="ver-ov" onclick="if(event.target===this)closeVersionPanel()">
   <div class="ver-sheet">
