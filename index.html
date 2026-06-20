@@ -964,31 +964,37 @@ body.nuit .ver-feats{border-color:#334155}
 .fd-fill{height:100%;border-radius:99px;transition:width .4s ease}
 .fd-val{font-size:11px;color:var(--texte-deux);flex:0 0 auto;text-align:right;max-width:130px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 body.nuit .forme-bar,body.nuit .forme-detail{background:#1e293b;border-color:#334155}
-/* ===== Forme score — aide ===== */
-.fb-help{width:16px;height:16px;border-radius:50%;background:var(--gris-fond,#f1f5f9);border:.5px solid var(--bord-card,#e2e8f0);font-size:10px;font-weight:700;color:var(--texte-deux);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;margin-left:5px;vertical-align:middle;line-height:1;padding:0}
-.fb-help:active{background:#e2e8f0}
-#forme-help-ov{display:none;position:fixed;inset:0;background:rgba(15,23,42,.6);z-index:1004;align-items:flex-end}
-#forme-help-ov.open{display:flex}
-.fh-sheet{background:#fff;border-radius:18px 18px 0 0;padding:20px 16px 32px;width:100%;max-height:88vh;overflow-y:auto;animation:qlUp .22s ease}
-.fh-handle{width:36px;height:4px;background:#e2e8f0;border-radius:99px;margin:0 auto 16px}
-.fh-title{font-size:16px;font-weight:700;color:#0f172a;margin-bottom:8px}
-.fh-intro{font-size:13px;color:#475569;line-height:1.55;margin-bottom:16px}
-.fh-scale{display:flex;flex-direction:column;gap:8px;margin-bottom:18px}
-.fh-s-item{display:flex;align-items:flex-start;gap:10px;font-size:13px;color:#475569;line-height:1.45}
-.fh-dot{width:12px;height:12px;border-radius:50%;flex:0 0 12px;margin-top:3px}
+/* ===== Forme score — aide (plein écran, scroll top) ===== */
+.fb-help{width:16px;height:16px;border-radius:50%;background:rgba(255,255,255,.2);border:.5px solid rgba(255,255,255,.3);font-size:10px;font-weight:700;color:var(--texte-deux);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;margin-left:5px;vertical-align:middle;line-height:1;padding:0;-webkit-tap-highlight-color:transparent}
+.fb-help:active{opacity:.7}
+#forme-help-ov{display:none;position:fixed;inset:0;z-index:1004;background:#fff;overflow-y:auto;-webkit-overflow-scrolling:touch}
+#forme-help-ov.open{display:block}
+.fh-topbar{position:sticky;top:0;background:#fff;display:flex;align-items:center;justify-content:space-between;padding:16px 16px 12px;border-bottom:.5px solid #f1f5f9;z-index:1}
+.fh-topbar-title{font-size:15px;font-weight:700;color:#0f172a;line-height:1.2;flex:1;padding-right:12px}
+.fh-close-top{width:32px;height:32px;border-radius:50%;background:#f1f5f9;border:none;font-size:16px;color:#475569;cursor:pointer;display:flex;align-items:center;justify-content:center;flex:0 0 32px;-webkit-tap-highlight-color:transparent}
+.fh-close-top:active{background:#e2e8f0}
+.fh-body{padding:16px 16px 48px}
+.fh-intro{font-size:13px;color:#475569;line-height:1.6;margin-bottom:18px}
+.fh-scale{display:flex;flex-direction:column;gap:10px;margin-bottom:20px}
+.fh-s-item{display:flex;align-items:flex-start;gap:10px;font-size:13px;color:#475569;line-height:1.5}
+.fh-dot{width:12px;height:12px;border-radius:50%;flex:0 0 12px;margin-top:4px}
 .fh-s-item strong{color:#0f172a}
 .fh-sec{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#94a3b8;margin-bottom:10px}
 .fh-comps{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
-.fh-comp{background:#f8fafc;border-radius:10px;padding:11px 13px}
-.fh-c-head{font-size:12px;font-weight:700;color:#0f172a;margin-bottom:4px;display:flex;justify-content:space-between}
-.fh-c-head span{color:#0d9488;font-weight:800}
-.fh-c-txt{font-size:12px;color:#64748b;line-height:1.5}
-.fh-note{font-size:12px;color:#64748b;background:#eff6ff;border-radius:8px;padding:9px 11px;margin-bottom:16px;line-height:1.5}
-.fh-close{width:100%;padding:12px;border-radius:10px;background:#0d9488;border:none;color:#fff;font-size:14px;font-weight:700;cursor:pointer}
-body.nuit .fh-sheet{background:#1e293b}
-body.nuit .fh-title{color:#f1f5f9}
-body.nuit .fh-comp{background:#0f172a}
+.fh-comp{background:#f8fafc;border-radius:10px;padding:12px 13px}
+.fh-c-head{font-size:12px;font-weight:700;color:#0f172a;margin-bottom:5px;display:flex;justify-content:space-between;align-items:center}
+.fh-c-head span{color:#0d9488;font-weight:800;font-size:13px}
+.fh-c-txt{font-size:12px;color:#64748b;line-height:1.55}
+.fh-note{font-size:12px;color:#475569;background:#eff6ff;border-radius:8px;padding:10px 12px;margin-bottom:10px;line-height:1.55}
+body.nuit #forme-help-ov{background:#0f172a}
+body.nuit .fh-topbar{background:#0f172a;border-color:#1e293b}
+body.nuit .fh-topbar-title{color:#f1f5f9}
+body.nuit .fh-close-top{background:#1e293b;color:#94a3b8}
+body.nuit .fh-comp{background:#1e293b}
 body.nuit .fh-c-head{color:#f1f5f9}
+body.nuit .fh-c-txt{color:#94a3b8}
+body.nuit .fh-s-item{color:#94a3b8}
+body.nuit .fh-s-item strong{color:#e2e8f0}
 </style></head>
 <body>
 <a href="#main" class="skip-link">Aller au contenu</a>
@@ -2149,34 +2155,40 @@ function initVersionPanel(){
   </div>
 </div>`);
 }
-function openFormeHelp(){const o=document.getElementById('forme-help-ov');if(o)o.classList.add('open');}
+function openFormeHelp(){
+  const o=document.getElementById('forme-help-ov');
+  if(o){o.classList.add('open');o.scrollTop=0;}
+}
 function closeFormeHelp(){const o=document.getElementById('forme-help-ov');if(o)o.classList.remove('open');}
 function initFormeHelp(){
   if(!document.body||typeof document.body.insertAdjacentHTML!=='function')return;
   document.body.insertAdjacentHTML('beforeend',`
-<div id="forme-help-ov" onclick="if(event.target===this)closeFormeHelp()">
-  <div class="fh-sheet">
-    <div class="fh-handle"></div>
-    <div class="fh-title">Score de forme · Comment ça marche ?</div>
+<div id="forme-help-ov">
+  <div class="fh-topbar">
+    <div class="fh-topbar-title">Score de forme · Comment ça marche ?</div>
+    <button class="fh-close-top" onclick="closeFormeHelp()">✕</button>
+  </div>
+  <div class="fh-body">
     <div class="fh-intro">Un seul chiffre chaque matin pour savoir où tu en es. Il synthétise automatiquement 4 indicateurs de ton entraînement récent.</div>
+    <div class="fh-sec">L'échelle de 0 à 100</div>
     <div class="fh-scale">
-      <div class="fh-s-item"><div class="fh-dot" style="background:#0d9488"></div><div><strong>82–100 · Excellent</strong> — Tu es en forme, tu peux attaquer une séance qualité.</div></div>
+      <div class="fh-s-item"><div class="fh-dot" style="background:#0d9488"></div><div><strong>82–100 · Excellent</strong> — Tu es en forme, tu peux attaquer une séance qualité sans hésiter.</div></div>
       <div class="fh-s-item"><div class="fh-dot" style="background:#22c55e"></div><div><strong>68–81 · Bon</strong> — Paramètres dans la norme. Suis le plan tel quel.</div></div>
-      <div class="fh-s-item"><div class="fh-dot" style="background:#f59e0b"></div><div><strong>52–67 · Vigilance</strong> — Quelque chose mérite attention. Lis le détail pour identifier le point faible.</div></div>
-      <div class="fh-s-item"><div class="fh-dot" style="background:#ef4444"></div><div><strong>0–51 · Alerte</strong> — Privilégie le repos ou un EF très léger. Ne force pas.</div></div>
+      <div class="fh-s-item"><div class="fh-dot" style="background:#f59e0b"></div><div><strong>52–67 · Vigilance</strong> — Quelque chose mérite attention. Tape sur la barre pour identifier le point faible.</div></div>
+      <div class="fh-s-item"><div class="fh-dot" style="background:#ef4444"></div><div><strong>0–51 · Alerte</strong> — Privilégie le repos ou un EF très léger. Ne force pas une qualité.</div></div>
     </div>
     <div class="fh-sec">Les 4 composantes</div>
     <div class="fh-comps">
-      <div class="fh-comp"><div class="fh-c-head">ACWR <span>30 %</span></div><div class="fh-c-txt">Ratio charge aiguë / charge chronique sur 4 semaines. Zone idéale : 0,8–1,3. En dessous = sous-entraîné. Au-dessus = surcharge.</div></div>
-      <div class="fh-comp"><div class="fh-c-head">Adhérence <span>25 %</span></div><div class="fh-c-txt">Pourcentage de séances réalisées vs planifiées sur les 2 dernières semaines (hors optionnelles).</div></div>
-      <div class="fh-comp"><div class="fh-c-head">Z2 pace <span>25 %</span></div><div class="fh-c-txt">Tendance de ton allure sur les footings faciles (EF). Si tu cours de plus en plus vite à même FC → forme aérobie en progression.</div></div>
-      <div class="fh-comp"><div class="fh-c-head">Fraîcheur <span>20 %</span></div><div class="fh-c-txt">Jours de repos depuis ta dernière séance. Optimal : 1–2 jours. 0 jour = tu viens de courir. 4+ jours = tu perds du fil.</div></div>
+      <div class="fh-comp"><div class="fh-c-head">ACWR <span>30 %</span></div><div class="fh-c-txt">Ratio charge aiguë / charge chronique sur 4 semaines glissantes. Zone idéale : 0,8–1,3. En dessous = sous-entraîné. Au-dessus = surcharge, risque blessure.</div></div>
+      <div class="fh-comp"><div class="fh-c-head">Adhérence <span>25 %</span></div><div class="fh-c-txt">Pourcentage de séances réalisées vs planifiées sur les 2 dernières semaines, hors optionnelles. Reflète ta régularité.</div></div>
+      <div class="fh-comp"><div class="fh-c-head">Z2 pace <span>25 %</span></div><div class="fh-c-txt">Tendance de ton allure sur les footings faciles (EF). Si tu cours de plus en plus vite à même FC, ta forme aérobie progresse — et le score monte.</div></div>
+      <div class="fh-comp"><div class="fh-c-head">Fraîcheur <span>20 %</span></div><div class="fh-c-txt">Jours de repos depuis ta dernière séance. Optimal : 1–2 jours. 0 = couru aujourd'hui (neutre). 4+ jours sans courir = tu perds du fil.</div></div>
     </div>
-    <div class="fh-note">💡 Tape sur la barre pour voir le détail de chaque composante avec ta valeur du jour.</div>
-    <button class="fh-close" onclick="closeFormeHelp()">Compris</button>
+    <div class="fh-note">💡 Tape directement sur la barre "Forme du jour" pour voir le détail de chaque composante avec tes valeurs du jour en temps réel.</div>
+    <div class="fh-note" style="background:#f0fdf4;color:#15803d">🎯 L'objectif à long terme : maintenir le score au-dessus de 75 sur les semaines de charge, et au-dessus de 80 pendant les allègements. Le trend (↑ ↓ →) te dit si tu vas dans le bon sens.</div>
   </div>
-</div>`);
-}
+</div>`);}
+
 function openVersionPanel(){const o=document.getElementById('ver-ov');if(o)o.classList.add('open');}
 function closeVersionPanel(){const o=document.getElementById('ver-ov');if(o)o.classList.remove('open');}
 
