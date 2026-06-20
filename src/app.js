@@ -168,7 +168,7 @@ function renderHeader(){
   // Sprint A — Score de forme
   const _forme=computeFormeScore();
   const _formeBar=`<div class="forme-bar" onclick="document.getElementById('forme-detail').classList.toggle('fd-open')">
-    <div class="fb-left"><span class="fb-kicker">Forme du jour</span><span class="fb-sig">${_forme.signal}</span></div>
+    <div class="fb-left"><span class="fb-kicker">Forme du jour <button class="fb-help" onclick="event.stopPropagation();openFormeHelp()">?</button></span><span class="fb-sig">${_forme.signal}</span></div>
     <div class="fb-right"><div class="fb-score" style="color:${_forme.color}">${_forme.score}<span class="fb-trend">${_forme.trend}</span></div></div>
   </div>
   <div class="forme-detail" id="forme-detail">
@@ -1107,6 +1107,34 @@ function initVersionPanel(){
   </div>
 </div>`);
 }
+function openFormeHelp(){const o=document.getElementById('forme-help-ov');if(o)o.classList.add('open');}
+function closeFormeHelp(){const o=document.getElementById('forme-help-ov');if(o)o.classList.remove('open');}
+function initFormeHelp(){
+  if(!document.body||typeof document.body.insertAdjacentHTML!=='function')return;
+  document.body.insertAdjacentHTML('beforeend',`
+<div id="forme-help-ov" onclick="if(event.target===this)closeFormeHelp()">
+  <div class="fh-sheet">
+    <div class="fh-handle"></div>
+    <div class="fh-title">Score de forme · Comment ça marche ?</div>
+    <div class="fh-intro">Un seul chiffre chaque matin pour savoir où tu en es. Il synthétise automatiquement 4 indicateurs de ton entraînement récent.</div>
+    <div class="fh-scale">
+      <div class="fh-s-item"><div class="fh-dot" style="background:#0d9488"></div><div><strong>82–100 · Excellent</strong> — Tu es en forme, tu peux attaquer une séance qualité.</div></div>
+      <div class="fh-s-item"><div class="fh-dot" style="background:#22c55e"></div><div><strong>68–81 · Bon</strong> — Paramètres dans la norme. Suis le plan tel quel.</div></div>
+      <div class="fh-s-item"><div class="fh-dot" style="background:#f59e0b"></div><div><strong>52–67 · Vigilance</strong> — Quelque chose mérite attention. Lis le détail pour identifier le point faible.</div></div>
+      <div class="fh-s-item"><div class="fh-dot" style="background:#ef4444"></div><div><strong>0–51 · Alerte</strong> — Privilégie le repos ou un EF très léger. Ne force pas.</div></div>
+    </div>
+    <div class="fh-sec">Les 4 composantes</div>
+    <div class="fh-comps">
+      <div class="fh-comp"><div class="fh-c-head">ACWR <span>30 %</span></div><div class="fh-c-txt">Ratio charge aiguë / charge chronique sur 4 semaines. Zone idéale : 0,8–1,3. En dessous = sous-entraîné. Au-dessus = surcharge.</div></div>
+      <div class="fh-comp"><div class="fh-c-head">Adhérence <span>25 %</span></div><div class="fh-c-txt">Pourcentage de séances réalisées vs planifiées sur les 2 dernières semaines (hors optionnelles).</div></div>
+      <div class="fh-comp"><div class="fh-c-head">Z2 pace <span>25 %</span></div><div class="fh-c-txt">Tendance de ton allure sur les footings faciles (EF). Si tu cours de plus en plus vite à même FC → forme aérobie en progression.</div></div>
+      <div class="fh-comp"><div class="fh-c-head">Fraîcheur <span>20 %</span></div><div class="fh-c-txt">Jours de repos depuis ta dernière séance. Optimal : 1–2 jours. 0 jour = tu viens de courir. 4+ jours = tu perds du fil.</div></div>
+    </div>
+    <div class="fh-note">💡 Tape sur la barre pour voir le détail de chaque composante avec ta valeur du jour.</div>
+    <button class="fh-close" onclick="closeFormeHelp()">Compris</button>
+  </div>
+</div>`);
+}
 function openVersionPanel(){const o=document.getElementById('ver-ov');if(o)o.classList.add('open');}
 function closeVersionPanel(){const o=document.getElementById('ver-ov');if(o)o.classList.remove('open');}
 
@@ -1931,5 +1959,5 @@ function initBarre(se){const piste=document.getElementById('piste');if(!piste)re
     e.addEventListener('click',()=>{if(segActif)segActif.classList.remove('actif');if(segActif===e){segActif=null;pan.classList.remove('visible');return;}segActif=e;e.classList.add('actif');dnom.textContent=seg.nom;drole.textContent=seg.role;dgr.innerHTML=`<div><div class="di-label">Durée</div><div class="di-val">${fmt(seg.duree)}</div></div><div><div class="di-label">Bloc</div><div class="di-val">${seg.bloc}</div></div><div><div class="di-label">Début</div><div class="di-val">${fmt(seg.debut)}</div></div><div><div class="di-label">Fin</div><div class="di-val">${fmt(seg.fin)}</div></div>`;pan.classList.add('visible');});
     piste.appendChild(e);});
 }
-hydrateLogs();hydrateOverrides();initQuickLog();initCreneaux();initSessionMenu();initInstall();initVersionPanel();renderHeader();renderPlan();rwAuto();
+hydrateLogs();hydrateOverrides();initQuickLog();initCreneaux();initSessionMenu();initInstall();initVersionPanel();initFormeHelp();renderHeader();renderPlan();rwAuto();
 if('serviceWorker'in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
