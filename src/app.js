@@ -1205,6 +1205,155 @@ function openVersionPanel(){const o=document.getElementById('ver-ov');if(o)o.cla
 function closeVersionPanel(){const o=document.getElementById('ver-ov');if(o)o.classList.remove('open');}
 
 /* ===================================================================
+   COACH — Sprint B Option B (sans clé API, données app)
+   =================================================================== */
+function _cFmt(t){return t.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>');}
+function _cReply(txt){
+  const t=txt.toLowerCase();
+  const forme=computeFormeScore();
+  const today=new Date();today.setHours(0,0,0,0);
+  const curWk=isoWeek(today);
+  const sc=SEMAINES.find(s=>s.num===curWk)||{theme:'',km:0};
+  const ps=prochaineSeance();
+  if(/cour[ui]|run|\bkm\b|séance.*fait|terminé/.test(t))
+    return `Pour logger ta séance, tape le bouton ✓ sur la carte dans l'onglet Séances. Tu peux saisir km · temps · RPE · nutrition.\n\nDis-moi comment s'est passée la sortie si tu veux un retour coach.`;
+  if(/fatigu|crev[eé]|mal aux|douleur|bless/.test(t)){
+    const warn=forme.score<65?`Ton score de forme est bas (${forme.score}/100) — le repos est justifié.`:`Ton score de forme est à ${forme.score}/100, les données sont bonnes. La fatigue ressentie est probablement normale après ${sc.theme}.`;
+    const psw=ps&&ps.se.cat==='AM'?`\n\nAttention : ta prochaine séance est une qualité (${ps.se.titre}). Si tu es vraiment fatigué, mieux vaut la reporter.`:'';
+    return `${warn}${psw}\n\nEn cas de doute : un EF léger 30min FC<135 vaut mieux qu'un repos complet ou une séance forcée.`;
+  }
+  if(/demain|prochain|suivant|après-demain/.test(t)){
+    if(!ps)return 'Toutes les séances de la semaine sont terminées 🎉 La prochaine commence lundi.';
+    const diff=Math.round((ps.d-today)/86400000);
+    const quand=diff===0?"aujourd'hui":diff===1?'demain':`dans ${diff} jours`;
+    let msg=`**${ps.se.titre}** — ${quand}\n\n${ps.se.sous}`;
+    if(ps.se.cat==='EF')msg+='\n\nObjectif : FC < 144 tout du long. Pas d\'allure cible.';
+    else if(ps.se.cat==='AM')msg+='\n\nSéance qualité. Échauffement 15min avant les blocs.';
+    else if(ps.se.cat==='LONG')msg+='\n\nPars avec la nutrition complète : TA + gels.';
+    return msg;
+  }
+  if(/forme|score|comment (je|tu|ça va)|bilan/.test(t)){
+    const c=forme.components;
+    return `**Forme du jour : ${forme.score}/100 ${forme.trend}**\n\n• ${c[0].label} : ${Math.round(c[0].score)}/100 — ${c[0].detail}\n• ${c[1].label} : ${Math.round(c[1].score)}/100 — ${c[1].detail}\n• ${c[2].label} : ${Math.round(c[2].score)}/100 — ${c[2].detail}\n• ${c[3].label} : ${Math.round(c[3].score)}/100 — ${c[3].detail}\n\n→ ${forme.signal}`;
+  }
+  if(/d[eé]raille|nice|saintex|course|objectif|j-\d/.test(t)){
+    const R=[{n:'Trail Déraille',d:'2026-07-05',i:'24km +901m · Objectif C · test nutrition'},
+             {n:'Marathon de Nice',d:'2026-11-08',i:'42.195km · Objectif A · 3h45 (5:20/km)'},
+             {n:'SaintExpress',d:'2026-11-28',i:'45km nuit · Objectif B · finisher'}];
+    return R.map(x=>{const j=Math.ceil((new Date(x.d)-today)/86400000);return `**${x.n}** — J-${j}\n${x.i}`;}).join('\n\n');
+  }
+  if(/nutri|gel|[eé]lectro|\bta\b|manger|caf[eé]|cherry|amarena/.test(t))
+    return `**Protocole nutrition**\n\n**TA Electrolytes** → 1 cpr/h (sorties >45min) · 2 cpr départ course\n**Gels Aptonia** → km 0 et km 8 en course\n**Cherry 65mg** → km 13 Déraille · km 32 Nice\n**Amarena 130mg** → km 20 Déraille · km 38 Nice\n\n⚠️ Leçon Circaète : électrolytes sur toutes les sorties > 1h, sans exception.`;
+  if(/m[eé]t[eé]o|chaud|canicule|chaleur/.test(t)){
+    try{const mc=JSON.parse(localStorage.getItem('meteo_cache')||'null');
+      if(mc&&mc.temp){const T=Math.round(mc.temp),adj=T<26?10:T<30?20:30;
+        if(T>28)return `🔴 **Canicule : ${T}°C**\n\n• Départ avant 8h30 impératif\n• Allure : +${adj}s/km\n• TA Electrolytes obligatoire\n• FC max réduite de 3-5 bpm`;
+        if(T>22)return `🟡 **${T}°C** — pars tôt, allure +${adj}s/km, emporte du TA.`;
+        return `🟢 **${T}°C** — conditions favorables, plan nominal.`;
+      }}catch(e){}
+    return 'Ouvre l\'onglet Séances pour actualiser la météo.';
+  }
+  if(/chaussure|shoe|clifton|novablast|cascadia|magic speed/.test(t)){
+    const g=typeof GEAR!=='undefined'?GEAR:[];
+    if(!g.length)return 'Données chaussures non disponibles.';
+    return `**Parc chaussures** 👟\n\n`+g.map(x=>`${x.km>1000?'⚠️':x.km>700?'🟡':'🟢'} **${x.marque} ${x.modele}** — ${x.km} km`).join('\n')+`\n\n• Clifton (1103km) : décrassages courts seulement\n• Magic Speed : AM/qualité uniquement\n• Cascadia : trail\n• Novablast J/V : route training`;
+  }
+  if(/allure|vitesse|pace|5:20|5:40/.test(t))
+    return `**Allures cibles 2026**\n\n• EF Z2 : 5:50–6:05/km (FC<144)\n• AM marathon : **5:20/km** → 3h45 Nice\n• Seuil : 4:50–5:00/km\n• Trail montée : 9:00–10:00/km\n\nZ2 actuel 5:56/km → objectif octobre : **5:40/km** à même FC.`;
+  if(/repos|r[eé]cup|bless|day off/.test(t))
+    return `**Récupération**\n\n• 48h après effort intense : EF léger FC<135 OK\n• 72h : retour entraînement normal\n• Douleur : repos complet jusqu'à disparition\n\nLa récupération est de l'entraînement. Tu te construis au repos, pas à l'effort.`;
+  const tip=forme.score>=82?'en pleine forme':forme.score>=68?'en bonne forme':'à surveiller';
+  return `Tu es ${tip} (${forme.score}/100). Je peux t'aider sur : **ma forme** · **demain** · **fatigue** · **météo** · **courses** · **nutrition** · **chaussures** · **allures** · **récupération**.`;
+}
+function _cAddMsg(role,html){
+  const el=document.getElementById('coach-msgs');if(!el)return;
+  const t=new Date().toLocaleTimeString('fr',{hour:'2-digit',minute:'2-digit'});
+  const d=document.createElement('div');
+  d.className='coach-msg '+role;
+  d.innerHTML=`<div class="cmsg-bbl">${html}</div><div class="cmsg-t">${t}</div>`;
+  el.appendChild(d);el.scrollTop=9999;
+}
+function _cTyping(cb){
+  const el=document.getElementById('coach-msgs');if(!el)return;
+  const d=document.createElement('div');d.className='coach-msg coach';d.id='c-dots';
+  d.innerHTML='<div class="cmsg-bbl"><div class="c-dots"><span></span><span></span><span></span></div></div>';
+  el.appendChild(d);el.scrollTop=9999;
+  setTimeout(()=>{const x=document.getElementById('c-dots');if(x)x.remove();cb();},900);
+}
+function openCoach(){
+  const ov=document.getElementById('coach-ov');if(!ov)return;
+  ov.classList.add('open');
+  if(!document.getElementById('coach-msgs').children.length){
+    setTimeout(()=>{
+      const forme=computeFormeScore();
+      const ps=prochaineSeance();
+      const today=new Date();today.setHours(0,0,0,0);
+      const diff=ps?Math.round((ps.d-today)/86400000):-1;
+      const emoji=forme.score>=82?'🟢':forme.score>=68?'🟡':'🔴';
+      let intro=`Bonjour Loïc 👋<br><br>${emoji} <strong>Forme du jour : ${forme.score}/100 ${forme.trend}</strong><br>${forme.signal}`;
+      if(ps){const quand=diff===0?"aujourd'hui":diff===1?'demain':`dans ${diff}j`;
+        intro+=`<br><br>Prochaine séance <strong>${quand}</strong> : ${ps.se.titre}`;}
+      intro+='<br><br>Pose-moi n\'importe quelle question sur ton entraînement.';
+      _cAddMsg('coach',intro);
+    },300);
+  }
+}
+function closeCoach(){document.getElementById('coach-ov')?.classList.remove('open');}
+function coachSend(){
+  const inp=document.getElementById('coach-inp');if(!inp)return;
+  const txt=inp.value.trim();if(!txt)return;
+  inp.value='';
+  _cAddMsg('user',txt);
+  _cTyping(()=>_cAddMsg('coach',_cFmt(_cReply(txt))));
+}
+function coachChip(txt){const inp=document.getElementById('coach-inp');if(inp)inp.value=txt;coachSend();}
+function initCoach(){
+  if(!document.body||typeof document.body.insertAdjacentHTML!=='function')return;
+  document.body.insertAdjacentHTML('beforeend',`
+<button class="coach-fab" onclick="openCoach()" aria-label="Coach">🤖</button>
+<div id="coach-ov">
+  <div class="coach-topbar">
+    <div class="c-avatar">🤖</div>
+    <div class="c-head"><div class="c-title">Coach</div><div class="c-sub"><div class="c-live"></div>Analyse depuis tes données</div></div>
+    <button class="c-close" onclick="closeCoach()">✕</button>
+  </div>
+  <div id="coach-msgs" class="coach-msgs"></div>
+  <div class="coach-chips">
+    <div class="c-chip" onclick="coachChip('Ma forme aujourd\\'hui')">Ma forme</div>
+    <div class="c-chip" onclick="coachChip('Plan de demain')">Demain</div>
+    <div class="c-chip" onclick="coachChip('Je me sens fatigué')">Fatigue ?</div>
+    <div class="c-chip" onclick="coachChip('Météo et canicule')">Météo</div>
+    <div class="c-chip" onclick="coachChip('Mes courses objectifs')">Courses</div>
+    <div class="c-chip" onclick="coachChip('Nutrition pour la Déraille')">Nutrition</div>
+    <div class="c-chip" onclick="coachChip('Mes chaussures')">Chaussures</div>
+  </div>
+  <div class="coach-inp-row">
+    <input id="coach-inp" type="text" placeholder="Pose ta question…" onkeydown="if(event.key==='Enter')coachSend()">
+    <button class="c-send" onclick="coachSend()">↑</button>
+  </div>
+</div>`);
+}
+function checkAutoSync(){
+  const today=new Date();today.setHours(0,0,0,0);
+  const yest=new Date(today);yest.setDate(today.getDate()-1);
+  const curWk=isoWeek(today);
+  for(const wk of[curWk,curWk-1]){
+    for(const s of(SEANCES_BY_WEEK[wk]||[])){
+      if(!s.date||s.opt)continue;
+      const d=new Date(s.date+'T00:00:00');
+      if((+d===+today||+d===+yest)&&(!s.realise||s.realise.statut!=='fait')){
+        const k='as_'+s.id;if(localStorage.getItem(k))continue;
+        const hero=document.getElementById('hero-plan');if(!hero)return;
+        const bar=document.createElement('div');bar.className='as-bar';
+        const when=+d===+today?"aujourd'hui":'hier';
+        bar.innerHTML=`<div class="as-ico">📍</div><div class="as-txt"><strong>Séance ${when} non loggée</strong> — S${wk} ${s.titre}</div><button class="as-btn" onclick="ouvrirQuickLog(${wk},${s.id})">Logger</button><button class="as-x" onclick="localStorage.setItem('${k}','1');this.parentElement.remove()">✕</button>`;
+        hero.insertAdjacentElement('afterend',bar);return;
+      }
+    }
+  }
+}
+
+/* ===================================================================
    PALMARÈS — Historique des courses officielles
    =================================================================== */
 function renderPalmares(){
@@ -2028,5 +2177,5 @@ function initBarre(se){const piste=document.getElementById('piste');if(!piste)re
     e.addEventListener('click',()=>{if(segActif)segActif.classList.remove('actif');if(segActif===e){segActif=null;pan.classList.remove('visible');return;}segActif=e;e.classList.add('actif');dnom.textContent=seg.nom;drole.textContent=seg.role;dgr.innerHTML=`<div><div class="di-label">Durée</div><div class="di-val">${fmt(seg.duree)}</div></div><div><div class="di-label">Bloc</div><div class="di-val">${seg.bloc}</div></div><div><div class="di-label">Début</div><div class="di-val">${fmt(seg.debut)}</div></div><div><div class="di-label">Fin</div><div class="di-val">${fmt(seg.fin)}</div></div>`;pan.classList.add('visible');});
     piste.appendChild(e);});
 }
-hydrateLogs();hydrateOverrides();initQuickLog();initCreneaux();initSessionMenu();initInstall();initVersionPanel();initFormeHelp();initCkHelp();renderHeader();renderPlan();rwAuto();
+hydrateLogs();hydrateOverrides();initQuickLog();initCreneaux();initSessionMenu();initInstall();initVersionPanel();initFormeHelp();initCkHelp();initCoach();renderHeader();renderPlan();rwAuto();setTimeout(checkAutoSync,800);
 if('serviceWorker'in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
