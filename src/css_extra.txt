@@ -789,3 +789,21 @@ body.nuit .ver-latest{background:#042f2e;border-color:#0d9488}
 body.nuit .ver-build,.body.nuit .ver-title{color:#f1f5f9}
 body.nuit .ver-date,.body.nuit .ver-feat{color:#64748b}
 body.nuit .ver-feats{border-color:#334155}
+/* ===== Sprint A — Score de forme composite ===== */
+.forme-bar{display:flex;align-items:center;justify-content:space-between;background:var(--bg-card,#fff);border:.5px solid var(--bord-card,#e2e8f0);border-radius:12px;padding:12px 14px;margin-bottom:8px;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:border-color .2s}
+.forme-bar:active{opacity:.85}
+.fb-left{flex:1;min-width:0}
+.fb-kicker{display:block;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--texte-deux);margin-bottom:3px}
+.fb-sig{display:block;font-size:12px;color:var(--texte);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fb-right{flex:0 0 auto;margin-left:12px}
+.fb-score{font-size:2rem;font-weight:800;letter-spacing:-.04em;line-height:1;text-align:right}
+.fb-trend{font-size:1rem;font-weight:600;margin-left:2px}
+.forme-detail{display:none;background:var(--bg-card,#fff);border:.5px solid var(--bord-card,#e2e8f0);border-radius:12px;padding:12px 14px;margin-bottom:8px;margin-top:-4px}
+.forme-detail.fd-open{display:block}
+.fd-row{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:.5px solid var(--gris-fond,#f8fafc)}
+.fd-row:last-child{border-bottom:none}
+.fd-lbl{font-size:11px;font-weight:700;color:var(--texte-deux);flex:0 0 72px}
+.fd-track{flex:1;height:5px;background:var(--gris-fond,#f1f5f9);border-radius:99px;overflow:hidden}
+.fd-fill{height:100%;border-radius:99px;transition:width .4s ease}
+.fd-val{font-size:11px;color:var(--texte-deux);flex:0 0 auto;text-align:right;max-width:130px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+body.nuit .forme-bar,body.nuit .forme-detail{background:#1e293b;border-color:#334155}
