@@ -1041,7 +1041,76 @@ function logSeance(wk,id){
   _afterLog(wk,id);
 }
 function unlogSeance(wk,id){const se=findSeance(wk,id);if(!se)return;const logs=loadLogs();delete logs[logId(wk,id)];saveLogs(logs);se.realise={statut:'a_faire'};_afterLog(wk,id);}
-/* ===== Feature 1 — iOS Install Flow ===== */
+/* ===== Cockpit — aides contextuelles ===== */
+const _CK_HELP={
+  vol:{t:'Volume hebdomadaire',c:'#f97316',body:`<p>Kilomètres courus chaque semaine (barres colorées) comparés au volume planifié (barres grises en arrière-plan).</p>
+    <div class="ch-rule"><div class="ch-dot" style="background:#f97316"></div><div><strong>Barre au-dessus du gris</strong> → tu as sur-performé. Vérifie que ce n'était pas au détriment de la qualité des séances.</div></div>
+    <div class="ch-rule"><div class="ch-dot" style="background:#94a3b8"></div><div><strong>Barre en dessous du gris</strong> → semaine incomplète. Normal pendant les allègements ou après une course.</div></div>
+    <div class="ch-tip">💡 Tendance à surveiller : une progression de +5–10% max par semaine. Au-delà, tu accumules une dette de récupération même sans le ressentir.</div>`},
+  re:{t:'Relative Effort (RE)',c:'#f59e0b',body:`<p>Score de charge calculé par Strava à partir de la fréquence cardiaque. Il intègre à la fois la durée et l'intensité de chaque sortie.</p>
+    <div class="ch-rule"><div class="ch-dot" style="background:#4ade80"></div><div><strong>EF 10 km facile</strong> ≈ 40–70 RE</div></div>
+    <div class="ch-rule"><div class="ch-dot" style="background:#f59e0b"></div><div><strong>Sortie longue 16 km</strong> ≈ 150–180 RE</div></div>
+    <div class="ch-rule"><div class="ch-dot" style="background:#ef4444"></div><div><strong>Circaète 30 km trail</strong> ≈ 696 RE</div></div>
+    <div class="ch-tip">💡 Glisse le doigt sur le graphe pour voir la valeur semaine par semaine. La tendance sur 8 semaines est plus parlante que la valeur isolée.</div>`},
+  acwr:{t:'ACWR — Risque de blessure',c:'#f59e0b',body:`<p>Ratio Charge Aiguë / Charge Chronique (Acute:Chronic Workload Ratio). Compare la charge des 7 derniers jours à la moyenne des 28 derniers jours.</p>
+    <div class="ch-rule"><div class="ch-dot" style="background:#3b82f6"></div><div><strong>ACWR &lt; 0.8 (bleu)</strong> → Sous-entraîné. Semaine légère ou récup prolongée. Faible risque mais perte de forme.</div></div>
+    <div class="ch-rule"><div class="ch-dot" style="background:#22c55e"></div><div><strong>ACWR 0.8–1.3 (vert)</strong> → Zone optimale. Continue sur cette lancée.</div></div>
+    <div class="ch-rule"><div class="ch-dot" style="background:#f59e0b"></div><div><strong>ACWR 1.3–1.5 (orange)</strong> → Charge élevée. Pas dangereux si ponctuel, mais surveille.</div></div>
+    <div class="ch-rule"><div class="ch-dot" style="background:#ef4444"></div><div><strong>ACWR &gt; 1.5 (rouge)</strong> → Surcharge. Risque de blessure ×5. Réduire l'intensité immédiatement.</div></div>
+    <div class="ch-tip">💡 Objectif : rester dans la zone verte 80% du temps. Dépasser 1.3 ponctuellement (semaine de pic avant compétition) est acceptable si les semaines suivantes permettent de récupérer.</div>`},
+  dp:{t:'Dénivelé positif (D+)',c:'#0d9488',body:`<p>Mètres de dénivelé positif cumulés par semaine. Indicateur clé pour la préparation aux courses de trail.</p>
+    <div class="ch-rule"><div class="ch-dot" style="background:#0d9488"></div><div><strong>Semaine route pure</strong> → D+ ≈ 30–80 m (variation naturelle du terrain)</div></div>
+    <div class="ch-rule"><div class="ch-dot" style="background:#8b5cf6"></div><div><strong>Semaine trail légère</strong> → D+ 200–500 m</div></div>
+    <div class="ch-rule"><div class="ch-dot" style="background:#f97316"></div><div><strong>Semaine spécifique trail</strong> → D+ 600–1000 m</div></div>
+    <div class="ch-tip">💡 Pour la Déraille (+901m) et SaintExpress, le D+ hebdo doit idéalement atteindre 500–800m dans les 4 semaines précédentes. Ce graphe permet de vérifier que la spécificité trail est bien intégrée.</div>`},
+  z2:{t:'Z2 pace — Allure EF',c:'#0d9488',body:`<p>Allure moyenne de tes footings faciles semaine par semaine. C'est <strong>l'indicateur fondamental</strong> du développement aérobie.</p>
+    <p>La Zone 2 = effort où tu peux tenir une conversation. FC < 144 bpm pour toi.</p>
+    <div class="ch-rule"><div class="ch-dot" style="background:#0d9488"></div><div><strong>Courbe descendante</strong> (allure plus rapide) = ta forme aérobie progresse. Tu vas plus vite sans travailler plus fort.</div></div>
+    <div class="ch-rule"><div class="ch-dot" style="background:#f59e0b"></div><div><strong>Courbe plate</strong> = stagnation. Normal en période de maintien ou de volume élevé.</div></div>
+    <div class="ch-rule"><div class="ch-dot" style="background:#ef4444"></div><div><strong>Courbe montante</strong> = régression. Souvent liée à la fatigue, la chaleur, ou un ACWR > 1.3.</div></div>
+    <div class="ch-tip">💡 Ton objectif saison : passer de 5:56/km à ~5:40/km en Z2 d'ici octobre. Chaque dixième de seconde gagné reflète une adaptation mitochondriale réelle.</div>`},
+  dc:{t:'Découplage cardiaque',c:'#8b5cf6',body:`<p>Mesure l'écart entre ton allure et ta FC sur une sortie longue. Un faible découplage = ton cœur reste stable alors que tu te fatigues.</p>
+    <div class="ch-rule"><div class="ch-dot" style="background:#22c55e"></div><div><strong>&lt; 5% (vert)</strong> → Excellent. Ton système aérobie est solide et stable sur la durée.</div></div>
+    <div class="ch-rule"><div class="ch-dot" style="background:#f59e0b"></div><div><strong>5–8% (orange)</strong> → Acceptable. Léger décrochage en fin de sortie, souvent dû à la chaleur ou à la fatigue.</div></div>
+    <div class="ch-rule"><div class="ch-dot" style="background:#ef4444"></div><div><strong>&gt; 8% (rouge)</strong> → Problème. Sortie trop longue, trop chaude, ou nutrition insuffisante.</div></div>
+    <div class="ch-tip">💡 Ce graphe te dit si tes sorties longues sont vraiment "faciles" ou si ton cœur souffre en fin de sortie sans que tu le ressentes. Un découplage élevé en canicule est normal — c'est pour ça qu'on court avant 8h30.</div>`},
+  pace:{t:'Progression allure par type',c:'#22c55e',body:`<p>3 courbes d'allure sur la fenêtre sélectionnée — footings faciles (EF), allure marathon (AM) et seuil. Permet de voir si tu progresses sur tous les registres.</p>
+    <div class="ch-rule"><div class="ch-dot" style="background:#22c55e"></div><div><strong>EF (vert)</strong> → Allure Z2, footing facile. Doit descendre progressivement toute la saison.</div></div>
+    <div class="ch-rule"><div class="ch-dot" style="background:#3b82f6"></div><div><strong>AM (bleu)</strong> → Allure marathon cible. Doit converger vers 5:20/km pour Nice (objectif 3h45).</div></div>
+    <div class="ch-rule"><div class="ch-dot" style="background:#f59e0b"></div><div><strong>Seuil (orange)</strong> → Allure séance AM ou tempo. Reflète ta capacité lactique.</div></div>
+    <div class="ch-tip">💡 Glisse le doigt sur le graphe pour voir les 3 valeurs simultanément. L'écart entre EF et seuil = ton amplitude de vitesse. Plus il est grand, meilleur est ton profil de coureur.</div>`},
+  fc:{t:'Zones FC — Distribution',c:'#ef4444',body:`<p>Répartition du temps passé dans chaque zone de fréquence cardiaque sur la semaine sélectionnée. Reflète la structure de ton entraînement.</p>
+    <div class="ch-rule"><div class="ch-dot" style="background:#3b82f6"></div><div><strong>Z1 Récup (&lt;130 bpm)</strong> → Échauffement, récupération active. Peut être augmenté.</div></div>
+    <div class="ch-rule"><div class="ch-dot" style="background:#22c55e"></div><div><strong>Z2 Endurance (130–148)</strong> → Moteur aérobie. Doit représenter 70–80% du volume total.</div></div>
+    <div class="ch-rule"><div class="ch-dot" style="background:#f59e0b"></div><div><strong>Z3 Seuil (148–163)</strong> → Zone "grise" : trop dur pour récupérer vite, trop facile pour progresser fort. À limiter.</div></div>
+    <div class="ch-rule"><div class="ch-dot" style="background:#f97316"></div><div><strong>Z4 Lactique (163–178)</strong> → Séances AM, tempo. 15–20% du volume = optimal.</div></div>
+    <div class="ch-rule"><div class="ch-dot" style="background:#ef4444"></div><div><strong>Z5 Max (&gt;178)</strong> → Fractionné intense. Réservé aux séances très ciblées.</div></div>
+    <div class="ch-tip">💡 Distribution idéale (entraînement polarisé) : 75–80% Z1-Z2 + 5% Z3 + 15–20% Z4-Z5. Trop de Z3 = entraînement "moyen partout" = progression lente.</div>`},
+  cad:{t:'Cadence (pas/min)',c:'#6366f1',body:`<p>Nombre de pas par minute. La valeur affichée est en SPM (steps per minute = total des deux pieds). Ta cadence naturelle est d'environ 172–174 spm en route.</p>
+    <div class="ch-rule"><div class="ch-dot" style="background:#22c55e"></div><div><strong>170–180 spm</strong> → Zone optimale. Limite l'impact au sol et réduit le risque de blessures aux genoux et hanches.</div></div>
+    <div class="ch-rule"><div class="ch-dot" style="background:#f59e0b"></div><div><strong>&lt;170 spm</strong> → Foulée trop longue. Augmente les forces d'impact. Surtout visible en fatigue ou en descente trail.</div></div>
+    <div class="ch-rule"><div class="ch-dot" style="background:#6366f1"></div><div><strong>Trail &lt;155 spm</strong> → Normal en montée raide (marche) ou sur terrain très technique.</div></div>
+    <div class="ch-tip">💡 Ta cadence trail (146 spm au Circaète) inclut les passages de marche en montée — c'est tout à fait normal. L'écart route/trail que tu vois dans ce graphe est attendu et sain.</div>`}
+};
+function openCkHelp(key){
+  const d=_CK_HELP[key];if(!d)return;
+  const o=document.getElementById('ck-help-ov');if(!o)return;
+  document.getElementById('ck-help-title').textContent=d.t;
+  document.getElementById('ck-help-body').innerHTML=d.body;
+  o.classList.add('open');o.scrollTop=0;
+}
+function closeCkHelp(){const o=document.getElementById('ck-help-ov');if(o)o.classList.remove('open');}
+function initCkHelp(){
+  if(!document.body||typeof document.body.insertAdjacentHTML!=='function')return;
+  document.body.insertAdjacentHTML('beforeend',`
+<div id="ck-help-ov">
+  <div class="ckh-topbar">
+    <div class="ckh-title" id="ck-help-title"></div>
+    <button class="ckh-close" onclick="closeCkHelp()">✕</button>
+  </div>
+  <div class="ckh-body" id="ck-help-body"></div>
+</div>`);}
+
 function _isPwa(){return(window.matchMedia&&window.matchMedia('(display-mode:standalone)').matches)||window.navigator.standalone===true;}
 function _isIos(){return/iPhone|iPod|iPad/i.test(navigator.userAgent)&&!window.MSStream;}
 function initInstall(){
@@ -1364,7 +1433,10 @@ function renderCockpit(){
   const el=document.getElementById('cockpit-contenu');
   if(el.innerHTML.trim()){_ckRenderAll(_ckWin);return;}
   const FC_RANGE={'Z1':'<130 bpm','Z2':'130-144','Z3':'145-165','Z4+':'>165 bpm'};
-  function card(id,title,sub,valId,valSuffix,chartH,extra){return`<div class="ck-card"><div class="ck-ch"><div><div class="ck-ct">${title}</div><div class="ck-cs" id="${id}-sub">${sub}</div></div>${valId?`<div style="text-align:right"><div class="ck-big" id="${valId}">—</div>${valSuffix?'<div class="ck-cs">'+valSuffix+'</div>':''}</div>`:''}</div><div class="ck-cw" id="${id}W"><svg id="${id}" height="${chartH}" style="display:block;width:100%"></svg><div class="ck-tt" id="${id}T"></div></div><div class="ck-xl" id="${id}X"></div>${extra||''}</div>`;}
+  function card(id,title,sub,valId,valSuffix,chartH,extra,helpKey){
+    const hb=helpKey?`<button class="ck-help" onclick="event.stopPropagation();openCkHelp('${helpKey}')">?</button>`:'';
+    return`<div class="ck-card"><div class="ck-ch"><div><div class="ck-ct">${title}${hb}</div><div class="ck-cs" id="${id}-sub">${sub}</div></div>${valId?`<div style="text-align:right"><div class="ck-big" id="${valId}">—</div>${valSuffix?'<div class="ck-cs">'+valSuffix+'</div>':''}</div>`:''}</div><div class="ck-cw" id="${id}W"><svg id="${id}" height="${chartH}" style="display:block;width:100%"></svg><div class="ck-tt" id="${id}T"></div></div><div class="ck-xl" id="${id}X"></div>${extra||''}</div>`;
+  }
   el.innerHTML=`
 <div style="padding:12px 12px 40px">
 <div style="font-size:22px;font-weight:700;color:var(--texte);letter-spacing:-.02em;margin-bottom:2px">Cockpit</div>
@@ -1382,19 +1454,19 @@ function renderCockpit(){
   <div class="ck-kpi"><div class="ck-kv">51.6</div><div class="ck-kl">VO₂max</div><div class="ck-kd up">↑ +0.4</div></div>
 </div>
 <div class="ck-sec">📊 Volume &amp; charge</div>
-${card('ckVol','Volume hebdomadaire','',null,null,90,'<div style="font-size:9px;color:#94a3b8;text-align:center;margin-top:4px">touche une barre · ■ prévu</div>')}
+${card('ckVol','Volume hebdomadaire','',null,null,90,'<div style="font-size:9px;color:#94a3b8;text-align:center;margin-top:4px">touche une barre · ■ prévu</div>','vol')}
 <div class="ck-cs" id="ck-vol-sub" style="margin:-4px 0 8px;padding:0 2px"></div>
-${card('ckRE','⚡ Relative Effort / sem.','charge Strava réelle',null,null,80,'<div style="font-size:9px;color:#94a3b8;text-align:center;margin-top:4px">glisse →</div>')}
-<div class="ck-card"><div class="ck-ch"><div><div class="ck-ct">🩹 ACWR — risque blessure</div><div class="ck-cs">ratio charge aiguë / chronique</div></div><div style="font-size:26px;font-weight:700;line-height:1" id="ck-acwr-val2">1.42</div></div><div class="ck-cw" id="ckACWRW"><svg id="ckACWR" height="65" style="display:block;width:100%"></svg><div class="ck-tt" id="ckACWRT"></div></div><div class="ck-xl" id="ckACWRX"></div></div>
-${card('ckDP','⛰ Dénivelé D+','',null,'m',75,'')}
+${card('ckRE','⚡ Relative Effort / sem.','charge Strava réelle',null,null,80,'<div style="font-size:9px;color:#94a3b8;text-align:center;margin-top:4px">glisse →</div>','re')}
+<div class="ck-card"><div class="ck-ch"><div><div class="ck-ct">🩹 ACWR — risque blessure<button class="ck-help" onclick="event.stopPropagation();openCkHelp('acwr')">?</button></div><div class="ck-cs">ratio charge aiguë / chronique</div></div><div style="font-size:26px;font-weight:700;line-height:1" id="ck-acwr-val2">1.42</div></div><div class="ck-cw" id="ckACWRW"><svg id="ckACWR" height="65" style="display:block;width:100%"></svg><div class="ck-tt" id="ckACWRT"></div></div><div class="ck-xl" id="ckACWRX"></div></div>
+${card('ckDP','⛰ Dénivelé D+','',null,'m',75,'','dp')}
 <div class="ck-sec">🔋 Moteur aérobie</div>
-<div class="ck-card"><div class="ck-ch"><div><div class="ck-ct">Z2 pace — allure EF à FC&lt;144</div><div class="ck-cs">indicateur n°1 du développement</div></div><div style="text-align:right"><div style="font-size:22px;font-weight:700;color:#0d9488" id="ck-z2-val">5:54</div><div class="ck-cs">/km</div></div></div><div style="font-size:10px;font-weight:600;margin:3px 0 6px" id="ck-z2-delta"></div><div class="ck-cw" id="ckZ2W"><svg id="ckZ2" height="85" style="display:block;width:100%"></svg><div class="ck-tt" id="ckZ2T"></div></div><div class="ck-xl" id="ckZ2X"></div></div>
-<div class="ck-card"><div class="ck-ch"><div><div class="ck-ct">💓 Découplage cardiaque</div><div class="ck-cs">dérive FC sortie longue · &lt;5% idéal</div></div><div style="font-size:22px;font-weight:700" id="ck-dc-val">—</div></div><div class="ck-cw" id="ckDCW"><svg id="ckDC" height="75" style="display:block;width:100%"></svg><div class="ck-tt" id="ckDCT"></div></div><div class="ck-xl" id="ckDCX"></div></div>
+<div class="ck-card"><div class="ck-ch"><div><div class="ck-ct">Z2 pace — allure EF à FC&lt;144<button class="ck-help" onclick="event.stopPropagation();openCkHelp('z2')">?</button></div><div class="ck-cs">indicateur n°1 du développement</div></div><div style="text-align:right"><div style="font-size:22px;font-weight:700;color:#0d9488" id="ck-z2-val">5:54</div><div class="ck-cs">/km</div></div></div><div style="font-size:10px;font-weight:600;margin:3px 0 6px" id="ck-z2-delta"></div><div class="ck-cw" id="ckZ2W"><svg id="ckZ2" height="85" style="display:block;width:100%"></svg><div class="ck-tt" id="ckZ2T"></div></div><div class="ck-xl" id="ckZ2X"></div></div>
+<div class="ck-card"><div class="ck-ch"><div><div class="ck-ct">💓 Découplage cardiaque<button class="ck-help" onclick="event.stopPropagation();openCkHelp('dc')">?</button></div><div class="ck-cs">dérive FC sortie longue · &lt;5% idéal</div></div><div style="font-size:22px;font-weight:700" id="ck-dc-val">—</div></div><div class="ck-cw" id="ckDCW"><svg id="ckDC" height="75" style="display:block;width:100%"></svg><div class="ck-tt" id="ckDCT"></div></div><div class="ck-xl" id="ckDCX"></div></div>
 <div class="ck-sec">📈 Allure &amp; vitesse</div>
-<div class="ck-card"><div class="ck-ch"><div><div class="ck-ct">Progression allure par type</div><div class="ck-cs">EF · marathon · seuil</div></div></div><div class="ck-cw" id="ckPACEW"><svg id="ckPACE" height="95" style="display:block;width:100%"></svg><div class="ck-tt" id="ckPACET"></div></div><div class="ck-xl" id="ckPACEX"></div><div style="display:flex;gap:12px;font-size:10px;color:var(--texte-deux);margin-top:7px"><span><span style="color:#22c55e">●</span> EF</span><span><span style="color:#3b82f6">●</span> AM</span><span><span style="color:#f59e0b">●</span> Seuil</span></div></div>
+<div class="ck-card"><div class="ck-ch"><div><div class="ck-ct">Progression allure par type<button class="ck-help" onclick="event.stopPropagation();openCkHelp('pace')">?</button></div><div class="ck-cs">EF · marathon · seuil</div></div></div><div class="ck-cw" id="ckPACEW"><svg id="ckPACE" height="95" style="display:block;width:100%"></svg><div class="ck-tt" id="ckPACET"></div></div><div class="ck-xl" id="ckPACEX"></div><div style="display:flex;gap:12px;font-size:10px;color:var(--texte-deux);margin-top:7px"><span><span style="color:#22c55e">●</span> EF</span><span><span style="color:#3b82f6">●</span> AM</span><span><span style="color:#f59e0b">●</span> Seuil</span></div></div>
 <div class="ck-sec">❤️ Cardiaque &amp; cadence</div>
-<div class="ck-card"><div class="ck-ch"><div><div class="ck-ct">Zones FC</div><div class="ck-cs" id="ck-fc-sub"></div></div></div><div class="ck-cw" id="ckFCW"><svg id="ckFC" height="100" style="display:block;width:100%"></svg><div class="ck-tt" id="ckFCT"></div></div><div style="font-size:10px;color:var(--texte-deux);text-align:center;margin-top:6px;min-height:14px" id="ck-fc-info">touche une zone</div></div>
-<div class="ck-card"><div class="ck-ch"><div><div class="ck-ct">🦶 Cadence</div><div class="ck-cs">route ~172 spm · trail ~146 spm</div></div><div><div style="font-size:22px;font-weight:700;color:var(--texte)" id="ck-cad-val">172</div><div class="ck-cs">spm</div></div></div><div class="ck-cw" id="ckCADW"><svg id="ckCAD" height="70" style="display:block;width:100%"></svg><div class="ck-tt" id="ckCADT"></div></div><div class="ck-xl" id="ckCADX"></div></div>
+<div class="ck-card"><div class="ck-ch"><div><div class="ck-ct">Zones FC<button class="ck-help" onclick="event.stopPropagation();openCkHelp('fc')">?</button></div><div class="ck-cs" id="ck-fc-sub"></div></div></div><div class="ck-cw" id="ckFCW"><svg id="ckFC" height="100" style="display:block;width:100%"></svg><div class="ck-tt" id="ckFCT"></div></div><div style="font-size:10px;color:var(--texte-deux);text-align:center;margin-top:6px;min-height:14px" id="ck-fc-info">touche une zone</div></div>
+<div class="ck-card"><div class="ck-ch"><div><div class="ck-ct">🦶 Cadence<button class="ck-help" onclick="event.stopPropagation();openCkHelp('cad')">?</button></div><div class="ck-cs">route ~172 spm · trail ~146 spm</div></div><div><div style="font-size:22px;font-weight:700;color:var(--texte)" id="ck-cad-val">172</div><div class="ck-cs">spm</div></div></div><div class="ck-cw" id="ckCADW"><svg id="ckCAD" height="70" style="display:block;width:100%"></svg><div class="ck-tt" id="ckCADT"></div></div><div class="ck-xl" id="ckCADX"></div></div>
 <div class="ck-sec">🔍 Analyse par sortie</div>
 <div id="ck-runs"></div>
 </div>
@@ -1956,5 +2028,5 @@ function initBarre(se){const piste=document.getElementById('piste');if(!piste)re
     e.addEventListener('click',()=>{if(segActif)segActif.classList.remove('actif');if(segActif===e){segActif=null;pan.classList.remove('visible');return;}segActif=e;e.classList.add('actif');dnom.textContent=seg.nom;drole.textContent=seg.role;dgr.innerHTML=`<div><div class="di-label">Durée</div><div class="di-val">${fmt(seg.duree)}</div></div><div><div class="di-label">Bloc</div><div class="di-val">${seg.bloc}</div></div><div><div class="di-label">Début</div><div class="di-val">${fmt(seg.debut)}</div></div><div><div class="di-label">Fin</div><div class="di-val">${fmt(seg.fin)}</div></div>`;pan.classList.add('visible');});
     piste.appendChild(e);});
 }
-hydrateLogs();hydrateOverrides();initQuickLog();initCreneaux();initSessionMenu();initInstall();initVersionPanel();initFormeHelp();renderHeader();renderPlan();rwAuto();
+hydrateLogs();hydrateOverrides();initQuickLog();initCreneaux();initSessionMenu();initInstall();initVersionPanel();initFormeHelp();initCkHelp();renderHeader();renderPlan();rwAuto();
 if('serviceWorker'in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
