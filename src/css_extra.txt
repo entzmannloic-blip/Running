@@ -839,7 +839,7 @@ body.nuit .fh-c-txt{color:#94a3b8}
 body.nuit .fh-s-item{color:#94a3b8}
 body.nuit .fh-s-item strong{color:#e2e8f0}
 /* ===== Cockpit — aide contextuelle ===== */
-.ck-help{width:16px;height:16px;border-radius:50%;background:rgba(255,255,255,.12);border:.5px solid rgba(255,255,255,.2);font-size:10px;font-weight:700;color:rgba(255,255,255,.5);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;margin-left:6px;vertical-align:middle;line-height:1;padding:0;-webkit-tap-highlight-color:transparent}
+.ck-help{width:16px;height:16px;border-radius:50%;background:var(--gris-fond,#f1f5f9);border:.5px solid var(--bord-card,#e2e8f0);font-size:10px;font-weight:700;color:var(--texte-deux,#64748b);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;margin-left:6px;vertical-align:middle;line-height:1;padding:0;-webkit-tap-highlight-color:transparent}
 .ck-help:active{opacity:.7}
 #ck-help-ov{display:none;position:fixed;inset:0;z-index:1005;background:#fff;overflow-y:auto;-webkit-overflow-scrolling:touch}
 #ck-help-ov.open{display:block}
