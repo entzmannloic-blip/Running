@@ -989,6 +989,47 @@ function openInstall(){const o=document.getElementById('install-ov');if(o)o.clas
 function closeInstall(){const o=document.getElementById('install-ov');if(o)o.classList.remove('open');}
 function dismissInstall(){localStorage.setItem('install_dismissed','1');const b=document.getElementById('install-banner');if(b)b.remove();}
 
+/* ===== Historique des versions ===== */
+function initVersionPanel(){
+  if(!document.body||typeof document.body.insertAdjacentHTML!=='function')return;
+  const cl=(typeof CHANGELOG!=='undefined'?CHANGELOG:[])||[];
+  const latest=cl[0]||{build:'—',date:'—'};
+  // Badge dans le footer
+  const foot=document.getElementById('maj-foot');
+  if(foot){
+    const btn=document.createElement('button');
+    btn.id='build-badge';
+    btn.textContent='Build '+latest.build;
+    btn.onclick=openVersionPanel;
+    foot.appendChild(btn);
+  }
+  // Overlay
+  document.body.insertAdjacentHTML('beforeend',`
+<div id="ver-ov" onclick="if(event.target===this)closeVersionPanel()">
+  <div class="ver-sheet">
+    <div class="ver-handle"></div>
+    <div class="ver-title">🕐 Historique des versions</div>
+    <div class="ver-sub">Tap un build pour le détail · Rollback → me demander le SHA</div>
+    <div class="ver-list">
+    ${cl.map((b,i)=>`<div class="ver-item ${i===0?'ver-latest':''}">
+      <div class="ver-hd" onclick="this.nextElementSibling.classList.toggle('ver-open')">
+        <div><div class="ver-build">Build ${b.build} <span class="ver-tag">${b.tag}</span></div>
+        <div class="ver-date">${b.date} · SHA ${b.sha}</div></div>
+        <span class="ver-arr">›</span>
+      </div>
+      <div class="ver-feats">
+        ${b.items.map(f=>`<div class="ver-feat">· ${f}</div>`).join('')}
+        <div class="ver-sha-row">SHA : <code>${b.sha}</code></div>
+      </div>
+    </div>`).join('')}
+    </div>
+    <button class="ver-close" onclick="closeVersionPanel()">Fermer</button>
+  </div>
+</div>`);
+}
+function openVersionPanel(){const o=document.getElementById('ver-ov');if(o)o.classList.add('open');}
+function closeVersionPanel(){const o=document.getElementById('ver-ov');if(o)o.classList.remove('open');}
+
 /* ===================================================================
    PALMARÈS — Historique des courses officielles
    =================================================================== */
@@ -1810,5 +1851,5 @@ function initBarre(se){const piste=document.getElementById('piste');if(!piste)re
     e.addEventListener('click',()=>{if(segActif)segActif.classList.remove('actif');if(segActif===e){segActif=null;pan.classList.remove('visible');return;}segActif=e;e.classList.add('actif');dnom.textContent=seg.nom;drole.textContent=seg.role;dgr.innerHTML=`<div><div class="di-label">Durée</div><div class="di-val">${fmt(seg.duree)}</div></div><div><div class="di-label">Bloc</div><div class="di-val">${seg.bloc}</div></div><div><div class="di-label">Début</div><div class="di-val">${fmt(seg.debut)}</div></div><div><div class="di-label">Fin</div><div class="di-val">${fmt(seg.fin)}</div></div>`;pan.classList.add('visible');});
     piste.appendChild(e);});
 }
-hydrateLogs();hydrateOverrides();initQuickLog();initCreneaux();initSessionMenu();initInstall();renderHeader();renderPlan();rwAuto();
+hydrateLogs();hydrateOverrides();initQuickLog();initCreneaux();initSessionMenu();initInstall();initVersionPanel();renderHeader();renderPlan();rwAuto();
 if('serviceWorker'in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
