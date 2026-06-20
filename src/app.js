@@ -1107,34 +1107,40 @@ function initVersionPanel(){
   </div>
 </div>`);
 }
-function openFormeHelp(){const o=document.getElementById('forme-help-ov');if(o)o.classList.add('open');}
+function openFormeHelp(){
+  const o=document.getElementById('forme-help-ov');
+  if(o){o.classList.add('open');o.scrollTop=0;}
+}
 function closeFormeHelp(){const o=document.getElementById('forme-help-ov');if(o)o.classList.remove('open');}
 function initFormeHelp(){
   if(!document.body||typeof document.body.insertAdjacentHTML!=='function')return;
   document.body.insertAdjacentHTML('beforeend',`
-<div id="forme-help-ov" onclick="if(event.target===this)closeFormeHelp()">
-  <div class="fh-sheet">
-    <div class="fh-handle"></div>
-    <div class="fh-title">Score de forme · Comment ça marche ?</div>
+<div id="forme-help-ov">
+  <div class="fh-topbar">
+    <div class="fh-topbar-title">Score de forme · Comment ça marche ?</div>
+    <button class="fh-close-top" onclick="closeFormeHelp()">✕</button>
+  </div>
+  <div class="fh-body">
     <div class="fh-intro">Un seul chiffre chaque matin pour savoir où tu en es. Il synthétise automatiquement 4 indicateurs de ton entraînement récent.</div>
+    <div class="fh-sec">L'échelle de 0 à 100</div>
     <div class="fh-scale">
-      <div class="fh-s-item"><div class="fh-dot" style="background:#0d9488"></div><div><strong>82–100 · Excellent</strong> — Tu es en forme, tu peux attaquer une séance qualité.</div></div>
+      <div class="fh-s-item"><div class="fh-dot" style="background:#0d9488"></div><div><strong>82–100 · Excellent</strong> — Tu es en forme, tu peux attaquer une séance qualité sans hésiter.</div></div>
       <div class="fh-s-item"><div class="fh-dot" style="background:#22c55e"></div><div><strong>68–81 · Bon</strong> — Paramètres dans la norme. Suis le plan tel quel.</div></div>
-      <div class="fh-s-item"><div class="fh-dot" style="background:#f59e0b"></div><div><strong>52–67 · Vigilance</strong> — Quelque chose mérite attention. Lis le détail pour identifier le point faible.</div></div>
-      <div class="fh-s-item"><div class="fh-dot" style="background:#ef4444"></div><div><strong>0–51 · Alerte</strong> — Privilégie le repos ou un EF très léger. Ne force pas.</div></div>
+      <div class="fh-s-item"><div class="fh-dot" style="background:#f59e0b"></div><div><strong>52–67 · Vigilance</strong> — Quelque chose mérite attention. Tape sur la barre pour identifier le point faible.</div></div>
+      <div class="fh-s-item"><div class="fh-dot" style="background:#ef4444"></div><div><strong>0–51 · Alerte</strong> — Privilégie le repos ou un EF très léger. Ne force pas une qualité.</div></div>
     </div>
     <div class="fh-sec">Les 4 composantes</div>
     <div class="fh-comps">
-      <div class="fh-comp"><div class="fh-c-head">ACWR <span>30 %</span></div><div class="fh-c-txt">Ratio charge aiguë / charge chronique sur 4 semaines. Zone idéale : 0,8–1,3. En dessous = sous-entraîné. Au-dessus = surcharge.</div></div>
-      <div class="fh-comp"><div class="fh-c-head">Adhérence <span>25 %</span></div><div class="fh-c-txt">Pourcentage de séances réalisées vs planifiées sur les 2 dernières semaines (hors optionnelles).</div></div>
-      <div class="fh-comp"><div class="fh-c-head">Z2 pace <span>25 %</span></div><div class="fh-c-txt">Tendance de ton allure sur les footings faciles (EF). Si tu cours de plus en plus vite à même FC → forme aérobie en progression.</div></div>
-      <div class="fh-comp"><div class="fh-c-head">Fraîcheur <span>20 %</span></div><div class="fh-c-txt">Jours de repos depuis ta dernière séance. Optimal : 1–2 jours. 0 jour = tu viens de courir. 4+ jours = tu perds du fil.</div></div>
+      <div class="fh-comp"><div class="fh-c-head">ACWR <span>30 %</span></div><div class="fh-c-txt">Ratio charge aiguë / charge chronique sur 4 semaines glissantes. Zone idéale : 0,8–1,3. En dessous = sous-entraîné. Au-dessus = surcharge, risque blessure.</div></div>
+      <div class="fh-comp"><div class="fh-c-head">Adhérence <span>25 %</span></div><div class="fh-c-txt">Pourcentage de séances réalisées vs planifiées sur les 2 dernières semaines, hors optionnelles. Reflète ta régularité.</div></div>
+      <div class="fh-comp"><div class="fh-c-head">Z2 pace <span>25 %</span></div><div class="fh-c-txt">Tendance de ton allure sur les footings faciles (EF). Si tu cours de plus en plus vite à même FC, ta forme aérobie progresse — et le score monte.</div></div>
+      <div class="fh-comp"><div class="fh-c-head">Fraîcheur <span>20 %</span></div><div class="fh-c-txt">Jours de repos depuis ta dernière séance. Optimal : 1–2 jours. 0 = couru aujourd'hui (neutre). 4+ jours sans courir = tu perds du fil.</div></div>
     </div>
-    <div class="fh-note">💡 Tape sur la barre pour voir le détail de chaque composante avec ta valeur du jour.</div>
-    <button class="fh-close" onclick="closeFormeHelp()">Compris</button>
+    <div class="fh-note">💡 Tape directement sur la barre "Forme du jour" pour voir le détail de chaque composante avec tes valeurs du jour en temps réel.</div>
+    <div class="fh-note" style="background:#f0fdf4;color:#15803d">🎯 L'objectif à long terme : maintenir le score au-dessus de 75 sur les semaines de charge, et au-dessus de 80 pendant les allègements. Le trend (↑ ↓ →) te dit si tu vas dans le bon sens.</div>
   </div>
-</div>`);
-}
+</div>`);}
+
 function openVersionPanel(){const o=document.getElementById('ver-ov');if(o)o.classList.add('open');}
 function closeVersionPanel(){const o=document.getElementById('ver-ov');if(o)o.classList.remove('open');}
 
