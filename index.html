@@ -946,6 +946,24 @@ body.nuit .ver-latest{background:#042f2e;border-color:#0d9488}
 body.nuit .ver-build,.body.nuit .ver-title{color:#f1f5f9}
 body.nuit .ver-date,.body.nuit .ver-feat{color:#64748b}
 body.nuit .ver-feats{border-color:#334155}
+/* ===== Sprint A — Score de forme composite ===== */
+.forme-bar{display:flex;align-items:center;justify-content:space-between;background:var(--bg-card,#fff);border:.5px solid var(--bord-card,#e2e8f0);border-radius:12px;padding:12px 14px;margin-bottom:8px;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:border-color .2s}
+.forme-bar:active{opacity:.85}
+.fb-left{flex:1;min-width:0}
+.fb-kicker{display:block;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--texte-deux);margin-bottom:3px}
+.fb-sig{display:block;font-size:12px;color:var(--texte);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fb-right{flex:0 0 auto;margin-left:12px}
+.fb-score{font-size:2rem;font-weight:800;letter-spacing:-.04em;line-height:1;text-align:right}
+.fb-trend{font-size:1rem;font-weight:600;margin-left:2px}
+.forme-detail{display:none;background:var(--bg-card,#fff);border:.5px solid var(--bord-card,#e2e8f0);border-radius:12px;padding:12px 14px;margin-bottom:8px;margin-top:-4px}
+.forme-detail.fd-open{display:block}
+.fd-row{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:.5px solid var(--gris-fond,#f8fafc)}
+.fd-row:last-child{border-bottom:none}
+.fd-lbl{font-size:11px;font-weight:700;color:var(--texte-deux);flex:0 0 72px}
+.fd-track{flex:1;height:5px;background:var(--gris-fond,#f1f5f9);border-radius:99px;overflow:hidden}
+.fd-fill{height:100%;border-radius:99px;transition:width .4s ease}
+.fd-val{font-size:11px;color:var(--texte-deux);flex:0 0 auto;text-align:right;max-width:130px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+body.nuit .forme-bar,body.nuit .forme-detail{background:#1e293b;border-color:#334155}
 </style></head>
 <body>
 <a href="#main" class="skip-link">Aller au contenu</a>
@@ -1073,6 +1091,73 @@ function prochaineSeance(){
   return best;
 }
 
+/* ===== Score de forme composite (Sprint A Roadmap) ===== */
+function computeFormeScore(){
+  const today=new Date();today.setHours(0,0,0,0);
+  const curWk=isoWeek(today);
+  // 1. ACWR (30%)
+  let acwrScore=70,acwrVal=1.0,acwrLabel='—';
+  if(typeof ACWR_DATA!=='undefined'&&ACWR_DATA.length){
+    const last=ACWR_DATA[ACWR_DATA.length-1];
+    acwrVal=+(last.acwr||1.0).toFixed(2);
+    if(acwrVal>=0.8&&acwrVal<=1.3){acwrScore=100;acwrLabel='Zone optimale ('+acwrVal+')';}
+    else if(acwrVal>1.3&&acwrVal<=1.5){acwrScore=58;acwrLabel='⚠ Charge élevée ('+acwrVal+')';}
+    else if(acwrVal>1.5){acwrScore=22;acwrLabel='🔴 Surcharge ('+acwrVal+')';}
+    else if(acwrVal>=0.7){acwrScore=72;acwrLabel='Légère sous-charge ('+acwrVal+')';}
+    else{acwrScore=44;acwrLabel='Sous-charge ('+acwrVal+')';}
+  }
+  // 2. Adhérence 2 sem (25%)
+  let totalP=0,totalF=0;
+  for(let w=curWk-1;w<=curWk;w++){const ss=SEANCES_BY_WEEK[w]||[];totalP+=ss.filter(s=>!s.opt).length;totalF+=ss.filter(s=>s.realise&&s.realise.statut==='fait').length;}
+  const adherScore=totalP>0?Math.min(100,Math.round(totalF/totalP*108)):75;
+  // 3. Z2 pace trend (25%)
+  const efSess=[];
+  Object.entries(SEANCES_BY_WEEK).forEach(([wk,ss])=>ss.forEach(s=>{
+    if(s.realise&&s.realise.allure&&(s.cat==='EF'||(s.type||'').includes('EF'))){
+      const p=s.realise.allure.replace('/km','').split(':');
+      if(p.length===2)efSess.push({wk:+wk,pace:+p[0]*60+(+p[1]||0)});
+    }
+  }));
+  let z2Score=72,z2Label='—';
+  const rEf=efSess.filter(x=>x.wk>=curWk-1).map(x=>x.pace);
+  const oEf=efSess.filter(x=>x.wk<curWk-1&&x.wk>=curWk-5).map(x=>x.pace);
+  if(rEf.length&&oEf.length){
+    const d=(oEf.reduce((a,b)=>a+b)/oEf.length)-(rEf.reduce((a,b)=>a+b)/rEf.length);
+    if(d>15){z2Score=100;z2Label='+'+Math.round(d)+'s/km ↑↑';}
+    else if(d>5){z2Score=88;z2Label='+'+Math.round(d)+'s/km ↑';}
+    else if(d>-5){z2Score=75;z2Label='Stable';}
+    else if(d>-15){z2Score=52;z2Label=Math.round(d)+'s/km ↓';}
+    else{z2Score=32;z2Label=Math.round(d)+'s/km ↓↓';}
+  }
+  // 4. Fraîcheur (20%)
+  let freshScore=75,freshLabel='—';
+  const doneSess=Object.values(SEANCES_BY_WEEK).flat().filter(s=>s.realise&&s.realise.statut==='fait'&&s.date).sort((a,b)=>b.date.localeCompare(a.date));
+  if(doneSess.length){
+    const days=Math.round((today-new Date(doneSess[0].date+'T00:00:00'))/86400000);
+    if(days===0){freshScore=68;freshLabel='Couru aujourd\'hui';}
+    else if(days===1){freshScore=85;freshLabel='1 jour de repos';}
+    else if(days===2){freshScore=95;freshLabel='2 jours · frais';}
+    else if(days===3){freshScore=85;freshLabel='3 jours · prêt';}
+    else{freshScore=58;freshLabel=days+' jours sans courir';}
+  }
+  const score=Math.round(acwrScore*.30+adherScore*.25+z2Score*.25+freshScore*.20);
+  const color=score>=82?'#0d9488':score>=68?'#22c55e':score>=52?'#f59e0b':'#ef4444';
+  const trend=acwrVal<=1.3&&adherScore>=90?'↑':acwrVal>1.4?'↓':'→';
+  let signal='';
+  if(acwrVal>1.4)signal='⚠️ Charge élevée · éviter les intensités';
+  else if(adherScore>=98)signal='Adhérence parfaite · plan bien tenu';
+  else if(z2Score>=88)signal='Z2 en progression · forme aérobie solide';
+  else if(freshScore>=90)signal='Bien reposé · prêt pour une qualité';
+  else if(score>=82)signal='Forme au top · continue sur cette lancée';
+  else signal='Paramètres équilibrés · maintenir le rythme';
+  return{score,trend,color,signal,components:[
+    {label:'ACWR',score:acwrScore,detail:acwrLabel},
+    {label:'Adhérence',score:adherScore,detail:totalF+'/'+totalP+' séances (2 sem.)'},
+    {label:'Z2 pace',score:z2Score,detail:z2Label},
+    {label:'Fraîcheur',score:freshScore,detail:freshLabel}
+  ]};
+}
+
 function renderHeader(){
   const cur=isoWeek(new Date());const sc=SEMAINES.find(s=>s.num===cur)||SEMAINES[0];
   const _t=new Date();_t.setHours(0,0,0,0);
@@ -1097,6 +1182,19 @@ function renderHeader(){
     const _dist=(_se.metriques&&_se.metriques.Distance)?' · '+_se.metriques.Distance:'';
     _psCard=`<div class="vdj" onclick="ouvrirSeance(${_ps.wk},${_se.id})"><div class="vdj-lbl">Prochaine séance · ${_lbl}</div><div class="vdj-t">${_se.titre}</div><div class="vdj-s">${_se.type}${_dist} · S${_ps.wk}</div>${_fit}${_tempAdj}</div>`;
   }
+  // Sprint A — Score de forme
+  const _forme=computeFormeScore();
+  const _formeBar=`<div class="forme-bar" onclick="document.getElementById('forme-detail').classList.toggle('fd-open')">
+    <div class="fb-left"><span class="fb-kicker">Forme du jour</span><span class="fb-sig">${_forme.signal}</span></div>
+    <div class="fb-right"><div class="fb-score" style="color:${_forme.color}">${_forme.score}<span class="fb-trend">${_forme.trend}</span></div></div>
+  </div>
+  <div class="forme-detail" id="forme-detail">
+    ${_forme.components.map(c=>`<div class="fd-row">
+      <div class="fd-lbl">${c.label}</div>
+      <div class="fd-track"><div class="fd-fill" style="width:${c.score}%;background:${c.score>=80?'#0d9488':c.score>=65?'#22c55e':c.score>=50?'#f59e0b':'#ef4444'}"></div></div>
+      <div class="fd-val">${c.detail}</div>
+    </div>`).join('')}
+  </div>`;
   let _cd='';
   if(RACES&&RACES.length){
     const _it=RACES.map(r=>{const _dn=Math.max(0,Math.ceil((new Date(r.date)-_t)/86400000));
@@ -1107,7 +1205,7 @@ function renderHeader(){
   const _maj=`<div class="vdj-maj">Données à jour au ${MAJ}</div>`;
   document.getElementById('cd-strip').innerHTML=_cd;
   const _cw=`<button class="cw-link" onclick="jumpToWeek(${sc.num})"><span class="cw-pin">📍</span><span class="cw-txt">Tu es en <strong>S${sc.num} · ${sc.theme}</strong></span><span class="cw-arr">voir dans le plan →</span></button>`;
-  document.getElementById('hero-plan').innerHTML=`${_psCard}<div id="canicule-banner" style="display:none"></div>${_cw}<div id="meteo-widget" class="meteo"><div class="meteo-loc">⏳ Météo…</div></div>`;
+  document.getElementById('hero-plan').innerHTML=`${_psCard}${_formeBar}<div id="canicule-banner" style="display:none"></div>${_cw}<div id="meteo-widget" class="meteo"><div class="meteo-loc">⏳ Météo…</div></div>`;
   renderMeteo();
   document.getElementById('maj-foot').innerHTML=_maj;
   const _ab=document.getElementById('appbar');if(_ab&&document.documentElement)document.documentElement.style.setProperty('--appbar-h',_ab.offsetHeight+'px');
