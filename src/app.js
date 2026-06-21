@@ -1,5 +1,5 @@
 /* ===== helpers ===== */
-function rpeColor(r){return r<=3?'#22c55e':r<=5?'#3b82f6':r<=6.9?'#eab308':r<=8?'#f97316':'#ef4444';}
+function rpeColor(r){return r<=3?'#16a34a':r<=5?'#0d9488':r<=6.9?'#f59e0b':r<=8?'#f59e0b':'#ef4444';}
 function rpeScale(r){let h='';for(let i=1;i<=10;i++){const on=i<=Math.round(r);h+=`<div class="rpe-seg" style="background:${on?rpeColor(r):''}"></div>`;}return h;}
 function catBadge(c){return c==='specifique'?'<span class="cat-badge cat-specifique">Spécifique</span>':'<span class="cat-badge cat-classique">Classique</span>';}
 function stChip(st){const m={a_faire:['st-afaire','À faire'],fait:['st-fait','Fait ✓'],partiel:['st-partiel','Partiel'],manque:['st-manque','Manqué']};const x=m[st]||m.a_faire;return `<span class="st-chip ${x[0]}">${x[1]}</span>`;}
@@ -13,7 +13,7 @@ function paceFmt(s){const m=Math.floor(s/60),x=Math.round(s%60);return `${m}:${S
 function isoWeek(d){d=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()));const day=d.getUTCDay()||7;d.setUTCDate(d.getUTCDate()+4-day);const ys=new Date(Date.UTC(d.getUTCFullYear(),0,1));return Math.ceil((((d-ys)/86400000)+1)/7);}
 
 /* ===== graphes SVG ===== */
-function chartLine(vals,o){o=o||{};const color=o.color||'#3b82f6',h=o.h||150,fmtY=o.fmtY||(v=>v),baseline=o.baseline,todayIdx=o.todayIdx,labels=o.labels;
+function chartLine(vals,o){o=o||{};const color=o.color||'#0d9488',h=o.h||150,fmtY=o.fmtY||(v=>v),baseline=o.baseline,todayIdx=o.todayIdx,labels=o.labels;
   const W=720,pad=30,padB=22,padT=12;const idx=vals.map((v,i)=>[i,v]).filter(p=>p[1]!=null);if(!idx.length)return'';
   const ys=idx.map(p=>p[1]);let max=Math.max(...ys),min=Math.min(...ys);if(baseline!=null){max=Math.max(max,baseline);min=Math.min(min,baseline);}
   const rng=(max-min)||1;max+=rng*0.12;min-=rng*0.12;if(min<0&&Math.min(...ys)>=0)min=0;max=Math.ceil(max);min=Math.floor(min);const n=vals.length;
@@ -35,16 +35,16 @@ function svgMountain(){const wks=SEMAINES.filter(s=>s.num>=25);const W=760,h=195
   const mk=(num,emoji,lab,up)=>{const i=wks.findIndex(w=>w.num===num);if(i<0)return'';const cx=X(i),cy=Y(wks[i].km);return `<circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="3.5" fill="#fff" stroke="#475569" stroke-width="2"/><text x="${cx.toFixed(1)}" y="${(up?cy-8:cy+15).toFixed(1)}" font-size="12" text-anchor="middle">${emoji}</text><text x="${cx.toFixed(1)}" y="${up?(cy-21).toFixed(1):(h-7)}" font-size="8.5" fill="#64748b" text-anchor="middle" font-weight="700">${lab}</text>`;};
   const tpidx=[];wks.forEach((w,i)=>{const a=i>0?wks[i-1].km:null,b=i<n-1?wks[i+1].km:null;let lab=false;if(a==null||b==null)lab=true;else if((w.km>a&&w.km>=b)||(w.km<a&&w.km<=b))lab=true;if(lab&&![42,37,45,48].includes(w.num))tpidx.push(i);});
   const kmlab=tpidx.map(i=>{const w=wks[i];const up=(i>0)?(w.km>=wks[i-1].km):true;return `<text x="${X(i).toFixed(1)}" y="${(up?Y(w.km)-6:Y(w.km)+13).toFixed(1)}" font-size="8.5" font-weight="700" fill="#94a3b8" text-anchor="middle">${w.km}</text>`;}).join('');
-  const cur=`<circle cx="${X(0).toFixed(1)}" cy="${Y(wks[0].km).toFixed(1)}" r="7" fill="#22c55e" opacity=".25"/><circle cx="${X(0).toFixed(1)}" cy="${Y(wks[0].km).toFixed(1)}" r="3.5" fill="#22c55e"/>`;
+  const cur=`<circle cx="${X(0).toFixed(1)}" cy="${Y(wks[0].km).toFixed(1)}" r="7" fill="#16a34a" opacity=".25"/><circle cx="${X(0).toFixed(1)}" cy="${Y(wks[0].km).toFixed(1)}" r="3.5" fill="#16a34a"/>`;
   const cols=wks.map((w,i)=>`<rect x="${(X(i)-(W-2*padX)/n/2).toFixed(1)}" y="0" width="${((W-2*padX)/n).toFixed(1)}" height="${h}" fill="transparent" style="cursor:pointer" onclick="ouvrirSemaine(${w.num})"><title>S${w.num} · ${w.theme} · ${w.km} km</title></rect>`).join('');
-  return `<svg viewBox="0 0 ${W} ${h}" class="chart-svg"><defs><linearGradient id="mtn" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#f97316" stop-opacity=".45"/><stop offset=".55" stop-color="#3b82f6" stop-opacity=".2"/><stop offset="1" stop-color="#22c55e" stop-opacity="0"/></linearGradient></defs><path d="${area}" fill="url(#mtn)"/><path d="${line}" fill="none" stroke="#475569" stroke-width="2"/>${mk(42,'⛰️','Pic 88',true)}${mk(37,'🏕️','USA',false)}${mk(45,'🏁','Nice',true)}${mk(48,'🌙','SaintExpress',false)}${cur}${kmlab}${cols}</svg>`;
+  return `<svg viewBox="0 0 ${W} ${h}" class="chart-svg"><defs><linearGradient id="mtn" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#f59e0b" stop-opacity=".45"/><stop offset=".55" stop-color="#0d9488" stop-opacity=".2"/><stop offset="1" stop-color="#16a34a" stop-opacity="0"/></linearGradient></defs><path d="${area}" fill="url(#mtn)"/><path d="${line}" fill="none" stroke="#475569" stroke-width="2"/>${mk(42,'⛰️','Pic 88',true)}${mk(37,'🏕️','USA',false)}${mk(45,'🏁','Nice',true)}${mk(48,'🌙','SaintExpress',false)}${cur}${kmlab}${cols}</svg>`;
 }
 function svgDonut(segs){const tot=segs.reduce((a,s)=>a+s.val,0)||1;let a=-90,paths='';const R=54,r=31,cx=64,cy=64;
   segs.forEach(s=>{const ang=s.val/tot*360,a2=a+ang;const P=(deg,rad)=>[cx+rad*Math.cos(Math.PI*deg/180),cy+rad*Math.sin(Math.PI*deg/180)];const large=ang>180?1:0;const[x1,y1]=P(a,R),[x2,y2]=P(a2,R),[x3,y3]=P(a2,r),[x4,y4]=P(a,r);paths+=`<path d="M ${x1.toFixed(1)} ${y1.toFixed(1)} A ${R} ${R} 0 ${large} 1 ${x2.toFixed(1)} ${y2.toFixed(1)} L ${x3.toFixed(1)} ${y3.toFixed(1)} A ${r} ${r} 0 ${large} 0 ${x4.toFixed(1)} ${y4.toFixed(1)} Z" fill="${s.color}"/>`;a=a2;});
   return `<svg viewBox="0 0 128 128" width="120" height="120">${paths}</svg>`;
 }
 
-function delta(series,good){const v=series.filter(x=>x!=null);if(v.length<2)return'';const d=v[v.length-1]-v[v.length-2];if(Math.abs(d)<0.5&&good!=='down')return '<span class="delta" style="color:#94a3b8">\u25aa stable</span>';const up=d>0;const isGood=good?((good==='up'&&up)||(good==='down'&&!up)):null;const col=isGood===null?'#64748b':(isGood?'#22c55e':'#ef4444');const a=up?'\u25b2':'\u25bc';const val=Math.abs(d)>=1?Math.round(Math.abs(d)):Math.abs(d).toFixed(1);return `<span class="delta" style="color:${col}">${a} ${val} vs S-1</span>`;}
+function delta(series,good){const v=series.filter(x=>x!=null);if(v.length<2)return'';const d=v[v.length-1]-v[v.length-2];if(Math.abs(d)<0.5&&good!=='down')return '<span class="delta" style="color:#94a3b8">\u25aa stable</span>';const up=d>0;const isGood=good?((good==='up'&&up)||(good==='down'&&!up)):null;const col=isGood===null?'#64748b':(isGood?'#16a34a':'#ef4444');const a=up?'\u25b2':'\u25bc';const val=Math.abs(d)>=1?Math.round(Math.abs(d)):Math.abs(d).toFixed(1);return `<span class="delta" style="color:${col}">${a} ${val} vs S-1</span>`;}
 
 /* ===== thème ===== */
 function toggleTheme(){const n=document.body.classList.toggle('nuit');document.getElementById('themebtn').textContent=n?'☀️':'🌙';}
@@ -146,7 +146,7 @@ function computeFormeScore(){
     else{freshScore=58;freshLabel=days+' jours sans courir';}
   }
   const score=Math.round(acwrScore*.30+adherScore*.25+z2Score*.25+freshScore*.20);
-  const color=score>=82?'#0d9488':score>=68?'#22c55e':score>=52?'#f59e0b':'#ef4444';
+  const color=score>=82?'#0d9488':score>=68?'#16a34a':score>=52?'#f59e0b':'#ef4444';
   const trend=acwrVal<=1.3&&adherScore>=90?'↑':acwrVal>1.4?'↓':'→';
   let signal='';
   if(acwrVal>1.4)signal='⚠️ Charge élevée · éviter les intensités';
@@ -196,7 +196,7 @@ function renderHeader(){
   <div class="forme-detail" id="forme-detail">
     ${_forme.components.map(c=>`<div class="fd-row">
       <div class="fd-lbl">${c.label}</div>
-      <div class="fd-track"><div class="fd-fill" style="width:${c.score}%;background:${c.score>=80?'#0d9488':c.score>=65?'#22c55e':c.score>=50?'#f59e0b':'#ef4444'}"></div></div>
+      <div class="fd-track"><div class="fd-fill" style="width:${c.score}%;background:${c.score>=80?'#0d9488':c.score>=65?'#16a34a':c.score>=50?'#f59e0b':'#ef4444'}"></div></div>
       <div class="fd-val">${c.detail}</div>
     </div>`).join('')}
   </div>`;
@@ -484,14 +484,14 @@ function renderCrystalBall(){
   const goalPos=clamp((goal-gmin)/(gmax-gmin)*100);
   const ahead=goal-P.sec;
   const ahMin=Math.round(Math.abs(ahead)/60);
-  const deltaTxt=ahead>=0?`<strong style="color:#22c55e">${ahMin} min d\u2019avance</strong> sur l\u2019objectif 3h45`
-    :`<strong style="color:#f97316">+${ahMin} min</strong> au-dessus de 3h45`;
+  const deltaTxt=ahead>=0?`<strong style="color:#16a34a">${ahMin} min d\u2019avance</strong> sur l\u2019objectif 3h45`
+    :`<strong style="color:#f59e0b">+${ahMin} min</strong> au-dessus de 3h45`;
   const deltaShort=ahead>=0?`${ahMin} min d'avance sur l'objectif 3h45`:`${ahMin} min au-dessus de 3h45 — le bloc va combler l'écart`;
   let clarte;
   if(P.n===0)clarte=`<div class="cb-clarte">🌫️ <strong>Boule encore voilée.</strong> La projection part de ta forme actuelle (${PROJ.base_label}). Elle s'affinera à chaque séance qualité loguée — le <strong>test 10 km de la S31</strong> sera le premier gros recalibrage, puis chaque seuil et chaque séance d'allure marathon.</div>`;
   else clarte=`<div class="cb-clarte">🔮 <strong>${P.n} séance${P.n>1?'s':''} qualité intégrée${P.n>1?'s':''}.</strong> Plus tu logues de qualité, plus la projection se précise.</div>`;
   const sources=P.n?`<div class="cb-src"><div class="cb-src-t">Ce qui nourrit la projection</div>${P.sources.map(s=>`<div class="cb-src-l"><span>${s.label}${s.sub?` · ${s.sub}`:''}</span><span class="cb-src-v">${_s2hm(s.sec)}</span></div>`).join('')}<div class="cb-src-l cb-src-base"><span>Forme de départ (référence)</span><span class="cb-src-v">${_s2hm(PROJ.base)}</span></div></div>`:'';
-  const trend=P.trend.length>=2?`<div class="cb-trend"><div class="cb-src-t">Affinage de la projection séance après séance</div>${chartLine(P.trend.map(v=>v/60),{color:'#8b5cf6',h:120,fmtY:v=>_s2hm(v*60),baseline:goal/60,annotate:true})}</div>`:'';
+  const trend=P.trend.length>=2?`<div class="cb-trend"><div class="cb-src-t">Affinage de la projection séance après séance</div>${chartLine(P.trend.map(v=>v/60),{color:'#0d9488',h:120,fmtY:v=>_s2hm(v*60),baseline:goal/60,annotate:true})}</div>`:'';
   return `<div class="kpi cb">
     <div class="cb-head"><span class="cb-orb">🔮</span><div><div class="kpi-t" style="margin:0">Projection marathon — boule de cristal</div><div class="kpi-r" style="margin:2px 0 0">Temps projeté sur Nice, recalculé à chaque séance qualité loguée.</div></div></div>
     <div class="cb-big"><div class="cb-time">${_s2hm(P.sec)}</div><div class="cb-delta">${deltaTxt}</div></div>
@@ -525,17 +525,17 @@ function renderDash(){const el=document.getElementById('dash-contenu');
   }
 
   // Donut polarisation
-  const pol=[{label:'Très facile',val:POLAR.tres_facile,color:'#86efac'},{label:'EF facile',val:POLAR.ef,color:'#22c55e'},{label:'Zone grise',val:POLAR.gris,color:'#f59e0b'},{label:'Qualité',val:POLAR.qualite,color:'#ef4444'}];
+  const pol=[{label:'Très facile',val:POLAR.tres_facile,color:'#bbf7d0'},{label:'EF facile',val:POLAR.ef,color:'#16a34a'},{label:'Zone grise',val:POLAR.gris,color:'#f59e0b'},{label:'Qualité',val:POLAR.qualite,color:'#ef4444'}];
   const histKm=HIST.map(h=>h.km);const histRe=HIST.map(h=>h.re);const histLab=HIST.map(h=>h.sem);
 
   // Couleur ACWR
-  const acwr=ACWR_DATA.acwr;const acwrCol=acwr>1.5?'#ef4444':acwr<0.8?'#3b82f6':'#22c55e';
+  const acwr=ACWR_DATA.acwr;const acwrCol=acwr>1.5?'#ef4444':acwr<0.8?'#0d9488':'#16a34a';
   const acwrLabel=acwr>1.5?'Attention — charge élevée':acwr<0.8?'Frais / allègement':'Charge maîtrisée';
 
   // Chaussures
   const maxShKm=Math.max(...GEAR.map(g=>g.km));
   const shoes=GEAR.slice().sort((a,b)=>b.km-a.km).map(g=>{
-    const col=g.km>900?'#ef4444':g.km>700?'#f97316':'#22c55e';
+    const col=g.km>900?'#ef4444':g.km>700?'#f59e0b':'#16a34a';
     const al=g.km>900?`<div class="shoe-alert">⚠ ${g.km} km — remplacement à envisager</div>`:'';
     return `<div><div class="shoe-row"><div class="shoe-name">${g.marque} ${g.modele}</div><div class="shoe-track"><div class="shoe-fill" style="width:${g.km/maxShKm*100}%;background:${col}"></div></div><div class="shoe-km">${g.km} km</div></div>${al}</div>`;}).join('');
 
@@ -583,19 +583,19 @@ function renderDash(){const el=document.getElementById('dash-contenu');
     <div class="kpi-t">📅 Ta saison 2026 en chiffres</div>
     <div class="kpi-r">Depuis le 1er janvier 2026 · <strong>Run + Trail uniquement</strong>, aligné sur Strava (108 activités). Hikes et raquettes non inclus dans le compteur Strava running.</div>
     <div class="dash-stats" style="margin-bottom:18px">
-      <div class="dstat" style="--accent:#3b82f6"><div class="dstat-l">Sorties</div><div class="dstat-v">${SAISON2026.sorties}</div><div class="dstat-s">en ${SAISON2026.mois} mois</div></div>
-      <div class="dstat" style="--accent:#22c55e"><div class="dstat-l">Kilométrage</div><div class="dstat-v">${SAISON2026.km}</div><div class="dstat-s">km parcourus</div></div>
-      <div class="dstat" style="--accent:#f97316"><div class="dstat-l">Dénivelé +</div><div class="dstat-v">${SAISON2026.elev.toLocaleString()}</div><div class="dstat-s">mètres</div></div>
-      <div class="dstat" style="--accent:#8b5cf6"><div class="dstat-l">Prépa plan</div><div class="dstat-v">${faites}/${total}</div><div class="dstat-s">séances réalisées</div></div>
+      <div class="dstat" style="--accent:#0d9488"><div class="dstat-l">Sorties</div><div class="dstat-v">${SAISON2026.sorties}</div><div class="dstat-s">en ${SAISON2026.mois} mois</div></div>
+      <div class="dstat" style="--accent:#16a34a"><div class="dstat-l">Kilométrage</div><div class="dstat-v">${SAISON2026.km}</div><div class="dstat-s">km parcourus</div></div>
+      <div class="dstat" style="--accent:#f59e0b"><div class="dstat-l">Dénivelé +</div><div class="dstat-v">${SAISON2026.elev.toLocaleString()}</div><div class="dstat-s">mètres</div></div>
+      <div class="dstat" style="--accent:#0d9488"><div class="dstat-l">Prépa plan</div><div class="dstat-v">${faites}/${total}</div><div class="dstat-s">séances réalisées</div></div>
     </div>
     <div class="kpi-t" style="font-size:.88rem;margin-bottom:8px">Volume mensuel (km)</div>
-    ${svgMonthly('km','#3b82f6',v=>Math.round(v))}
+    ${svgMonthly('km','#0d9488',v=>Math.round(v))}
     <div style="margin-top:14px">
     <div class="kpi-t" style="font-size:.88rem;margin-bottom:8px">Dénivelé mensuel (m)</div>
-    ${svgMonthly('elev','#f97316',v=>v>=1000?(v/1000).toFixed(1)+'k':v)}</div>
+    ${svgMonthly('elev','#f59e0b',v=>v>=1000?(v/1000).toFixed(1)+'k':v)}</div>
     <div style="margin-top:14px">
     <div class="kpi-t" style="font-size:.88rem;margin-bottom:8px">Sorties par mois</div>
-    ${svgMonthly('sorties','#8b5cf6',v=>v)}</div>
+    ${svgMonthly('sorties','#0d9488',v=>v)}</div>
   </div>
 
   </div></section>`+dgrpHead('charge','❤️','Charge & physiologie')+`
@@ -617,11 +617,11 @@ function renderDash(){const el=document.getElementById('dash-contenu');
       <div class="dstat" style="--accent:${acwrCol}"><div class="dstat-l">Ratio ACWR</div><div class="dstat-v" style="color:${acwrCol}">${acwr.toFixed(2)}</div><div class="dstat-s">${acwrLabel}</div></div>
     </div>
     <div class="rev-coach">${ACWR_DATA.interpretation}</div>
-    <div style="margin-top:14px">${delta(histRe)} ${chartLine(histRe,{color:'#8b5cf6',labels:histLab,annotate:true,h:140})}</div>
+    <div style="margin-top:14px">${delta(histRe)} ${chartLine(histRe,{color:'#0d9488',labels:histLab,annotate:true,h:140})}</div>
   </div>
 
   <!-- 5. Volume hebdo -->
-  <div class="kpi"><div class="kpi-t">📈 Ton volume — historique 28 semaines</div><div class="kpi-r">Tes vraies semaines Strava. Le plan prend le relais à la S25.</div>${delta(histKm)} ${chartLine(histKm,{color:'#3b82f6',labels:histLab,fmtY:v=>Math.round(v)+'km',annotate:true,h:150})}</div>
+  <div class="kpi"><div class="kpi-t">📈 Ton volume — historique 28 semaines</div><div class="kpi-r">Tes vraies semaines Strava. Le plan prend le relais à la S25.</div>${delta(histKm)} ${chartLine(histKm,{color:'#0d9488',labels:histLab,fmtY:v=>Math.round(v)+'km',annotate:true,h:150})}</div>
 
   </div></section>`+dgrpHead('perf','🏆','Performances & objectifs')+renderCrystalBall()+`
   <!-- 7. Allures d'entraînement -->
@@ -641,7 +641,7 @@ function renderDash(){const el=document.getElementById('dash-contenu');
       <tbody>${RECORDS_PERF.map((r,i)=>`<tr style="border-bottom:1px solid var(--gris-clair)">
         <td style="padding:9px 6px;font-weight:800">${r.dist}</td>
         <td style="padding:9px 6px;text-align:center"><div style="font-weight:700">${r.temps_rec||'—'}</div><div style="font-size:.7rem;color:var(--texte-trois)">${r.record_sub}</div></td>
-        <td style="padding:9px 6px;text-align:center"><div style="font-weight:700;color:#3b82f6">${r.temps_act}</div><div style="font-size:.7rem;color:var(--texte-trois)">${r.actuel_sub}</div></td>
+        <td style="padding:9px 6px;text-align:center"><div style="font-weight:700;color:#0d9488">${r.temps_act}</div><div style="font-size:.7rem;color:var(--texte-trois)">${r.actuel_sub}</div></td>
         <td style="padding:9px 6px;text-align:right"><div style="font-weight:700">${r.actuel}</div></td>
       </tr>`).join('')}</tbody>
     </table>
@@ -654,9 +654,9 @@ function renderDash(){const el=document.getElementById('dash-contenu');
     <div class="kpi-t">🎯 Objectifs course</div>
     <div class="kpi-r">Trois objectifs, trois logiques différentes.</div>
     <div class="dash-stats">
-      <div class="dstat" style="--accent:#14b8a6"><div class="dstat-l">J avant Déraille</div><div class="dstat-v">J-${cd[0]}</div><div class="dstat-s">Trail 24 km · 5 juil. · plaisir & test nutrition</div></div>
-      <div class="dstat" style="--accent:#f97316"><div class="dstat-l">J avant Nice</div><div class="dstat-v">J-${cd[1]}</div><div class="dstat-s">Marathon 8 nov. · objectif 3h45</div></div>
-      <div class="dstat" style="--accent:#8b5cf6"><div class="dstat-l">J avant SaintExpress</div><div class="dstat-v">J-${cd[2]}</div><div class="dstat-s">45 km night trail 28 nov.</div></div>
+      <div class="dstat" style="--accent:#0d9488"><div class="dstat-l">J avant Déraille</div><div class="dstat-v">J-${cd[0]}</div><div class="dstat-s">Trail 24 km · 5 juil. · plaisir & test nutrition</div></div>
+      <div class="dstat" style="--accent:#f59e0b"><div class="dstat-l">J avant Nice</div><div class="dstat-v">J-${cd[1]}</div><div class="dstat-s">Marathon 8 nov. · objectif 3h45</div></div>
+      <div class="dstat" style="--accent:#0d9488"><div class="dstat-l">J avant SaintExpress</div><div class="dstat-v">J-${cd[2]}</div><div class="dstat-s">45 km night trail 28 nov.</div></div>
     </div>
     <div class="rec-grid" style="margin-top:12px">
       <div class="rec"><div class="rec-v">3h45</div><div class="rec-l">Marathon objectif</div><div class="rec-s">Nice · 8 nov.</div></div>
@@ -697,14 +697,14 @@ function s24Chart(splits){const n=splits.length,W=720,h=190,padL=8,padR=8,padT=2
   const bw=(W-padL-padR)/n;
   const bars=splits.map((s,i)=>{const sp=1000/s[0];const bh=(sp-sMin)/(sMax-sMin)*(h-padT-padB);const x=padL+i*bw,y=h-padB-bh;
     const pm=Math.floor(s[0]/60),ps=Math.round(s[0]%60);
-    return `<rect x="${(x+2).toFixed(1)}" y="${y.toFixed(1)}" width="${(bw-4).toFixed(1)}" height="${bh.toFixed(1)}" rx="3" fill="#3b82f6" opacity=".55"/>
+    return `<rect x="${(x+2).toFixed(1)}" y="${y.toFixed(1)}" width="${(bw-4).toFixed(1)}" height="${bh.toFixed(1)}" rx="3" fill="#0d9488" opacity=".55"/>
       <text x="${(x+bw/2).toFixed(1)}" y="${(h-padB+11).toFixed(1)}" font-size="7.6" fill="#94a3b8" text-anchor="middle">${pm}:${String(ps).padStart(2,'0')}</text>
       <text x="${(x+bw/2).toFixed(1)}" y="${(h-padB+21).toFixed(1)}" font-size="6.8" fill="#cbd5e1" text-anchor="middle">km${i+1}</text>`;}).join('');
   const HY=v=>padT+(h-padT-padB)*(1-(v-hMin)/(hMax-hMin));
   const line='M '+hrs.map((v,i)=>`${(padL+i*bw+bw/2).toFixed(1)} ${HY(v).toFixed(1)}`).join(' L ');
   const hrlab=hrs.map((v,i)=>{if(i===0||i===n-1||v===Math.max(...hrs))return `<text x="${(padL+i*bw+bw/2).toFixed(1)}" y="${(HY(v)-6).toFixed(1)}" font-size="8" font-weight="700" fill="#ef4444" text-anchor="middle">${v}</text>`;return '';}).join('');
   return `<svg viewBox="0 0 ${W} ${h}" class="chart-svg">${bars}<path d="${line}" fill="none" stroke="#ef4444" stroke-width="2" stroke-linejoin="round"/>${hrlab}
-    <text x="${padL}" y="11" font-size="8.5" fill="#3b82f6" font-weight="700">▮ Allure /km</text><text x="${padL+74}" y="11" font-size="8.5" fill="#ef4444" font-weight="700">— FC moyenne /km</text></svg>`;
+    <text x="${padL}" y="11" font-size="8.5" fill="#0d9488" font-weight="700">▮ Allure /km</text><text x="${padL+74}" y="11" font-size="8.5" fill="#ef4444" font-weight="700">— FC moyenne /km</text></svg>`;
 }
 
 /* ===== REWIND hebdo ===== */
@@ -927,7 +927,7 @@ function ouvrirDossier(id){
 function ouvrirSeanceS24(idx){const r=S24R.runs[idx];if(!r)return;segActif=null;
   topbar.innerHTML=`<button class="btn-nav" onclick="ouvrirSemaine(24)">‹ Retour semaine 24</button>${btnFermer}`;
   const metr=Object.entries(r.metriques).map(([k,v])=>`<div class="metrique"><div class="metrique-l">${k}</div><div class="metrique-v">${v}</div></div>`).join('');
-  contenu.innerHTML=`<div class="sd-hero"><div class="hero-badges"><span class="sd-badge" style="background:#22c55e22;color:#15803d">Course à pied</span><span class="st-chip st-fait">Fait ✓</span><span class="seance-tag">${r.tag}</span></div>
+  contenu.innerHTML=`<div class="sd-hero"><div class="hero-badges"><span class="sd-badge" style="background:#16a34a22;color:#15803d">Course à pied</span><span class="st-chip st-fait">Fait ✓</span><span class="seance-tag">${r.tag}</span></div>
     <h2 class="sd-titre">${r.titre}</h2><p class="sd-sous">Semaine 24 · ${r.date} juin · récupération post-Circaète</p>
     <div class="sd-metriques">${metr}</div>${r.chaussure?`<div class="shoe-chip">👟 ${r.chaussure}</div>`:''}${prCelebration(r)}</div>
     <div class="sd-corps">
@@ -940,7 +940,7 @@ function ouvrirSeanceS24(idx){const r=S24R.runs[idx];if(!r)return;segActif=null;
 const S25_CAP=`<strong>Reprise &amp; déblocage.</strong> Le chantier de la semaine, c'est <strong>corriger la zone grise</strong> : footings vraiment faciles (≥ 6:00/km, FC ≤ 144), lignes droites relâchées pour réveiller la foulée, et on relance la structure tout en douceur. Tu arrives <strong>en avance sur la récupération</strong> — dos et jambes OK, aucune douleur — les conditions sont idéales pour repartir proprement. Objectif : 52 km sur 5 séances, zéro précipitation. C'est le socle du bloc de développement qui démarre juste après.`;
 function ouvrirSemaine(num){const s=SEMAINES.find(x=>x.num===num);const ph=PHASES.find(p=>p.id===s.phase);segActif=null;
   if(num===24){topbar.innerHTML=`<span></span>${btnFermer}`;
-    const runs=S24R.runs.map((r,i)=>`<div class="seance-carte" onclick="ouvrirSeanceS24(${i})"><div class="seance-bande" style="background:#22c55e"></div><div class="seance-idx">${r.date}</div><div class="seance-info"><div class="seance-nom">${r.titre}</div><div class="seance-desc">${r.desc}</div><div class="seance-tags"><span class="st-chip st-fait">Fait ✓</span><span class="seance-tag">${r.tag}</span><span class="cat-badge cat-classique">Classique</span></div></div><div class="seance-fleche">›</div></div>`).join('');
+    const runs=S24R.runs.map((r,i)=>`<div class="seance-carte" onclick="ouvrirSeanceS24(${i})"><div class="seance-bande" style="background:#16a34a"></div><div class="seance-idx">${r.date}</div><div class="seance-info"><div class="seance-nom">${r.titre}</div><div class="seance-desc">${r.desc}</div><div class="seance-tags"><span class="st-chip st-fait">Fait ✓</span><span class="seance-tag">${r.tag}</span><span class="cat-badge cat-classique">Classique</span></div></div><div class="seance-fleche">›</div></div>`).join('');
     contenu.innerHTML=`<div class="sw-hero"><span class="sw-tag" style="background:${COUL[s.phase]}22;color:${COUL[s.phase]}">${ph.nom}</span><h2 class="sw-titre">Semaine ${s.num} — ${s.theme}</h2><p class="sw-sous">Semaine terminée · récupération post-Circaète</p></div>
       <div class="sw-corps"><div class="callout callout-obj">${s.objectif}</div>
       <div class="sw-section">Réalisé sur la semaine — ${S24R.runs.length} sorties · ${S24R.km} km</div><div class="seance-liste">${runs}</div>
@@ -965,7 +965,7 @@ function ouvrirSemaine(num){const s=SEMAINES.find(x=>x.num===num);const ph=PHASE
     const rightEl=isDone
       ?`<div class="seance-fleche sc-check">✓</div>`
       :isSkipped
-        ?`<div class="seance-fleche" style="color:#fbbf24;font-size:20px">—</div>`
+        ?`<div class="seance-fleche" style="color:#f59e0b;font-size:20px">—</div>`
         :loggable
           ?`<div class="ql-btn"><i class="ti ti-check"></i></div>${menuBtn}`
           :menuBtn;
@@ -977,9 +977,9 @@ function ouvrirSemaine(num){const s=SEMAINES.find(x=>x.num===num);const ph=PHASE
 }
 /* ===== Créneaux météo — popup horaire ===== */
 function _wxStatus(t){
-  if(t<22)return{cls:'wx-ideal',lbl:'🟢 Idéal',c:'#22c55e'};
-  if(t<27)return{cls:'wx-ok',lbl:'🟡 OK',c:'#fbbf24'};
-  if(t<32)return{cls:'wx-dur',lbl:'🟠 Difficile',c:'#f97316'};
+  if(t<22)return{cls:'wx-ideal',lbl:'🟢 Idéal',c:'#16a34a'};
+  if(t<27)return{cls:'wx-ok',lbl:'🟡 OK',c:'#f59e0b'};
+  if(t<32)return{cls:'wx-dur',lbl:'🟠 Difficile',c:'#f59e0b'};
   return{cls:'wx-evit',lbl:'🔴 Éviter',c:'#ef4444'};
 }
 function _wxReco(hrs){
@@ -1067,28 +1067,28 @@ function unlogSeance(wk,id){const se=findSeance(wk,id);if(!se)return;const logs=
 const _CK_HELP={
   pmc:{t:'PMC — Fitness · Fatigue · Forme',c:'#0d9488',body:`<p>Le <strong>Performance Management Chart</strong> (PMC) est le graphe fondamental du coaching de haut niveau — c'est ce qu'utilisent les entraîneurs TrainingPeaks. Il montre l'équilibre entre ta construction de forme et ta fatigue.</p>
     <div class="ch-rule"><div class="ch-dot" style="background:#0d9488"></div><div><strong>CTL — Fitness (teal)</strong> : Charge chronique sur 42 jours. Représente ta forme physique accumulée. Monte lentement avec l'entraînement, descend lentement avec le repos.</div></div>
-    <div class="ch-rule"><div class="ch-dot" style="background:#f97316"></div><div><strong>ATL — Fatigue (orange tirets)</strong> : Charge aiguë sur 7 jours. Réagit vite aux variations de charge. Monte rapidement après une grosse semaine, descend vite avec le repos.</div></div>
-    <div class="ch-rule"><div class="ch-dot" style="background:#22c55e"></div><div><strong>TSB — Forme (barres)</strong> : CTL − ATL. Positif (vert) = tu es frais, reposé. Négatif (rouge) = tu accumules de la fatigue.</div></div>
+    <div class="ch-rule"><div class="ch-dot" style="background:#f59e0b"></div><div><strong>ATL — Fatigue (orange tirets)</strong> : Charge aiguë sur 7 jours. Réagit vite aux variations de charge. Monte rapidement après une grosse semaine, descend vite avec le repos.</div></div>
+    <div class="ch-rule"><div class="ch-dot" style="background:#16a34a"></div><div><strong>TSB — Forme (barres)</strong> : CTL − ATL. Positif (vert) = tu es frais, reposé. Négatif (rouge) = tu accumules de la fatigue.</div></div>
     <div class="ch-tip">💡 <strong>Comment lire ce graphe pour Nice :</strong> La CTL doit monter progressivement jusqu'à octobre (pic prévu ~65-70), puis la TSB doit remonter en positif grâce au tapering J-21/J-14/J-7. Le jour de Nice, visée : CTL élevée + TSB entre +5 et +20 = pic de forme.</div>`},
-  vol:{t:'Volume hebdomadaire',c:'#f97316',body:`<p>Kilomètres courus chaque semaine (barres colorées) comparés au volume planifié (barres grises en arrière-plan).</p>
-    <div class="ch-rule"><div class="ch-dot" style="background:#f97316"></div><div><strong>Barre au-dessus du gris</strong> → tu as sur-performé. Vérifie que ce n'était pas au détriment de la qualité des séances.</div></div>
+  vol:{t:'Volume hebdomadaire',c:'#f59e0b',body:`<p>Kilomètres courus chaque semaine (barres colorées) comparés au volume planifié (barres grises en arrière-plan).</p>
+    <div class="ch-rule"><div class="ch-dot" style="background:#f59e0b"></div><div><strong>Barre au-dessus du gris</strong> → tu as sur-performé. Vérifie que ce n'était pas au détriment de la qualité des séances.</div></div>
     <div class="ch-rule"><div class="ch-dot" style="background:#94a3b8"></div><div><strong>Barre en dessous du gris</strong> → semaine incomplète. Normal pendant les allègements ou après une course.</div></div>
     <div class="ch-tip">💡 Tendance à surveiller : une progression de +5–10% max par semaine. Au-delà, tu accumules une dette de récupération même sans le ressentir.</div>`},
   re:{t:'Relative Effort (RE)',c:'#f59e0b',body:`<p>Score de charge calculé par Strava à partir de la fréquence cardiaque. Il intègre à la fois la durée et l'intensité de chaque sortie.</p>
-    <div class="ch-rule"><div class="ch-dot" style="background:#4ade80"></div><div><strong>EF 10 km facile</strong> ≈ 40–70 RE</div></div>
+    <div class="ch-rule"><div class="ch-dot" style="background:#16a34a"></div><div><strong>EF 10 km facile</strong> ≈ 40–70 RE</div></div>
     <div class="ch-rule"><div class="ch-dot" style="background:#f59e0b"></div><div><strong>Sortie longue 16 km</strong> ≈ 150–180 RE</div></div>
     <div class="ch-rule"><div class="ch-dot" style="background:#ef4444"></div><div><strong>Circaète 30 km trail</strong> ≈ 696 RE</div></div>
     <div class="ch-tip">💡 Glisse le doigt sur le graphe pour voir la valeur semaine par semaine. La tendance sur 8 semaines est plus parlante que la valeur isolée.</div>`},
   acwr:{t:'ACWR — Risque de blessure',c:'#f59e0b',body:`<p>Ratio Charge Aiguë / Charge Chronique (Acute:Chronic Workload Ratio). Compare la charge des 7 derniers jours à la moyenne des 28 derniers jours.</p>
-    <div class="ch-rule"><div class="ch-dot" style="background:#3b82f6"></div><div><strong>ACWR &lt; 0.8 (bleu)</strong> → Sous-entraîné. Semaine légère ou récup prolongée. Faible risque mais perte de forme.</div></div>
-    <div class="ch-rule"><div class="ch-dot" style="background:#22c55e"></div><div><strong>ACWR 0.8–1.3 (vert)</strong> → Zone optimale. Continue sur cette lancée.</div></div>
+    <div class="ch-rule"><div class="ch-dot" style="background:#0d9488"></div><div><strong>ACWR &lt; 0.8 (bleu)</strong> → Sous-entraîné. Semaine légère ou récup prolongée. Faible risque mais perte de forme.</div></div>
+    <div class="ch-rule"><div class="ch-dot" style="background:#16a34a"></div><div><strong>ACWR 0.8–1.3 (vert)</strong> → Zone optimale. Continue sur cette lancée.</div></div>
     <div class="ch-rule"><div class="ch-dot" style="background:#f59e0b"></div><div><strong>ACWR 1.3–1.5 (orange)</strong> → Charge élevée. Pas dangereux si ponctuel, mais surveille.</div></div>
     <div class="ch-rule"><div class="ch-dot" style="background:#ef4444"></div><div><strong>ACWR &gt; 1.5 (rouge)</strong> → Surcharge. Risque de blessure ×5. Réduire l'intensité immédiatement.</div></div>
     <div class="ch-tip">💡 Objectif : rester dans la zone verte 80% du temps. Dépasser 1.3 ponctuellement (semaine de pic avant compétition) est acceptable si les semaines suivantes permettent de récupérer.</div>`},
   dp:{t:'Dénivelé positif (D+)',c:'#0d9488',body:`<p>Mètres de dénivelé positif cumulés par semaine. Indicateur clé pour la préparation aux courses de trail.</p>
     <div class="ch-rule"><div class="ch-dot" style="background:#0d9488"></div><div><strong>Semaine route pure</strong> → D+ ≈ 30–80 m (variation naturelle du terrain)</div></div>
-    <div class="ch-rule"><div class="ch-dot" style="background:#8b5cf6"></div><div><strong>Semaine trail légère</strong> → D+ 200–500 m</div></div>
-    <div class="ch-rule"><div class="ch-dot" style="background:#f97316"></div><div><strong>Semaine spécifique trail</strong> → D+ 600–1000 m</div></div>
+    <div class="ch-rule"><div class="ch-dot" style="background:#0d9488"></div><div><strong>Semaine trail légère</strong> → D+ 200–500 m</div></div>
+    <div class="ch-rule"><div class="ch-dot" style="background:#f59e0b"></div><div><strong>Semaine spécifique trail</strong> → D+ 600–1000 m</div></div>
     <div class="ch-tip">💡 Pour la Déraille (+901m) et SaintExpress, le D+ hebdo doit idéalement atteindre 500–800m dans les 4 semaines précédentes. Ce graphe permet de vérifier que la spécificité trail est bien intégrée.</div>`},
   z2:{t:'Z2 pace — Allure EF',c:'#0d9488',body:`<p>Allure moyenne de tes footings faciles semaine par semaine. C'est <strong>l'indicateur fondamental</strong> du développement aérobie.</p>
     <p>La Zone 2 = effort où tu peux tenir une conversation. FC < 144 bpm pour toi.</p>
@@ -1096,25 +1096,25 @@ const _CK_HELP={
     <div class="ch-rule"><div class="ch-dot" style="background:#f59e0b"></div><div><strong>Courbe plate</strong> = stagnation. Normal en période de maintien ou de volume élevé.</div></div>
     <div class="ch-rule"><div class="ch-dot" style="background:#ef4444"></div><div><strong>Courbe montante</strong> = régression. Souvent liée à la fatigue, la chaleur, ou un ACWR > 1.3.</div></div>
     <div class="ch-tip">💡 Ton objectif saison : passer de 5:56/km à ~5:40/km en Z2 d'ici octobre. Chaque dixième de seconde gagné reflète une adaptation mitochondriale réelle.</div>`},
-  dc:{t:'Découplage cardiaque',c:'#8b5cf6',body:`<p>Mesure l'écart entre ton allure et ta FC sur une sortie longue. Un faible découplage = ton cœur reste stable alors que tu te fatigues.</p>
-    <div class="ch-rule"><div class="ch-dot" style="background:#22c55e"></div><div><strong>&lt; 5% (vert)</strong> → Excellent. Ton système aérobie est solide et stable sur la durée.</div></div>
+  dc:{t:'Découplage cardiaque',c:'#0d9488',body:`<p>Mesure l'écart entre ton allure et ta FC sur une sortie longue. Un faible découplage = ton cœur reste stable alors que tu te fatigues.</p>
+    <div class="ch-rule"><div class="ch-dot" style="background:#16a34a"></div><div><strong>&lt; 5% (vert)</strong> → Excellent. Ton système aérobie est solide et stable sur la durée.</div></div>
     <div class="ch-rule"><div class="ch-dot" style="background:#f59e0b"></div><div><strong>5–8% (orange)</strong> → Acceptable. Léger décrochage en fin de sortie, souvent dû à la chaleur ou à la fatigue.</div></div>
     <div class="ch-rule"><div class="ch-dot" style="background:#ef4444"></div><div><strong>&gt; 8% (rouge)</strong> → Problème. Sortie trop longue, trop chaude, ou nutrition insuffisante.</div></div>
     <div class="ch-tip">💡 Ce graphe te dit si tes sorties longues sont vraiment "faciles" ou si ton cœur souffre en fin de sortie sans que tu le ressentes. Un découplage élevé en canicule est normal — c'est pour ça qu'on court avant 8h30.</div>`},
-  pace:{t:'Progression allure par type',c:'#22c55e',body:`<p>3 courbes d'allure sur la fenêtre sélectionnée — footings faciles (EF), allure marathon (AM) et seuil. Permet de voir si tu progresses sur tous les registres.</p>
-    <div class="ch-rule"><div class="ch-dot" style="background:#22c55e"></div><div><strong>EF (vert)</strong> → Allure Z2, footing facile. Doit descendre progressivement toute la saison.</div></div>
-    <div class="ch-rule"><div class="ch-dot" style="background:#3b82f6"></div><div><strong>AM (bleu)</strong> → Allure marathon cible. Doit converger vers 5:20/km pour Nice (objectif 3h45).</div></div>
+  pace:{t:'Progression allure par type',c:'#16a34a',body:`<p>3 courbes d'allure sur la fenêtre sélectionnée — footings faciles (EF), allure marathon (AM) et seuil. Permet de voir si tu progresses sur tous les registres.</p>
+    <div class="ch-rule"><div class="ch-dot" style="background:#16a34a"></div><div><strong>EF (vert)</strong> → Allure Z2, footing facile. Doit descendre progressivement toute la saison.</div></div>
+    <div class="ch-rule"><div class="ch-dot" style="background:#0d9488"></div><div><strong>AM (bleu)</strong> → Allure marathon cible. Doit converger vers 5:20/km pour Nice (objectif 3h45).</div></div>
     <div class="ch-rule"><div class="ch-dot" style="background:#f59e0b"></div><div><strong>Seuil (orange)</strong> → Allure séance AM ou tempo. Reflète ta capacité lactique.</div></div>
     <div class="ch-tip">💡 Glisse le doigt sur le graphe pour voir les 3 valeurs simultanément. L'écart entre EF et seuil = ton amplitude de vitesse. Plus il est grand, meilleur est ton profil de coureur.</div>`},
   fc:{t:'Zones FC — Distribution',c:'#ef4444',body:`<p>Répartition du temps passé dans chaque zone de fréquence cardiaque sur la semaine sélectionnée. Reflète la structure de ton entraînement.</p>
-    <div class="ch-rule"><div class="ch-dot" style="background:#3b82f6"></div><div><strong>Z1 Récup (&lt;130 bpm)</strong> → Échauffement, récupération active. Peut être augmenté.</div></div>
-    <div class="ch-rule"><div class="ch-dot" style="background:#22c55e"></div><div><strong>Z2 Endurance (130–148)</strong> → Moteur aérobie. Doit représenter 70–80% du volume total.</div></div>
+    <div class="ch-rule"><div class="ch-dot" style="background:#0d9488"></div><div><strong>Z1 Récup (&lt;130 bpm)</strong> → Échauffement, récupération active. Peut être augmenté.</div></div>
+    <div class="ch-rule"><div class="ch-dot" style="background:#16a34a"></div><div><strong>Z2 Endurance (130–148)</strong> → Moteur aérobie. Doit représenter 70–80% du volume total.</div></div>
     <div class="ch-rule"><div class="ch-dot" style="background:#f59e0b"></div><div><strong>Z3 Seuil (148–163)</strong> → Zone "grise" : trop dur pour récupérer vite, trop facile pour progresser fort. À limiter.</div></div>
-    <div class="ch-rule"><div class="ch-dot" style="background:#f97316"></div><div><strong>Z4 Lactique (163–178)</strong> → Séances AM, tempo. 15–20% du volume = optimal.</div></div>
+    <div class="ch-rule"><div class="ch-dot" style="background:#f59e0b"></div><div><strong>Z4 Lactique (163–178)</strong> → Séances AM, tempo. 15–20% du volume = optimal.</div></div>
     <div class="ch-rule"><div class="ch-dot" style="background:#ef4444"></div><div><strong>Z5 Max (&gt;178)</strong> → Fractionné intense. Réservé aux séances très ciblées.</div></div>
     <div class="ch-tip">💡 Distribution idéale (entraînement polarisé) : 75–80% Z1-Z2 + 5% Z3 + 15–20% Z4-Z5. Trop de Z3 = entraînement "moyen partout" = progression lente.</div>`},
   cad:{t:'Cadence (pas/min)',c:'#6366f1',body:`<p>Nombre de pas par minute. La valeur affichée est en SPM (steps per minute = total des deux pieds). Ta cadence naturelle est d'environ 172–174 spm en route.</p>
-    <div class="ch-rule"><div class="ch-dot" style="background:#22c55e"></div><div><strong>170–180 spm</strong> → Zone optimale. Limite l'impact au sol et réduit le risque de blessures aux genoux et hanches.</div></div>
+    <div class="ch-rule"><div class="ch-dot" style="background:#16a34a"></div><div><strong>170–180 spm</strong> → Zone optimale. Limite l'impact au sol et réduit le risque de blessures aux genoux et hanches.</div></div>
     <div class="ch-rule"><div class="ch-dot" style="background:#f59e0b"></div><div><strong>&lt;170 spm</strong> → Foulée trop longue. Augmente les forces d'impact. Surtout visible en fatigue ou en descente trail.</div></div>
     <div class="ch-rule"><div class="ch-dot" style="background:#6366f1"></div><div><strong>Trail &lt;155 spm</strong> → Normal en montée raide (marche) ou sur terrain très technique.</div></div>
     <div class="ch-tip">💡 Ta cadence trail (146 spm au Circaète) inclut les passages de marche en montée — c'est tout à fait normal. L'écart route/trail que tu vois dans ce graphe est attendu et sain.</div>`}
@@ -1212,7 +1212,7 @@ function initFormeHelp(){
     <div class="fh-sec">L'échelle de 0 à 100</div>
     <div class="fh-scale">
       <div class="fh-s-item"><div class="fh-dot" style="background:#0d9488"></div><div><strong>82–100 · Excellent</strong> — Tu es en forme, tu peux attaquer une séance qualité sans hésiter.</div></div>
-      <div class="fh-s-item"><div class="fh-dot" style="background:#22c55e"></div><div><strong>68–81 · Bon</strong> — Paramètres dans la norme. Suis le plan tel quel.</div></div>
+      <div class="fh-s-item"><div class="fh-dot" style="background:#16a34a"></div><div><strong>68–81 · Bon</strong> — Paramètres dans la norme. Suis le plan tel quel.</div></div>
       <div class="fh-s-item"><div class="fh-dot" style="background:#f59e0b"></div><div><strong>52–67 · Vigilance</strong> — Quelque chose mérite attention. Tape sur la barre pour identifier le point faible.</div></div>
       <div class="fh-s-item"><div class="fh-dot" style="background:#ef4444"></div><div><strong>0–51 · Alerte</strong> — Privilégie le repos ou un EF très léger. Ne force pas une qualité.</div></div>
     </div>
@@ -1402,7 +1402,7 @@ ${P.slice().sort((a,b)=>b.date.localeCompare(a.date)).map((p,i)=>{
   const d=new Date(p.date+'T12:00:00');
   const mois=['janv.','févr.','mars','avr.','mai','juin','juil.','août','sept.','oct.','nov.','déc.'];
   const dateStr=d.getDate()+' '+mois[d.getMonth()]+' '+d.getFullYear();
-  const classGen=p.classement_gen?`<span style="font-size:11px;font-weight:600;padding:2px 7px;border-radius:99px;background:#eff6ff;color:#1d4ed8">#${p.classement_gen}${p.total_finishers?' / '+p.total_finishers:''} général</span>`:'';
+  const classGen=p.classement_gen?`<span style="font-size:11px;font-weight:600;padding:2px 7px;border-radius:99px;background:#f0fdfa;color:#0f766e">#${p.classement_gen}${p.total_finishers?' / '+p.total_finishers:''} général</span>`:'';
   const classCat=p.classement_cat?`<span style="font-size:11px;font-weight:600;padding:2px 7px;border-radius:99px;background:#f0fdf4;color:#15803d">#${p.classement_cat} cat.</span>`:'';
   return`<div style="background:var(--bg-card,#fff);border:.5px solid var(--bord-card,#e2e8f0);border-radius:14px;margin-bottom:10px;overflow:hidden">
     <div style="display:flex;align-items:stretch">
@@ -1447,12 +1447,12 @@ const _CK={
   Z2:{2:{w:['S24','S25'],v:[360,354]},4:{w:['S22','S23','S24','S25'],v:[372,358,360,354]},8:{w:['S18','S19','S20','S21','S22','S23','S24','S25'],v:[384,378,375,380,372,358,360,354]},12:{w:['S14','S15','S16','S17','S18','S19','S20','S21','S22','S23','S24','S25'],v:[396,392,390,388,384,378,375,380,372,358,360,354]}},
   DC:{2:{w:['S24','S25'],v:[6.2,4.1]},4:{w:['S22','S23','S24','S25'],v:[8.5,5.5,6.2,4.1]},8:{w:['S18','S19','S20','S21','S22','S23','S24','S25'],v:[9.1,7.8,8.5,5.5,8.5,5.5,6.2,4.1]},12:{w:['S14','S15','S16','S17','S18','S19','S20','S21','S22','S23','S24','S25'],v:[11,10.2,9.5,8.8,9.1,7.8,8.5,5.5,8.5,5.5,6.2,4.1]}},
   PACE:{2:{w:['S24','S25'],ef:[360,354],am:[320,314],se:[null,288]},4:{w:['S22','S23','S24','S25'],ef:[384,358,360,354],am:[320,315,320,314],se:[295,null,null,288]},8:{w:['S18','S19','S20','S21','S22','S23','S24','S25'],ef:[396,390,387,390,384,358,360,354],am:[316,318,316,315,320,315,320,314],se:[300,298,295,297,295,null,null,288]},12:{w:['S14','S15','S16','S17','S18','S19','S20','S21','S22','S23','S24','S25'],ef:[408,404,400,396,390,387,390,384,380,358,360,354],am:[324,322,320,318,316,318,316,315,320,315,320,314],se:[310,308,305,302,300,298,295,297,295,null,null,288]}},
-  FCZ:{2:[['Z1','#4ade80',10],['Z2','#22c55e',58],['Z3','#f59e0b',20],['Z4+','#ef4444',12]],4:[['Z1','#4ade80',11],['Z2','#22c55e',62],['Z3','#f59e0b',17],['Z4+','#ef4444',10]],8:[['Z1','#4ade80',12],['Z2','#22c55e',65],['Z3','#f59e0b',15],['Z4+','#ef4444',8]],12:[['Z1','#4ade80',14],['Z2','#22c55e',68],['Z3','#f59e0b',12],['Z4+','#ef4444',6]]},
+  FCZ:{2:[['Z1','#16a34a',10],['Z2','#16a34a',58],['Z3','#f59e0b',20],['Z4+','#ef4444',12]],4:[['Z1','#16a34a',11],['Z2','#16a34a',62],['Z3','#f59e0b',17],['Z4+','#ef4444',10]],8:[['Z1','#16a34a',12],['Z2','#16a34a',65],['Z3','#f59e0b',15],['Z4+','#ef4444',8]],12:[['Z1','#16a34a',14],['Z2','#16a34a',68],['Z3','#f59e0b',12],['Z4+','#ef4444',6]]},
   CAD:{2:{w:['S24','S25'],v:[171,172]},4:{w:['S22','S23','S24','S25'],v:[145,172,171,172]},8:{w:['S18','S19','S20','S21','S22','S23','S24','S25'],v:[154,168,146,170,145,172,171,172]},12:{w:['S14','S15','S16','S17','S18','S19','S20','S21','S22','S23','S24','S25'],v:[168,169,154,170,154,168,146,170,145,172,171,172]}},
   RUNS:[
-    {id:'18967988695',title:'Sortie longue endurance',date:'Jeu 18 juin',type:'#f97316',km:16.0,al:'5:31',re:156,fcm:151,fcx:171,cad:172,dp:52,cal:1249,hasStreams:true},
-    {id:'18955432704',title:'Allure marathon 1×6 km',date:'Mer 17 juin',type:'#3b82f6',km:10.1,al:'5:14',re:169,fcm:165,fcx:181,cad:168,dp:35,cal:816,hasStreams:true},
-    {id:'18939731283',title:'Footing facile',date:'Mar 16 juin',type:'#4ade80',km:10.1,al:'5:56',re:58,fcm:140,fcx:167,cad:172,dp:40,cal:788,hasStreams:true},
+    {id:'18967988695',title:'Sortie longue endurance',date:'Jeu 18 juin',type:'#f59e0b',km:16.0,al:'5:31',re:156,fcm:151,fcx:171,cad:172,dp:52,cal:1249,hasStreams:true},
+    {id:'18955432704',title:'Allure marathon 1×6 km',date:'Mer 17 juin',type:'#0d9488',km:10.1,al:'5:14',re:169,fcm:165,fcx:181,cad:168,dp:35,cal:816,hasStreams:true},
+    {id:'18939731283',title:'Footing facile',date:'Mar 16 juin',type:'#16a34a',km:10.1,al:'5:56',re:58,fcm:140,fcx:167,cad:172,dp:40,cal:788,hasStreams:true},
     {id:'18810734775',title:'Trail des Gypaètes (Circaète)',date:'Sam 6 juin',type:'#0d9488',km:29.8,al:'9:50',re:696,fcm:152,fcx:178,cad:146,dp:1662,cal:3191,hasStreams:true}
   ],
   STREAMS:{
@@ -1489,8 +1489,8 @@ function _pmcRender(win){
   const aP='M'+data.map((d,i)=>`${xS(i).toFixed(1)},${yS(d.atl).toFixed(1)}`).join('L');
   const lbls=data.map((d,i)=>(i===0||i===n-1||i===Math.floor(n/2))?`<text x="${xS(i).toFixed(1)}" y="${H-2}" text-anchor="middle" font-size="9" fill="#64748b">${d.wk}</text>`:'').join('');
   const last=data[n-1];
-  const endLbls=`<text x="${(pl+cw+3).toFixed(1)}" y="${yS(last.ctl).toFixed(1)}" font-size="9" fill="#0d9488">${last.ctl.toFixed(0)}</text><text x="${(pl+cw+3).toFixed(1)}" y="${yS(last.atl).toFixed(1)}" font-size="9" fill="#f97316">${last.atl.toFixed(0)}</text><text x="${(pl+cw+3).toFixed(1)}" y="${tS(last.tsb).toFixed(1)}" font-size="9" fill="${last.tsb>=0?'#22c55e':'#ef4444'}">${last.tsb>=0?'+':''}${last.tsb.toFixed(0)}</text>`;
-  svg.innerHTML=`${bars}<line x1="${pl}" y1="${zy}" x2="${pl+cw}" y2="${zy}" stroke="rgba(100,116,139,.3)" stroke-dasharray="3,3" stroke-width="1"/><path d="${cP}" stroke="#0d9488" stroke-width="2" fill="none" stroke-linejoin="round"/><path d="${aP}" stroke="#f97316" stroke-width="1.5" fill="none" stroke-linejoin="round" stroke-dasharray="4,2"/>${lbls}${endLbls}`;
+  const endLbls=`<text x="${(pl+cw+3).toFixed(1)}" y="${yS(last.ctl).toFixed(1)}" font-size="9" fill="#0d9488">${last.ctl.toFixed(0)}</text><text x="${(pl+cw+3).toFixed(1)}" y="${yS(last.atl).toFixed(1)}" font-size="9" fill="#f59e0b">${last.atl.toFixed(0)}</text><text x="${(pl+cw+3).toFixed(1)}" y="${tS(last.tsb).toFixed(1)}" font-size="9" fill="${last.tsb>=0?'#16a34a':'#ef4444'}">${last.tsb>=0?'+':''}${last.tsb.toFixed(0)}</text>`;
+  svg.innerHTML=`${bars}<line x1="${pl}" y1="${zy}" x2="${pl+cw}" y2="${zy}" stroke="rgba(100,116,139,.3)" stroke-dasharray="3,3" stroke-width="1"/><path d="${cP}" stroke="#0d9488" stroke-width="2" fill="none" stroke-linejoin="round"/><path d="${aP}" stroke="#f59e0b" stroke-width="1.5" fill="none" stroke-linejoin="round" stroke-dasharray="4,2"/>${lbls}${endLbls}`;
   const wrap=document.getElementById('ckPMCW');if(!wrap)return;
   wrap.onpointermove=ev=>{const r=wrap.getBoundingClientRect(),idx=Math.max(0,Math.min(n-1,Math.round((ev.clientX-r.left-pl)/cw*(n-1))));const d=data[idx];const tt=document.getElementById('ckPMCT');if(tt)tt.textContent=`${d.wk} · Fitness ${d.ctl.toFixed(0)} · Fatigue ${d.atl.toFixed(0)} · Forme ${d.tsb>=0?'+':''}${d.tsb.toFixed(0)}`;};
   wrap.onpointerleave=()=>{const tt=document.getElementById('ckPMCT');if(tt)tt.textContent='glisse pour voir les valeurs';};
@@ -1505,7 +1505,7 @@ function _ckBar(svgId,wrapId,ttId,xlId,data,opt){
     if(opt.ref&&data.p){const ph=data.p[i]/mx*(H-12);s+=`<rect x="${x}" y="${H-ph}" width="${bw}" height="${ph}" rx="2" fill="${opt.col||'#0d9488'}" opacity="0.2"/>`;}
     const v=vals[i];if(v==null)return;const h=v/mx*(H-12);
     let c=opt.col||'#0d9488';
-    if(opt.thr)c=v>opt.thr[1]?'#ef4444':v>opt.thr[0]?'#f59e0b':'#22c55e';
+    if(opt.thr)c=v>opt.thr[1]?'#ef4444':v>opt.thr[0]?'#f59e0b':'#16a34a';
     if(opt.ref&&data.p)c=v>=data.p[i]?'#0d9488':'#ef4444';
     s+=`<rect class="ck-bar-${svgId}" data-i="${i}" x="${x}" y="${H-h}" width="${bw}" height="${h}" rx="2" fill="${c}"/>`;});
   const svg=document.getElementById(svgId);if(!svg)return;svg.setAttribute('viewBox',`0 0 300 ${H}`);svg.innerHTML=s;
@@ -1618,16 +1618,16 @@ function _ckRenderAll(win){
   _pmcRender(W);
   _ckBar('ckVol','ckVolW','ckVolT','ckVolX',D.VOL[W],{ref:true,col:'#0d9488',unit:' km',h:90});
   document.getElementById('ck-vol-sub').textContent=totalKm.toFixed(0)+' km · '+W+' sem.';
-  _ckBar('ckRE','ckREW','ckRET','ckREX',D.RE[W],{col:'#8b5cf6',h:80});
-  _ckLine('ckACWR','ckACWRW','ckACWRT','ckACWRX',D.ACWR[W].w,[{v:D.ACWR[W].v,color:'#f59e0b',lbl:''}],v=>v.toFixed(2),{h:65,zones:[[0,0.8,'#3b82f6'],[0.8,1.3,'#22c55e'],[1.3,2,'#ef4444']]});
-  const al=D.ACWR[W].v[D.ACWR[W].v.length-1];document.getElementById('ck-acwr-val').textContent=al.toFixed(2);document.getElementById('ck-acwr-val').style.color=al>1.3?'#ef4444':al<0.8?'#3b82f6':'#22c55e';
+  _ckBar('ckRE','ckREW','ckRET','ckREX',D.RE[W],{col:'#0d9488',h:80});
+  _ckLine('ckACWR','ckACWRW','ckACWRT','ckACWRX',D.ACWR[W].w,[{v:D.ACWR[W].v,color:'#f59e0b',lbl:''}],v=>v.toFixed(2),{h:65,zones:[[0,0.8,'#0d9488'],[0.8,1.3,'#16a34a'],[1.3,2,'#ef4444']]});
+  const al=D.ACWR[W].v[D.ACWR[W].v.length-1];document.getElementById('ck-acwr-val').textContent=al.toFixed(2);document.getElementById('ck-acwr-val').style.color=al>1.3?'#ef4444':al<0.8?'#0d9488':'#16a34a';
   _ckBar('ckDP','ckDPW','ckDPT','ckDPX',D.DPLUS[W],{col:'#94a3b8',unit:' m',h:75});
   _ckLine('ckZ2','ckZ2W','ckZ2T','ckZ2X',D.Z2[W].w,[{v:D.Z2[W].v,color:'#0d9488',lbl:'/km'}],_ckSmin,{h:85});
   document.getElementById('ck-z2-val').textContent=_ckSmin(D.Z2[W].v[D.Z2[W].v.length-1]);
-  const z2d=D.Z2[W].v[0]-D.Z2[W].v[D.Z2[W].v.length-1];document.getElementById('ck-z2-delta').textContent=(z2d>0?'↓ −'+_ckSmin(z2d)+'/km · le moteur grossit 💪':'↑ à surveiller');document.getElementById('ck-z2-delta').style.color=z2d>0?'#22c55e':'#ef4444';
-  const dcLast=D.DC[W].v.filter(x=>x!=null).pop();_ckLine('ckDC','ckDCW','ckDCT','ckDCX',D.DC[W].w,[{v:D.DC[W].v,color:'#22c55e',lbl:'%'}],v=>v.toFixed(1)+'%',{h:75,zones:[[0,5,'#22c55e'],[5,8,'#f59e0b'],[8,15,'#ef4444']]});
-  document.getElementById('ck-dc-val').textContent=dcLast?dcLast.toFixed(1)+'%':'—';document.getElementById('ck-dc-val').style.color=dcLast<5?'#22c55e':dcLast<8?'#f59e0b':'#ef4444';
-  _ckLine('ckPACE','ckPACEW','ckPACET','ckPACEX',D.PACE[W].w,[{v:D.PACE[W].ef,color:'#22c55e',lbl:'EF'},{v:D.PACE[W].am,color:'#3b82f6',lbl:'AM'},{v:D.PACE[W].se,color:'#f59e0b',lbl:'Seuil'}],_ckSmin,{h:95,fill:false});
+  const z2d=D.Z2[W].v[0]-D.Z2[W].v[D.Z2[W].v.length-1];document.getElementById('ck-z2-delta').textContent=(z2d>0?'↓ −'+_ckSmin(z2d)+'/km · le moteur grossit 💪':'↑ à surveiller');document.getElementById('ck-z2-delta').style.color=z2d>0?'#16a34a':'#ef4444';
+  const dcLast=D.DC[W].v.filter(x=>x!=null).pop();_ckLine('ckDC','ckDCW','ckDCT','ckDCX',D.DC[W].w,[{v:D.DC[W].v,color:'#16a34a',lbl:'%'}],v=>v.toFixed(1)+'%',{h:75,zones:[[0,5,'#16a34a'],[5,8,'#f59e0b'],[8,15,'#ef4444']]});
+  document.getElementById('ck-dc-val').textContent=dcLast?dcLast.toFixed(1)+'%':'—';document.getElementById('ck-dc-val').style.color=dcLast<5?'#16a34a':dcLast<8?'#f59e0b':'#ef4444';
+  _ckLine('ckPACE','ckPACEW','ckPACET','ckPACEX',D.PACE[W].w,[{v:D.PACE[W].ef,color:'#16a34a',lbl:'EF'},{v:D.PACE[W].am,color:'#0d9488',lbl:'AM'},{v:D.PACE[W].se,color:'#f59e0b',lbl:'Seuil'}],_ckSmin,{h:95,fill:false});
   // Zones FC
   const z=D.FCZ[W],H=100,n=z.length,gap=300/n,bw=gap*0.5,mxz=Math.max(...z.map(x=>x[2]));
   let fcs='';z.forEach((zone,i)=>{const x=i*gap+gap*0.25,h=zone[2]/mxz*(H-22);fcs+=`<rect class="ck-fcb" data-i="${i}" x="${x}" y="${H-h-10}" width="${bw}" height="${h}" rx="3" fill="${zone[1]}"/><text x="${x+bw/2}" y="${H-h-14}" text-anchor="middle" font-size="11" font-weight="700" fill="${zone[1]}">${zone[2]}%</text><text x="${x+bw/2}" y="${H-1}" text-anchor="middle" font-size="9" fill="#94a3b8">${zone[0]}</text>`;});
@@ -1665,7 +1665,7 @@ function renderCockpit(){
 </div>
 <div class="ck-sec">📊 Volume &amp; charge</div>
 <div class="ck-sec">📈 Performance Management Chart</div>
-<div class="ck-card"><div class="ck-ch"><div><div class="ck-ct">CTL · ATL · TSB<button class="ck-help" onclick="event.stopPropagation();openCkHelp('pmc')">?</button></div><div class="ck-cs" id="ckPMC-sub">Fitness · Fatigue · Forme</div></div></div><div class="ck-cw" id="ckPMCW"><svg id="ckPMC" height="90" style="display:block;width:100%"></svg><div class="ck-tt" id="ckPMCT">glisse pour voir les valeurs</div></div><div style="display:flex;gap:14px;font-size:10px;color:var(--texte-deux);margin-top:6px;padding:0 2px"><span><span style="color:#0d9488">●</span> CTL fitness</span><span><span style="color:#f97316">●</span> ATL fatigue</span><span><span style="color:#22c55e">▌</span> TSB forme</span></div></div>
+<div class="ck-card"><div class="ck-ch"><div><div class="ck-ct">CTL · ATL · TSB<button class="ck-help" onclick="event.stopPropagation();openCkHelp('pmc')">?</button></div><div class="ck-cs" id="ckPMC-sub">Fitness · Fatigue · Forme</div></div></div><div class="ck-cw" id="ckPMCW"><svg id="ckPMC" height="90" style="display:block;width:100%"></svg><div class="ck-tt" id="ckPMCT">glisse pour voir les valeurs</div></div><div style="display:flex;gap:14px;font-size:10px;color:var(--texte-deux);margin-top:6px;padding:0 2px"><span><span style="color:#0d9488">●</span> CTL fitness</span><span><span style="color:#f59e0b">●</span> ATL fatigue</span><span><span style="color:#16a34a">▌</span> TSB forme</span></div></div>
 ${card('ckVol','Volume hebdomadaire','',null,null,90,'<div style="font-size:9px;color:#94a3b8;text-align:center;margin-top:4px">touche une barre · ■ prévu</div>','vol')}
 <div class="ck-cs" id="ck-vol-sub" style="margin:-4px 0 8px;padding:0 2px"></div>
 ${card('ckRE','⚡ Relative Effort / sem.','charge Strava réelle',null,null,80,'<div style="font-size:9px;color:#94a3b8;text-align:center;margin-top:4px">glisse →</div>','re')}
@@ -1675,7 +1675,7 @@ ${card('ckDP','⛰ Dénivelé D+','',null,'m',75,'','dp')}
 <div class="ck-card"><div class="ck-ch"><div><div class="ck-ct">Z2 pace — allure EF à FC&lt;144<button class="ck-help" onclick="event.stopPropagation();openCkHelp('z2')">?</button></div><div class="ck-cs">indicateur n°1 du développement</div></div><div style="text-align:right"><div style="font-size:22px;font-weight:700;color:#0d9488" id="ck-z2-val">5:54</div><div class="ck-cs">/km</div></div></div><div style="font-size:10px;font-weight:600;margin:3px 0 6px" id="ck-z2-delta"></div><div class="ck-cw" id="ckZ2W"><svg id="ckZ2" height="85" style="display:block;width:100%"></svg><div class="ck-tt" id="ckZ2T"></div></div><div class="ck-xl" id="ckZ2X"></div></div>
 <div class="ck-card"><div class="ck-ch"><div><div class="ck-ct">💓 Découplage cardiaque<button class="ck-help" onclick="event.stopPropagation();openCkHelp('dc')">?</button></div><div class="ck-cs">dérive FC sortie longue · &lt;5% idéal</div></div><div style="font-size:22px;font-weight:700" id="ck-dc-val">—</div></div><div class="ck-cw" id="ckDCW"><svg id="ckDC" height="75" style="display:block;width:100%"></svg><div class="ck-tt" id="ckDCT"></div></div><div class="ck-xl" id="ckDCX"></div></div>
 <div class="ck-sec">📈 Allure &amp; vitesse</div>
-<div class="ck-card"><div class="ck-ch"><div><div class="ck-ct">Progression allure par type<button class="ck-help" onclick="event.stopPropagation();openCkHelp('pace')">?</button></div><div class="ck-cs">EF · marathon · seuil</div></div></div><div class="ck-cw" id="ckPACEW"><svg id="ckPACE" height="95" style="display:block;width:100%"></svg><div class="ck-tt" id="ckPACET"></div></div><div class="ck-xl" id="ckPACEX"></div><div style="display:flex;gap:12px;font-size:10px;color:var(--texte-deux);margin-top:7px"><span><span style="color:#22c55e">●</span> EF</span><span><span style="color:#3b82f6">●</span> AM</span><span><span style="color:#f59e0b">●</span> Seuil</span></div></div>
+<div class="ck-card"><div class="ck-ch"><div><div class="ck-ct">Progression allure par type<button class="ck-help" onclick="event.stopPropagation();openCkHelp('pace')">?</button></div><div class="ck-cs">EF · marathon · seuil</div></div></div><div class="ck-cw" id="ckPACEW"><svg id="ckPACE" height="95" style="display:block;width:100%"></svg><div class="ck-tt" id="ckPACET"></div></div><div class="ck-xl" id="ckPACEX"></div><div style="display:flex;gap:12px;font-size:10px;color:var(--texte-deux);margin-top:7px"><span><span style="color:#16a34a">●</span> EF</span><span><span style="color:#0d9488">●</span> AM</span><span><span style="color:#f59e0b">●</span> Seuil</span></div></div>
 <div class="ck-sec">❤️ Cardiaque &amp; cadence</div>
 <div class="ck-card"><div class="ck-ch"><div><div class="ck-ct">Zones FC<button class="ck-help" onclick="event.stopPropagation();openCkHelp('fc')">?</button></div><div class="ck-cs" id="ck-fc-sub"></div></div></div><div class="ck-cw" id="ckFCW"><svg id="ckFC" height="100" style="display:block;width:100%"></svg><div class="ck-tt" id="ckFCT"></div></div><div style="font-size:10px;color:var(--texte-deux);text-align:center;margin-top:6px;min-height:14px" id="ck-fc-info">touche une zone</div></div>
 <div class="ck-card"><div class="ck-ch"><div><div class="ck-ct">🦶 Cadence<button class="ck-help" onclick="event.stopPropagation();openCkHelp('cad')">?</button></div><div class="ck-cs">route ~172 spm · trail ~146 spm</div></div><div><div style="font-size:22px;font-weight:700;color:var(--texte)" id="ck-cad-val">172</div><div class="ck-cs">spm</div></div></div><div class="ck-cw" id="ckCADW"><svg id="ckCAD" height="70" style="display:block;width:100%"></svg><div class="ck-tt" id="ckCADT"></div></div><div class="ck-xl" id="ckCADX"></div></div>
@@ -2016,19 +2016,19 @@ function coachDebrief(num,se){
 }
 /* ===== Schémas théoriques SVG (FCmax 192) ===== */
 function svgZonesFC(hi){
-  const Z=[['Z1','Récup / EF','<134','#22c55e'],['Z2','Endurance','134-154','#84cc16'],['Z3','Tempo / AM','154-167','#eab308'],['Z4','Seuil','167-177','#f97316'],['Z5','VO2max','>177','#ef4444']];
+  const Z=[['Z1','Récup / EF','<134','#16a34a'],['Z2','Endurance','134-154','#84cc16'],['Z3','Tempo / AM','154-167','#f59e0b'],['Z4','Seuil','167-177','#f59e0b'],['Z5','VO2max','>177','#ef4444']];
   const w=300,bh=34,gap=4,x0=8;let bars='',labs='';const bw=(w-x0*2-gap*4)/5;
   Z.forEach((z,i)=>{const x=x0+i*(bw+gap);const on=hi===i;bars+=`<rect x="${x}" y="14" width="${bw}" height="${bh}" rx="5" fill="${z[3]}" opacity="${on?1:.3}"/>${on?`<rect x="${x}" y="14" width="${bw}" height="${bh}" rx="5" fill="none" stroke="${z[3]}" stroke-width="2.5"/>`:''}`;labs+=`<text x="${x+bw/2}" y="62" text-anchor="middle" font-size="9" font-weight="700" fill="${on?z[3]:'#94a3b8'}">${z[0]}</text><text x="${x+bw/2}" y="73" text-anchor="middle" font-size="7.5" fill="#94a3b8">${z[2]}</text>`;});
   return `<svg viewBox="0 0 ${w} 82" class="theo-svg" role="img" aria-label="Zones de fréquence cardiaque">${bars}${labs}</svg>`;
 }
 function svg8020(){
   return `<svg viewBox="0 0 300 96" class="theo-svg" role="img" aria-label="Répartition polarisée 80/20">
-    <rect x="8" y="14" width="200" height="30" rx="5" fill="#22c55e"/><text x="108" y="33" text-anchor="middle" font-size="11" font-weight="800" fill="#fff">80 % FACILE</text>
-    <rect x="212" y="14" width="34" height="30" rx="5" fill="#f97316" opacity=".35"/>
+    <rect x="8" y="14" width="200" height="30" rx="5" fill="#16a34a"/><text x="108" y="33" text-anchor="middle" font-size="11" font-weight="800" fill="#fff">80 % FACILE</text>
+    <rect x="212" y="14" width="34" height="30" rx="5" fill="#f59e0b" opacity=".35"/>
     <rect x="250" y="14" width="42" height="30" rx="5" fill="#ef4444"/><text x="271" y="33" text-anchor="middle" font-size="10" font-weight="800" fill="#fff">20 %</text>
-    <text x="229" y="58" text-anchor="middle" font-size="8" font-weight="700" fill="#f97316">zone grise</text>
+    <text x="229" y="58" text-anchor="middle" font-size="8" font-weight="700" fill="#f59e0b">zone grise</text>
     <text x="229" y="68" text-anchor="middle" font-size="7.5" fill="#94a3b8">le piège</text>
-    <path d="M229 44 L229 50" stroke="#f97316" stroke-width="1.5"/>
+    <path d="M229 44 L229 50" stroke="#f59e0b" stroke-width="1.5"/>
     <text x="108" y="86" text-anchor="middle" font-size="8" fill="#94a3b8">récupération + construction du moteur</text>
     <text x="271" y="86" text-anchor="middle" font-size="8" fill="#94a3b8">stimulus</text>
   </svg>`;
@@ -2043,7 +2043,7 @@ function svgGlycogen(){
     <text x="251" y="48" text-anchor="middle" font-size="9" font-weight="800" fill="#ef4444">LE MUR</text>
     <path d="M34 14 C120 30, 180 78, 215 100" fill="none" stroke="#ef4444" stroke-width="2.5"/>
     <text x="120" y="78" font-size="8" font-weight="700" fill="#ef4444">sans fueling</text>
-    <path d="M34 14 C140 28, 240 52, 292 64" fill="none" stroke="#22c55e" stroke-width="2.5"/>
+    <path d="M34 14 C140 28, 240 52, 292 64" fill="none" stroke="#16a34a" stroke-width="2.5"/>
     <text x="200" y="44" font-size="8" font-weight="700" fill="#16a34a">avec fueling</text>
     <text x="206" y="113" font-size="7.5" fill="#94a3b8">~30-32 km</text>
   </svg>`;
@@ -2052,8 +2052,8 @@ function svgDerive(){
   return `<svg viewBox="0 0 300 120" class="theo-svg" role="img" aria-label="Dérive cardiaque">
     <line x1="30" y1="10" x2="30" y2="92" stroke="#cbd5e1" stroke-width="1"/><line x1="30" y1="92" x2="292" y2="92" stroke="#cbd5e1" stroke-width="1"/>
     <text x="150" y="112" text-anchor="middle" font-size="8.5" fill="#94a3b8">temps →</text>
-    <line x1="30" y1="60" x2="292" y2="60" stroke="#3b82f6" stroke-width="2.5" stroke-dasharray="0"/>
-    <text x="200" y="54" font-size="8" font-weight="700" fill="#3b82f6">allure (constante)</text>
+    <line x1="30" y1="60" x2="292" y2="60" stroke="#0d9488" stroke-width="2.5" stroke-dasharray="0"/>
+    <text x="200" y="54" font-size="8" font-weight="700" fill="#0d9488">allure (constante)</text>
     <path d="M30 50 C120 48, 200 38, 292 22" fill="none" stroke="#ef4444" stroke-width="2.5"/>
     <text x="120" y="36" font-size="8" font-weight="700" fill="#ef4444">FC (qui monte)</text>
     <text x="60" y="84" font-size="7.5" fill="#94a3b8">→ découplage = fatigue / chaleur / déshydratation</text>
@@ -2064,9 +2064,9 @@ function svgLactate(){
     <line x1="30" y1="10" x2="30" y2="92" stroke="#cbd5e1" stroke-width="1"/><line x1="30" y1="92" x2="292" y2="92" stroke="#cbd5e1" stroke-width="1"/>
     <text x="150" y="112" text-anchor="middle" font-size="8.5" fill="#94a3b8">intensité / allure →</text>
     <text x="12" y="50" font-size="8" fill="#94a3b8" transform="rotate(-90 12 50)">lactate</text>
-    <path d="M30 86 C120 84, 170 78, 200 64 C225 52, 250 26, 285 14" fill="none" stroke="#8b5cf6" stroke-width="2.5"/>
-    <line x1="200" y1="14" x2="200" y2="92" stroke="#f97316" stroke-width="1.5" stroke-dasharray="4 3"/>
-    <text x="200" y="106" text-anchor="middle" font-size="8" font-weight="700" fill="#f97316">SEUIL</text>
+    <path d="M30 86 C120 84, 170 78, 200 64 C225 52, 250 26, 285 14" fill="none" stroke="#0d9488" stroke-width="2.5"/>
+    <line x1="200" y1="14" x2="200" y2="92" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="4 3"/>
+    <text x="200" y="106" text-anchor="middle" font-size="8" font-weight="700" fill="#f59e0b">SEUIL</text>
     <text x="95" y="78" font-size="7.5" fill="#16a34a">éliminé = tu tiens</text>
     <text x="232" y="34" font-size="7.5" fill="#ef4444">s'accumule</text>
   </svg>`;
@@ -2199,15 +2199,15 @@ function ttsStop(){_ttsOn=false;_ttsPaused=false;if(_ttsKeep){clearInterval(_tts
 function svgCote(){
   return `<svg viewBox="0 0 300 120" class="theo-svg" role="img" aria-label="Course en côte : force et économie">
     <line x1="20" y1="100" x2="280" y2="100" stroke="#cbd5e1" stroke-width="1"/>
-    <path d="M40 100 L210 30 L210 100 Z" fill="#22c55e" opacity=".12"/>
+    <path d="M40 100 L210 30 L210 100 Z" fill="#16a34a" opacity=".12"/>
     <path d="M40 100 L210 30" stroke="#16a34a" stroke-width="2.5"/>
     <circle cx="120" cy="62" r="6" fill="#1e293b"/>
     <path d="M120 62 L132 56" stroke="#1e293b" stroke-width="3" stroke-linecap="round"/>
     <path d="M120 62 L112 72" stroke="#1e293b" stroke-width="3" stroke-linecap="round"/>
-    <path d="M126 50 L140 40" stroke="#f97316" stroke-width="2.5" marker-end="url(#ar)"/>
-    <defs><marker id="ar" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto"><path d="M0 0 L6 3.5 L0 7 Z" fill="#f97316"/></marker></defs>
-    <text x="158" y="44" font-size="8" font-weight="700" fill="#f97316">pousse contre</text>
-    <text x="158" y="54" font-size="8" font-weight="700" fill="#f97316">la gravité</text>
+    <path d="M126 50 L140 40" stroke="#f59e0b" stroke-width="2.5" marker-end="url(#ar)"/>
+    <defs><marker id="ar" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto"><path d="M0 0 L6 3.5 L0 7 Z" fill="#f59e0b"/></marker></defs>
+    <text x="158" y="44" font-size="8" font-weight="700" fill="#f59e0b">pousse contre</text>
+    <text x="158" y="54" font-size="8" font-weight="700" fill="#f59e0b">la gravité</text>
     <text x="60" y="115" font-size="8" fill="#94a3b8">+ de fibres recrutées · tendons = ressort · 0 stress vitesse</text>
   </svg>`;
 }
@@ -2215,7 +2215,7 @@ function svgRiegel(){
   return `<svg viewBox="0 0 300 124" class="theo-svg" role="img" aria-label="Prédiction de performance">
     <line x1="34" y1="12" x2="34" y2="96" stroke="#cbd5e1" stroke-width="1"/><line x1="34" y1="96" x2="288" y2="96" stroke="#cbd5e1" stroke-width="1"/>
     <text x="14" y="26" font-size="8" fill="#94a3b8">temps</text>
-    <path d="M50 84 C120 78, 200 60, 278 22" fill="none" stroke="#3b82f6" stroke-width="2.5"/>
+    <path d="M50 84 C120 78, 200 60, 278 22" fill="none" stroke="#0d9488" stroke-width="2.5"/>
     <circle cx="92" cy="74" r="4.5" fill="#16a34a"/><text x="78" y="66" font-size="8" font-weight="700" fill="#16a34a">10 km</text>
     <line x1="92" y1="74" x2="250" y2="34" stroke="#94a3b8" stroke-width="1" stroke-dasharray="3 3"/>
     <circle cx="250" cy="34" r="4.5" fill="#ef4444"/><text x="214" y="30" font-size="8" font-weight="700" fill="#ef4444">marathon prédit</text>
@@ -2227,8 +2227,8 @@ function ouvrirSeance(num,id){const se=(SEANCES_BY_WEEK[num]||[]).find(x=>x.id==
   const ttsBarSeance=(typeof window!=='undefined'&&'speechSynthesis' in window)?`<div class="tts-bar tts-bar-seance" id="ttsBarSeance"><button class="tts-btn tts-play" onclick="ttsPlaySeance(${num},${se.id})">🔊 Lecture de la séance</button><span class="tts-hint">lecture vocale de la fiche, de haut en bas</span></div>`:'';
   topbar.innerHTML=`<button class="btn-nav" onclick="ouvrirSemaine(${num})">‹ Retour semaine ${num}</button>${btnFermer}`;
   const metr=Object.entries(se.metriques).map(([k,v])=>`<div class="metrique"><div class="metrique-l">${k}</div><div class="metrique-v">${v}</div></div>`).join('');
-  const struct=se.struct.map((b,i)=>{const c=(i===0||i===se.struct.length-1)?'#22c55e':se.accent;return `<div class="struct-ligne"><div class="struct-puce" style="background:${c}"></div><div class="struct-nom">${b.nom}</div><div class="struct-txt">${b.txt}</div></div>`;}).join('');
-  const LEGMAP={vert:['#22c55e','Endurance / échauffement / retour au calme'],bleu:['#3b82f6','Travail qualitatif / spécifique'],orange:['#f97316','Récupération'],violet:['#8b5cf6','Nutrition / rappel'],jaune:['#eab308','Descente active'],rouge:['#ef4444','Effort chrono']};
+  const struct=se.struct.map((b,i)=>{const c=(i===0||i===se.struct.length-1)?'#16a34a':se.accent;return `<div class="struct-ligne"><div class="struct-puce" style="background:${c}"></div><div class="struct-nom">${b.nom}</div><div class="struct-txt">${b.txt}</div></div>`;}).join('');
+  const LEGMAP={vert:['#16a34a','Endurance / échauffement / retour au calme'],bleu:['#0d9488','Travail qualitatif / spécifique'],orange:['#f59e0b','Récupération'],violet:['#64748b','Nutrition / rappel'],jaune:['#94a3b8','Descente active'],rouge:['#ef4444','Effort chrono']};
   const leg=(se.segments?[...new Set(se.segments.map(s=>s.couleur))].map(c=>LEGMAP[c]||['#94a3b8',c]).map(x=>`<div class="legende-item"><div class="legende-puce" style="background:${x[0]}"></div>${x[1]}</div>`).join(''):se.legende.map(l=>`<div class="legende-item"><div class="legende-puce" style="background:${l.c}"></div>${l.l}</div>`).join(''));
   const coach=se.coach.map(c=>`<div class="coach-carte"><div class="coach-titre">${c.titre}</div><p class="coach-texte">${c.texte}</p></div>`).join('');
   const viz=se.segments?`<div class="sd-section">Visualisation chronologique</div><div class="viz-wrap"><div class="viz-entete"><span class="viz-label">Structure de la séance</span><span class="viz-hint">Clique un segment</span></div><div class="barre-scroll"><div class="barre-piste" id="piste"></div></div><div class="detail-panneau" id="dpan"><div class="detail-nom" id="dnom"></div><div class="detail-role" id="drole"></div><div class="detail-grille" id="dgr"></div></div></div>`:'';

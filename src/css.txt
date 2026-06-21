@@ -1,15 +1,29 @@
 
 :root{
-  --vert:#22c55e;--vert-clair:#bbf7d0;--vert-fond:#f0fdf4;
-  --orange:#f97316;--orange-clair:#fed7aa;--orange-fond:#fff7ed;
-  --jaune:#eab308;--jaune-clair:#fef08a;--jaune-fond:#fefce8;
-  --bleu:#3b82f6;--bleu-clair:#bfdbfe;--bleu-fond:#eff6ff;
-  --violet:#8b5cf6;--violet-clair:#ddd6fe;--violet-fond:#f5f3ff;
-  --teal:#14b8a6;--teal-clair:#99f6e4;--teal-fond:#f0fdfa;
-  --rouge:#ef4444;--rouge-clair:#fecaca;--rouge-fond:#fef2f2;
+  /* ===== PRIMAIRE — teal, unique ===== */
+  --primary:#0d9488;--primary-deux:#0f766e;--primary-clair:#99f6e4;--primary-fond:#f0fdfa;
+  /* ===== ÉTATS sémantiques (un sens chacun) ===== */
+  --ok:#16a34a;--ok-deux:#15803d;--ok-clair:#bbf7d0;--ok-fond:#dcfce7;
+  --warn:#f59e0b;--warn-deux:#b45309;--warn-clair:#fde68a;--warn-fond:#fef3c7;
+  --danger:#ef4444;--danger-deux:#b91c1c;--danger-clair:#fecaca;--danger-fond:#fee2e2;
+  /* ===== NEUTRES — slate (conservés) ===== */
   --gris:#94a3b8;--gris-clair:#e2e8f0;--gris-fond:#f8fafc;
-  --texte:#1e293b;--texte-deux:#475569;--texte-trois:#64748b;
-  --blanc:#fff;--rayon:12px;--rayon-lg:18px;--ombre-lg:0 8px 32px rgba(0,0,0,.12);
+  --texte:#1e293b;--texte-deux:#475569;--texte-trois:#64748b;--blanc:#fff;
+  /* ===== ÉCHELLE TYPO — 7 niveaux ===== */
+  --t-display:2rem;--t-title:1.375rem;--t-headline:1.0625rem;--t-body:1rem;--t-callout:.875rem;--t-caption:.8125rem;--t-data:.75rem;
+  --fw-reg:400;--fw-med:500;--fw-semi:600;--fw-bold:700;--fw-black:800;
+  /* ===== RAYONS / PROFONDEUR iOS 27 ===== */
+  --rayon:12px;--rayon-lg:18px;
+  --ombre:0 1px 2px rgba(15,23,42,.06),0 4px 12px -6px rgba(15,23,42,.10);
+  --ombre-lg:0 2px 6px rgba(15,23,42,.07),0 18px 36px -14px rgba(15,23,42,.22);
+  /* ===== ALIAS rétro-compat → mappés sur le système (migration douce) ===== */
+  --vert:var(--ok);--vert-clair:var(--ok-clair);--vert-fond:var(--ok-fond);
+  --orange:var(--warn);--orange-clair:var(--warn-clair);--orange-fond:var(--warn-fond);
+  --jaune:var(--warn);--jaune-clair:var(--warn-clair);--jaune-fond:var(--warn-fond);
+  --bleu:var(--primary);--bleu-clair:var(--primary-clair);--bleu-fond:var(--primary-fond);
+  --violet:var(--primary);--violet-clair:var(--primary-clair);--violet-fond:var(--primary-fond);
+  --teal:var(--primary);--teal-clair:var(--primary-clair);--teal-fond:var(--primary-fond);
+  --rouge:var(--danger);--rouge-clair:var(--danger-clair);--rouge-fond:var(--danger-fond);
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 body{font-family:system-ui,-apple-system,'Segoe UI',sans-serif;background:var(--gris-fond);color:var(--texte);line-height:1.55;-webkit-font-smoothing:antialiased;min-height:100vh}
@@ -49,7 +63,7 @@ body{font-family:system-ui,-apple-system,'Segoe UI',sans-serif;background:var(--
 .sem-km span{font-size:.7rem;font-weight:600;color:var(--texte-trois)}
 .sem-statut{position:absolute;top:14px;right:14px;font-size:.58rem;font-weight:800;letter-spacing:.07em;text-transform:uppercase;padding:3px 8px;border-radius:99px}
 .st-courante{background:var(--vert-clair);color:#15803d}
-.st-ouverte{background:var(--bleu-clair);color:#1d4ed8}
+.st-ouverte{background:var(--bleu-clair);color:#0f766e}
 .st-verrouille{background:var(--gris-fond);color:var(--gris);border:1px solid var(--gris-clair)}
 .sem-carte.verrouillee{opacity:.72}
 .sem-cadenas{font-size:.8rem}
@@ -125,7 +139,7 @@ body{font-family:system-ui,-apple-system,'Segoe UI',sans-serif;background:var(--
 .barre-piste{display:flex;align-items:flex-end;gap:2px;height:90px;min-width:100%}
 .seg{border-radius:4px 4px 0 0;min-width:5px;cursor:pointer;transition:opacity .15s;align-self:flex-end}
 .seg:hover{opacity:.8}.seg.actif{outline:2px solid var(--texte);outline-offset:1px}
-.seg-vert{background:var(--vert)}.seg-bleu{background:var(--bleu)}.seg-jaune{background:var(--jaune)}.seg-orange{background:var(--orange)}.seg-violet{background:var(--violet)}
+.seg-vert{background:#16a34a}.seg-bleu{background:#0d9488}.seg-orange{background:#f59e0b}.seg-violet{background:#64748b}.seg-jaune{background:#94a3b8}
 .detail-panneau{margin-top:14px;padding:13px 15px;background:var(--gris-fond);border:1px solid var(--gris-clair);border-radius:var(--rayon);display:none}
 .detail-panneau.visible{display:block}
 .detail-nom{font-weight:800;font-size:.92rem;margin-bottom:3px}
