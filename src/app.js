@@ -187,31 +187,23 @@ function renderHeader(){
     const _dist=(_se.metriques&&_se.metriques.Distance)?' · '+_se.metriques.Distance:'';
     _psCard=`<div class="vdj" onclick="ouvrirSeance(${_ps.wk},${_se.id})"><div class="vdj-lbl">Prochaine séance · ${_lbl}</div><div class="vdj-t">${_se.titre}</div><div class="vdj-s">${_se.type}${_dist} · S${_ps.wk}</div>${_fit}${_tempAdj}</div>`;
   }
-  // Sprint A — Score de forme
+  // Sprint 1 — Score de forme en tuile compacte
   const _forme=computeFormeScore();
-  const _formeBar=`<div class="forme-bar" onclick="document.getElementById('forme-detail').classList.toggle('fd-open')">
-    <div class="fb-left"><span class="fb-kicker">Forme du jour <button class="fb-help" onclick="event.stopPropagation();openFormeHelp()">?</button></span><span class="fb-sig">${_forme.signal}</span></div>
-    <div class="fb-right"><div class="fb-score" style="color:${_forme.color}">${_forme.score}<span class="fb-trend">${_forme.trend}</span></div></div>
-  </div>
-  <div class="forme-detail" id="forme-detail">
-    ${_forme.components.map(c=>`<div class="fd-row">
-      <div class="fd-lbl">${c.label}</div>
-      <div class="fd-track"><div class="fd-fill" style="width:${c.score}%;background:${c.score>=80?'#0d9488':c.score>=65?'#16a34a':c.score>=50?'#f59e0b':'#ef4444'}"></div></div>
-      <div class="fd-val">${c.detail}</div>
-    </div>`).join('')}
-  </div>`;
-  let _cd='';
+  const _formeTile=`<button class="htile htile-forme" onclick="document.getElementById('forme-detail').classList.toggle('fd-open')"><span class="ht-k">Forme du jour <span class="ht-help" role="button" tabindex="0" onclick="event.stopPropagation();openFormeHelp()">\u24d8</span></span><span class="ht-v" style="color:${_forme.color}">${_forme.score}<span class="ht-trend">${_forme.trend}</span></span><span class="ht-s">${_forme.signal}</span></button>`;
+  const _formeDetail=`<div class="forme-detail" id="forme-detail">${_forme.components.map(c=>`<div class="fd-row"><div class="fd-lbl">${c.label}</div><div class="fd-track"><div class="fd-fill" style="width:${c.score}%;background:${c.score>=80?'#0d9488':c.score>=65?'#16a34a':c.score>=50?'#f59e0b':'#ef4444'}"></div></div><div class="fd-val">${c.detail}</div></div>`).join('')}</div>`;
+  // Sprint 1 — courses : la plus proche en tuile, les autres repliees
+  let _nearTile='',_mini='';
   if(RACES&&RACES.length){
-    const _it=RACES.map(r=>{const _dn=Math.max(0,Math.ceil((new Date(r.date)-_t)/86400000));
-      if(r.dossier){return `<span class="cds-item cds-clic" role="button" tabindex="0" onclick="ouvrirDossier('${r.dossier}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();ouvrirDossier('${r.dossier}')}"><span class="cds-n">J-${_dn}</span><span class="cds-l">${r.nom}</span><span class="cds-go">›</span></span>`;}
-      return `<span class="cds-item"><span class="cds-n">J-${_dn}</span><span class="cds-l">${r.nom}</span></span>`;}).join('');
-    _cd=`${_it}`;
+    const _rc=RACES.map(r=>Object.assign({},r,{dn:Math.max(0,Math.ceil((new Date(r.date)-_t)/86400000))})).sort((a,b)=>a.dn-b.dn);
+    const _n=_rc[0];
+    _nearTile=`<button class="htile htile-race" ${_n.dossier?`onclick="ouvrirDossier('${_n.dossier}')"`:''}><span class="ht-k">Prochaine course</span><span class="ht-v">J-${_n.dn}</span><span class="ht-s">${_n.nom}</span>${_n.dossier?'<span class="ht-arr">\u203a</span>':''}</button>`;
+    _mini=_rc.slice(1).map(r=>`<button class="hmini" ${r.dossier?`onclick="ouvrirDossier('${r.dossier}')"`:''}><span class="hmini-n">J-${r.dn}</span>${r.nom}${r.dossier?'<span class="hmini-go">\u203a</span>':''}</button>`).join('');
   }
   const _latestBuild=(typeof CHANGELOG!=='undefined'&&CHANGELOG.length)?CHANGELOG[0].build:'—';
   const _maj=`<div class="vdj-maj">Données à jour au ${MAJ}<button id="build-badge" onclick="openVersionPanel()">Build ${_latestBuild}</button></div>`;
-  document.getElementById('cd-strip').innerHTML=_cd;
+  document.getElementById('cd-strip').innerHTML='';
   const _cw=`<button class="cw-link" onclick="jumpToWeek(${sc.num})"><span class="cw-pin">📍</span><span class="cw-txt">Tu es en <strong>S${sc.num} · ${sc.theme}</strong></span><span class="cw-arr">voir dans le plan →</span></button>`;
-  document.getElementById('hero-plan').innerHTML=`${_psCard}${_formeBar}<div id="canicule-banner" style="display:none"></div>${_cw}<div id="meteo-widget" class="meteo"><div class="meteo-loc">⏳ Météo…</div></div>`;
+  document.getElementById('hero-plan').innerHTML=`${_psCard}<div class="hx-row">${_formeTile}${_nearTile}</div>${_formeDetail}<div id="canicule-banner" style="display:none"></div>${_cw}<div id="meteo-widget" class="meteo"><div class="meteo-loc">⏳ Météo…</div></div>${_mini?`<div class="hmini-row">${_mini}</div>`:''}`;
   renderMeteo();
   document.getElementById('maj-foot').innerHTML=_maj;
   const _ab=document.getElementById('appbar');if(_ab&&document.documentElement)document.documentElement.style.setProperty('--appbar-h',_ab.offsetHeight+'px');

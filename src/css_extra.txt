@@ -896,9 +896,30 @@ body.nuit .ch-tip{background:#042f2e;border-color:#065f46;color:#bbf7d0}
 #coach-inp::placeholder{color:#475569}
 .c-send{width:36px;height:36px;border-radius:50%;background:#0d9488;border:none;color:#fff;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex:0 0 36px}
 /* Auto-sync nudge */
-.as-bar{display:flex;align-items:center;gap:8px;background:#fff;border:.5px solid #e2e8f0;border-radius:12px;padding:10px 13px;margin:8px 0}
-.as-ico{font-size:16px;flex:0 0 auto}
-.as-txt{flex:1;font-size:12px;color:#475569;line-height:1.4}
-.as-txt strong{color:#0f172a;display:block}
-.as-btn{padding:5px 11px;background:#0d9488;border:none;border-radius:7px;color:#fff;font-size:12px;font-weight:700;cursor:pointer;flex:0 0 auto}
-.as-x{font-size:16px;color:#cbd5e1;background:none;border:none;cursor:pointer;padding:4px}
+.as-bar{display:flex;align-items:center;gap:9px;background:var(--warn-fond);border:1px solid var(--warn-clair);border-radius:99px;padding:8px 14px;margin:10px 0 0;font-size:.8rem;color:var(--warn-deux)}
+.as-ico{font-size:14px;flex:0 0 auto}
+.as-txt{flex:1;min-width:0;font-size:.78rem;color:var(--warn-deux);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.as-txt strong{font-weight:700}
+.as-btn{padding:5px 12px;background:var(--warn);border:none;border-radius:99px;color:#fff;font-size:.72rem;font-weight:700;cursor:pointer;flex:0 0 auto}
+.as-x{font-size:.8rem;color:var(--warn-deux);background:none;border:none;cursor:pointer;padding:2px 4px;opacity:.55;flex:0 0 auto}
+
+/* ===== Sprint 1 — Home qui respire ===== */
+.vdj{padding:22px 22px 20px;border-radius:22px}
+.vdj-lbl{color:#5eead4}
+.vdj-t{font-size:1.5rem;line-height:1.12}
+.hx-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0 10px}
+.htile{display:block;text-align:left;background:var(--blanc);border:1px solid var(--gris-clair);border-radius:16px;padding:14px 15px;box-shadow:var(--ombre);position:relative;overflow:hidden;cursor:pointer;-webkit-tap-highlight-color:transparent;font-family:inherit}
+.htile:active{transform:scale(.99)}
+.ht-k{display:flex;align-items:center;gap:5px;font-size:.6rem;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--texte-trois);margin-bottom:6px}
+.ht-help{color:var(--gris);font-weight:700;font-size:.72rem}
+.ht-v{display:block;font-size:1.5rem;font-weight:800;line-height:1;letter-spacing:-.02em;color:var(--texte)}
+.ht-trend{font-size:.85rem;font-weight:700;color:var(--ok);margin-left:3px}
+.ht-s{display:block;font-size:.7rem;color:var(--texte-trois);margin-top:5px;line-height:1.35}
+.htile-forme .ht-v{color:var(--primary)}
+.htile-race::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--warn)}
+.htile-race .ht-v{color:var(--warn-deux);font-size:1.3rem}
+.ht-arr{position:absolute;right:12px;top:12px;color:var(--gris);font-size:.95rem}
+.hmini-row{display:flex;gap:8px;overflow-x:auto;padding:4px 0 2px;margin-top:10px;-webkit-overflow-scrolling:touch}
+.hmini{flex:0 0 auto;display:inline-flex;align-items:center;gap:7px;background:var(--blanc);border:1px solid var(--gris-clair);border-radius:99px;padding:6px 12px;font-size:.72rem;color:var(--texte-deux);font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap}
+.hmini-n{font-weight:800;color:var(--texte-trois)}
+.hmini-go{color:var(--gris)}
