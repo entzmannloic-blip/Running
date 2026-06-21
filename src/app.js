@@ -74,21 +74,43 @@ function prochaineSeance(){
   return best;
 }
 
+/* ACWR dynamique — méthode EMA (même que PMC) recalculé à chaque ouverture */
+function _dynamicACWR(){
+  const today=new Date();today.setHours(0,0,0,0);
+  const curWk=isoWeek(today);
+  const ckRe=typeof _CK!=='undefined'&&_CK.RE?_CK.RE[12]:null;
+  if(!ckRe||!ckRe.v||ckRe.v.length<2){
+    return typeof ACWR_DATA!=='undefined'?ACWR_DATA.acwr||1.0:1.0;
+  }
+  // RE estimé depuis séances loggées semaine courante
+  const RC={EF:7,AM:16,LONG:10,SEUIL:13,TRAIL:22,RENFO:4,default:8};
+  let curRE=0;
+  (SEANCES_BY_WEEK[curWk]||[]).forEach(s=>{
+    if(s.realise&&s.realise.statut==='fait'&&s.realise.km)curRE+=s.realise.km*(RC[s.cat]||RC.default);
+  });
+  const series=[...ckRe.v];
+  const lastW=ckRe.w[ckRe.w.length-1];
+  if(curWk>lastW&&curRE>0)series.push(curRE);
+  else if(curWk===lastW&&curRE>series[series.length-1])series[series.length-1]=curRE;
+  // EMA CTL (42j) + ATL (7j) → ACWR = ATL/CTL
+  const aC=1-Math.exp(-7/42),aA=1-Math.exp(-7/7);
+  let ctl=series[0],atl=series[0];
+  series.forEach((v,i)=>{if(i>0){ctl=(1-aC)*ctl+aC*v;atl=(1-aA)*atl+aA*v;}});
+  return ctl>0?+((atl/ctl).toFixed(2)):1.0;
+}
+
 /* ===== Score de forme composite (Sprint A Roadmap) ===== */
 function computeFormeScore(){
   const today=new Date();today.setHours(0,0,0,0);
   const curWk=isoWeek(today);
-  // 1. ACWR (30%)
+  // 1. ACWR (30%) — dynamique depuis _CK.RE + logs
   let acwrScore=70,acwrVal=1.0,acwrLabel='—';
-  if(typeof ACWR_DATA!=='undefined'&&ACWR_DATA.length){
-    const last=ACWR_DATA[ACWR_DATA.length-1];
-    acwrVal=+(last.acwr||1.0).toFixed(2);
-    if(acwrVal>=0.8&&acwrVal<=1.3){acwrScore=100;acwrLabel='Zone optimale ('+acwrVal+')';}
-    else if(acwrVal>1.3&&acwrVal<=1.5){acwrScore=58;acwrLabel='⚠ Charge élevée ('+acwrVal+')';}
-    else if(acwrVal>1.5){acwrScore=22;acwrLabel='🔴 Surcharge ('+acwrVal+')';}
-    else if(acwrVal>=0.7){acwrScore=72;acwrLabel='Légère sous-charge ('+acwrVal+')';}
-    else{acwrScore=44;acwrLabel='Sous-charge ('+acwrVal+')';}
-  }
+  acwrVal=_dynamicACWR();
+  if(acwrVal>=0.8&&acwrVal<=1.3){acwrScore=100;acwrLabel='Zone optimale ('+acwrVal+')';}
+  else if(acwrVal>1.3&&acwrVal<=1.5){acwrScore=58;acwrLabel='⚠ Charge élevée ('+acwrVal+')';}
+  else if(acwrVal>1.5){acwrScore=22;acwrLabel='🔴 Surcharge ('+acwrVal+')';}
+  else if(acwrVal>=0.7){acwrScore=72;acwrLabel='Légère sous-charge ('+acwrVal+')';}
+  else{acwrScore=44;acwrLabel='Sous-charge ('+acwrVal+')';}
   // 2. Adhérence 2 sem (25%)
   let totalP=0,totalF=0;
   for(let w=curWk-1;w<=curWk;w++){const ss=SEANCES_BY_WEEK[w]||[];totalP+=ss.filter(s=>!s.opt).length;totalF+=ss.filter(s=>s.realise&&s.realise.statut==='fait').length;}
