@@ -810,40 +810,34 @@ JOURNAL=[{"sem":"S24","theme":"Récupération post-Circaète","texte":S24_REALIS
 {"sem":"S25","theme":"Reprise & déblocage","texte":"<p>La semaine de reprise que tu devais faire. Pas celle que tu espérais peut-être, mais celle qu'il fallait — et tu l'as exécutée proprement.</p><p><strong>Ce qui ressort avant tout : la gestion de la chaleur.</strong> Quatre séances sur cinq démarrées entre 7h25 et 8h30. L'écart entre la s3 (FC 165/181, subi à midi) et les quatre autres (FC 140-151, maîtrisé) dit tout. Ce n'est pas une variable de confort, c'est une variable de performance.</p><p><strong>La progression dans la semaine est nette.</strong> S1/S2 très faciles (FC 140-143). S3 qualité en milieu de semaine, 6 km à 5:14/km tenus. S4 sortie longue avec fast finish à <strong>4:58/km sur le dernier kilomètre</strong> — sub-5 min au 4e jour consécutif en canicule. S5 bonus parfait, FC 144 en plein cœur de la Z2, rien dépensé.</p><p><strong>Ce que cette semaine confirme pour la Déraille (J-16) :</strong> tu n'es pas en reprise, tu es en forme. La Z2 pace à 5:56/km avec FC 140-144, c'est ton moteur aérobie qui tourne. Le fast finish montre que la résistance à la fatigue est là. S26 allégée par conception — laisse-la être légère.</p>"}]
 HEATMAP={"2026-01-03": 10.1, "2026-01-05": 11.2, "2026-01-06": 13.0, "2026-01-10": 21.6, "2026-01-12": 10.0, "2026-01-13": 11.3, "2026-01-14": 11.0, "2026-01-15": 14.1, "2026-01-16": 4.0, "2026-01-17": 11.1, "2026-01-20": 11.0, "2026-01-21": 21.1, "2026-01-22": 10.0, "2026-01-23": 3.5, "2026-01-26": 10.3, "2026-01-27": 11.5, "2026-01-28": 10.0, "2026-01-29": 18.2, "2026-01-31": 11.0, "2026-02-02": 14.0, "2026-02-03": 21.2, "2026-02-05": 8.9, "2026-02-06": 11.1, "2026-02-07": 12.1, "2026-02-08": 4.2, "2026-02-09": 20.4, "2026-02-10": 10.2, "2026-02-11": 11.8, "2026-02-16": 10.2, "2026-02-17": 20.0, "2026-02-18": 10.0, "2026-02-20": 10.6, "2026-02-21": 10.0, "2026-02-22": 11.8, "2026-02-23": 10.1, "2026-02-24": 2.5, "2026-02-25": 10.0, "2026-02-26": 12.5, "2026-02-27": 5.0, "2026-03-01": 4.4, "2026-03-02": 11.3, "2026-03-03": 18.0, "2026-03-04": 20.4, "2026-03-05": 17.1, "2026-03-07": 21.2, "2026-03-09": 17.0, "2026-03-10": 16.0, "2026-03-11": 10.0, "2026-03-12": 17.2, "2026-03-15": 4.2, "2026-03-16": 18.1, "2026-03-17": 13.0, "2026-03-18": 14.2, "2026-03-19": 21.2, "2026-03-20": 10.5, "2026-03-23": 13.0, "2026-03-24": 30.1, "2026-03-26": 15.0, "2026-03-27": 10.0, "2026-03-29": 15.0, "2026-03-30": 12.0, "2026-03-31": 13.0, "2026-04-01": 10.0, "2026-04-03": 14.3, "2026-04-04": 21.2, "2026-04-06": 18.6, "2026-04-07": 15.0, "2026-04-09": 24.7, "2026-04-10": 12.0, "2026-04-13": 18.0, "2026-04-14": 14.5, "2026-04-15": 15.1, "2026-04-16": 11.0, "2026-04-18": 30.1, "2026-04-19": 3.8, "2026-04-20": 13.0, "2026-04-21": 17.0, "2026-04-22": 16.0, "2026-04-24": 10.3, "2026-04-26": 4.0, "2026-04-27": 10.7, "2026-04-30": 3.6, "2026-05-01": 42.4, "2026-05-04": 13.0, "2026-05-06": 10.5, "2026-05-08": 11.1, "2026-05-09": 11.1, "2026-05-16": 8.4, "2026-05-18": 17.0, "2026-05-20": 10.0, "2026-05-21": 21.2, "2026-05-22": 22.2, "2026-05-27": 4.6, "2026-05-28": 4.0, "2026-05-29": 16.6, "2026-05-31": 10.0, "2026-06-01": 14.0, "2026-06-02": 12.0, "2026-06-06": 29.8, "2026-06-09": 16.0, "2026-06-10": 10.3, "2026-06-12": 10.0}
 CHANGELOG=[
+  {"build":40,"date":"21 juin 2026","sha":"6f3dc9a5","tag":"Sprint B+C Roadmap","items":[
+    "Claude Coach in-app sans API — 10 scénarios (forme/fatigue/demain/météo/courses/nutrition/chaussures/allures/récup)",
+    "Auto-sync nudge — détection séances non loggées au démarrage",
+    "PMC Performance Management Chart — CTL/ATL/TSB (fitness/fatigue/forme) dans Cockpit",
+    "Courbe CTL teal + ATL orange tirets + barres TSB vert/rouge + aide ? contextuelle",
+    "Icônes aide ? Cockpit — couleur corrigée (visible sur fond clair)"
+  ]},
   {"build":39,"date":"20 juin 2026","sha":"f2794553","tag":"Sprint A Roadmap · IA & UX","items":[
     "Score de forme composite 0–100 (ACWR 30% + adhérence 25% + Z2 pace 25% + fraîcheur 20%)",
     "Barre cliquable hero → détail 4 composantes avec barres de progression",
     "Icône aide ? sur score de forme → overlay plein écran (scrollTop=0 à l'ouverture)",
     "Icônes aide ? sur 9 graphes Cockpit (volume · RE · ACWR · D+ · Z2 · découplage · allures · FC · cadence)",
-    "Overlay plein écran avec topbar sticky + bouton ✕ fixe en haut",
-    "Badge Build XX toujours visible — intégré dans renderHeader (fix écrasement)"
+    "Badge Build XX toujours visible — intégré dans renderHeader"
   ]},
   {"build":38,"date":"19 juin 2026","sha":"65668b30","tag":"Session J1 · Roadmap complète","items":[
     "Rewind S25 (10 slides · verdict A) + revue coach dans fiche semaine",
-    "Checklist J-7 Nice (21 items · 5 sections) dans dossier marathon",
-    "Checklist J-7 SaintExpress (22 items · 5 sections · nuit) dans dossier",
-    "Journal nutrition dans log rapide — chips ⚡TA 🟡Gel 🍒Cherry ☕Amarena",
-    "iOS Install flow guidé — bannière + sheet 3 étapes (Safari uniquement)",
-    "Adaptation allure ↔ T° — pastille hero séance +10/20/30/40s/km",
-    "Mode canicule auto 10j — bannière si ≥3j consécutifs >28°C prévus",
-    "Fix: PALMARES ajouté dans assemble.py (onglet vide corrigé)",
-    "Fix: revue S25 injectée dans SEMAINES (placeholder → bilan réel)"
+    "Checklist J-7 Nice (21 items) + SaintExpress (22 items) dans dossiers",
+    "Journal nutrition dans log rapide — chips TA/Gel/Cherry/Amarena",
+    "iOS Install flow · Adaptation allure T° · Mode canicule auto 10j"
   ]},
   {"build":37,"date":"19 juin 2026","sha":"ac1520eb","tag":"Session J1 · Produit & Data","items":[
     "Palmarès 4ème onglet — 5 courses officielles avec bilans coach",
-    "MyDataRun intégré — Circaète #182 · Run In Lyon #4900 · Semi Paris #27259 · Hautes Chaumes #44",
-    "Déplacer / Skipper séance — menu ··· + date picker + 4 raisons + état jaune rayé",
-    "Checklist J-7 Déraille (20 items · 5 sections) dans dossier course",
-    "Cockpit 3ème onglet — 9 graphes scrubbing · ACWR · Z2 pace · découplage",
-    "4 streams Strava réels — drill-down seconde par seconde (Circaète · AM · EF · Longue)",
-    "Log self-service — bouton cercle + bottom sheet (km · temps · allure · RPE)"
+    "Déplacer / Skipper séance · Checklist J-7 Déraille · Cockpit 9 graphes + 4 streams",
+    "Log self-service · Palmarès MyDataRun · Historique versions"
   ]},
   {"build":36,"date":"19 juin 2026","sha":"18dabd58","tag":"Session J1 · Séances","items":[
-    "S25-5 loggée — 10.03km · 5:56/km · FC 144/165 · 7h25 chez parents",
-    "S25 bouclée 5/5 · 56.6 km",
-    "Clifton 10 mis à jour — 1093 → 1103 km",
-    "Banner météo créneaux — popup horaire 5h-22h · onglets Aujourd'hui/Demain",
-    "Accents séances corrigés — EF vert clair · Sortie longue orange"
+    "S25 bouclée 5/5 · 56.6 km · Clifton 10 → 1103 km",
+    "Banner météo créneaux · Accents séances corrigés"
   ]}
 ]
 
