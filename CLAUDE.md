@@ -1,61 +1,92 @@
 # CLAUDE.md — Contexte Running PWA
+> Ce fichier est lu en premier par Claude Code avant toute action sur ce repo.
+> Documentation complète : docs/TECHNICAL.md (1657 lignes)
 
-> Ce fichier donne le contexte à Claude Code pour travailler sur ce repo.
-> Documentation technique complète : `docs/TECHNICAL.md`
+## Identité
+**App** : Running PWA — coaching running personnel pour Loïc Entzmann
+**Repo** : entzmannloic-blip/Running (GitHub Pages)
+**Build actuel** : 40
+**Token GitHub** : fine-grained PAT, expire 10 septembre 2026
 
 ## Athlète
-**Loïc Entzmann** — Chef de projet Lyon, trail runner + marathonien.
-- FCmax : 192 bpm · Seuil marche : ~160 bpm · Poids : 84 kg · Cat. M0
-- Objectifs 2026 : Trail Déraille 5 juillet (24km) · Marathon de Nice 8 novembre (3h45) · SaintExpress 28 novembre (45km nuit)
+- **Loïc Entzmann** · Lyon · M0 (30-34) · 84 kg
+- FCmax 192 · Z2 max 144 bpm · Seuil marche ~160 bpm
+- **Courses 2026** : Trail Déraille 5 juil (24km) · Marathon Nice 8 nov (objectif 3h45) · SaintExpress 28 nov (45km nuit)
 
-## Architecture
-Single-file PWA · GitHub Pages · `entzmannloic-blip/Running`
+## Règles absolues (voir docs/TECHNICAL.md §14 pour le détail)
 
-**Pipeline build :**
+1. **POC avant prod** — Toute feature = artifact POC → validation Loïc → code prod
+2. **Checklist build** : `python3 gen.py && python3 assemble.py && node --check app.js`
+   - `node --check` qui échoue = STOP, ne jamais push
+3. **CHANGELOG obligatoire** — Incrémenter le build ET ajouter une entrée avant chaque push
+4. **Fichiers** — Toujours pousser `src/` modifiés + `index.html` ensemble
+5. **Chaussures** — `Strava:get_gear` après chaque log de séance → update gen.py → rebuild
+6. **SHA** — Toujours GET le SHA avant PUT (sinon 409 Conflict)
+
+## Pipeline build
 ```bash
-python3 src/gen.py       # données → /tmp/data.json
-python3 src/assemble.py  # assemble → /mnt/user-data/outputs/plan-entrainement.html
-node --check src/app.js  # validation JS
-cp /mnt/user-data/outputs/plan-entrainement.html index.html
-# Push GitHub via API Python (voir docs/TECHNICAL.md §9)
+cp /home/claude/Running/src/*.py *.js *.txt *.html /tmp/
+cd /tmp && python3 gen.py && python3 assemble.py && node --check app.js
+cp /mnt/user-data/outputs/plan-entrainement.html /home/claude/Running/index.html
 ```
 
-## Règles de travail
-1. **POC avant prod** — toute nouvelle feature passe par un artifact de validation
-2. **Valider avec `node --check app.js`** avant tout push
-3. **Ajouter le build dans `CHANGELOG` de gen.py** à chaque push (Build N → Build N+1)
-4. **Toujours pousser `src/` + `index.html`** en même temps
-5. **Mettre à jour les km chaussures** après chaque séance loggée via `Strava:get_gear`
-
 ## Fichiers clés
-- `src/gen.py` — plan d'entraînement, séances, chaussures, dossiers, palmarès
-- `src/app.js` — toute la logique JS (~2200 lignes)
-- `src/css_extra.txt` — CSS additionnel features (~900 lignes)
-- `src/body.html` — structure HTML (4 onglets + overlays)
-- `src/assemble.py` — pipeline d'assemblage + liste des exports JS
+- `src/gen.py` (854 lignes) — données : plan, séances, chaussures, dossiers, palmarès
+- `src/app.js` (2244 lignes) — toute la logique JS (184 fonctions)
+- `src/css_extra.txt` (904 lignes) — CSS features
+- `src/body.html` (19 lignes) — structure HTML minimaliste
+- `src/assemble.py` (30 lignes) — pipeline + liste des exports JS
 
-## Variables importantes
-- Build actuel : **40**
-- Token GitHub expire : **10 septembre 2026** (à renouveler)
-- Strava MCP : connecté (`https://mcp.strava.com/mcp`)
+## Données clés gen.py
+- Plan : S25→S53 (30 semaines, 131 séances)
+- Courses : RACES[3] — Déraille, Nice, SaintExpress
+- Chaussures : GEAR[5] — voir tableau ci-dessous
+- Palmarès : PALMARES[5] — 5 courses officielles
+- Builds : CHANGELOG[5] — 5 derniers builds
 
-## Parc chaussures (gen.py → GEAR)
-| Modèle | Km | Usage |
-|--------|----|-------|
-| HOKA Clifton 10 | 1103 | Décrassages courts (<10km) |
+## Parc chaussures
+| Modèle | Km | Convention |
+|--------|----|-----------|
+| HOKA Clifton 10 | 1103 | Décrassages seulement |
 | ASICS Gel Pulse 16 | 225 | Footings faciles |
 | Brooks Cascadia 19 | 196 | Trail |
-| ASICS Novablast 5 J (jaune) | 502 | Training route principal |
-| ASICS Novablast 5 V (vert) | 0 | Neuf, pour courses |
-| ASICS Magic Speed 4 | 51 | AM/qualité seulement |
+| ASICS Novablast 5 J | 502 | Training route (jaune) |
+| ASICS Novablast 5 V | 0 | Courses (vert, neuf) |
+| ASICS Magic Speed 4 | 51 | AM/qualité |
+| gear_id Strava | Clifton=28498174 · Pulse=28498182 · Cascadia=28498287 · NB J=28722452 · Magic=29204843 |
 
-## Statique vs Dynamique
-- **Dynamique** : ACWR (`_dynamicACWR()` EMA), score de forme, météo, logs, checklists, overrides
-- **Statique (rebuild)** : plan, dossiers, chaussures, palmarès, Cockpit graphs (`_CK`)
-- **⚠️ Bug connu** : graphes Cockpit ne reflètent pas les nouvelles séances → Sprint A.2
+## Architecture JS clé
+```
+hydrateLogs() → hydrateOverrides() → initAll*() → renderHeader() → renderPlan() → checkAutoSync()
+```
 
-## Derniers builds
-- **Build 40** : Coach in-app + auto-sync nudge + PMC CTL/ATL/TSB + ACWR dynamique EMA
-- **Build 39** : Score de forme + aides ? Cockpit
-- **Build 38** : Checklists Nice/SaintExpress + journal nutrition + iOS install
-- **Build 37** : Palmarès + Cockpit + Déplacer/skipper
+## localStorage
+```
+log_{wk}_{id}       → séances loggées (JSON)
+session_overrides   → déplace/skips (JSON)
+ck_{race}           → checklists (JSON)
+meteo_cache         → météo Lyon (TTL 30min)
+install_dismissed   → bannière iOS
+```
+
+## Strava MCP (Claude uniquement, pas depuis l'app)
+```
+Strava:list_activities(first=N)
+Strava:get_activity_performance(activity_id)
+Strava:get_activity_streams(activity_id, resolution, streams)
+Strava:get_gear(gear_types=["Shoe"])
+```
+
+## Points de vigilance
+- ⚠️ Graphes Cockpit (_CK) = snapshots statiques — ne se mettent pas à jour auto
+- ⚠️ ACWR_DATA dans gen.py est obsolète — remplacé par _dynamicACWR() EMA dans app.js
+- ⚠️ Token expire 10 sept. 2026
+- ⚠️ Nouveau champ gen.py = aussi l'ajouter dans assemble.py
+
+## Convention commits
+```
+feat(roadmap-X): description (build N)
+fix: bug — cause (build N)
+log S{wk}-{n}: km FC allure (build N)
+docs: description
+```
