@@ -929,3 +929,17 @@ body.nuit .ch-tip{background:#042f2e;border-color:#065f46;color:#bbf7d0}
 .modale-overlay,.theo-overlay,#ql-overlay,#wx-ov,#sm-overlay,#sm-dp-ov,#sm-sk-ov,#install-ov,#ver-ov{background:var(--ov-backdrop);-webkit-backdrop-filter:var(--ov-blur);backdrop-filter:var(--ov-blur)}
 .ql-handle,.wx-handle,.sm-handle,.ver-handle{width:38px;height:5px;background:var(--gris-clair);border-radius:99px;margin:10px auto 14px}
 .theo-sheet::before{content:"";display:block;width:38px;height:5px;background:var(--gris-clair);border-radius:99px;margin:9px auto 2px;position:relative;z-index:3}
+
+/* ===== Sprint 2.5 — Bottom tab bar (Coach au centre) ===== */
+.botbar{position:fixed;left:0;right:0;bottom:0;z-index:90;background:rgba(255,255,255,.86);-webkit-backdrop-filter:saturate(1.4) blur(18px);backdrop-filter:saturate(1.4) blur(18px);border-top:1px solid var(--gris-clair);padding:8px 8px calc(8px + env(safe-area-inset-bottom));display:flex;align-items:flex-end;max-width:1000px;margin:0 auto}
+body.nuit .botbar{background:rgba(15,23,42,.82);border-top-color:#1e293b}
+.botbar .bi{flex:1;background:none;border:none;font-family:inherit;display:flex;flex-direction:column;align-items:center;gap:3px;padding:4px 2px;color:var(--texte-trois);cursor:pointer;-webkit-tap-highlight-color:transparent}
+.botbar .bi svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.botbar .bi span{font-size:10.5px;font-weight:700}
+.botbar .bi.actif{color:var(--primary)}
+.botbar .bi:active{transform:scale(.94)}
+.botbar .bi.coach .bi-bub{width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,#0d9488,#0891b2);display:flex;align-items:center;justify-content:center;margin-top:-22px;box-shadow:0 8px 20px -6px rgba(13,148,136,.55);border:3px solid var(--blanc)}
+.botbar .bi.coach .bi-bub svg{width:24px;height:24px;stroke:#fff;stroke-width:1.8}
+.botbar .bi.coach span{color:var(--primary);margin-top:1px}
+.coach-fab{display:none!important}
+.accueil{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
