@@ -3,7 +3,134 @@
 
 ---
 
-## 1. Architecture générale
+## 0. Protocole de travail — RÈGLES ABSOLUES
+
+> Ces règles s'appliquent à tout intervenant (Claude, développeur humain) sans exception.
+
+### Règle 1 — POC avant prod
+**Toute nouvelle feature passe par un artifact de validation avant le push en production.**
+1. Créer un POC HTML dans l'artifact (ou fichier local)
+2. Le montrer à Loïc pour validation
+3. Seulement après OK → intégrer dans `app.js` / `gen.py`
+
+```
+Brief → Artifact POC → OK Loïc → Code prod → node --check → Push
+```
+
+Ne jamais bypasser cette étape, même pour une feature "simple".
+
+### Règle 2 — Checklist avant chaque push
+
+```bash
+# 1. Copier les sources vers /tmp
+cp src/*.py src/*.js src/*.txt src/*.html /tmp/
+
+# 2. Build
+cd /tmp && python3 gen.py      # doit afficher "OK" et "Semaines: 30"
+python3 assemble.py            # doit afficher "Écrit: XXX caractères"
+
+# 3. Validation JS (BLOQUANT — ne jamais pusher si cette commande échoue)
+node --check app.js            # doit retourner sans erreur
+
+# 4. Tests fonctionnels
+node test.js                   # doit afficher "Toutes les fonctions OK ✓"
+
+# 5. Copier vers index.html
+cp /mnt/user-data/outputs/plan-entrainement.html /home/claude/Running/index.html
+
+# 6. Push (voir §9)
+```
+
+**Si `node --check` échoue → STOP. Corriger l'erreur avant tout push.**
+
+### Règle 3 — CHANGELOG obligatoire
+À chaque push en prod, **incrémenter le build et ajouter une entrée dans `CHANGELOG` de `gen.py`**.
+
+```python
+# Dans gen.py, CHANGELOG doit avoir le nouveau build EN PREMIER
+CHANGELOG=[
+  {"build": 41,             # ← Build incrémenté
+   "date": "22 juin 2026",
+   "sha": "xxxxxxxx",       # SHA du commit (rempli après push)
+   "tag": "Nom du sprint",
+   "items": [
+     "Feature A — description courte",
+     "Fix: Bug B — cause et correction",
+   ]},
+  {"build": 40, ...},       # Builds précédents conservés
+  ...
+]
+```
+
+Le badge "Build XX" en bas de l'app lit `CHANGELOG[0].build`. Si oublié → le badge affiche l'ancien numéro.
+
+### Règle 4 — Fichiers à pousser
+Toujours pousser `src/` ET `index.html` ensemble. Ne jamais pousser l'un sans l'autre.
+
+| Ce qui change | Fichiers à pousser |
+|--------------|-------------------|
+| Plan / séances / données | `src/gen.py` + `index.html` |
+| Feature JavaScript | `src/app.js` + `index.html` |
+| Feature CSS | `src/css_extra.txt` + `index.html` |
+| Structure HTML | `src/body.html` + `index.html` |
+| Export de données (nouveau champ) | `src/assemble.py` + `src/gen.py` + `index.html` |
+| Documentation uniquement | `docs/TECHNICAL.md` (sans index.html) |
+| **Toute feature complète** | Tous les fichiers modifiés + `index.html` |
+
+### Règle 5 — Mise à jour chaussures
+**Après chaque séance loggée**, appeler `Strava:get_gear` et mettre à jour les km dans `gen.py` → rebuild → push. Ne pas attendre que Loïc le demande.
+
+```python
+# Dans gen.py, section GEAR
+GEAR=[
+  {"marque":"HOKA","modele":"Clifton 10","km": XXXX},  # ← mettre à jour
+  ...
+]
+```
+
+### Règle 6 — Convention des commits
+Format : `type(scope): description courte (build N)`
+
+Types :
+- `feat` — nouvelle feature
+- `fix` — correction de bug
+- `feat(roadmap-X)` — sprint roadmap
+- `docs` — documentation uniquement
+- `log` — séance loggée (données athlète)
+- `refactor` — amélioration sans feature visible
+
+Exemples :
+```
+feat(roadmap-C): PMC Performance Management Chart CTL/ATL/TSB (build 40)
+fix: ACWR dynamique via EMA — plus de valeur statique (build 40)
+log S26-1: footing facile 11.2km FC 141 + Novablast V (build 41)
+docs: documentation technique complete + CLAUDE.md
+```
+
+### Règle 7 — Token GitHub
+Le token est un **fine-grained PAT** portée `entzmannloic-blip/Running` Contents R/W.
+- **Expire : 10 septembre 2026**
+- À renouveler sur `github.com/settings/tokens`
+- ⚠️ Apparaît en clair dans les sessions Claude — ne jamais le partager publiquement
+- Si compromis → révoquer immédiatement sur GitHub → générer nouveau → mettre à jour `CLAUDE.md`
+
+### Règle 8 — Gestion des conflits GitHub
+Toujours récupérer le SHA actuel avant de pousser un fichier :
+
+```python
+# GET le fichier pour récupérer son SHA
+st, meta = api('GET', url + '?ref=main')
+sha = meta.get('sha') if st == 200 else None
+
+# PUT avec le SHA (sinon 409 Conflict)
+body = {'message': MSG, 'content': b64_content, 'branch': 'main'}
+if sha:
+    body['sha'] = sha  # obligatoire si le fichier existe déjà
+api('PUT', url, body)
+```
+
+Sans SHA sur un fichier existant → erreur 409 (conflit).
+
 
 ### Philosophie
 Application single-file HTML déployée sur GitHub Pages. Pas de serveur, pas de base de données, pas de framework. Tout tient dans un seul `index.html` (~650 ko).
