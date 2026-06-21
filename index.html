@@ -2155,6 +2155,11 @@ function logSeance(wk,id){
 function unlogSeance(wk,id){const se=findSeance(wk,id);if(!se)return;const logs=loadLogs();delete logs[logId(wk,id)];saveLogs(logs);se.realise={statut:'a_faire'};_afterLog(wk,id);}
 /* ===== Cockpit — aides contextuelles ===== */
 const _CK_HELP={
+  pmc:{t:'PMC — Fitness · Fatigue · Forme',c:'#0d9488',body:`<p>Le <strong>Performance Management Chart</strong> (PMC) est le graphe fondamental du coaching de haut niveau — c'est ce qu'utilisent les entraîneurs TrainingPeaks. Il montre l'équilibre entre ta construction de forme et ta fatigue.</p>
+    <div class="ch-rule"><div class="ch-dot" style="background:#0d9488"></div><div><strong>CTL — Fitness (teal)</strong> : Charge chronique sur 42 jours. Représente ta forme physique accumulée. Monte lentement avec l'entraînement, descend lentement avec le repos.</div></div>
+    <div class="ch-rule"><div class="ch-dot" style="background:#f97316"></div><div><strong>ATL — Fatigue (orange tirets)</strong> : Charge aiguë sur 7 jours. Réagit vite aux variations de charge. Monte rapidement après une grosse semaine, descend vite avec le repos.</div></div>
+    <div class="ch-rule"><div class="ch-dot" style="background:#22c55e"></div><div><strong>TSB — Forme (barres)</strong> : CTL − ATL. Positif (vert) = tu es frais, reposé. Négatif (rouge) = tu accumules de la fatigue.</div></div>
+    <div class="ch-tip">💡 <strong>Comment lire ce graphe pour Nice :</strong> La CTL doit monter progressivement jusqu'à octobre (pic prévu ~65-70), puis la TSB doit remonter en positif grâce au tapering J-21/J-14/J-7. Le jour de Nice, visée : CTL élevée + TSB entre +5 et +20 = pic de forme.</div>`},
   vol:{t:'Volume hebdomadaire',c:'#f97316',body:`<p>Kilomètres courus chaque semaine (barres colorées) comparés au volume planifié (barres grises en arrière-plan).</p>
     <div class="ch-rule"><div class="ch-dot" style="background:#f97316"></div><div><strong>Barre au-dessus du gris</strong> → tu as sur-performé. Vérifie que ce n'était pas au détriment de la qualité des séances.</div></div>
     <div class="ch-rule"><div class="ch-dot" style="background:#94a3b8"></div><div><strong>Barre en dessous du gris</strong> → semaine incomplète. Normal pendant les allègements ou après une course.</div></div>
@@ -2548,6 +2553,39 @@ const _CK={
   }
 };
 let _ckWin=8;
+/* PMC — Performance Management Chart (Sprint C) */
+function _pmcCompute(win){
+  const re=_CK.RE[win];if(!re)return[];
+  const aC=1-Math.exp(-7/42),aA=1-Math.exp(-7/7);
+  let ctl=re.v[0]/7,atl=re.v[0]/7;
+  return re.v.map((v,i)=>{
+    const d=v/7;if(i>0){ctl=(1-aC)*ctl+aC*d;atl=(1-aA)*atl+aA*d;}
+    return{wk:re.w[i],ctl:+ctl.toFixed(1),atl:+atl.toFixed(1),tsb:+(ctl-atl).toFixed(1)};
+  });
+}
+function _pmcRender(win){
+  const data=_pmcCompute(win);if(!data.length)return;
+  const svg=document.getElementById('ckPMC');if(!svg)return;
+  const W=svg.parentElement?.offsetWidth||320,H=90;
+  const pl=6,pr=28,pt=8,pb=18,cw=W-pl-pr,ch=H-pt-pb;
+  const allV=[...data.map(d=>d.ctl),...data.map(d=>d.atl)];
+  const yMax=Math.max(...allV)*1.15,yMin=0;
+  const tMax=Math.max(10,...data.map(d=>Math.abs(d.tsb)))*1.5;
+  const n=data.length;
+  const xS=i=>pl+i/(n-1)*cw,yS=v=>pt+ch-(v-yMin)/(yMax-yMin)*ch,tS=v=>pt+ch/2-v/tMax*(ch/2);
+  const bars=data.map((d,i)=>{const x=xS(i)-cw/(n*2.2),w=Math.max(1,cw/n*0.75);const h=Math.abs(d.tsb)/tMax*(ch/2);const y=d.tsb>=0?tS(d.tsb):pt+ch/2;return`<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${w.toFixed(1)}" height="${h.toFixed(1)}" fill="${d.tsb>=0?'rgba(34,197,94,.3)':'rgba(239,68,68,.2)'}" rx="1"/>`;}).join('');
+  const zy=(pt+ch/2).toFixed(1);
+  const cP='M'+data.map((d,i)=>`${xS(i).toFixed(1)},${yS(d.ctl).toFixed(1)}`).join('L');
+  const aP='M'+data.map((d,i)=>`${xS(i).toFixed(1)},${yS(d.atl).toFixed(1)}`).join('L');
+  const lbls=data.map((d,i)=>(i===0||i===n-1||i===Math.floor(n/2))?`<text x="${xS(i).toFixed(1)}" y="${H-2}" text-anchor="middle" font-size="9" fill="#64748b">${d.wk}</text>`:'').join('');
+  const last=data[n-1];
+  const endLbls=`<text x="${(pl+cw+3).toFixed(1)}" y="${yS(last.ctl).toFixed(1)}" font-size="9" fill="#0d9488">${last.ctl.toFixed(0)}</text><text x="${(pl+cw+3).toFixed(1)}" y="${yS(last.atl).toFixed(1)}" font-size="9" fill="#f97316">${last.atl.toFixed(0)}</text><text x="${(pl+cw+3).toFixed(1)}" y="${tS(last.tsb).toFixed(1)}" font-size="9" fill="${last.tsb>=0?'#22c55e':'#ef4444'}">${last.tsb>=0?'+':''}${last.tsb.toFixed(0)}</text>`;
+  svg.innerHTML=`${bars}<line x1="${pl}" y1="${zy}" x2="${pl+cw}" y2="${zy}" stroke="rgba(100,116,139,.3)" stroke-dasharray="3,3" stroke-width="1"/><path d="${cP}" stroke="#0d9488" stroke-width="2" fill="none" stroke-linejoin="round"/><path d="${aP}" stroke="#f97316" stroke-width="1.5" fill="none" stroke-linejoin="round" stroke-dasharray="4,2"/>${lbls}${endLbls}`;
+  const wrap=document.getElementById('ckPMCW');if(!wrap)return;
+  wrap.onpointermove=ev=>{const r=wrap.getBoundingClientRect(),idx=Math.max(0,Math.min(n-1,Math.round((ev.clientX-r.left-pl)/cw*(n-1))));const d=data[idx];const tt=document.getElementById('ckPMCT');if(tt)tt.textContent=`${d.wk} · Fitness ${d.ctl.toFixed(0)} · Fatigue ${d.atl.toFixed(0)} · Forme ${d.tsb>=0?'+':''}${d.tsb.toFixed(0)}`;};
+  wrap.onpointerleave=()=>{const tt=document.getElementById('ckPMCT');if(tt)tt.textContent='glisse pour voir les valeurs';};
+  const s=document.getElementById('ckPMC-sub');if(s)s.textContent=`Fitness ${last.ctl.toFixed(0)} · Fatigue ${last.atl.toFixed(0)} · Forme ${last.tsb>=0?'+':''}${last.tsb.toFixed(0)}`;
+}
 function _ckSmin(s){if(s==null)return'—';const m=Math.floor(s/60),x=Math.round(s%60);return m+':'+(x<10?'0':'')+x;}
 function _ckXL(id,weeks){const el=document.getElementById(id);if(!el)return;el.innerHTML='';const n=weeks.length;const show=n<=4?weeks.map((_,i)=>i):[0,Math.floor(n/3),Math.floor(2*n/3),n-1];weeks.forEach((wk,i)=>{const sp=document.createElement('span');sp.textContent=show.includes(i)?wk:'';el.appendChild(sp);});}
 function _ckBar(svgId,wrapId,ttId,xlId,data,opt){
@@ -2667,6 +2705,7 @@ function _ckRenderAll(win){
   const kmLbl=document.getElementById('ck-km-lbl');if(kmLbl){kmLbl.textContent=W+' semaines';}
   const reLbl=document.getElementById('ck-re-lbl');if(reLbl){reLbl.textContent='Effort · '+W+' sem.';}
   document.getElementById('ck-re-val').textContent=totalRE;
+  _pmcRender(W);
   _ckBar('ckVol','ckVolW','ckVolT','ckVolX',D.VOL[W],{ref:true,col:'#0d9488',unit:' km',h:90});
   document.getElementById('ck-vol-sub').textContent=totalKm.toFixed(0)+' km · '+W+' sem.';
   _ckBar('ckRE','ckREW','ckRET','ckREX',D.RE[W],{col:'#8b5cf6',h:80});
@@ -2715,6 +2754,8 @@ function renderCockpit(){
   <div class="ck-kpi"><div class="ck-kv">51.6</div><div class="ck-kl">VO₂max</div><div class="ck-kd up">↑ +0.4</div></div>
 </div>
 <div class="ck-sec">📊 Volume &amp; charge</div>
+<div class="ck-sec">📈 Performance Management Chart</div>
+<div class="ck-card"><div class="ck-ch"><div><div class="ck-ct">CTL · ATL · TSB<button class="ck-help" onclick="event.stopPropagation();openCkHelp('pmc')">?</button></div><div class="ck-cs" id="ckPMC-sub">Fitness · Fatigue · Forme</div></div></div><div class="ck-cw" id="ckPMCW"><svg id="ckPMC" height="90" style="display:block;width:100%"></svg><div class="ck-tt" id="ckPMCT">glisse pour voir les valeurs</div></div><div style="display:flex;gap:14px;font-size:10px;color:var(--texte-deux);margin-top:6px;padding:0 2px"><span><span style="color:#0d9488">●</span> CTL fitness</span><span><span style="color:#f97316">●</span> ATL fatigue</span><span><span style="color:#22c55e">▌</span> TSB forme</span></div></div>
 ${card('ckVol','Volume hebdomadaire','',null,null,90,'<div style="font-size:9px;color:#94a3b8;text-align:center;margin-top:4px">touche une barre · ■ prévu</div>','vol')}
 <div class="ck-cs" id="ck-vol-sub" style="margin:-4px 0 8px;padding:0 2px"></div>
 ${card('ckRE','⚡ Relative Effort / sem.','charge Strava réelle',null,null,80,'<div style="font-size:9px;color:#94a3b8;text-align:center;margin-top:4px">glisse →</div>','re')}
