@@ -923,3 +923,9 @@ body.nuit .ch-tip{background:#042f2e;border-color:#065f46;color:#bbf7d0}
 .hmini{flex:0 0 auto;display:inline-flex;align-items:center;gap:7px;background:var(--blanc);border:1px solid var(--gris-clair);border-radius:99px;padding:6px 12px;font-size:.72rem;color:var(--texte-deux);font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap}
 .hmini-n{font-weight:800;color:var(--texte-trois)}
 .hmini-go{color:var(--gris)}
+
+/* ===== Sprint 2 — Langage d'overlay unifie ===== */
+:root{--ov-backdrop:rgba(15,23,42,.5);--ov-blur:saturate(1.1) blur(8px)}
+.modale-overlay,.theo-overlay,#ql-overlay,#wx-ov,#sm-overlay,#sm-dp-ov,#sm-sk-ov,#install-ov,#ver-ov{background:var(--ov-backdrop);-webkit-backdrop-filter:var(--ov-blur);backdrop-filter:var(--ov-blur)}
+.ql-handle,.wx-handle,.sm-handle,.ver-handle{width:38px;height:5px;background:var(--gris-clair);border-radius:99px;margin:10px auto 14px}
+.theo-sheet::before{content:"";display:block;width:38px;height:5px;background:var(--gris-clair);border-radius:99px;margin:9px auto 2px;position:relative;z-index:3}
