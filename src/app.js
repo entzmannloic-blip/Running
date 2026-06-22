@@ -1310,6 +1310,18 @@ function openCoach(){
       const diff=ps?Math.round((ps.d-today)/86400000):-1;
       const emoji=forme.score>=82?'🟢':forme.score>=68?'🟡':'🔴';
       let intro=`Bonjour Loïc 👋<br><br>${emoji} <strong>Forme du jour : ${forme.score}/100 ${forme.trend}</strong><br>${forme.signal}`;
+      // Le mot du coach — ligne contextuelle priorisée
+      const _acwr=(typeof _dynamicACWR==='function')?_dynamicACWR():1.0;
+      const _canEl=document.getElementById('canicule-banner');
+      const _canHot=_canEl&&_canEl.style.display!=='none'&&_canEl.textContent.trim();
+      const _rdays=(typeof RACES!=='undefined'&&RACES.length)?RACES.map(r=>Math.ceil((new Date(r.date)-today)/86400000)).filter(n=>n>=0).sort((a,b)=>a-b):[];
+      const _rn=_rdays.length?_rdays[0]:999;
+      let _ctx='';
+      if(_canHot){_ctx='🌡️ <strong>Chaleur annoncée</strong> — pars tôt, emporte des électrolytes et accepte de lever le pied sur l\'allure.';}
+      else if(_acwr>1.4){_ctx=`👉 <strong>Cette semaine</strong> : on calme l'intensité et on soigne le sommeil — l'ACWR à ${_acwr} demande qu'on protège la suite.`;}
+      else if(_rn<=7){_ctx=`🏁 <strong>J-${_rn} avant la course</strong> — affûtage : volume réduit, on garde 2-3 accélérations pour rester vif. Prépare ton sac.`;}
+      else if(_acwr<0.8){_ctx='🟢 Charge un peu basse — tu as de la marge pour pousser le volume si la forme suit.';}
+      if(_ctx)intro+='<br><br>'+_ctx;
       if(ps){const quand=diff===0?"aujourd'hui":diff===1?'demain':`dans ${diff}j`;
         intro+=`<br><br>Prochaine séance <strong>${quand}</strong> : ${ps.se.titre}`;}
       intro+='<br><br>Pose-moi n\'importe quelle question sur ton entraînement.';
