@@ -52,12 +52,11 @@ function toggleTheme(){const n=document.body.classList.toggle('nuit');document.g
 /* ===== onglets ===== */
 function showTab(t){
   if(navigator.vibrate)try{navigator.vibrate(8)}catch(e){}
-  ['plan','dash','cockpit','palmares'].forEach(id=>{
+  ['accueil','plan','cockpit','palmares'].forEach(id=>{
     document.getElementById('vue-'+id).style.display=t===id?'block':'none';
     document.getElementById('tab-'+id).classList.toggle('actif',t===id);
   });
-  if(t==='dash')renderDash();
-  if(t==='cockpit')renderCockpit();
+  if(t==='cockpit'){renderCockpit();renderDash();}
   if(t==='palmares')renderPalmares();
   window.scrollTo(0,0);
   const _vw=document.getElementById('vue-'+t);
@@ -69,7 +68,7 @@ function _revealScan(){
   if(!('IntersectionObserver' in window))return;
   if(!_revealIO)_revealIO=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.remove('rv-init');e.target.classList.add('rv-show');_revealIO.unobserve(e.target);}});},{threshold:.08,rootMargin:'0px 0px -6% 0px'});
   let scope=document;
-  ['plan','dash','cockpit','palmares'].forEach(function(id){var v=document.getElementById('vue-'+id);if(v&&v.style.display!=='none')scope=v;});
+  ['accueil','plan','cockpit','palmares'].forEach(function(id){var v=document.getElementById('vue-'+id);if(v&&v.style.display!=='none')scope=v;});
   scope.querySelectorAll('.sem-carte,.ck-card,.statut-carte,.pal-carte,.dash-card').forEach(function(el){
     if(el.classList.contains('rv-show'))return;
     var r=el.getBoundingClientRect();
@@ -225,6 +224,7 @@ function renderHeader(){
   document.getElementById('hero-plan').innerHTML=`${_psCard}<div class="hx-row">${_formeTile}${_nearTile}</div>${_formeDetail}<div id="canicule-banner" style="display:none"></div>${_cw}<div id="meteo-widget" class="meteo"><div class="meteo-loc">⏳ Météo…</div></div>${_mini?`<div class="hmini-row">${_mini}</div>`:''}`;
   renderMeteo();
   document.getElementById('maj-foot').innerHTML=_maj;
+   try{const _aSe=Object.values(SEANCES_BY_WEEK).flat();const _aF=_aSe.filter(s=>s.realise&&(s.realise.statut==='fait'||s.realise.statut==='partiel')).length;const _aKm=Math.round(_aSe.reduce((a,s)=>a+((s.realise&&s.realise.km)||0),0));const _aP=_aSe.length?Math.round(_aF/_aSe.length*100):0;const _ae=document.getElementById('accueil-annee');if(_ae)_ae.innerHTML=`<div class="acc-lab">Bilan du plan</div><div class="acc-annee"><div class="acc-stat"><div class="av">${_aF}</div><div class="ak">Sorties</div></div><div class="acc-stat"><div class="av">${_aKm}<span>km</span></div><div class="ak">R\u00e9alis\u00e9</div></div><div class="acc-stat"><div class="av">${_aP}<span>%</span></div><div class="ak">Pr\u00e9pa plan</div></div></div>`;}catch(e){}
   const _ab=document.getElementById('appbar');if(_ab&&document.documentElement)document.documentElement.style.setProperty('--appbar-h',_ab.offsetHeight+'px');
 }
 
@@ -1831,7 +1831,7 @@ function initSessionMenu(){
 </div>
 <div id="sm-toast" class="sm-toast"></div>`);
 }
-function _afterLog(wk,id){renderHeader();renderPlan();if(document.getElementById('vue-dash').style.display!=='none')renderDash();ouvrirSeance(wk,id);setTimeout(()=>{const b=document.querySelector&&document.querySelector('.lf-save');if(b){b.textContent='Enregistré ✓';b.classList.add('lf-saved');setTimeout(()=>{if(b)b.textContent='Enregistrer';},1800);}},80);}
+function _afterLog(wk,id){renderHeader();renderPlan();if(document.getElementById('vue-cockpit').style.display!=='none'){renderCockpit();renderDash();}ouvrirSeance(wk,id);setTimeout(()=>{const b=document.querySelector&&document.querySelector('.lf-save');if(b){b.textContent='Enregistré ✓';b.classList.add('lf-saved');setTimeout(()=>{if(b)b.textContent='Enregistrer';},1800);}},80);}
 function logForm(wk,se){
   const r=se.realise||{statut:'a_faire'};const logged=r.statut!=='a_faire';
   _pendingStatut=logged?r.statut:'fait';
