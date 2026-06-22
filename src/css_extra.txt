@@ -943,3 +943,16 @@ body.nuit .botbar{background:rgba(15,23,42,.82);border-top-color:#1e293b}
 .botbar .bi.coach span{color:var(--primary);margin-top:1px}
 .coach-fab{display:none!important}
 .accueil{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
+
+/* ===== Sprint 4 — Profondeur & polish ===== */
+:root{--ease:cubic-bezier(.22,.68,0,1.1)}
+@keyframes viewIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.vue-in{animation:viewIn .42s var(--ease) both}
+.vdj,.htile,.hmini,.cw-link,.sem-carte,.statut-carte,.ck-card,.botbar .bi{transition:transform .14s var(--ease)}
+.vdj:active,.htile:active,.hmini:active,.cw-link:active,.sem-carte:active,.statut-carte:active,.ck-card:active{transform:scale(.975)}
+.botbar .bi svg{transition:transform .3s var(--ease)}
+.botbar .bi.actif svg{transform:translateY(-2px) scale(1.14)}
+.botbar .bi:active svg{transform:scale(.88)}
+.rv-init{opacity:0;transform:translateY(16px)}
+.rv-show{opacity:1;transform:none;transition:opacity .5s var(--ease),transform .5s var(--ease)}
+@media (prefers-reduced-motion:reduce){.vue-in{animation:none}.rv-init{opacity:1!important;transform:none!important}.botbar .bi.actif svg{transform:none}}
