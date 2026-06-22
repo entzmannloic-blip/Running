@@ -30,6 +30,40 @@
 
 ---
 
+## 0. État actuel — Refonte UX/UI & IA (builds 42→51, juin 2026)
+
+> ⚠️ Les sections détaillées ci-dessous (notamment §3 Architecture et §9 body.html) décrivent en partie la structure **d'avant la refonte** (onglets en haut). Cette section 0 fait foi pour la navigation actuelle.
+
+**Build actuel : 51.** L'app a gardé son moteur (coaching, Strava, Cockpit, dossiers) mais sa couche expérience a été entièrement refondue en 10 builds.
+
+### Navigation actuelle — bottom bar fixe `#botbar`
+```
+Accueil · Séances · [Coach central surélevé] · Cockpit · Courses
+```
+| Onglet | Vue (id interne) | Contenu |
+|--------|------------------|---------|
+| Accueil | `#vue-accueil` (`accueil`) | `#hero-plan` (héros prochaine séance, forme, course, météo, `#canicule-banner`, mini-courses) + `#accueil-annee` (bilan). 2 raccourcis : héros→`ouvrirSeance`, `.cw-link`→`jumpToWeek`. **Vue par défaut.** |
+| Séances | `#vue-plan` (`plan`) | Le plan seul (`#main` + `#phases`), sans dashboard. |
+| Coach | centre | `openCoach()` + message contextuel priorisé : canicule > charge (ACWR>1.4) > affûtage ≤7j > marge. |
+| Cockpit | `#vue-cockpit` (`cockpit`) | `renderCockpit()` **+ `renderDash()`** : `#cockpit-contenu` + `#dash-contenu` (bilan ex-Suivi). |
+| Courses | `#vue-palmares` (**`palmares`**) | `renderPalmares()` = À venir (`RACES` + `ouvrirDossier`) + Passées (`PALMARES`). |
+
+**Pièges :** l'onglet « Suivi » a été **dissous** (`#vue-dash` supprimé ; `renderDash()` rendu dans Cockpit). « Courses » garde l'**id interne `palmares`**. `showTab` liste `['accueil','plan','cockpit','palmares']`.
+
+### Design system (build 42)
+`css.txt :root` = tokens sémantiques : 1 primaire `--primary:#0d9488`, états `--ok/--warn/--danger` (+`-deux/-clair/-fond`), neutres slate, échelle typo `--t-display…--t-data`, `--ombre/-lg`, `--ease`. Anciens noms couleur = **alias** vers tokens. Dégradés-identité des dossiers de course préservés.
+
+### Couche mouvement (build 47)
+`.vue-in` (transition de vue), `_revealScan()` (reveal au scroll + filet 4s), press-scale, pop d'icône active, haptique — tout sous `prefers-reduced-motion`.
+
+### Journal de la refonte
+42 design system · 43 Home qui respire · 44 overlays unifiés · 45 bottom bar (Coach central) · 46 mot du coach contextuel · 47 profondeur & polish · 48 enforcement (purge CSS mort + consolidation tailles) · 49 page Accueil + dissolution Suivi · 50 onglet Courses · 51 log S26-s1.
+
+### Dette connue (audit build 47)
+Échelle typo posée en tokens mais pas 100 % enforced sur le legacy ; graisses 700/800 encore dominantes ; quelques déclarations CSS mortes ; reveal limité aux vues principales.
+
+---
+
 ## 1. Contexte & Philosophie
 
 ### Pourquoi cette app existe
@@ -282,7 +316,7 @@ node test.js
 ### Rôle
 Génère `/tmp/data.json` contenant toutes les données statiques de l'app. C'est la source de vérité pour le plan d'entraînement.
 
-### Structure du fichier (854 lignes)
+### Structure du fichier (~932 lignes)
 
 #### Lignes 1–39 : Imports et constantes
 ```python
@@ -623,7 +657,7 @@ Sinon la variable n'existera pas dans l'HTML et causera des erreurs JS silencieu
 
 ## 7. JavaScript — app.js
 
-### Organisation générale (2244 lignes)
+### Organisation générale (~2274 lignes)
 
 ```
 Lignes 1–50      : Fonctions utilitaires (isoWeek, findSeance, formatTime...)
