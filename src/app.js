@@ -1413,9 +1413,13 @@ function renderPalmares(){
   const types={'trail':'🏔️ Trail','trail_nuit':'🌙 Trail nuit','route':'🛣️ Route','semi':'🏃 Semi-marathon','marathon':'🏅 Marathon'};
   const totalKm=P.reduce((a,p)=>a+p.distance,0);
   const totalDplus=P.reduce((a,p)=>a+(p.dplus||0),0);
+  const _tdy=new Date();_tdy.setHours(0,0,0,0);
+  const _moisC=['janv.','f\u00e9vr.','mars','avr.','mai','juin','juil.','ao\u00fbt','sept.','oct.','nov.','d\u00e9c.'];
+  const _up=((typeof RACES!=='undefined'?RACES:(typeof DATA!=='undefined'&&DATA.RACES))||[]).map(r=>{const d=new Date(r.date+'T12:00:00');return{nom:r.nom,dossier:r.dossier,d:d,dn:Math.ceil((d-_tdy)/86400000)};}).filter(r=>r.dn>=0).sort((a,b)=>a.dn-b.dn);
+  const _aVenir=_up.length?'<div class="crs-lab">\u00c0 venir</div>'+_up.map(r=>{const ds=r.d.getDate()+' '+_moisC[r.d.getMonth()]+' '+r.d.getFullYear();return `<button class="crs-up"${r.dossier?` onclick="ouvrirDossier('${r.dossier}')"`:''}><span class="crs-jx">J-${r.dn}</span><span class="crs-mid"><span class="crs-nom">${r.nom}</span><span class="crs-date">${ds}</span></span>${r.dossier?'<span class="crs-go">Dossier \u203a</span>':''}</button>`;}).join(''):''; 
   el.innerHTML=`<div style="padding:12px 12px 40px">
-<div style="font-size:22px;font-weight:700;color:var(--texte);letter-spacing:-.02em;margin-bottom:2px">Palmarès</div>
-<div style="font-size:11px;color:var(--texte-deux);margin-bottom:14px">Courses officielles terminées · résultats &amp; bilans</div>
+<div style="font-size:22px;font-weight:700;color:var(--texte);letter-spacing:-.02em;margin-bottom:2px">Courses</div>
+<div style="font-size:11px;color:var(--texte-deux);margin-bottom:14px">À venir &amp; passées · objectifs et résultats</div>${_aVenir}<div class="crs-lab">Passées</div>
 <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px">
   <div style="background:var(--bg-card,#fff);border:.5px solid var(--bord-card,#e2e8f0);border-radius:12px;padding:10px;text-align:center"><div style="font-size:20px;font-weight:700;color:var(--texte)">${P.length}</div><div style="font-size:9px;text-transform:uppercase;letter-spacing:.05em;color:var(--texte-deux);margin-top:3px">Courses</div></div>
   <div style="background:var(--bg-card,#fff);border:.5px solid var(--bord-card,#e2e8f0);border-radius:12px;padding:10px;text-align:center"><div style="font-size:20px;font-weight:700;color:var(--texte)">${totalKm.toFixed(0)}</div><div style="font-size:9px;text-transform:uppercase;letter-spacing:.05em;color:var(--texte-deux);margin-top:3px">km courus</div></div>

@@ -959,3 +959,14 @@ body.nuit .botbar{background:rgba(15,23,42,.82);border-top-color:#1e293b}
 .acc-stat .av{font-size:1.1875rem;font-weight:800;color:var(--texte)}
 .acc-stat .av span{font-size:.75rem}
 .acc-stat .ak{font-size:.59375rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--texte-trois);margin-top:3px}
+
+/* ===== Sprint B (B50) — onglet Courses ===== */
+.crs-lab{font-size:.65625rem;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--primary-deux);margin:6px 2px 9px;display:flex;align-items:center;gap:7px}
+.crs-lab::after{content:"";flex:1;height:1px;background:var(--gris-clair)}
+.crs-up{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:var(--blanc);border:1px solid var(--gris-clair);border-left:3px solid var(--primary);border-radius:14px;padding:13px 15px;box-shadow:var(--ombre);margin-bottom:10px;cursor:pointer;font-family:inherit;transition:transform .14s var(--ease)}
+.crs-up:active{transform:scale(.985)}
+.crs-jx{flex:0 0 auto;font-size:1.0625rem;font-weight:800;color:var(--warn-deux)}
+.crs-mid{flex:1;min-width:0;display:flex;flex-direction:column}
+.crs-nom{font-size:.875rem;font-weight:700;color:var(--texte)}
+.crs-date{font-size:.75rem;color:var(--texte-trois)}
+.crs-go{flex:0 0 auto;font-size:.8125rem;font-weight:700;color:var(--primary)}
