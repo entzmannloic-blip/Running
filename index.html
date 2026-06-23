@@ -2794,7 +2794,8 @@ function _ckLine(svgId,wrapId,ttId,xlId,weeks,series,fmt,opt){
   const xs=weeks.map((_,i)=>10+i*((300-20)/Math.max(1,n-1)));
   const ym=v=>H-10-((v-mn)/(mx-mn)*(H-20));
   let defs='',paths='',zones='';
-  if(opt.zones)opt.zones.forEach(z=>{const y1=ym(z[1]),y2=ym(z[0]);zones+=`<rect x="0" y="${y1}" width="300" height="${Math.max(0,y2-y1)}" fill="${z[2]}" opacity="0.08"/>`;});
+  const clipId=`ck-clip-${svgId}`;defs+=`<clipPath id="${clipId}"><rect x="0" y="0" width="300" height="${H}"/></clipPath>`;
+  if(opt.zones)opt.zones.forEach(z=>{const y1=ym(Math.min(z[1],mx+pad)),y2=ym(Math.max(z[0],mn-pad));zones+=`<rect x="0" y="${Math.max(0,y1).toFixed(1)}" width="300" height="${Math.max(0,y2-y1).toFixed(1)}" fill="${z[2]}" opacity="0.06" clip-path="url(#${clipId})"/>`;});
   series.forEach((s,si)=>{
     const c=s.v.map((v,i)=>v==null?null:[xs[i],ym(v)]).filter(Boolean);if(!c.length)return;
     const line=c.map((p,i)=>(i?'L':'M')+p[0].toFixed(1)+' '+p[1].toFixed(1)).join(' ');
@@ -2803,7 +2804,7 @@ function _ckLine(svgId,wrapId,ttId,xlId,weeks,series,fmt,opt){
   });
   let dots='';series.forEach((s,si)=>{dots+=`<circle id="${svgId}dt${si}" r="4" fill="${s.color}" opacity="0" stroke="#fff" stroke-width="1.5"/>`;});
   const scrub=`<line id="${svgId}sc" x1="0" y1="0" x2="0" y2="${H}" stroke="#94a3b8" stroke-width="1" stroke-dasharray="3 3" opacity="0"/>`;
-  const svg=document.getElementById(svgId);if(!svg)return;svg.setAttribute('viewBox',`0 0 300 ${H}`);svg.innerHTML=`<defs>${defs}</defs>${zones}${paths}${scrub}${dots}`;
+  const svg=document.getElementById(svgId);if(!svg)return;svg.setAttribute('viewBox',`0 0 300 ${H}`);svg.innerHTML=`<defs>${defs}</defs><g clip-path="url(#${clipId})">${zones}${paths}</g>${scrub}${dots}`;
   _ckXL(xlId,weeks);
   const wrap=document.getElementById(wrapId),tt=document.getElementById(ttId);if(!wrap||!tt)return;
   function doScrub(cx){try{
@@ -2886,7 +2887,7 @@ function _ckRenderAll(win){
   _ckBar('ckVol','ckVolW','ckVolT','ckVolX',D.VOL[W],{ref:true,col:'#0d9488',unit:' km',h:90});
   document.getElementById('ck-vol-sub').textContent=totalKm.toFixed(0)+' km · '+W+' sem.';
   _ckBar('ckRE','ckREW','ckRET','ckREX',D.RE[W],{col:'#0d9488',h:80});
-  _ckLine('ckACWR','ckACWRW','ckACWRT','ckACWRX',D.ACWR[W].w,[{v:D.ACWR[W].v,color:'#f59e0b',lbl:''}],v=>v.toFixed(2),{h:65,zones:[[0,0.8,'#0d9488'],[0.8,1.3,'#16a34a'],[1.3,2,'#ef4444']]});
+  _ckLine('ckACWR','ckACWRW','ckACWRT','ckACWRX',D.ACWR[W].w,[{v:D.ACWR[W].v,color:'#f59e0b',lbl:''}],v=>v.toFixed(2),{h:65,fill:false,zones:[[0,0.8,'#0d9488'],[0.8,1.3,'#16a34a'],[1.3,2,'#ef4444']]});
   const al=D.ACWR[W].v[D.ACWR[W].v.length-1];document.getElementById('ck-acwr-val').textContent=al.toFixed(2);document.getElementById('ck-acwr-val').style.color=al>1.3?'#ef4444':al<0.8?'#0d9488':'#16a34a';
   _ckBar('ckDP','ckDPW','ckDPT','ckDPX',D.DPLUS[W],{col:'#94a3b8',unit:' m',h:75});
   _ckLine('ckZ2','ckZ2W','ckZ2T','ckZ2X',D.Z2[W].w,[{v:D.Z2[W].v,color:'#0d9488',lbl:'/km'}],_ckSmin,{h:85});
