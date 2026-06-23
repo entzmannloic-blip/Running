@@ -1106,7 +1106,7 @@ const _CK_HELP={
     <div class="ch-rule"><div class="ch-dot" style="background:#0d9488"></div><div><strong>Courbe descendante</strong> (allure plus rapide) = ta forme aérobie progresse. Tu vas plus vite sans travailler plus fort.</div></div>
     <div class="ch-rule"><div class="ch-dot" style="background:#f59e0b"></div><div><strong>Courbe plate</strong> = stagnation. Normal en période de maintien ou de volume élevé.</div></div>
     <div class="ch-rule"><div class="ch-dot" style="background:#ef4444"></div><div><strong>Courbe montante</strong> = régression. Souvent liée à la fatigue, la chaleur, ou un ACWR > 1.3.</div></div>
-    <div class="ch-tip">💡 Ton objectif saison : passer de 5:56/km à ~5:40/km en Z2 d'ici octobre. Chaque dixième de seconde gagné reflète une adaptation mitochondriale réelle.</div>`},
+    <div class="ch-tip">💡 Ton objectif saison : passer de 5:56/km à ~5:40/km en Z2 d’ici octobre. Chaque dixième de seconde gagné reflète une adaptation mitochondriale réelle.</div>`},
   dc:{t:'Découplage cardiaque',c:'#0d9488',body:`<p>Mesure l'écart entre ton allure et ta FC sur une sortie longue. Un faible découplage = ton cœur reste stable alors que tu te fatigues.</p>
     <div class="ch-rule"><div class="ch-dot" style="background:#16a34a"></div><div><strong>&lt; 5% (vert)</strong> → Excellent. Ton système aérobie est solide et stable sur la durée.</div></div>
     <div class="ch-rule"><div class="ch-dot" style="background:#f59e0b"></div><div><strong>5–8% (orange)</strong> → Acceptable. Léger décrochage en fin de sortie, souvent dû à la chaleur ou à la fatigue.</div></div>
@@ -1130,11 +1130,80 @@ const _CK_HELP={
     <div class="ch-rule"><div class="ch-dot" style="background:#6366f1"></div><div><strong>Trail &lt;155 spm</strong> → Normal en montée raide (marche) ou sur terrain très technique.</div></div>
     <div class="ch-tip">💡 Ta cadence trail (146 spm au Circaète) inclut les passages de marche en montée — c'est tout à fait normal. L'écart route/trail que tu vois dans ce graphe est attendu et sain.</div>`}
 };
+function _ckCtxBlock(key){
+  try{
+    var D=_CK,W=8;
+    var now=new Date();
+    var _rd=(typeof RACES!=='undefined'&&RACES.length)?RACES.map(function(r){return Math.ceil((new Date(r.date+'T12:00:00')-now)/86400000);}).filter(function(n){return n>=0;}).sort(function(a,b){return a-b;}):[],jrace=_rd.length?_rd[0]:999;
+    var race0=(typeof RACES!=='undefined'&&RACES.length)?RACES.find(function(r){return Math.ceil((new Date(r.date+'T12:00:00')-now)/86400000)>=0;}):null;
+    var rname=race0?race0.nom:'la prochaine course';
+    var acwr=D.ACWR&&D.ACWR[2]?D.ACWR[2].v[D.ACWR[2].v.length-1]:null;
+    var canEl=document.getElementById('canicule-banner');
+    var isHot=canEl&&canEl.style.display!=='none'&&canEl.textContent.trim();
+    var h='<div class="ck-ctx"><div class="ck-ctx-h">\u{1F4CD} Ta lecture en ce moment</div><p>';
+    if(key==='pmc'){
+      var pmc=typeof _pmcCompute==='function'?_pmcCompute(W):null;
+      if(!pmc||!pmc.length)return '';
+      var last=pmc[pmc.length-1];
+      var ctl=last.ctl.toFixed(0),atl=last.atl.toFixed(0),tsb=(last.tsb>=0?'+':'')+last.tsb.toFixed(0);
+      var tsbCol=last.tsb>5?'#16a34a':last.tsb>-10?'#f59e0b':'#ef4444';
+      var lec='';
+      if(jrace<=14){
+        lec='J-'+jrace+' avant '+rname+' \u2014 ton TSB \u00e0 <strong>'+tsb+'</strong> est '+(last.tsb>5?'positif\u00a0: tu arrives frais, exactement comme voulu.':'encore l\u00e9g\u00e8rement n\u00e9gatif. Normal en aff\u00fbtage \u2014 il remontera d\u2019ici le d\u00e9part si tu restes easy.');
+      }else if(jrace<=30){
+        lec='\u00c0 J-'+jrace+', l\u2019aff\u00fbtage commence. Ta CTL \u00e0 <strong>'+ctl+'</strong> repr\u00e9sente la forme accumul\u00e9e \u2014 elle va descendre un peu avec la r\u00e9duction du volume, c\u2019est voulu. Objectif\u00a0: TSB \u00e0 +5/+20 le jour J.';
+      }else{
+        var trend=pmc.length>=4?Math.round(pmc[pmc.length-1].ctl-pmc[pmc.length-4].ctl):null;
+        var trendStr=trend!==null?(trend>0?' (+'+trend+' sur 4\u00a0sem. \u2014 bonne progression)':(trend<-2?' ('+trend+' sur 4\u00a0sem. \u2014 surveille la stagnation)':' (stable)')):'';
+        var tsbState=last.tsb>5?'tu es frais':last.tsb>-5?'tu es en \u00e9quilibre':'tu accumules de la fatigue\u00a0: soigne le sommeil et garde les footings vraiment faciles';
+        lec='Ta CTL est \u00e0 <strong>'+ctl+'</strong>'+trendStr+'. Fatigue ATL <strong>'+atl+'</strong> \u2192 forme TSB <strong style="color:'+tsbCol+'">'+tsb+'</strong> \u2014 '+tsbState+'. Pour '+rname+', vise CTL 65\u201370 + TSB entre +5 et +20 le jour J.';
+      }
+      if(isHot)lec+=' En canicule\u00a0: l\u2019ATL grimpe plus vite pour la m\u00eame allure \u2014 ton TSB peut para\u00eetre plus bas qu\u2019il n\u2019est. Cours t\u00f4t, r\u00e9duis l\u2019intensit\u00e9 de 10\u201315\u00a0%, \u00e7a ne change pas ta CTL.';
+      return h+lec+'</p></div>';
+    }
+    if(key==='acwr'){
+      if(acwr===null)return '';
+      var col=acwr>1.3?'#ef4444':acwr<0.8?'#0d9488':'#16a34a';
+      var label=acwr>1.5?'en surcharge':acwr>1.3?'charge \u00e9lev\u00e9e':acwr<0.8?'sous-entra\u00een\u00e9':'dans la zone optimale';
+      var txt='Ton ACWR est \u00e0 <strong style="color:'+col+'">'+acwr.toFixed(2)+'</strong> \u2014 tu es <strong>'+label+'</strong>.';
+      if(acwr>1.3&&jrace<=21)txt+=' J-'+jrace+' avant '+rname+'\u00a0: c\u2019est le moment de lever le pied. R\u00e9duis le volume de 20\u201330\u00a0% cette semaine, garde 2\u20133 acc\u00e9l\u00e9rations courtes, dors bien. Tu arriveras plus frais que si tu pushs.';
+      else if(acwr>1.3)txt+=' Surveille les signaux de fatigue (jambes lourdes, sommeil perturb\u00e9, FC matin \u00e9lev\u00e9e). Si un 2\u1d49\u1d49 indicateur clignote, all\u00e8ge la semaine.';
+      else if(acwr<0.8)txt+=' Tu peux relancer le volume progressivement. Pas de rattrapage brutal \u2014 +10\u00a0% max par semaine.';
+      else txt+=' Continue sur cette lanc\u00e9e.'+(jrace<=60?' Avec J-'+jrace+' avant '+rname+', c\u2019est exactement le bon rythme.':'');
+      if(isHot)txt+=' Avec la canicule, l\u2019ACWR sous-estime la fatigue r\u00e9elle \u2014 ajoute un cr\u00e9dit de +0,1 \u00e0 ta lecture.';
+      return h+txt+'</p></div>';
+    }
+    if(key==='z2'){
+      var z2d=D.Z2&&D.Z2[4]?D.Z2[4].v.filter(function(x){return x;}):[];
+      if(!z2d.length)return '';
+      var zlast=z2d[z2d.length-1],zfirst=z2d[0],zdiff=zfirst-zlast;
+      var zStr=typeof _ckSmin==='function'?_ckSmin(zlast):Math.floor(zlast/60)+':'+String(Math.round(zlast%60)).padStart(2,'0');
+      var ztxt='Ton allure EF actuelle est <strong>'+zStr+'/km</strong>.';
+      if(zdiff>5)ztxt+=' Tu as gagn\u00e9 '+Math.round(zdiff)+'\u00a0sec/km en Z2 sur la p\u00e9riode \u2014 vraie progression a\u00e9robie.';
+      else if(zdiff<-5)ztxt+=' Allure EF l\u00e9g\u00e8rement moins bonne. Souvent li\u00e9 \u00e0 la chaleur (d\u00e9rive cardiaque) ou \u00e0 la fatigue accumul\u00e9e \u2014 pas forc\u00e9ment une r\u00e9gression r\u00e9elle.';
+      else ztxt+=' Allure stable \u2014 coh\u00e9rent en phase de volume \u00e9lev\u00e9.';
+      ztxt+=' Objectif saison\u00a0: ~5:40/km en Z2 d\u2019ici octobre.';
+      if(isHot)ztxt+=' Par temps chaud, cours \u00e0 allure \u00ab\u00a0confort\u00a0\u00bb plut\u00f4t qu\u2019\u00e0 une allure cible.';
+      return h+ztxt+'</p></div>';
+    }
+    if(key==='vol'){
+      var vol=D.VOL&&D.VOL[4]?D.VOL[4]:null;if(!vol)return '';
+      var vr=vol.a[vol.a.length-1],vp=vol.p?vol.p[vol.p.length-1]:null;
+      var vtxt='Cette semaine\u00a0: <strong>'+vr+'\u00a0km</strong>'+(vp?' sur <strong>'+vp+'\u00a0km</strong> planifi\u00e9s':'')+'. ';
+      if(jrace<=14)vtxt+='Normal d\u2019\u00eatre en dessous \u2014 c\u2019est l\u2019aff\u00fbtage, le volume r\u00e9duit sert \u00e0 arriver frais.';
+      else if(vp&&vr<vp*0.7)vtxt+='Semaine incompl\u00e8te. Si c\u2019est voulu, pas de probl\u00e8me. Sinon, essaie de caler la s\u00e9ance manqu\u00e9e en d\u00e9but de semaine prochaine.';
+      else if(vp&&vr>=vp)vtxt+='Volume dans les clous \u2014 belle semaine.';
+      else vtxt+='En cours de semaine, continue comme pr\u00e9vu.';
+      return h+vtxt+'</p></div>';
+    }
+  }catch(e){return '';}
+  return '';
+}
 function openCkHelp(key){
   const d=_CK_HELP[key];if(!d)return;
   const o=document.getElementById('ck-help-ov');if(!o)return;
   document.getElementById('ck-help-title').textContent=d.t;
-  document.getElementById('ck-help-body').innerHTML=d.body;
+  document.getElementById('ck-help-body').innerHTML=d.body+_ckCtxBlock(key);
   o.classList.add('open');o.scrollTop=0;
 }
 function closeCkHelp(){const o=document.getElementById('ck-help-ov');if(o)o.classList.remove('open');}
@@ -2023,7 +2092,7 @@ const COACH_THEORY={
  longue:{nom:'Sortie longue',
    pourquoi:"La séance reine du marathon. Elle apprend à ton corps à <em>durer</em> : étend tes réserves de glycogène, densifie les capillaires, et entraîne la tête à tenir l'effort long. Avec finish allure marathon, elle simule la fin de course quand ça pique.",
    comment:"Corps en EF (≤ 144), finish AM si prévu. Mange et bois AVANT d'avoir faim ou soif — c'est l'entraînement du fueling autant que des jambes. Sur le finish, garde du jus : tu dois finir solide, pas cramé.",
-   theorie:"<p><strong>Pourquoi c'est la séance reine.</strong> Le marathon se gagne sur l'endurance, et l'endurance se construit sur la durée. La sortie longue étend tes réserves de glycogène, multiplie les capillaires, et surtout muscle ta tête : apprendre à rester efficace quand c'est long et inconfortable.</p><p><strong>Le fueling, ta priorité n°1.</strong> C'est ton limiteur identifié — l'effondrement de La Circaète (km 21) venait d'un déficit d'eau et d'électrolytes par forte chaleur. La sortie longue est <em>l'</em>occasion de répéter ton plan : électrolytes réguliers, gels testés (4Endurance, Nduranz), boire avant la soif. Ne jamais découvrir son fueling le jour de la course.</p><p><strong>Le finish allure marathon.</strong> Courir les derniers km à 5:20 sur des jambes déjà fatiguées, c'est répéter <em>exactement</em> le 35e km de Nice. C'est dur, c'est volontaire, et c'est ce qui fait la différence entre finir fort et marcher.</p>",
+   theorie:"<p><strong>Pourquoi c'est la séance reine.</strong> Le marathon se gagne sur l'endurance, et l'endurance se construit sur la durée. La sortie longue étend tes réserves de glycogène, multiplie les capillaires, et surtout muscle ta tête : apprendre à rester efficace quand c'est long et inconfortable.</p><p><strong>Le fueling, ta priorité n°1.</strong> C'est ton limiteur identifié — l'effondrement de La Circaète (km 21) venait d'un déficit d'eau et d'électrolytes par forte chaleur. La sortie longue est <em>l'</em>occasion de répéter ton plan : électrolytes réguliers, gels testés (4Endurance, Nduranz), boire avant la soif. Ne jamais découvrir son fueling le jour de la course.</p><p><strong>Le finish allure marathon.</strong> Courir les derniers km à 5:20 sur des jambes déjà fatiguées, c'est répéter <em>exactement</em> le 35e km de Nice. C'est dur, c’est volontaire, et c'est ce qui fait la différence entre finir fort et marcher.</p>",
    lecture:{fcBand:[0,150],fcLabel:"corps ≤ 144, finish ~155-163"}},
  test:{nom:'Test / recalibrage',
    pourquoi:"Recalibrer objectivement. Un test mesure ta forme réelle et permet d'ajuster tes zones, tes allures cibles et la projection marathon. C'est ton juge de paix périodique — la vérité du terrain.",
@@ -2167,7 +2236,7 @@ const RICH_THEORY={
    {h:'Glycogène, capillaires, durée',html:`<p>Passé ~90 minutes, ton corps s'adapte : il apprend à stocker plus de glycogène et à mieux brûler les graisses pour l'épargner. C'est l'adaptation clé du marathonien.</p>`+svgGlycogen()+`<p>C'est aussi pour ça que la durée compte plus que l'allure : courir lentement <strong>longtemps</strong> bat courir vite <strong>court</strong>.</p>`},
    {h:'Le fueling, ton limiteur n°1',html:`<p class="theo-perso">📌 C'est <strong>ton</strong> point faible identifié. À La Circaète, tu t'es effondré au km 20-21 : pas par manque de jambes, mais par <strong>déficit d'eau et d'électrolytes</strong> par 26-31°C. Yannis t'a relancé avec une pastille de sodium.</p><p>La sortie longue est <em>l'</em>occasion de répéter ton plan, jamais de l'improviser le jour J :</p><p><strong>• Électrolytes :</strong> 1 pastille toutes les 45 min sur effort long ou par chaleur, sans attendre.<br><strong>• Hydratation :</strong> boire <strong>avant</strong> d'avoir soif (~500-600 ml/h).<br><strong>• Glucides :</strong> 1 gel testé toutes les 40-45 min (4Endurance Pro, Nduranz NRGY — déjà validés en training).<br><strong>• Règle d'or :</strong> rien de nouveau le jour de la course.</p>`},
    {h:'L\'endurance mentale (la durabilité)',html:`<p>Au-delà du physique, la sortie longue entraîne ta <strong>durabilité</strong> : ta capacité à garder une foulée efficace quand la fatigue s'installe. Deux coureurs avec le même VO2max ne finissent pas pareil un marathon — c'est la durabilité qui les sépare. Et ça, ça ne se travaille qu'en accumulant des kilomètres fatigués.</p>`},
-   {h:'Le finish allure marathon',html:`<p>Quand la sortie longue se termine par quelques km à 5:20/km sur des jambes déjà entamées, tu répètes <strong>exactement le 35e km de Nice</strong>. C'est dur, c'est volontaire, et c'est ce qui fait la différence entre finir solide et marcher. Garde toujours du jus pour ce finish : tu dois le terminer en contrôle, pas cramé.</p>`}],
+   {h:'Le finish allure marathon',html:`<p>Quand la sortie longue se termine par quelques km à 5:20/km sur des jambes déjà entamées, tu répètes <strong>exactement le 35e km de Nice</strong>. C'est dur, c’est volontaire, et c'est ce qui fait la différence entre finir solide et marcher. Garde toujours du jus pour ce finish : tu dois le terminer en contrôle, pas cramé.</p>`}],
    coach:`<p>Loïc, sur tes sorties longues, deux non-négociables. <strong>Un : le fueling, dès le départ et même sans « besoin »</strong> — c'est l'automatisme à graver après ta défaillance de juin (pastilles d'électrolytes + gels testés, boire avant la soif). <strong>Deux : la régularité de l'allure</strong>, en EF (≤ 144) sur le corps. Quand un finish allure marathon est prévu, garde du jus pour le tenir en contrôle : c'est la répétition exacte du 35e km de Nice. Plus tard, ces longues iront jusqu'à 30 km avec 14 km de finish AM — la vraie séance reine de ta prépa.</p>`},
  seuil:{titre:'Seuil',icone:'🔥',sections:[
    {h:'Qu\'est-ce que le seuil ?',html:`<p>À l'effort, tes muscles produisent du <em>lactate</em>. Tant que ton corps l'élimine (la « clairance ») aussi vite qu'il le produit, tu tiens. Au-delà d'une certaine intensité — ton <strong>seuil lactique</strong> — le lactate s'accumule, l'acidité monte, et tu dois ralentir.</p>`+svgLactate()+`<p>Entraîner le seuil, c'est déplacer ce point de bascule <strong>plus haut</strong> : courir plus vite, plus longtemps, avant de « cramer ».</p>`},
