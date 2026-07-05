@@ -315,8 +315,8 @@ W(25,[ef(10,65,strides=True), ef(9,55), mp(12,72,1,6,"Premier contact sérieux a
 W(26,[ef(11,66,strides=True), ef(9,55), deraille_prep(15,90), renfo(opt=True)])
 # Semaine de course — Trail Déraille au Lac des Sapins (dim. 5 juillet)
 W(27,[ef(8,48,strides=True), ef(7,45,recovery=True), ef(6,38,recovery=True), race("deraille")])
-W(28,[ef(12,72), thresh(12,68,2,8,"Découverte du seuil : 2 blocs courts."), ef(10,60,strides=True), longrun(22,135,mp_km=5,heat=True), renfo(opt=False)])
-W(29,[ef(10,60), thresh(10,58,2,6,"Seuil allégé, semaine de récup."), ef(10,60,strides=True), longrun(16,95,heat=True,desc="Longue raccourcie, on assimile."), renfo(opt=True)])
+W(28,[ef(6,38,recovery=True), ef(8,50,recovery=True), ef(10,60), longrun(12,72,fuel=False,heat=True,desc="Sortie tranquille — pas de finish AM, juste du volume facile pour réactiver."), renfo(opt=True)])
+W(29,[ef(11,66), thresh(12,68,2,8,"Découverte du seuil : 2 blocs courts, reprise progressive après la récup."), ef(10,60,strides=True), longrun(18,108,mp_km=5,heat=True,desc="Longue qui reprend du volume, avec 5 km à allure marathon en fin."), renfo(opt=False)])
 W(30,[ef(12,72), thresh(13,75,3,8,"Seuil consolidé, 3 blocs."), pyr_hills(45), longrun(24,145,mp_km=6,heat=True), renfo(opt=False)])
 W(31,[ef(11,66,strides=True), benchmark(), ef(10,60), longrun(20,120,heat=True,desc="Longue facile après le test."), renfo(opt=False)])
 # Seuil & pré-USA
@@ -542,8 +542,8 @@ META=[
 (25,'reprise','Reprise & déblocage',52,'Modérée','≈ 85 % facile · 15 % qualité légère',"Relancer une structure : ré-ancrer le vrai easy, vivacité, premier contact allure marathon, longue + carburant."),
 (26,'general','Allègement + prépa Déraille',35,'Allégée','≈ 78 % facile · 22 % spécifique',"Volume réduit, une séance spécifique vallonnée avec répétition nutrition : on prépare la Déraille sans entamer la reprise."),
 (27,'general','Semaine course — Déraille',45,'Course','—',"Affûtage court (3 footings) + Trail Déraille au Lac des Sapins le 5 juillet. Objectif C, plaisir & test nutrition. (21 km allégés + 24 km course.)"),
-(28,'general','Seuil découverte',70,'Soutenue','≈ 80 % facile · 20 % qualité',"Premier vrai seuil, longue qui s'allonge avec bloc AM."),
-(29,'general','Allègement',56,'Légère','≈ 85 % facile · 15 % qualité',"Récupération : on assimile, le dos respire."),
+(28,'general','Récupération post-Déraille',36,'Récup','100 % facile · récupération active',"Semaine de récupération après le Trail Déraille — footings très faciles, zéro intensité. Le bloc seuil est décalé à S30 pour laisser les jambes assimiler le D+ et la chaleur. La récup n'est pas du temps perdu : c'est là que les adaptations se construisent."),
+(29,'general','Seuil découverte',62,'Soutenue','≈ 80 % facile · 20 % qualité',"Reprise progressive après la semaine de récup : premier vrai contact avec le seuil (2 blocs courts) + longue qui reprend du volume avec finish AM."),
 (30,'general','Seuil + pyramide',72,'Soutenue','≈ 80 % facile · 20 % qualité',"Seuil 3 blocs, rappel pyramide, longue 24 km dont 6 AM."),
 (31,'general','Test 10 km + recalibrage',70,'Soutenue','≈ 82 % facile · test',"Benchmark 10 km pour recaler les allures avant le bloc spécifique."),
 (32,'seuil','Seuil long',78,'Élevée','≈ 80 % facile · 20 % qualité',"Seuil long (2×15 min) + longue 26 km dont 8 AM. 2ᵉ mobilité ajoutée."),
@@ -856,6 +856,12 @@ JOURNAL=[{"sem":"S24","theme":"Récupération post-Circaète","texte":S24_REALIS
 {"sem":"S26","theme":"Allègement + prépa Déraille","texte":_S26_REVUE},{"sem":"S27","theme":"Semaine course — Trail Déraille","texte":_S27_REVUE}]
 HEATMAP={"2026-01-03": 10.1, "2026-01-05": 11.2, "2026-01-06": 13.0, "2026-01-10": 21.6, "2026-01-12": 10.0, "2026-01-13": 11.3, "2026-01-14": 11.0, "2026-01-15": 14.1, "2026-01-16": 4.0, "2026-01-17": 11.1, "2026-01-20": 11.0, "2026-01-21": 21.1, "2026-01-22": 10.0, "2026-01-23": 3.5, "2026-01-26": 10.3, "2026-01-27": 11.5, "2026-01-28": 10.0, "2026-01-29": 18.2, "2026-01-31": 11.0, "2026-02-02": 14.0, "2026-02-03": 21.2, "2026-02-05": 8.9, "2026-02-06": 11.1, "2026-02-07": 12.1, "2026-02-08": 4.2, "2026-02-09": 20.4, "2026-02-10": 10.2, "2026-02-11": 11.8, "2026-02-16": 10.2, "2026-02-17": 20.0, "2026-02-18": 10.0, "2026-02-20": 10.6, "2026-02-21": 10.0, "2026-02-22": 11.8, "2026-02-23": 10.1, "2026-02-24": 2.5, "2026-02-25": 10.0, "2026-02-26": 12.5, "2026-02-27": 5.0, "2026-03-01": 4.4, "2026-03-02": 11.3, "2026-03-03": 18.0, "2026-03-04": 20.4, "2026-03-05": 17.1, "2026-03-07": 21.2, "2026-03-09": 17.0, "2026-03-10": 16.0, "2026-03-11": 10.0, "2026-03-12": 17.2, "2026-03-15": 4.2, "2026-03-16": 18.1, "2026-03-17": 13.0, "2026-03-18": 14.2, "2026-03-19": 21.2, "2026-03-20": 10.5, "2026-03-23": 13.0, "2026-03-24": 30.1, "2026-03-26": 15.0, "2026-03-27": 10.0, "2026-03-29": 15.0, "2026-03-30": 12.0, "2026-03-31": 13.0, "2026-04-01": 10.0, "2026-04-03": 14.3, "2026-04-04": 21.2, "2026-04-06": 18.6, "2026-04-07": 15.0, "2026-04-09": 24.7, "2026-04-10": 12.0, "2026-04-13": 18.0, "2026-04-14": 14.5, "2026-04-15": 15.1, "2026-04-16": 11.0, "2026-04-18": 30.1, "2026-04-19": 3.8, "2026-04-20": 13.0, "2026-04-21": 17.0, "2026-04-22": 16.0, "2026-04-24": 10.3, "2026-04-26": 4.0, "2026-04-27": 10.7, "2026-04-30": 3.6, "2026-05-01": 42.4, "2026-05-04": 13.0, "2026-05-06": 10.5, "2026-05-08": 11.1, "2026-05-09": 11.1, "2026-05-16": 8.4, "2026-05-18": 17.0, "2026-05-20": 10.0, "2026-05-21": 21.2, "2026-05-22": 22.2, "2026-05-27": 4.6, "2026-05-28": 4.0, "2026-05-29": 16.6, "2026-05-31": 10.0, "2026-06-01": 14.0, "2026-06-02": 12.0, "2026-06-06": 29.8, "2026-06-09": 16.0, "2026-06-10": 10.3, "2026-06-12": 10.0}
 CHANGELOG=[
+  {"build":63,"date":"6 juillet 2026","sha":"","tag":"S28 → récup post-Déraille","items":[
+    "S28 transformée en récupération active (36 km, zéro intensité) après le trail",
+    "Bloc seuil décalé : S29 devient Seuil découverte (reprise progressive)",
+    "Décision coach : le D+ 957m + chaleur demandent 4-5j de vraie récup avant l'intensité",
+    "Suite du plan inchangée — marge suffisante jusqu'à Nice (8 nov)"
+  ]},
   {"build":62,"date":"6 juillet 2026","sha":"","tag":"Revue S27 — semaine course","items":[
     "Revue coach S27 : semaine course, 53 km, Déraille 2:52:48 (66e/180)",
     "REWIND S27 — 9 slides (Edwige, tempo stoppé, affûtage, course, descente, verdict A)",
