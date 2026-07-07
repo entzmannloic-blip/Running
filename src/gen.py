@@ -536,6 +536,11 @@ for n,ss in WEEKS.items():
         arr[3]["chaussure"]="Cascadia 19"
         arr[3]["realise"]={"statut":"fait","km":23.3,"temps":"2:52:48","allure":"7:12/km","fc_moy":168,"fc_max":181,"rpe_ressenti":8,"commentaire":"TRAIL DÉRAILLE · 23,3 km · D+ 957 m · 66e/gen · 11e/18 M0 · FC 168/181 (88% FCmax) · 2388 kcal · Cascadia 19 · chaleur intense · ~4h sommeil · 3 gels + 3L (1L électrolytes). Course de gestion réussie.","pr":0,"ach":1,"pr_detail":[],"revue":"<strong>Course de gestion réussie dans des conditions extrêmes.</strong> ~4h de sommeil, zéro prépa trail depuis la Circaète, forte chaleur — et tu finis 66e en courant, sans effondrement. FC moyenne 168 (88% FCmax) tenue sur 2h52 : la stratégie de gestion a parfaitement fonctionné.<br><br><strong>Le mur final était thermique, pas nutritionnel.</strong> Sur les 2 derniers km, ta FC reste à 170 pendant que l'allure s'effondre — signature déshydratation + chaleur, pas de panne de sucre. Ta descente reste une arme (km 18 à 4:46/km !). <strong>Voir le détail complet dans le Palmarès.</strong>"}
         SEANCES_BY_WEEK[str(n)]=arr
+    if n==28:
+        arr[0]["date"]="2026-07-07"
+        arr[0]["chaussure"]="Novablast 5 J"
+        arr[0]["realise"]={"statut":"fait","km":11.03,"temps":"1h07","allure":"6:02/km","fc_moy":148,"fc_max":192,"rpe_ressenti":4,"commentaire":"11,03 km en 1h07 · matin 9h07 · FC 148/192 · cadence 85 · D+ 39 m · RE 106 · 880 kcal · Novablast 5 J · 6 PRs · avec Anis (Yannis). Km 1-9 calés sur lui (~6:20-6:30, FC 138-153, récup pure), puis gros dernier km solo à 4:14/km avec FC 184 (max 192 = FCmax). J+2 Déraille, aucune douleur, jambes légères.","pr":6,"ach":6,"pr_detail":["Finish km 11 à 4:14/km"],"revue":"<strong>Le bon usage d'une récup active — avec un finish qui en dit long sur ton état.</strong> Km 1 à 9 calés sur Anis à 6:20-6:30/km, FC 138-153 : c'est <em>encore plus lent</em> que la prescription récup, et c'est exactement ce qu'il fallait à J+2 du trail. Circulation, zéro charge, plaisir partagé. Le manuel du coach.<br><br><strong>Puis le dernier km à 4:14/km, FC 184, max 192.</strong> Ta FCmax exacte atteinte, 2 jours après 957 m de D+, sans jambes lourdes et sans douleur. Ce finish me dit une chose claire : <strong>ton système neuromusculaire est complètement récupéré du trail.</strong> L'énergie est là, le trail est digéré.<br><br><strong>Le bémol honnête :</strong> sur une séance étiquetée récup, ce dernier km à FCmax n'était pas obligatoire, tu le dis toi-même. Une vraie récup reste sous 75% FCmax. Mais ici ça ne compromet rien : c'était court (1 km), le reste était vraiment très facile, et ton corps encaisse bien. À ne pas répéter à chaque footing — mais ponctuellement, sur des jambes qui en réclament, aucun problème.<br><br><strong>L'enseignement :</strong> tu es en avance sur ta récup. On garde S28 en récup comme prévu (pas de bêtise), mais on abordera le seuil de S29 avec sérénité — ton corps répond mieux que le plan ne le supposait."}
+        SEANCES_BY_WEEK[str(n)]=arr
 
 META=[
 (24,'reprise','Récupération',28,'Légère','—',"Absorber La Circaète : repos actif, footings très faciles, mobilité du dos."),
@@ -593,7 +598,7 @@ PHASES=[
 COUL={p["id"]:p["c"] for p in PHASES}
 GEAR=[
   {"marque":"HOKA","modele":"Clifton 10","km":1114},
-  {"marque":"ASICS","modele":"Novablast 5 J","km":537},
+  {"marque":"ASICS","modele":"Novablast 5 J","km":548},
   {"marque":"ASICS","modele":"Novablast 5 V","km":0},
   {"marque":"ASICS","modele":"Gel Pulse 16","km":225},
   {"marque":"Brooks","modele":"Cascadia 19","km":219},
@@ -856,6 +861,11 @@ JOURNAL=[{"sem":"S24","theme":"Récupération post-Circaète","texte":S24_REALIS
 {"sem":"S26","theme":"Allègement + prépa Déraille","texte":_S26_REVUE},{"sem":"S27","theme":"Semaine course — Trail Déraille","texte":_S27_REVUE}]
 HEATMAP={"2026-01-03": 10.1, "2026-01-05": 11.2, "2026-01-06": 13.0, "2026-01-10": 21.6, "2026-01-12": 10.0, "2026-01-13": 11.3, "2026-01-14": 11.0, "2026-01-15": 14.1, "2026-01-16": 4.0, "2026-01-17": 11.1, "2026-01-20": 11.0, "2026-01-21": 21.1, "2026-01-22": 10.0, "2026-01-23": 3.5, "2026-01-26": 10.3, "2026-01-27": 11.5, "2026-01-28": 10.0, "2026-01-29": 18.2, "2026-01-31": 11.0, "2026-02-02": 14.0, "2026-02-03": 21.2, "2026-02-05": 8.9, "2026-02-06": 11.1, "2026-02-07": 12.1, "2026-02-08": 4.2, "2026-02-09": 20.4, "2026-02-10": 10.2, "2026-02-11": 11.8, "2026-02-16": 10.2, "2026-02-17": 20.0, "2026-02-18": 10.0, "2026-02-20": 10.6, "2026-02-21": 10.0, "2026-02-22": 11.8, "2026-02-23": 10.1, "2026-02-24": 2.5, "2026-02-25": 10.0, "2026-02-26": 12.5, "2026-02-27": 5.0, "2026-03-01": 4.4, "2026-03-02": 11.3, "2026-03-03": 18.0, "2026-03-04": 20.4, "2026-03-05": 17.1, "2026-03-07": 21.2, "2026-03-09": 17.0, "2026-03-10": 16.0, "2026-03-11": 10.0, "2026-03-12": 17.2, "2026-03-15": 4.2, "2026-03-16": 18.1, "2026-03-17": 13.0, "2026-03-18": 14.2, "2026-03-19": 21.2, "2026-03-20": 10.5, "2026-03-23": 13.0, "2026-03-24": 30.1, "2026-03-26": 15.0, "2026-03-27": 10.0, "2026-03-29": 15.0, "2026-03-30": 12.0, "2026-03-31": 13.0, "2026-04-01": 10.0, "2026-04-03": 14.3, "2026-04-04": 21.2, "2026-04-06": 18.6, "2026-04-07": 15.0, "2026-04-09": 24.7, "2026-04-10": 12.0, "2026-04-13": 18.0, "2026-04-14": 14.5, "2026-04-15": 15.1, "2026-04-16": 11.0, "2026-04-18": 30.1, "2026-04-19": 3.8, "2026-04-20": 13.0, "2026-04-21": 17.0, "2026-04-22": 16.0, "2026-04-24": 10.3, "2026-04-26": 4.0, "2026-04-27": 10.7, "2026-04-30": 3.6, "2026-05-01": 42.4, "2026-05-04": 13.0, "2026-05-06": 10.5, "2026-05-08": 11.1, "2026-05-09": 11.1, "2026-05-16": 8.4, "2026-05-18": 17.0, "2026-05-20": 10.0, "2026-05-21": 21.2, "2026-05-22": 22.2, "2026-05-27": 4.6, "2026-05-28": 4.0, "2026-05-29": 16.6, "2026-05-31": 10.0, "2026-06-01": 14.0, "2026-06-02": 12.0, "2026-06-06": 29.8, "2026-06-09": 16.0, "2026-06-10": 10.3, "2026-06-12": 10.0}
 CHANGELOG=[
+  {"build":64,"date":"7 juillet 2026","sha":"","tag":"S28 s1 — récup + finish FCmax","items":[
+    "S28 séance 1 loggée : 11 km avec Anis · récup pure + dernier km à 4:14/km FC192",
+    "Revue coach : système neuromusculaire complètement récupéré du trail (J+2)",
+    "Novablast 5 J : 537 → 548 km"
+  ]},
   {"build":63,"date":"6 juillet 2026","sha":"","tag":"S28 → récup post-Déraille","items":[
     "S28 transformée en récupération active (36 km, zéro intensité) après le trail",
     "Bloc seuil décalé : S29 devient Seuil découverte (reprise progressive)",
