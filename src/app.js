@@ -93,6 +93,77 @@ function prochaineSeance(){
 }
 
 /* ACWR dynamique — méthode EMA (même que PMC) recalculé à chaque ouverture */
+
+/* ===== Recalcul dynamique des KPI depuis les séances réelles (à chaque chargement) ===== */
+function _weekNumFromKey(k){var m=String(k).match(/(\d+)/);return m?+m[1]:0;}
+function _reFromSeance(s){
+  // 1) RE réel parsé du commentaire ("RE 106")
+  if(s.realise&&s.realise.commentaire){var m=s.realise.commentaire.match(/RE\s+(\d+)/);if(m)return +m[1];}
+  // 2) sinon estimation depuis km + type
+  if(!s.realise||!s.realise.km)return 0;
+  var km=s.realise.km,t=(s.type||'').toLowerCase();
+  var coef=8;
+  if(/trail/.test(t))coef=25;
+  else if(/seuil|tempo|specifique|spécifique|marathon/.test(t))coef=13;
+  else if(/longue|long/.test(t))coef=10;
+  else if(/récup|recup|recovery/.test(t))coef=6;
+  else if(/ef|footing|aérobie|aerobie|technique/.test(t))coef=8;
+  return Math.round(km*coef);
+}
+function _ckRebuild(){
+  if(typeof SEANCES_BY_WEEK==='undefined'||typeof _CK==='undefined')return;
+  // Collecter les semaines avec des séances réalisées
+  var weeks=Object.keys(SEANCES_BY_WEEK).map(_weekNumFromKey).filter(function(n){return n>0;}).sort(function(a,b){return a-b;});
+  // Agréger km / RE / D+ / allure / FC / cadence réels par semaine
+  var agg={};
+  weeks.forEach(function(wn){
+    var arr=SEANCES_BY_WEEK[String(wn)]||SEANCES_BY_WEEK[wn]||[];
+    var km=0,re=0,dplus=0,fcSum=0,fcN=0,cadSum=0,cadN=0,paceSum=0,paceN=0,hasReal=false;
+    arr.forEach(function(s){
+      var r=s.realise;
+      if(r&&(r.statut==='fait'||r.statut==='partiel')&&r.km){
+        hasReal=true;km+=r.km;re+=_reFromSeance(s);
+        var dm=r.commentaire&&r.commentaire.match(/D\+\s*(\d+)/);if(dm)dplus+=+dm[1];
+        if(r.fc_moy){fcSum+=r.fc_moy;fcN++;}
+        var cm=r.commentaire&&r.commentaire.match(/cadence\s+(\d+)/);if(cm){cadSum+=+cm[1];cadN++;}
+        if(r.allure){var pm=r.allure.match(/(\d+):(\d+)/);if(pm){paceSum+=(+pm[1])*60+(+pm[2]);paceN++;}}
+      }
+    });
+    if(hasReal)agg[wn]={km:+km.toFixed(1),re:re,dplus:dplus,fc:fcN?Math.round(fcSum/fcN):null,cad:cadN?Math.round(cadSum/cadN):null,pace:paceN?Math.round(paceSum/paceN):null};
+  });
+  var realWeeks=Object.keys(agg).map(Number).sort(function(a,b){return a-b;});
+  if(realWeeks.length<2)return; // pas assez de données, on garde _CK figé
+  // ACWR EMA (CTL 42j / ATL 7j) sur la série RE complète
+  var reSeries=realWeeks.map(function(w){return agg[w].re;});
+  var aC=1-Math.exp(-7/42),aA=1-Math.exp(-7/7);
+  var acwrByWeek={},ctl=reSeries[0],atl=reSeries[0];
+  realWeeks.forEach(function(w,i){
+    var v=agg[w].re;
+    if(i>0){ctl=(1-aC)*ctl+aC*v;atl=(1-aA)*atl+aA*v;}
+    acwrByWeek[w]=ctl>0?+((atl/ctl).toFixed(2)):1.0;
+  });
+  // Reconstruire les fenêtres 2/4/8/12 de _CK
+  function lastN(n){return realWeeks.slice(-n);}
+  function wlabels(ws){return ws.map(function(w){return 'S'+w;});}
+  [2,4,8,12].forEach(function(N){
+    var ws=lastN(N);var lbl=wlabels(ws);
+    if(_CK.VOL)_CK.VOL[N]={w:lbl,p:ws.map(function(){return null;}),a:ws.map(function(w){return agg[w].km;})};
+    if(_CK.RE)_CK.RE[N]={w:lbl,v:ws.map(function(w){return agg[w].re;})};
+    if(_CK.ACWR)_CK.ACWR[N]={w:lbl,v:ws.map(function(w){return acwrByWeek[w];})};
+    if(_CK.DPLUS)_CK.DPLUS[N]={w:lbl,v:ws.map(function(w){return agg[w].dplus;})};
+    if(_CK.FCZ&&agg[ws[ws.length-1]].fc){/* FCZ gardé tel quel, structure complexe */}
+    if(_CK.CAD)_CK.CAD[N]={w:lbl,v:ws.map(function(w){return agg[w].cad;})};
+    if(_CK.PACE)_CK.PACE[N]={w:lbl,v:ws.map(function(w){return agg[w].pace;})};
+  });
+  // Mettre à jour ACWR_DATA (valeur de secours) avec la dernière valeur réelle
+  if(typeof ACWR_DATA!=='undefined'){
+    var lastW=realWeeks[realWeeks.length-1];
+    ACWR_DATA.acwr=acwrByWeek[lastW];
+    ACWR_DATA.charge7j=agg[lastW].re;
+    var s28=realWeeks.slice(-4);ACWR_DATA.charge28j=s28.reduce(function(a,w){return a+agg[w].re;},0);
+  }
+}
+
 function _dynamicACWR(){
   const today=new Date();today.setHours(0,0,0,0);
   const curWk=isoWeek(today);
@@ -1943,7 +2014,7 @@ function initSessionMenu(){
 </div>
 <div id="sm-toast" class="sm-toast"></div>`);
 }
-function _afterLog(wk,id){renderHeader();renderPlan();if(document.getElementById('vue-cockpit').style.display!=='none'){renderCockpit();renderDash();}ouvrirSeance(wk,id);setTimeout(()=>{const b=document.querySelector&&document.querySelector('.lf-save');if(b){b.textContent='Enregistré ✓';b.classList.add('lf-saved');setTimeout(()=>{if(b)b.textContent='Enregistrer';},1800);}},80);}
+function _afterLog(wk,id){try{_ckRebuild();}catch(e){}renderHeader();renderPlan();if(document.getElementById('vue-cockpit').style.display!=='none'){renderCockpit();renderDash();}ouvrirSeance(wk,id);setTimeout(()=>{const b=document.querySelector&&document.querySelector('.lf-save');if(b){b.textContent='Enregistré ✓';b.classList.add('lf-saved');setTimeout(()=>{if(b)b.textContent='Enregistrer';},1800);}},80);}
 function logForm(wk,se){
   const r=se.realise||{statut:'a_faire'};const logged=r.statut!=='a_faire';
   _pendingStatut=logged?r.statut:'fait';
@@ -2376,7 +2447,7 @@ function initBarre(se){const piste=document.getElementById('piste');if(!piste)re
     e.addEventListener('click',()=>{if(segActif)segActif.classList.remove('actif');if(segActif===e){segActif=null;pan.classList.remove('visible');return;}segActif=e;e.classList.add('actif');dnom.textContent=seg.nom;drole.textContent=seg.role;dgr.innerHTML=`<div><div class="di-label">Durée</div><div class="di-val">${fmt(seg.duree)}</div></div><div><div class="di-label">Bloc</div><div class="di-val">${seg.bloc}</div></div><div><div class="di-label">Début</div><div class="di-val">${fmt(seg.debut)}</div></div><div><div class="di-label">Fin</div><div class="di-val">${fmt(seg.fin)}</div></div>`;pan.classList.add('visible');});
     piste.appendChild(e);});
 }
-hydrateLogs();hydrateOverrides();initQuickLog();initCreneaux();initSessionMenu();initInstall();initVersionPanel();initFormeHelp();initCkHelp();initCoach();renderHeader();renderPlan();rwAuto();setTimeout(checkAutoSync,800);
+hydrateLogs();hydrateOverrides();try{_ckRebuild();}catch(e){console.warn('_ckRebuild',e);}initQuickLog();initCreneaux();initSessionMenu();initInstall();initVersionPanel();initFormeHelp();initCkHelp();initCoach();renderHeader();renderPlan();rwAuto();setTimeout(checkAutoSync,800);
 if('serviceWorker'in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
 
 if(typeof window!=='undefined'){window.addEventListener('load',function(){setTimeout(function(){try{_revealScan()}catch(e){}},350)});}
