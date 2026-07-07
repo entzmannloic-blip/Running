@@ -1524,22 +1524,22 @@ ${P.slice().sort((a,b)=>b.date.localeCompare(a.date)).map((p,i)=>{
    =================================================================== */
 const _CK={
   VOL:{
-  2:{w:["S25","S26"],p:[null,null],a:[56.6,11.3]},
-  4:{w:["S23","S24","S25","S26"],p:[null,null,null,null],a:[55.9,36.4,56.6,11.3]},
-  8:{w:["S19","S20","S21","S22","S23","S24","S25","S26"],p:[null,null,null,null,null,null,null,null],a:[38.7,8.4,70.4,35.2,55.9,36.4,56.6,11.3]},
-  12:{w:["S15","S16","S17","S18","S19","S20","S21","S22","S23","S24","S25","S26"],p:[null,null,null,null,null,null,null,null,null,null,null,null],a:[60.2,88.8,56.4,53.1,38.7,8.4,70.4,35.2,55.9,36.4,56.6,11.3]}
+  2:{w:["S27","S28"],p:[null,null],a:[53.4,11.0]},
+  4:{w:["S25","S26","S27","S28"],p:[null,null,null,null],a:[56.6,21.9,53.4,11.0]},
+  8:{w:["S21","S22","S23","S24","S25","S26","S27","S28"],p:[null,null,null,null,null,null,null,null],a:[70.4,35.2,55.9,36.4,56.6,21.9,53.4,11.0]},
+  12:{w:["S17","S18","S19","S20","S21","S22","S23","S24","S25","S26","S27","S28"],p:[null,null,null,null,null,null,null,null,null,null,null,null],a:[56.4,53.1,38.7,8.4,70.4,35.2,55.9,36.4,56.6,21.9,53.4,11.0]}
 },
   RE:{
-  2:{w:["S25","S26"],v:[531,105]},
-  4:{w:["S23","S24","S25","S26"],v:[901,255,531,105]},
-  8:{w:["S19","S20","S21","S22","S23","S24","S25","S26"],v:[418,85,818,365,901,255,531,105]},
-  12:{w:["S15","S16","S17","S18","S19","S20","S21","S22","S23","S24","S25","S26"],v:[567,821,410,542,418,85,818,365,901,255,531,105]}
+  2:{w:["S27","S28"],v:[889,106]},
+  4:{w:["S25","S26","S27","S28"],v:[531,116,889,106]},
+  8:{w:["S21","S22","S23","S24","S25","S26","S27","S28"],v:[818,365,901,255,531,116,889,106]},
+  12:{w:["S17","S18","S19","S20","S21","S22","S23","S24","S25","S26","S27","S28"],v:[410,542,418,85,818,365,901,255,531,116,889,106]}
 },
   ACWR:{
-  2:{w:["S25","S26"],v:[0.88,0.84]},
-  4:{w:["S23","S24","S25","S26"],v:[0.75,0.91,0.88,0.84]},
-  8:{w:["S19","S20","S21","S22","S23","S24","S25","S26"],v:[0.93,0.68,0.72,0.67,0.75,0.91,0.88,0.84]},
-  12:{w:["S15","S16","S17","S18","S19","S20","S21","S22","S23","S24","S25","S26"],v:[1.0,1.03,0.98,0.96,0.93,0.68,0.72,0.67,0.75,0.91,0.88,0.84]}
+  2:{w:["S27","S28"],v:[1.25,0.67]},
+  4:{w:["S25","S26","S27","S28"],v:[0.95,0.56,1.25,0.67]},
+  8:{w:["S21","S22","S23","S24","S25","S26","S27","S28"],v:[1.13,0.9,1.3,0.84,0.95,0.56,1.25,0.67]},
+  12:{w:["S17","S18","S19","S20","S21","S22","S23","S24","S25","S26","S27","S28"],v:[0.91,0.94,0.84,0.47,1.13,0.9,1.3,0.84,0.95,0.56,1.25,0.67]}
 },
   DPLUS:{
   2:{w:["S25","S26"],v:[208,43]},
@@ -1750,7 +1750,13 @@ function _ckRenderAll(win){
   document.getElementById('ck-vol-sub').textContent=totalKm.toFixed(0)+' km · '+W+' sem.';
   _ckBar('ckRE','ckREW','ckRET','ckREX',D.RE[W],{col:'#0d9488',h:80});
   _ckLine('ckACWR','ckACWRW','ckACWRT','ckACWRX',D.ACWR[W].w,[{v:D.ACWR[W].v,color:'#f59e0b',lbl:''}],v=>v.toFixed(2),{h:65,fill:false,zones:[[0,0.8,'#0d9488'],[0.8,1.3,'#16a34a'],[1.3,2,'#ef4444']]});
-  const al=D.ACWR[W].v[D.ACWR[W].v.length-1];document.getElementById('ck-acwr-val').textContent=al.toFixed(2);document.getElementById('ck-acwr-val').style.color=al>1.3?'#ef4444':al<0.8?'#0d9488':'#16a34a';
+  const al=D.ACWR[W].v[D.ACWR[W].v.length-1];
+  var _av=document.getElementById('ck-acwr-val');_av.textContent=al.toFixed(2);
+  var _acol=al>1.5?'#ef4444':al>1.3?'#f59e0b':al<0.8?'#0d9488':'#16a34a';
+  _av.style.color=_acol;_av.classList.remove('warn');
+  var _alab=al>1.5?'\u{1F534} surcharge':al>1.3?'\u26a0 \u00e9lev\u00e9':al<0.8?'frais / all\u00e8gement':'ma\u00eetris\u00e9';
+  var _akd=_av.parentElement.querySelector('.ck-kd');if(_akd){_akd.textContent=_alab;_akd.style.color=_acol;_akd.classList.remove('warn');}
+  var _av2=document.getElementById('ck-acwr-val2');if(_av2){_av2.textContent=al.toFixed(2);_av2.style.color=_acol;}
   _ckBar('ckDP','ckDPW','ckDPT','ckDPX',D.DPLUS[W],{col:'#94a3b8',unit:' m',h:75});
   _ckLine('ckZ2','ckZ2W','ckZ2T','ckZ2X',D.Z2[W].w,[{v:D.Z2[W].v,color:'#0d9488',lbl:'/km'}],_ckSmin,{h:85});
   document.getElementById('ck-z2-val').textContent=_ckSmin(D.Z2[W].v[D.Z2[W].v.length-1]);
@@ -1790,7 +1796,7 @@ function renderCockpit(){
 <div class="ck-kpis">
   <div class="ck-kpi"><div class="ck-kv" id="ck-km-val">—<span class="ck-ku">km</span></div><div class="ck-kl" id="ck-km-lbl">fenêtre</div><div class="ck-kd up">cumulé</div></div>
   <div class="ck-kpi"><div class="ck-kv" id="ck-re-val">—</div><div class="ck-kl" id="ck-re-lbl">Effort</div><div class="ck-kd up">cumulé</div></div>
-  <div class="ck-kpi"><div class="ck-kv warn" id="ck-acwr-val">1.42</div><div class="ck-kl">ACWR</div><div class="ck-kd warn">⚠ élevé</div></div>
+  <div class="ck-kpi"><div class="ck-kv" id="ck-acwr-val">0.69</div><div class="ck-kl">ACWR</div><div class="ck-kd">frais</div></div>
   <div class="ck-kpi"><div class="ck-kv">51.6</div><div class="ck-kl">VO₂max</div><div class="ck-kd up">↑ +0.4</div></div>
 </div>
 <div class="ck-sec">📊 Volume &amp; charge</div>
@@ -1799,7 +1805,7 @@ function renderCockpit(){
 ${card('ckVol','Volume hebdomadaire','',null,null,90,'<div style="font-size:9px;color:#94a3b8;text-align:center;margin-top:4px">touche une barre · ■ prévu</div>','vol')}
 <div class="ck-cs" id="ck-vol-sub" style="margin:-4px 0 8px;padding:0 2px"></div>
 ${card('ckRE','⚡ Relative Effort / sem.','charge Strava réelle',null,null,80,'<div style="font-size:9px;color:#94a3b8;text-align:center;margin-top:4px">glisse →</div>','re')}
-<div class="ck-card"><div class="ck-ch"><div><div class="ck-ct">🩹 ACWR — risque blessure<button class="ck-help" onclick="event.stopPropagation();openCkHelp('acwr')">?</button></div><div class="ck-cs">ratio charge aiguë / chronique</div></div><div style="font-size:26px;font-weight:700;line-height:1" id="ck-acwr-val2">1.42</div></div><div class="ck-cw" id="ckACWRW"><svg id="ckACWR" height="65" style="display:block;width:100%"></svg><div class="ck-tt" id="ckACWRT"></div></div><div class="ck-xl" id="ckACWRX"></div></div>
+<div class="ck-card"><div class="ck-ch"><div><div class="ck-ct">🩹 ACWR — risque blessure<button class="ck-help" onclick="event.stopPropagation();openCkHelp('acwr')">?</button></div><div class="ck-cs">ratio charge aiguë / chronique</div></div><div style="font-size:26px;font-weight:700;line-height:1" id="ck-acwr-val2">0.69</div></div><div class="ck-cw" id="ckACWRW"><svg id="ckACWR" height="65" style="display:block;width:100%"></svg><div class="ck-tt" id="ckACWRT"></div></div><div class="ck-xl" id="ckACWRX"></div></div>
 ${card('ckDP','⛰ Dénivelé D+','',null,'m',75,'','dp')}
 <div class="ck-sec">🔋 Moteur aérobie</div>
 <div class="ck-card"><div class="ck-ch"><div><div class="ck-ct">Z2 pace — allure EF à FC&lt;144<button class="ck-help" onclick="event.stopPropagation();openCkHelp('z2')">?</button></div><div class="ck-cs">indicateur n°1 du développement</div></div><div style="text-align:right"><div style="font-size:22px;font-weight:700;color:#0d9488" id="ck-z2-val">5:54</div><div class="ck-cs">/km</div></div></div><div style="font-size:10px;font-weight:600;margin:3px 0 6px" id="ck-z2-delta"></div><div class="ck-cw" id="ckZ2W"><svg id="ckZ2" height="85" style="display:block;width:100%"></svg><div class="ck-tt" id="ckZ2T"></div></div><div class="ck-xl" id="ckZ2X"></div></div>
