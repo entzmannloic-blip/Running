@@ -1,4 +1,13 @@
 # CLAUDE.md — Contexte Running PWA
+
+## ⚠ Learning — LIRE EN PREMIER
+Ce projet apprend de ses erreurs. **Avant tout push**, lancer depuis /tmp :
+```
+python3 scripts/preflight.py
+```
+Il encode mécaniquement les erreurs passées (pipeline stale, build désync, syntaxe JS, emoji surrogate-pair, mauvaise semaine ISO, token en clair, HTML tronqué). Un échec critique = **ne pas pousser**.
+
+Le détail de chaque leçon (cause racine + garde-fou) est dans **docs/LESSONS.md**. Quand une nouvelle erreur survient : la corriger, la consigner dans LESSONS.md, et si elle est mécanisable ajouter un check dans preflight.py.
 > Ce fichier est lu en premier par Claude Code avant toute action sur ce repo.
 > Documentation complète : docs/TECHNICAL.md
 

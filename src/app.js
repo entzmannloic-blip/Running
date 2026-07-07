@@ -1422,7 +1422,7 @@ function _cBuildSystemPrompt(){
   var seancesSem=sbw[curW]||[];
   var loggedSem=seancesSem.filter(function(s){return s.realise&&(s.realise.statut==='fait'||s.realise.statut==='partiel');});
   var loggedAll=Object.values(sbw).flat().filter(function(s){return s.realise&&s.realise.km;}).slice(-8).map(function(s){return s.type.substring(0,20)+' '+s.realise.km+'km '+s.realise.allure+' FC'+s.realise.fc_moy+'/'+s.realise.fc_max+' RPE'+s.realise.rpe_ressenti;});
-  var gearLines=(typeof GEAR!=='undefined'?GEAR:[]).map(function(g){return (g.km>900?'\u26a0\ufe0f':g.km>600?'\ud83d\udfe1':'\ud83d\udfe2')+' '+g.marque+' '+g.modele+' \u2014 '+g.km+'km';}).join('\n');
+  var gearLines=(typeof GEAR!=='undefined'?GEAR:[]).map(function(g){return (g.km>900?'\u26a0\ufe0f':g.km>600?'\u{1F7E1}':'\u{1F7E2}')+' '+g.marque+' '+g.modele+' \u2014 '+g.km+'km';}).join('\n');
   var vigLines=(typeof VIGILANCE!=='undefined'?VIGILANCE:[]).map(function(v){return '- '+v.t+(v.d?': '+v.d:'');}).join('\n');
   var canEl=document.getElementById('canicule-banner');
   var isHot=canEl&&canEl.style.display!=='none'&&canEl.textContent.trim()?'OUI \u2014 '+(canEl.textContent.trim()):'non';
@@ -1443,10 +1443,10 @@ function openCoach(){
       var acwr=(typeof _dynamicACWR==='function')?_dynamicACWR().toFixed(2):'—';
       var pmc=(typeof _pmcCompute==='function')?_pmcCompute(8):null;
       var tsb=pmc&&pmc.length?((pmc[pmc.length-1].tsb>=0?'+':'')+pmc[pmc.length-1].tsb.toFixed(0)):'—';
-      var emoji=forme.score>=82?'\ud83d\udfe2':forme.score>=68?'\ud83d\udfe1':'\ud83d\udd34';
+      var emoji=forme.score>=82?'\u{1F7E2}':forme.score>=68?'\u{1F7E1}':'\u{1F534}';
       var pr=typeof PROFIL!=='undefined'?PROFIL:{prenom:'toi'};
       var next=rdays.length?rdays[0]:null;
-      var intro='Bonjour '+pr.prenom+' \ud83d\udc4b<br><br>'+emoji+' <strong>Forme '+forme.score+'/100</strong> \u00b7 TSB '+tsb+' \u00b7 ACWR '+acwr+(next?'<br><br>\ud83c\udfc1 <strong>J-'+next.j+' avant '+next.nom+'.</strong>':'')+'<br><br>Je connais ton plan, tes s\u00e9ances logg\u00e9es, tes chaussures et tes courses. Pose-moi n\u2019importe quelle question.';
+      var intro='Bonjour '+pr.prenom+' \u{1F44B}<br><br>'+emoji+' <strong>Forme '+forme.score+'/100</strong> \u00b7 TSB '+tsb+' \u00b7 ACWR '+acwr+(next?'<br><br>\u{1F3C1} <strong>J-'+next.j+' avant '+next.nom+'.</strong>':'')+'<br><br>Je connais ton plan, tes s\u00e9ances logg\u00e9es, tes chaussures et tes courses. Pose-moi n\u2019importe quelle question.';
       _cAddMsg('coach',intro);
       _coachHistory.push({role:'assistant',content:intro.replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim()});
     },300);
