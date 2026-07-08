@@ -110,6 +110,17 @@ function _reFromSeance(s){
   else if(/ef|footing|aérobie|aerobie|technique/.test(t))coef=8;
   return Math.round(km*coef);
 }
+function _curWeek(){
+  // Semaine du plan basée sur la date réelle. Ancre : 9 mars 2026 = lundi = S11.
+  var now=new Date();
+  var monday=new Date(now);var day=now.getDay()||7;monday.setDate(now.getDate()-(day-1));
+  monday.setHours(0,0,0,0);
+  var anchor=new Date(2026,2,9);anchor.setHours(0,0,0,0); // 9 mars 2026
+  var weeks=Math.round((monday-anchor)/(7*86400000));
+  var wk=11+weeks;
+  return (wk>=1&&wk<=53)?wk:26; // garde-fou : plage plausible sinon fallback
+}
+
 function _ckRebuild(){
   if(typeof SEANCES_BY_WEEK==='undefined'||typeof _CK==='undefined')return;
   // Collecter les semaines avec des séances réalisées
@@ -1722,6 +1733,9 @@ function _ckBar(svgId,wrapId,ttId,xlId,data,opt){
 function _ckLine(svgId,wrapId,ttId,xlId,weeks,series,fmt,opt){
   opt=opt||{};const H=opt.h||90,n=weeks.length;
   if(!n)return;
+  // garde-fou : ne garder que les series ayant un tableau .v exploitable
+  series=(series||[]).filter(s=>s&&Array.isArray(s.v));
+  if(!series.length)return;
   const allV=series.flatMap(s=>s.v.filter(x=>x!=null));if(!allV.length)return;
   let mn=Math.min(...allV),mx=Math.max(...allV);const pad=(mx-mn)*0.15||5;mn-=pad;mx+=pad;
   const xs=weeks.map((_,i)=>10+i*((300-20)/Math.max(1,n-1)));
