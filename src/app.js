@@ -2,7 +2,7 @@
 function rpeColor(r){return r<=3?'#16a34a':r<=5?'#0d9488':r<=6.9?'#f59e0b':r<=8?'#f59e0b':'#ef4444';}
 function rpeScale(r){let h='';for(let i=1;i<=10;i++){const on=i<=Math.round(r);h+=`<div class="rpe-seg" style="background:${on?rpeColor(r):''}"></div>`;}return h;}
 function catBadge(c){return c==='specifique'?'<span class="cat-badge cat-specifique">Spécifique</span>':'<span class="cat-badge cat-classique">Classique</span>';}
-function stChip(st){const m={a_faire:['st-afaire','À faire'],fait:['st-fait','Fait ✓'],partiel:['st-partiel','Partiel'],manque:['st-manque','Manqué']};const x=m[st]||m.a_faire;return `<span class="st-chip ${x[0]}">${x[1]}</span>`;}
+function stChip(st){const m={a_faire:['st-afaire','À faire'],fait:['st-fait','Fait ✓'],partiel:['st-partiel','Partiel'],manque:['st-manque','Manqué'],skipped:['st-manque','Sautée']};const x=m[st]||m.a_faire;return `<span class="st-chip ${x[0]}">${x[1]}</span>`;}
 function prCelebration(o){if(!o)return'';const pr=o.pr||0,ach=o.ach||0;if(pr+ach<=0)return'';
   const parts=[];if(pr>0)parts.push(`<span class="prc-stat"><span class="prc-n">${pr}</span> record${pr>1?'s':''} perso</span>`);
   if(ach>0)parts.push(`<span class="prc-stat"><span class="prc-n">${ach}</span> trophée${ach>1?'s':''} de segment</span>`);
