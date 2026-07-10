@@ -1180,6 +1180,12 @@ function logSeance(wk,id){
 function unlogSeance(wk,id){const se=findSeance(wk,id);if(!se)return;const logs=loadLogs();delete logs[logId(wk,id)];saveLogs(logs);se.realise={statut:'a_faire'};_afterLog(wk,id);}
 /* ===== Cockpit — aides contextuelles ===== */
 const _CK_HELP={
+  forme:{t:'Forme du jour',c:'#0d9488',body:`<p>La <strong>Forme du jour</strong> est un score de synthèse sur 100 qui résume ton état de préparation actuel, recalculé à chaque ouverture à partir de tes vraies séances loggées.</p>
+    <div class="ch-rule"><div class="ch-dot" style="background:#0d9488"></div><div><strong>ACWR (30%)</strong> : équilibre entre ta charge récente et ta charge de fond. Le cœur du score.</div></div>
+    <div class="ch-rule"><div class="ch-dot" style="background:#16a34a"></div><div><strong>Adhérence (25%)</strong> : régularité sur les 2 dernières semaines — as-tu fait ce qui était prévu ?</div></div>
+    <div class="ch-rule"><div class="ch-dot" style="background:#0891b2"></div><div><strong>Allure Z2 (25%)</strong> : progression de ton allure en endurance fondamentale, l'indicateur n°1 du moteur aérobie.</div></div>
+    <div class="ch-rule"><div class="ch-dot" style="background:#f59e0b"></div><div><strong>Fraîcheur (20%)</strong> : ta charge du moment, pour capter la fatigue accumulée.</div></div>
+    <div class="ch-tip">💡 Un score élevé = bon moment pour une séance qualité. Un score bas = privilégie la récup ou l'endurance facile.</div>`},
   pmc:{t:'PMC — Fitness · Fatigue · Forme',c:'#0d9488',body:`<p>Le <strong>Performance Management Chart</strong> (PMC) est le graphe fondamental du coaching de haut niveau — c'est ce qu'utilisent les entraîneurs TrainingPeaks. Il montre l'équilibre entre ta construction de forme et ta fatigue.</p>
     <div class="ch-rule"><div class="ch-dot" style="background:#0d9488"></div><div><strong>CTL — Fitness (teal)</strong> : Charge chronique sur 42 jours. Représente ta forme physique accumulée. Monte lentement avec l'entraînement, descend lentement avec le repos.</div></div>
     <div class="ch-rule"><div class="ch-dot" style="background:#f59e0b"></div><div><strong>ATL — Fatigue (orange tirets)</strong> : Charge aiguë sur 7 jours. Réagit vite aux variations de charge. Monte rapidement après une grosse semaine, descend vite avec le repos.</div></div>
@@ -1852,6 +1858,7 @@ function _ckRenderAll(win){
   const kmLbl=document.getElementById('ck-km-lbl');if(kmLbl){kmLbl.textContent=W+' semaines';}
   const reLbl=document.getElementById('ck-re-lbl');if(reLbl){reLbl.textContent='Effort · '+W+' sem.';}
   document.getElementById('ck-re-val').textContent=totalRE;
+  (function(){var cv=document.getElementById('ck-cad-val');if(!cv)return;try{var cs=(_CK&&_CK.CAD&&_CK.CAD[W]&&Array.isArray(_CK.CAD[W].v))?_CK.CAD[W].v.filter(x=>x!=null):[];if(cs.length){var avg=Math.round(cs.reduce((a,b)=>a+b,0)/cs.length);cv.innerHTML=avg+'<span class="ck-ku">spm</span>';}else{cv.innerHTML='—<span class="ck-ku">spm</span>';}}catch(e){}})();
   _pmcRender(W);
   _ckBar('ckVol','ckVolW','ckVolT','ckVolX',D.VOL[W],{ref:true,col:'#0d9488',unit:' km',h:90});
   document.getElementById('ck-vol-sub').textContent=totalKm.toFixed(0)+' km · '+W+' sem.';
@@ -1890,10 +1897,20 @@ function renderCockpit(){
     const hb=helpKey?`<button class="ck-help" onclick="event.stopPropagation();openCkHelp('${helpKey}')">?</button>`:'';
     return`<div class="ck-card"><div class="ck-ch"><div><div class="ck-ct">${title}${hb}</div><div class="ck-cs" id="${id}-sub">${sub}</div></div>${valId?`<div style="text-align:right"><div class="ck-big" id="${valId}">—</div>${valSuffix?'<div class="ck-cs">'+valSuffix+'</div>':''}</div>`:''}</div><div class="ck-cw" id="${id}W"><svg id="${id}" height="${chartH}" style="display:block;width:100%"></svg><div class="ck-tt" id="${id}T"></div></div><div class="ck-xl" id="${id}X"></div>${extra||''}</div>`;
   }
+  const _f=computeFormeScore();
+  const _fcol=_f.color||'#0d9488';
+  const _ftrend=_f.trend||'→';
   el.innerHTML=`
-<div style="padding:12px 12px 40px">
+<div style="padding:var(--sp-3) var(--sp-3) var(--sp-10)">
 <div style="font-size:22px;font-weight:700;color:var(--texte);letter-spacing:-.02em;margin-bottom:2px">Cockpit</div>
-<div style="font-size:11px;color:var(--texte-deux);margin-bottom:10px">Glisse sur les courbes · touche une barre · tap une sortie</div>
+<div style="font-size:11px;color:var(--texte-deux);margin-bottom:var(--sp-4)">Glisse sur les courbes · touche une barre · tap une sortie</div>
+<div class="ck-hero" onclick="openCkHelp('forme')">
+  <div class="ck-hero-l">
+    <div class="ck-hero-lbl">Forme du jour</div>
+    <div class="ck-hero-val" style="color:${_fcol}">${_f.score}<span class="ck-hero-tr">${_ftrend}</span></div>
+    <div class="ck-hero-sig">${_f.signal||''}</div>
+  </div>
+</div>
 <div class="ck-toggle" id="ck-tgl">
   <button class="ck-tg" onclick="ckWin(2,this)">2 sem.</button>
   <button class="ck-tg" onclick="ckWin(4,this)">4 sem.</button>
@@ -1904,7 +1921,7 @@ function renderCockpit(){
   <div class="ck-kpi"><div class="ck-kv" id="ck-km-val">—<span class="ck-ku">km</span></div><div class="ck-kl" id="ck-km-lbl">fenêtre</div><div class="ck-kd up">cumulé</div></div>
   <div class="ck-kpi"><div class="ck-kv" id="ck-re-val">—</div><div class="ck-kl" id="ck-re-lbl">Effort</div><div class="ck-kd up">cumulé</div></div>
   <div class="ck-kpi"><div class="ck-kv" id="ck-acwr-val">0.69</div><div class="ck-kl">ACWR</div><div class="ck-kd">frais</div></div>
-  <div class="ck-kpi"><div class="ck-kv">51.6</div><div class="ck-kl">VO₂max</div><div class="ck-kd up">↑ +0.4</div></div>
+  <div class="ck-kpi"><div class="ck-kv" id="ck-cad-val">—<span class="ck-ku">spm</span></div><div class="ck-kl">Cadence</div><div class="ck-kd" id="ck-cad-d">moy.</div></div>
 </div>
 <div class="ck-sec">📊 Volume &amp; charge</div>
 <div class="ck-sec">📈 Performance Management Chart</div>
