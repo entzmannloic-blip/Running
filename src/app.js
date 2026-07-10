@@ -300,7 +300,8 @@ function renderHeader(){
     _mini=_rc.slice(1).map(r=>`<button class="hmini" ${r.dossier?`onclick="ouvrirDossier('${r.dossier}')"`:''}><span class="hmini-n">J-${r.dn}</span>${r.nom}${r.dossier?'<span class="hmini-go">\u203a</span>':''}</button>`).join('');
   }
   const _latestBuild=(typeof CHANGELOG!=='undefined'&&CHANGELOG.length)?CHANGELOG[0].build:'—';
-  const _maj=`<div class="vdj-maj">Données à jour au ${MAJ}<button id="build-badge" onclick="openVersionPanel()">Build ${_latestBuild}</button></div>`;
+  const _latestDate=(typeof CHANGELOG!=='undefined'&&CHANGELOG.length&&CHANGELOG[0].date)?CHANGELOG[0].date:MAJ;
+  const _maj=`<div class="vdj-maj">Données à jour au ${_latestDate}<button id="build-badge" onclick="openVersionPanel()">Build ${_latestBuild}</button></div>`;
   document.getElementById('cd-strip').innerHTML='';
   const _cw=`<button class="cw-link" onclick="jumpToWeek(${sc.num})"><span class="cw-pin">📍</span><span class="cw-txt">Tu es en <strong>S${sc.num} · ${sc.theme}</strong></span><span class="cw-arr">voir dans le plan →</span></button>`;
   document.getElementById('hero-plan').innerHTML=`${_psCard}<div class="hx-row">${_formeTile}${_nearTile}</div>${_formeDetail}<div id="canicule-banner" style="display:none"></div>${_cw}<div id="meteo-widget" class="meteo"><div class="meteo-loc">⏳ Météo…</div></div>${_mini?`<div class="hmini-row">${_mini}</div>`:''}`;
