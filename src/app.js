@@ -133,6 +133,9 @@ function _curWeek(){
 
 function _ckRebuild(){
   if(typeof SEANCES_BY_WEEK==='undefined'||typeof _CK==='undefined')return;
+  // Snapshot one-shot des séries d'allure par type (ef/am/se) issues des données statiques,
+  // pour ne pas les perdre quand le moteur reconstruit _CK.PACE (le moteur ne les recalcule pas).
+  if(_CK.PACE&&!_CK._PACE_ORIG){try{_CK._PACE_ORIG=JSON.parse(JSON.stringify(_CK.PACE));}catch(e){_CK._PACE_ORIG=null;}}
   // Collecter les semaines avec des séances réalisées
   var weeks=Object.keys(SEANCES_BY_WEEK).map(_weekNumFromKey).filter(function(n){return n>0;}).sort(function(a,b){return a-b;});
   // Agréger km / RE / D+ / allure / FC / cadence réels par semaine
@@ -174,7 +177,7 @@ function _ckRebuild(){
     if(_CK.DPLUS)_CK.DPLUS[N]={w:lbl,v:ws.map(function(w){return agg[w].dplus;})};
     if(_CK.FCZ&&agg[ws[ws.length-1]].fc){/* FCZ gardé tel quel, structure complexe */}
     if(_CK.CAD)_CK.CAD[N]={w:lbl,v:ws.map(function(w){return agg[w].cad;})};
-    if(_CK.PACE)_CK.PACE[N]={w:lbl,v:ws.map(function(w){return agg[w].pace;})};
+    if(_CK.PACE){var _pp=(_CK._PACE_ORIG&&_CK._PACE_ORIG[N])||{};var _L=lbl.length;var _tail=function(a){return Array.isArray(a)?a.slice(-_L):a;};_CK.PACE[N]={w:lbl,v:ws.map(function(w){return agg[w].pace;}),ef:_tail(_pp.ef),am:_tail(_pp.am),se:_tail(_pp.se)};}
   });
   // Mettre à jour ACWR_DATA (valeur de secours) avec la dernière valeur réelle
   if(typeof ACWR_DATA!=='undefined'){
