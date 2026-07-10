@@ -854,7 +854,16 @@ function ouvrir(){overlay.classList.add('ouverte');document.body.style.overflow=
 function fermer(){if(typeof ttsStop==='function')ttsStop();overlay.classList.remove('ouverte');document.body.style.overflow='';setTimeout(()=>{contenu.innerHTML='';topbar.innerHTML='';},300);}
 overlay.addEventListener('click',e=>{if(e.target===overlay)fermer()});
 (function(){const to=document.getElementById('theoOverlay');if(to)to.addEventListener('click',e=>{if(e.target===to)closeTheory();});})();
-document.addEventListener('keydown',e=>{if(e.key==='Escape')fermer()});
+document.addEventListener('keydown',e=>{if(e.key!=='Escape')return;
+  // Ferme l'overlay actuellement ouvert (priorité au plus au-dessus)
+  var coach=document.getElementById('coach-ov');
+  if(coach&&coach.classList.contains('open')){if(typeof closeCoach==='function')closeCoach();return;}
+  var help=document.getElementById('ck-help-ov');
+  if(help&&help.classList.contains('open')){if(typeof closeCkHelp==='function')closeCkHelp();return;}
+  var ver=document.getElementById('version-ov');
+  if(ver&&ver.classList.contains('open')){if(typeof closeVersionPanel==='function')closeVersionPanel();return;}
+  if(typeof fermer==='function')fermer();
+});
 const btnFermer='<button class="btn-close-round" onclick="fermer()" aria-label="Fermer la fiche">✕</button>';
 
 
