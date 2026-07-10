@@ -781,7 +781,7 @@ function fermer(){if(typeof ttsStop==='function')ttsStop();overlay.classList.rem
 overlay.addEventListener('click',e=>{if(e.target===overlay)fermer()});
 (function(){const to=document.getElementById('theoOverlay');if(to)to.addEventListener('click',e=>{if(e.target===to)closeTheory();});})();
 document.addEventListener('keydown',e=>{if(e.key==='Escape')fermer()});
-const btnFermer='<button class="btn-nav" onclick="fermer()" aria-label="Fermer la fiche">Fermer ✕</button>';
+const btnFermer='<button class="btn-close-round" onclick="fermer()" aria-label="Fermer la fiche">✕</button>';
 
 
 function s24Chart(splits){const n=splits.length,W=720,h=190,padL=8,padR=8,padT=26,padB=30;
