@@ -1003,3 +1003,13 @@ body.nuit .botbar{background:rgba(15,23,42,.82);border-top-color:#1e293b}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
 }
+/* ===== Coach nudge — suggestion proactive contextuelle (Sprint 4) ===== */
+.coach-nudge{display:flex;align-items:center;gap:var(--sp-3);width:100%;text-align:left;border:none;border-radius:var(--rayon);padding:var(--sp-3) var(--sp-4);margin-top:var(--sp-3);cursor:pointer;font-family:inherit;background:var(--primary-fond);border-left:3px solid var(--primary);transition:transform .14s,box-shadow .14s}
+.coach-nudge .cn-ico{flex:0 0 auto;font-size:18px;line-height:1}
+.coach-nudge .cn-txt{flex:1;min-width:0;font-size:13px;font-weight:600;color:var(--texte-deux);line-height:1.35}
+.coach-nudge .cn-go{flex:0 0 auto;font-size:12px;font-weight:700;color:var(--primary)}
+.coach-nudge.cn-warn{background:var(--danger-fond);border-left-color:var(--danger)}
+.coach-nudge.cn-warn .cn-go{color:var(--danger-deux)}
+.coach-nudge.cn-ok{background:var(--ok-fond);border-left-color:var(--ok)}
+.coach-nudge.cn-ok .cn-go{color:var(--ok-deux)}
+@media (hover:hover) and (pointer:fine){.coach-nudge:hover{transform:translateY(-1px);box-shadow:0 6px 16px -8px rgba(15,23,42,.2)}}

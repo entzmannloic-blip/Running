@@ -273,6 +273,39 @@ function computeFormeScore(){
   ]};
 }
 
+function _coachNudge(){
+  // Copilote : suggestion proactive contextuelle. Retourne null si rien de pertinent (jamais intrusif).
+  try{
+    const cur=isoWeek(new Date());
+    const acwr=(typeof _dynamicACWR==='function')?_dynamicACWR():1.0;
+    const forme=(typeof computeFormeScore==='function')?computeFormeScore():{score:75};
+    // Toutes les séances réellement loggées, triées par date
+    const done=[];
+    Object.entries(SEANCES_BY_WEEK).forEach(([wk,ss])=>ss.forEach(s=>{
+      if(s.realise&&s.realise.statut==='fait'&&s.date)done.push({date:s.date,type:(s.type||'')});
+    }));
+    done.sort((a,b)=>b.date.localeCompare(a.date));
+    const today=new Date();today.setHours(0,0,0,0);
+    // Jours depuis la dernière séance qualité (seuil / tempo / VMA / fractionné / côtes)
+    const isQuality=t=>/seuil|tempo|vma|fraction|c[ôo]tes?|intervalle|allure/i.test(t);
+    let lastQ=null;
+    for(const d of done){if(isQuality(d.type)){lastQ=d.date;break;}}
+    const daysSinceQ=lastQ?Math.floor((today-new Date(lastQ+'T12:00:00'))/86400000):999;
+    const daysSinceAny=done.length?Math.floor((today-new Date(done[0].date+'T12:00:00'))/86400000):999;
+    // Priorité aux signaux de risque, puis de relance
+    if(acwr>1.5)
+      return {tone:'warn',icon:'\u{1F534}',txt:'Ton ACWR est \u00e0 '+acwr.toFixed(2)+' \u2014 charge aigu\u00eb \u00e9lev\u00e9e. Priorise la r\u00e9cup ces prochains jours.'};
+    if(daysSinceAny>=5&&daysSinceAny<900)
+      return {tone:'info',icon:'\u{1F440}',txt:daysSinceAny+' jours sans sortie logg\u00e9e. Tout va bien ? Une sortie facile relancerait la machine.'};
+    if(acwr<0.7&&daysSinceAny<5)
+      return {tone:'info',icon:'\u{1F4C8}',txt:'Charge basse (ACWR '+acwr.toFixed(2)+') \u2014 de la marge pour ajouter du volume si la forme suit.'};
+    if(daysSinceQ>=10&&daysSinceQ<900)
+      return {tone:'info',icon:'\u26a1',txt:daysSinceQ+' jours sans s\u00e9ance qualit\u00e9. Un seuil ou un tempo ferait progresser ton chrono.'};
+    if(forme.score>=85)
+      return {tone:'ok',icon:'\u{1F7E2}',txt:'Forme \u00e0 '+forme.score+'/100 \u2014 excellent moment pour une s\u00e9ance qualit\u00e9 si le plan s\u2019y pr\u00eate.'};
+    return null;
+  }catch(e){return null;}
+}
 function renderHeader(){
   const cur=isoWeek(new Date());const sc=SEMAINES.find(s=>s.num===cur)||SEMAINES[0];
   const _t=new Date();_t.setHours(0,0,0,0);
@@ -314,7 +347,9 @@ function renderHeader(){
   const _maj=`<div class="vdj-maj">Données à jour au ${_latestDate}<button id="build-badge" onclick="openVersionPanel()">Build ${_latestBuild}</button></div>`;
   document.getElementById('cd-strip').innerHTML='';
   const _cw=`<button class="cw-link" onclick="jumpToWeek(${sc.num})"><span class="cw-pin">📍</span><span class="cw-txt">Tu es en <strong>S${sc.num} · ${sc.theme}</strong></span><span class="cw-arr">voir dans le plan →</span></button>`;
-  document.getElementById('hero-plan').innerHTML=`${_psCard}<div class="hx-row">${_formeTile}${_nearTile}</div>${_formeDetail}<div id="canicule-banner" style="display:none"></div>${_cw}<div id="meteo-widget" class="meteo"><div class="meteo-loc">⏳ Météo…</div></div>${_mini?`<div class="hmini-row">${_mini}</div>`:''}`;
+  const _nudge=_coachNudge();
+  const _nudgeCard=_nudge?`<button class="coach-nudge cn-${_nudge.tone}" onclick="openCoach()"><span class="cn-ico">${_nudge.icon}</span><span class="cn-txt">${_nudge.txt}</span><span class="cn-go">Coach ›</span></button>`:'';
+  document.getElementById('hero-plan').innerHTML=`${_psCard}<div class="hx-row">${_formeTile}${_nearTile}</div>${_formeDetail}<div id="canicule-banner" style="display:none"></div>${_cw}${_nudgeCard}<div id="meteo-widget" class="meteo"><div class="meteo-loc">⏳ Météo…</div></div>${_mini?`<div class="hmini-row">${_mini}</div>`:''}`;
   renderMeteo();
   document.getElementById('maj-foot').innerHTML=_maj;
    try{const _aSe=Object.values(SEANCES_BY_WEEK).flat();const _aF=_aSe.filter(s=>s.realise&&(s.realise.statut==='fait'||s.realise.statut==='partiel')).length;const _aKm=Math.round(_aSe.reduce((a,s)=>a+((s.realise&&s.realise.km)||0),0));const _aP=_aSe.length?Math.round(_aF/_aSe.length*100):0;const _ae=document.getElementById('accueil-annee');if(_ae)_ae.innerHTML=`<div class="acc-lab">Bilan du plan</div><div class="acc-annee"><div class="acc-stat"><div class="av">${_aF}</div><div class="ak">Sorties</div></div><div class="acc-stat"><div class="av">${_aKm}<span>km</span></div><div class="ak">R\u00e9alis\u00e9</div></div><div class="acc-stat"><div class="av">${_aP}<span>%</span></div><div class="ak">Pr\u00e9pa plan</div></div></div>`;}catch(e){}
