@@ -961,6 +961,7 @@ body.nuit .botbar{background:rgba(15,23,42,.82);border-top-color:#1e293b}
 .acc-lab{font-size:.65625rem;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--primary-deux);margin:18px 2px 9px;display:flex;align-items:center;gap:7px}
 .acc-lab::after{content:"";flex:1;height:1px;background:var(--gris-clair)}
 .acc-annee{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.acc-annee.has-streak{grid-template-columns:repeat(2,1fr)}
 .acc-stat{background:var(--blanc);border:1px solid var(--gris-clair);border-radius:14px;padding:13px 10px;box-shadow:var(--ombre);text-align:center}
 .acc-stat .av{font-size:1.1875rem;font-weight:800;color:var(--texte)}
 .acc-stat .av span{font-size:.75rem}
@@ -1013,3 +1014,11 @@ body.nuit .botbar{background:rgba(15,23,42,.82);border-top-color:#1e293b}
 .coach-nudge.cn-ok{background:var(--ok-fond);border-left-color:var(--ok)}
 .coach-nudge.cn-ok .cn-go{color:var(--ok-deux)}
 @media (hover:hover) and (pointer:fine){.coach-nudge:hover{transform:translateY(-1px);box-shadow:0 6px 16px -8px rgba(15,23,42,.2)}}
+/* ===== Célébration spéciale PR/records (Sprint 5 signature) ===== */
+.log-celeb.lc-pr .lc-card{background:linear-gradient(160deg,#fffbeb,#fff);border:1px solid #fde68a}
+.lc-medal{font-size:52px;line-height:1;filter:drop-shadow(0 4px 12px rgba(245,158,11,.45))}
+.log-celeb.lc-pr .lc-txt{font-size:17px;background:linear-gradient(90deg,#b45309,#f59e0b);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;font-weight:800}
+.log-celeb.lc-pr .lc-sub{color:#b45309}
+.log-celeb.lc-pr.show .lc-card{animation:lcPrPop .5s cubic-bezier(.34,1.56,.64,1)}
+@keyframes lcPrPop{0%{transform:scale(.7)}55%{transform:scale(1.06)}100%{transform:scale(1)}}
+@media (prefers-reduced-motion:reduce){.log-celeb.lc-pr.show .lc-card{animation:none}}

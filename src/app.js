@@ -306,6 +306,21 @@ function _coachNudge(){
     return null;
   }catch(e){return null;}
 }
+function _computeStreak(){
+  // Signature : nombre de semaines consécutives (jusqu'à la semaine en cours) avec au moins une séance faite.
+  try{
+    const cur=isoWeek(new Date());
+    let streak=0;
+    for(let w=cur;w>0;w--){
+      const ss=SEANCES_BY_WEEK[w];
+      if(!ss)break;
+      const done=ss.some(s=>s.realise&&(s.realise.statut==='fait'||s.realise.statut==='partiel'));
+      if(done)streak++;
+      else if(w<cur)break; // la semaine en cours peut être encore vide sans casser la série
+    }
+    return streak;
+  }catch(e){return 0;}
+}
 function renderHeader(){
   const cur=isoWeek(new Date());const sc=SEMAINES.find(s=>s.num===cur)||SEMAINES[0];
   const _t=new Date();_t.setHours(0,0,0,0);
@@ -352,7 +367,7 @@ function renderHeader(){
   document.getElementById('hero-plan').innerHTML=`${_psCard}<div class="hx-row">${_formeTile}${_nearTile}</div>${_formeDetail}<div id="canicule-banner" style="display:none"></div>${_cw}${_nudgeCard}<div id="meteo-widget" class="meteo"><div class="meteo-loc">⏳ Météo…</div></div>${_mini?`<div class="hmini-row">${_mini}</div>`:''}`;
   renderMeteo();
   document.getElementById('maj-foot').innerHTML=_maj;
-   try{const _aSe=Object.values(SEANCES_BY_WEEK).flat();const _aF=_aSe.filter(s=>s.realise&&(s.realise.statut==='fait'||s.realise.statut==='partiel')).length;const _aKm=Math.round(_aSe.reduce((a,s)=>a+((s.realise&&s.realise.km)||0),0));const _aP=_aSe.length?Math.round(_aF/_aSe.length*100):0;const _ae=document.getElementById('accueil-annee');if(_ae)_ae.innerHTML=`<div class="acc-lab">Bilan du plan</div><div class="acc-annee"><div class="acc-stat"><div class="av">${_aF}</div><div class="ak">Sorties</div></div><div class="acc-stat"><div class="av">${_aKm}<span>km</span></div><div class="ak">R\u00e9alis\u00e9</div></div><div class="acc-stat"><div class="av">${_aP}<span>%</span></div><div class="ak">Pr\u00e9pa plan</div></div></div>`;}catch(e){}
+   try{const _aSe=Object.values(SEANCES_BY_WEEK).flat();const _aF=_aSe.filter(s=>s.realise&&(s.realise.statut==='fait'||s.realise.statut==='partiel')).length;const _aKm=Math.round(_aSe.reduce((a,s)=>a+((s.realise&&s.realise.km)||0),0));const _aP=_aSe.length?Math.round(_aF/_aSe.length*100):0;const _ae=document.getElementById('accueil-annee');const _aStreak=_computeStreak();const _streakTile=_aStreak>=2?`<div class="acc-stat acc-streak"><div class="av">${_aStreak}<span>\u{1F525}</span></div><div class="ak">Sem. d\u2019affil\u00e9e</div></div>`:'';if(_ae)_ae.innerHTML=`<div class="acc-lab">Bilan du plan</div><div class="acc-annee ${_streakTile?'has-streak':''}"><div class="acc-stat"><div class="av">${_aF}</div><div class="ak">Sorties</div></div><div class="acc-stat"><div class="av">${_aKm}<span>km</span></div><div class="ak">R\u00e9alis\u00e9</div></div><div class="acc-stat"><div class="av">${_aP}<span>%</span></div><div class="ak">Pr\u00e9pa plan</div></div>${_streakTile}</div>`;}catch(e){}
   const _ab=document.getElementById('appbar');if(_ab&&document.documentElement)document.documentElement.style.setProperty('--appbar-h',_ab.offsetHeight+'px');
 }
 
@@ -1201,13 +1216,20 @@ function _v(id){const e=document.getElementById(id);return e?e.value.trim():'';}
 function _celebrateLog(realise){
   // Moment gratifiant quand une séance est loggée "faite". Respecte reduced-motion.
   if(!realise||realise.statut!=='fait')return;
-  if(navigator.vibrate)try{navigator.vibrate([12,40,12])}catch(e){}
+  const nbPr=(parseInt(realise.pr,10)||0)+(parseInt(realise.ach,10)||0);
+  const isPr=nbPr>0;
+  if(navigator.vibrate)try{navigator.vibrate(isPr?[15,50,15,50,25]:[12,40,12])}catch(e){}
   const prev=document.getElementById('log-celeb');if(prev)prev.remove();
   const km=realise.km?(String(realise.km).replace('.',',')+' km'):'';
-  const ov=document.createElement('div');ov.id='log-celeb';ov.className='log-celeb';
-  ov.innerHTML='<div class="lc-card"><div class="lc-check">✓</div><div class="lc-txt">Séance enregistrée</div>'+(km?'<div class="lc-sub">'+km+'</div>':'')+'</div>';
+  const ov=document.createElement('div');ov.id='log-celeb';ov.className='log-celeb'+(isPr?' lc-pr':'');
+  if(isPr){
+    const label=(parseInt(realise.pr,10)||0)>0?((parseInt(realise.pr,10))+' record'+((parseInt(realise.pr,10))>1?'s':'')+' battu'+((parseInt(realise.pr,10))>1?'s':'')+' !'):(nbPr+' troph\u00e9e'+(nbPr>1?'s':'')+' !');
+    ov.innerHTML='<div class="lc-card"><div class="lc-medal">\u{1F3C5}</div><div class="lc-txt">'+label+'</div>'+(km?'<div class="lc-sub">'+km+'</div>':'')+'</div>';
+  }else{
+    ov.innerHTML='<div class="lc-card"><div class="lc-check">\u2713</div><div class="lc-txt">S\u00e9ance enregistr\u00e9e</div>'+(km?'<div class="lc-sub">'+km+'</div>':'')+'</div>';
+  }
   document.body.appendChild(ov);
-  const dur=_reduceMotion()?400:1300;
+  const dur=_reduceMotion()?400:(isPr?1900:1300);
   requestAnimationFrame(()=>ov.classList.add('show'));
   setTimeout(()=>{ov.classList.remove('show');setTimeout(()=>ov.remove(),260);},dur);
 }
