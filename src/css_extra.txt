@@ -48,7 +48,7 @@
 .hero-next .hero-l{color:var(--texte-trois);opacity:1}.hero-next .hero-s{color:var(--texte-trois)}
 @media(max-width:640px){.hero-sem{grid-template-columns:1fr}}
 /* ===== dashboard charts ===== */
-.kpi{background:var(--blanc);border:1px solid var(--gris-clair);border-radius:var(--rayon-lg);padding:18px 20px;margin-bottom:14px}
+.kpi{background:var(--blanc);border:1px solid var(--gris-clair);border-radius:var(--rayon-lg);padding:var(--sp-5) var(--sp-5);margin-bottom:var(--sp-4)}
 .kpi-t{font-family:Georgia,serif;font-size:1.0625rem;font-weight:700;margin-bottom:3px}
 .kpi-r{font-size:.75rem;color:var(--texte-trois);margin-bottom:14px;line-height:1.5}
 .kpi-soon{font-size:.8125rem;color:var(--texte-trois);background:var(--gris-fond);border:1px dashed var(--gris-clair);border-radius:var(--rayon);padding:11px 14px}
@@ -633,7 +633,7 @@ body.nuit .wx-tab.active{background:#431407;border-color:#7c2d12;color:#fde68a}
 body.nuit .wx-close{background:#0f172a;border-color:#334155;color:#94a3b8}
 body.nuit .wx-hr{border-color:#1e293b}
 /* ===== Cockpit ===== */
-.ck-card{background:var(--bg-card,#fff);border-radius:13px;padding:13px;margin-bottom:8px;border:.5px solid var(--bord-card,#e2e8f0)}
+.ck-card{background:var(--bg-card,#fff);border-radius:var(--rayon);padding:var(--sp-3);margin-bottom:var(--sp-2);border:.5px solid var(--bord-card,#e2e8f0)}
 .ck-ch{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px}
 .ck-ct{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--texte-deux)}
 .ck-cs{font-size:10px;color:#94a3b8;margin-top:1px}
@@ -903,7 +903,7 @@ body.nuit .ch-tip{background:#042f2e;border-color:#065f46;color:#bbf7d0}
 .vdj{padding:22px 22px 20px;border-radius:22px}
 .vdj-lbl{color:#5eead4}
 .vdj-t{font-size:1.5rem;line-height:1.12}
-.hx-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0 10px}
+.hx-row{display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-3);margin:var(--sp-3) 0}
 .htile{display:block;text-align:left;background:var(--blanc);border:1px solid var(--gris-clair);border-radius:16px;padding:14px 15px;box-shadow:var(--ombre);position:relative;overflow:hidden;cursor:pointer;-webkit-tap-highlight-color:transparent;font-family:inherit}
 .htile:active{transform:scale(.99)}
 .ht-k{display:flex;align-items:center;gap:5px;font-size:.6rem;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--texte-trois);margin-bottom:6px}

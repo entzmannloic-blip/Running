@@ -24,12 +24,16 @@
   --violet:var(--primary);--violet-clair:var(--primary-clair);--violet-fond:var(--primary-fond);
   --teal:var(--primary);--teal-clair:var(--primary-clair);--teal-fond:var(--primary-fond);
   --rouge:var(--danger);--rouge-clair:var(--danger-clair);--rouge-fond:var(--danger-fond);
+  /* Échelle d'espacement — base 4px (Sprint 1 design system) */
+  --sp-1:4px;--sp-2:8px;--sp-3:12px;--sp-4:16px;--sp-5:20px;--sp-6:24px;--sp-8:32px;--sp-10:40px;--sp-12:48px;
+  /* Rayons complémentaires */
+  --rayon-sm:8px;--rayon-pill:99px;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 body{font-family:system-ui,-apple-system,'Segoe UI',sans-serif;background:var(--gris-fond);color:var(--texte);line-height:1.55;-webkit-font-smoothing:antialiased;min-height:100vh}
 
 /* ACCUEIL */
-.accueil{max-width:1000px;margin:0 auto;padding:44px 16px 90px}
+.accueil{max-width:1000px;margin:0 auto;padding:var(--sp-10) var(--sp-4) 90px}
 .accueil-header{text-align:center;margin-bottom:30px}
 .accueil-tag{display:inline-block;font-size:.7rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--bleu);background:var(--bleu-fond);border:1px solid var(--bleu-clair);padding:4px 12px;border-radius:99px;margin-bottom:16px}
 .accueil-titre{font-family:Georgia,'Times New Roman',serif;font-size:clamp(1.8rem,5vw,2.7rem);font-weight:700;letter-spacing:-.02em;line-height:1.12;margin-bottom:10px}
@@ -45,7 +49,7 @@ body{font-family:system-ui,-apple-system,'Segoe UI',sans-serif;background:var(--
 .statut-sub{font-size:.75rem;color:var(--texte-trois);margin-top:3px}
 
 /* PHASES */
-.phase-bloc{margin-bottom:30px}
+.phase-bloc{margin-bottom:var(--sp-8)}
 .phase-entete{display:flex;align-items:center;gap:11px;margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid var(--gris-clair)}
 .phase-puce{width:13px;height:13px;border-radius:4px;flex-shrink:0}
 .phase-nom{font-family:Georgia,serif;font-size:1.12rem;font-weight:700;color:var(--texte)}
@@ -54,7 +58,7 @@ body{font-family:system-ui,-apple-system,'Segoe UI',sans-serif;background:var(--
 .sem-grille{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:13px}
 
 /* CARTE SEMAINE */
-.sem-carte{background:var(--blanc);border:1px solid var(--gris-clair);border-radius:var(--rayon);padding:16px 16px 14px;position:relative;overflow:hidden;display:flex;flex-direction:column;min-height:128px;transition:box-shadow .2s,transform .2s,border-color .2s}
+.sem-carte{background:var(--blanc);border:1px solid var(--gris-clair);border-radius:var(--rayon);padding:var(--sp-4);position:relative;overflow:hidden;display:flex;flex-direction:column;min-height:128px;transition:box-shadow .2s,transform .2s,border-color .2s}
 .sem-carte.cliquable{cursor:pointer}
 .sem-carte.cliquable:hover{box-shadow:var(--ombre-lg);transform:translateY(-3px)}
 .sem-num{font-size:.62rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--texte-trois);margin-bottom:6px;display:flex;align-items:center;gap:7px}
