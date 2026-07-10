@@ -50,6 +50,7 @@ function delta(series,good){const v=series.filter(x=>x!=null);if(v.length<2)retu
 function toggleTheme(){const n=document.body.classList.toggle('nuit');document.getElementById('themebtn').textContent=n?'☀️':'🌙';}
 
 /* ===== onglets ===== */
+let _planAutoJumped=false;
 function showTab(t){
   if(navigator.vibrate)try{navigator.vibrate(8)}catch(e){}
   ['accueil','plan','cockpit','palmares'].forEach(id=>{
@@ -58,10 +59,19 @@ function showTab(t){
   });
   if(t==='cockpit'){renderCockpit();renderDash();}
   if(t==='palmares')renderPalmares();
-  window.scrollTo(0,0);
+  if(t==='plan'&&!_planAutoJumped){
+    _planAutoJumped=true;
+    window.scrollTo(0,0);
+    setTimeout(()=>jumpToWeek(isoWeek(new Date())),60);
+  }else{
+    window.scrollTo(0,0);
+  }
   const _vw=document.getElementById('vue-'+t);
   if(_vw){_vw.classList.remove('vue-in');void _vw.offsetWidth;_vw.classList.add('vue-in');}
   if(typeof _revealScan==='function')_revealScan();
+  const _fab=document.getElementById('fab-jump-week');
+  if(_fab)_fab.classList.toggle('tab-plan-active',t==='plan');
+  if(t==='plan'&&typeof _initJumpFabWatch==='function')_initJumpFabWatch();
 }
 let _revealIO=null;
 function _revealScan(){
@@ -396,7 +406,7 @@ function renderPlan(){const phasesEl=document.getElementById('phases');phasesEl.
   PHASES.forEach(ph=>{const bloc=document.createElement('div');bloc.className='phase-bloc';const sems=SEMAINES.filter(s=>s.phase===ph.id);
     const cartes=sems.map(s=>{const ses=SEANCES_BY_WEEK[s.num]||[];const fait=ses.filter(x=>x.realise&&(x.realise.statut==='fait'||x.realise.statut==='partiel')).length;
       const cnt=s.num===24?`<div class="sem-km" style="margin-top:4px"><span>${S24R.runs.length} sorties · ${S24R.km} km réalisés</span></div>`:(ses.length?`<div class="sem-km" style="margin-top:4px"><span>${fait}/${ses.length} séances</span></div>`:'');
-      const badge=s.num===_cur?`<div class="sem-statut st-courante">Courante</div>`:'';
+      const badge=s.num===_cur?`<div class="sem-statut st-courante">En cours</div>`:'';
       return `<div class="sem-carte cliquable" id="wk-${s.num}" onclick="ouvrirSemaine(${s.num})">${badge}<div class="sem-num">Semaine ${s.num}</div><div class="sem-theme">${s.theme}</div><div class="sem-km">${s.km} <span>km · ${s.charge}</span></div>${cnt}<div class="sem-barre"><div class="sem-barre-fill" style="width:${Math.min(100,s.km/88*100)}%;background:${ph.c}"></div></div></div>`;}).join('');
     bloc.innerHTML=`<div class="phase-entete"><div class="phase-puce" style="background:${ph.c}"></div><div class="phase-nom">${ph.nom}</div><div class="phase-sem">${ph.sem}</div></div><p class="phase-role">${ph.role}</p><div class="sem-grille">${cartes}</div>`;
     phasesEl.appendChild(bloc);});
@@ -546,6 +556,17 @@ function jumpToWeek(num){if(document.getElementById('vue-plan').style.display===
   const ab=document.getElementById('appbar');const abh=ab?ab.offsetHeight:0;
   const y=el.getBoundingClientRect().top+window.scrollY-(abh+14);window.scrollTo({top:y,behavior:_reduceMotion()?'auto':'smooth'});
   el.classList.add('wk-flash');setTimeout(()=>el.classList.remove('wk-flash'),1700);}
+let _jumpFabIO=null;
+function _initJumpFabWatch(){
+  const cur=isoWeek(new Date());const el=document.getElementById('wk-'+cur);const fab=document.getElementById('fab-jump-week');
+  if(!el||!fab)return;
+  if(!('IntersectionObserver' in window)){fab.classList.add('visible');return;}
+  if(_jumpFabIO)_jumpFabIO.disconnect();
+  _jumpFabIO=new IntersectionObserver(entries=>{
+    entries.forEach(e=>fab.classList.toggle('visible',!e.isIntersecting));
+  },{threshold:0,rootMargin:'-'+((document.getElementById('appbar')?.offsetHeight||60)+10)+'px 0px 0px 0px'});
+  _jumpFabIO.observe(el);
+}
 /* ===== Item 4 — Projection marathon « boule de cristal » ===== */
 function _pace2s(p){if(p==null)return null;const m=String(p).match(/(\d+):(\d+)/);return m?(+m[1]*60+ +m[2]):null;}
 function _s2hm(s){s=Math.round(s);const h=Math.floor(s/3600),m=Math.floor((s%3600)/60);return h+'h'+String(m).padStart(2,'0');}
