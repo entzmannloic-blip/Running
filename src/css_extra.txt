@@ -987,3 +987,19 @@ body.nuit .botbar{background:rgba(15,23,42,.82);border-top-color:#1e293b}
 .ck-hero-tr{font-size:22px;font-weight:700}
 .ck-hero-sig{font-size:12px;color:rgba(255,255,255,.8);margin-top:var(--sp-2);line-height:1.3}
 @media (hover:hover) and (pointer:fine){.ck-hero:hover{transform:translateY(-2px);box-shadow:0 14px 34px rgba(15,23,42,.4)}}
+/* ===== Moment de célébration au log d'une séance (Sprint 3) ===== */
+.log-celeb{position:fixed;inset:0;z-index:400;display:flex;align-items:center;justify-content:center;pointer-events:none;background:rgba(15,23,42,0);transition:background .2s}
+.log-celeb.show{background:rgba(15,23,42,.18)}
+.lc-card{display:flex;flex-direction:column;align-items:center;gap:var(--sp-2);background:var(--blanc);border-radius:var(--rayon-lg);padding:var(--sp-6) var(--sp-8);box-shadow:0 20px 60px -20px rgba(15,23,42,.5);transform:scale(.7);opacity:0;transition:transform .34s cubic-bezier(.34,1.56,.64,1),opacity .2s}
+.log-celeb.show .lc-card{transform:scale(1);opacity:1}
+.lc-check{width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#16a34a,#0d9488);color:#fff;font-size:30px;font-weight:800;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 18px rgba(22,163,74,.45)}
+.lc-txt{font-size:15px;font-weight:700;color:var(--texte)}
+.lc-sub{font-size:13px;font-weight:600;color:var(--primary)}
+@media (prefers-reduced-motion:reduce){
+  .lc-card{transition:opacity .15s;transform:none}
+  .log-celeb.show .lc-card{transform:none}
+}
+/* ===== Garde-fou global reduced-motion (Sprint 3) — neutralise toute animation résiduelle ===== */
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
+}

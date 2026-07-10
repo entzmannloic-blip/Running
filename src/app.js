@@ -1163,6 +1163,19 @@ let _pendingStatut='fait';
 function lfPickStatut(st){_pendingStatut=st;document.querySelectorAll('.lf-st').forEach(b=>b.classList.toggle('actif',b.dataset.st===st));}
 function lfToggle(wk,id){const f=document.getElementById('logform');if(!f)return;const open=f.style.display==='none';f.style.display=open?'block':'none';const b=document.getElementById('lf-toggle');if(b)b.textContent=open?'Masquer le formulaire':'✎ Logger / modifier le réalisé';if(open)f.scrollIntoView({behavior:_reduceMotion()?'auto':'smooth',block:'center'});}
 function _v(id){const e=document.getElementById(id);return e?e.value.trim():'';}
+function _celebrateLog(realise){
+  // Moment gratifiant quand une séance est loggée "faite". Respecte reduced-motion.
+  if(!realise||realise.statut!=='fait')return;
+  if(navigator.vibrate)try{navigator.vibrate([12,40,12])}catch(e){}
+  const prev=document.getElementById('log-celeb');if(prev)prev.remove();
+  const km=realise.km?(String(realise.km).replace('.',',')+' km'):'';
+  const ov=document.createElement('div');ov.id='log-celeb';ov.className='log-celeb';
+  ov.innerHTML='<div class="lc-card"><div class="lc-check">✓</div><div class="lc-txt">Séance enregistrée</div>'+(km?'<div class="lc-sub">'+km+'</div>':'')+'</div>';
+  document.body.appendChild(ov);
+  const dur=_reduceMotion()?400:1300;
+  requestAnimationFrame(()=>ov.classList.add('show'));
+  setTimeout(()=>{ov.classList.remove('show');setTimeout(()=>ov.remove(),260);},dur);
+}
 function logSeance(wk,id){
   const se=findSeance(wk,id);if(!se)return;
   const km=parseFloat(_v('lf-km').replace(',','.'))||'';
@@ -1175,6 +1188,7 @@ function logSeance(wk,id){
     revue:(se.realise&&se.realise.revue)||''};
   const logs=loadLogs();logs[logId(wk,id)]=realise;saveLogs(logs);
   se.realise=realise;
+  _celebrateLog(realise);
   _afterLog(wk,id);
 }
 function unlogSeance(wk,id){const se=findSeance(wk,id);if(!se)return;const logs=loadLogs();delete logs[logId(wk,id)];saveLogs(logs);se.realise={statut:'a_faire'};_afterLog(wk,id);}
