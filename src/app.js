@@ -149,7 +149,7 @@ function _ckRebuild(){
         hasReal=true;km+=r.km;re+=_reFromSeance(s);
         var dm=r.commentaire&&r.commentaire.match(/D\+\s*(\d+)/);if(dm)dplus+=+dm[1];
         if(r.fc_moy){fcSum+=r.fc_moy;fcN++;}
-        var cm=r.commentaire&&r.commentaire.match(/cadence\s+(\d+)/);if(cm){cadSum+=+cm[1];cadN++;}
+        var cm=r.commentaire&&r.commentaire.match(/cadence\s+(\d+)/);if(cm){var _cv=+cm[1];if(_cv<120)_cv*=2;cadSum+=_cv;cadN++;}
         if(r.allure){var pm=r.allure.match(/(\d+):(\d+)/);if(pm){paceSum+=(+pm[1])*60+(+pm[2]);paceN++;}}
       }
     });
@@ -340,6 +340,11 @@ function _whatsNew(){
     const streak=(typeof _computeStreak==='function')?_computeStreak():0;
     const cur={lastDate,forme,streak};
     let prev=null;try{prev=JSON.parse(localStorage.getItem('wn_seen')||'null');}catch(e){}
+    // Ne consommer le snapshot que si l'Accueil est réellement visible (sinon un render
+    // en arrière-plan — ex. après un log depuis l'onglet Séances — mangerait le diff sans que
+    // l'utilisateur ait vu la carte).
+    const _vAcc=document.getElementById('vue-accueil');
+    if(_vAcc&&_vAcc.style.display==='none')return null;
     localStorage.setItem('wn_seen',JSON.stringify(cur));
     if(!prev)return null; // première visite : rien à comparer
     let msg=null;
@@ -1594,7 +1599,7 @@ function _cReply(txt){
     return `${warn}\n\nEn cas de doute : un EF l\u00e9ger 30min FC<144 vaut mieux qu'un repos complet ou une s\u00e9ance forc\u00e9e. Et garde un \u0153il sur ton dos \u2014 ta vigilance connue.`;
   }
   if(/demain|prochain|suivant|apr\u00e8s-demain/.test(t)){
-    if(!ps)return 'Toutes les s\u00e9ances de la semaine sont log g\u00e9es ou pass\u00e9es \u{1F389} La suite se cale lundi.';
+    if(!ps)return 'Toutes les s\u00e9ances de la semaine sont logg\u00e9es ou pass\u00e9es \u{1F389} La suite se cale lundi.';
     const diff=Math.round((ps.d-today)/86400000);
     const quand=diff<=0?"aujourd'hui":diff===1?'demain':`dans ${diff} jours`;
     let msg=`**${ps.se.titre||ps.se.type}** \u2014 ${quand}\n\n${ps.se.sous||ps.se.objectif||''}`;
@@ -2063,7 +2068,7 @@ function _ckRenderAll(win){
   const reLbl=document.getElementById('ck-re-lbl');if(reLbl){reLbl.textContent='Effort · '+W+' sem.';}
   document.getElementById('ck-re-val').textContent=totalRE;
   (function(){var se=document.getElementById('ck-summary');if(!se)return;try{var pts=_ckSummary();if(!pts.length){se.style.display='none';return;}se.style.display='';se.innerHTML=pts.map(function(p){var c=p.t==='warn'?'#ef4444':p.t==='ok'?'#16a34a':'#0891b2';return '<div class="cks-row"><span class="cks-dot" style="background:'+c+'"></span><span>'+p.x+'</span></div>';}).join('');}catch(e){se.style.display='none';}})();
-  (function(){var cv=document.getElementById('ck-cad-val');if(!cv)return;try{var cs=(_CK&&_CK.CAD&&_CK.CAD[W]&&Array.isArray(_CK.CAD[W].v))?_CK.CAD[W].v.filter(x=>x!=null):[];if(cs.length){var avg=Math.round(cs.reduce((a,b)=>a+b,0)/cs.length);cv.innerHTML=avg+'<span class="ck-ku">spm</span>';}else{cv.innerHTML='—<span class="ck-ku">spm</span>';}}catch(e){}})();
+  (function(){var cv=document.getElementById('ck-cad-kpi');if(!cv)return;try{var cs=(_CK&&_CK.CAD&&_CK.CAD[W]&&Array.isArray(_CK.CAD[W].v))?_CK.CAD[W].v.filter(x=>x!=null):[];if(cs.length){var srt=cs.slice().sort((a,b)=>a-b);var med=srt[Math.floor(srt.length/2)];cv.innerHTML=Math.round(med)+'<span class="ck-ku">spm</span>';}else{cv.innerHTML='—<span class="ck-ku">spm</span>';}}catch(e){}})();
   _pmcRender(W);
   _ckBar('ckVol','ckVolW','ckVolT','ckVolX',D.VOL[W],{ref:true,col:'#0d9488',unit:' km',h:90});
   document.getElementById('ck-vol-sub').textContent=totalKm.toFixed(0)+' km · '+W+' sem.';
@@ -2153,7 +2158,7 @@ function renderCockpit(){
   <div class="ck-kpi"><div class="ck-kv" id="ck-km-val">—<span class="ck-ku">km</span></div><div class="ck-kl" id="ck-km-lbl">fenêtre</div><div class="ck-kd up">cumulé</div></div>
   <div class="ck-kpi"><div class="ck-kv" id="ck-re-val">—</div><div class="ck-kl" id="ck-re-lbl">Effort</div><div class="ck-kd up">cumulé</div></div>
   <div class="ck-kpi"><div class="ck-kv" id="ck-acwr-val">0.69</div><div class="ck-kl">ACWR</div><div class="ck-kd">frais</div></div>
-  <div class="ck-kpi"><div class="ck-kv" id="ck-cad-val">—<span class="ck-ku">spm</span></div><div class="ck-kl">Cadence</div><div class="ck-kd" id="ck-cad-d">moy.</div></div>
+  <div class="ck-kpi"><div class="ck-kv" id="ck-cad-kpi">—<span class="ck-ku">spm</span></div><div class="ck-kl">Cadence</div><div class="ck-kd" id="ck-cad-d">moy.</div></div>
 </div>
 <div class="ck-summary" id="ck-summary"></div>
 <div class="ck-sec ck-sec-tg" data-open="1" onclick="_ckToggleSec(this)">📊 Volume &amp; charge<span class="ck-sec-chev">▾</span></div>
