@@ -2065,6 +2065,7 @@ function _ckRenderAll(win){
   const kmLbl=document.getElementById('ck-km-lbl');if(kmLbl){kmLbl.textContent=W+' semaines';}
   const reLbl=document.getElementById('ck-re-lbl');if(reLbl){reLbl.textContent='Effort · '+W+' sem.';}
   document.getElementById('ck-re-val').textContent=totalRE;
+  (function(){var se=document.getElementById('ck-summary');if(!se)return;try{var pts=_ckSummary();if(!pts.length){se.style.display='none';return;}se.style.display='';se.innerHTML=pts.map(function(p){var c=p.t==='warn'?'#ef4444':p.t==='ok'?'#16a34a':'#0891b2';return '<div class="cks-row"><span class="cks-dot" style="background:'+c+'"></span><span>'+p.x+'</span></div>';}).join('');}catch(e){se.style.display='none';}})();
   (function(){var cv=document.getElementById('ck-cad-val');if(!cv)return;try{var cs=(_CK&&_CK.CAD&&_CK.CAD[W]&&Array.isArray(_CK.CAD[W].v))?_CK.CAD[W].v.filter(x=>x!=null):[];if(cs.length){var avg=Math.round(cs.reduce((a,b)=>a+b,0)/cs.length);cv.innerHTML=avg+'<span class="ck-ku">spm</span>';}else{cv.innerHTML='—<span class="ck-ku">spm</span>';}}catch(e){}})();
   _pmcRender(W);
   _ckBar('ckVol','ckVolW','ckVolT','ckVolX',D.VOL[W],{ref:true,col:'#0d9488',unit:' km',h:90});
@@ -2095,6 +2096,33 @@ function _ckRenderAll(win){
   const cadLast=D.CAD[W].v.filter(x=>x!=null).pop();document.getElementById('ck-cad-val').textContent=cadLast?cadLast.toFixed(0):'—';
   // Run list
   document.getElementById('ck-runs').innerHTML=D.RUNS.map((r,i)=>`<div onclick="_ckOpenRun(${i})" style="background:var(--gris-fond);border-radius:10px;padding:10px 12px;display:flex;align-items:center;gap:10px;cursor:pointer;margin-bottom:6px"><div style="width:7px;height:7px;border-radius:50%;background:${r.type};flex:0 0 7px"></div><div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:600;color:var(--texte)">${r.title}${r.hasStreams?' <span style="font-size:9px;color:#0d9488">⊙ live</span>':''}</div><div style="font-size:10px;color:var(--texte-deux);margin-top:1px">${r.date} · RE ${r.re} · FC ${r.fcm}/${r.fcx}</div></div><div style="text-align:right"><div style="font-size:14px;font-weight:700;color:var(--texte)">${r.km}</div><div style="font-size:9px;color:var(--texte-deux)">${r.al}/km</div></div></div>`).join('');
+}
+function _ckToggleSec(el){
+  const open=el.getAttribute('data-open')==='1';
+  const body=el.nextElementSibling;
+  const chev=el.querySelector('.ck-sec-chev');
+  if(open){el.setAttribute('data-open','0');if(body)body.style.display='none';if(chev)chev.textContent='▸';}
+  else{el.setAttribute('data-open','1');if(body)body.style.display='';if(chev)chev.textContent='▾';
+    // relancer un rebuild léger des graphes de la section qui s'ouvre (au cas où rendus à display:none)
+    try{if(typeof _ckRenderAll==='function'&&typeof _ckWin!=='undefined')_ckRenderAll(_ckWin);}catch(e){}
+  }
+}
+function _ckSummary(){
+  // Résumé exécutif : 2-3 constats clés générés depuis les vraies données.
+  try{
+    const acwr=(typeof _dynamicACWR==='function')?_dynamicACWR():1.0;
+    const forme=(typeof computeFormeScore==='function')?computeFormeScore():{score:75,signal:''};
+    const pts=[];
+    if(acwr>1.5)pts.push({t:'warn',x:`Charge aiguë élevée (ACWR ${acwr.toFixed(2)}) — vigilance blessure`});
+    else if(acwr<0.8)pts.push({t:'info',x:`Charge basse (ACWR ${acwr.toFixed(2)}) — de la marge pour construire`});
+    else pts.push({t:'ok',x:`Charge maîtrisée (ACWR ${acwr.toFixed(2)})`});
+    pts.push({t:forme.score>=80?'ok':forme.score>=65?'info':'warn',x:`Forme ${forme.score}/100${forme.signal?' · '+forme.signal:''}`});
+    try{
+      const z2=_CK&&_CK.Z2&&_CK.Z2[8]&&_CK.Z2[8].v?_CK.Z2[8].v.filter(x=>x!=null):[];
+      if(z2.length>=2){const d=z2[z2.length-1]-z2[0];if(d<-2)pts.push({t:'ok',x:'Allure Z2 en progression — le moteur aérobie grossit'});else if(d>4)pts.push({t:'info',x:'Allure Z2 en léger recul — normal en récup/chaleur'});}
+    }catch(e){}
+    return pts.slice(0,3);
+  }catch(e){return [];}
 }
 function renderCockpit(){
   const el=document.getElementById('cockpit-contenu');
@@ -2130,7 +2158,9 @@ function renderCockpit(){
   <div class="ck-kpi"><div class="ck-kv" id="ck-acwr-val">0.69</div><div class="ck-kl">ACWR</div><div class="ck-kd">frais</div></div>
   <div class="ck-kpi"><div class="ck-kv" id="ck-cad-val">—<span class="ck-ku">spm</span></div><div class="ck-kl">Cadence</div><div class="ck-kd" id="ck-cad-d">moy.</div></div>
 </div>
-<div class="ck-sec">📊 Volume &amp; charge</div>
+<div class="ck-summary" id="ck-summary"></div>
+<div class="ck-sec ck-sec-tg" data-open="1" onclick="_ckToggleSec(this)">📊 Volume &amp; charge<span class="ck-sec-chev">▾</span></div>
+<div class="ck-sec-body" data-sec="1">
 <div class="ck-sec">📈 Performance Management Chart</div>
 <div class="ck-card"><div class="ck-ch"><div><div class="ck-ct">CTL · ATL · TSB<button class="ck-help" onclick="event.stopPropagation();openCkHelp('pmc')">?</button></div><div class="ck-cs" id="ckPMC-sub">Fitness · Fatigue · Forme</div></div></div><div class="ck-cw" id="ckPMCW"><svg id="ckPMC" height="90" style="display:block;width:100%"></svg><div class="ck-tt" id="ckPMCT">glisse pour voir les valeurs</div></div><div style="display:flex;gap:14px;font-size:10px;color:var(--texte-deux);margin-top:6px;padding:0 2px"><span><span style="color:#0d9488">●</span> CTL fitness</span><span><span style="color:#f59e0b">●</span> ATL fatigue</span><span><span style="color:#16a34a">▌</span> TSB forme</span></div></div>
 ${card('ckVol','Volume hebdomadaire','',null,null,90,'<div style="font-size:9px;color:#94a3b8;text-align:center;margin-top:4px">touche une barre · ■ prévu</div>','vol')}
@@ -2138,16 +2168,25 @@ ${card('ckVol','Volume hebdomadaire','',null,null,90,'<div style="font-size:9px;
 ${card('ckRE','⚡ Relative Effort / sem.','charge Strava réelle',null,null,80,'<div style="font-size:9px;color:#94a3b8;text-align:center;margin-top:4px">glisse →</div>','re')}
 <div class="ck-card"><div class="ck-ch"><div><div class="ck-ct">🩹 ACWR — risque blessure<button class="ck-help" onclick="event.stopPropagation();openCkHelp('acwr')">?</button></div><div class="ck-cs">ratio charge aiguë / chronique</div></div><div style="font-size:26px;font-weight:700;line-height:1" id="ck-acwr-val2">0.69</div></div><div class="ck-cw" id="ckACWRW"><svg id="ckACWR" height="65" style="display:block;width:100%"></svg><div class="ck-tt" id="ckACWRT"></div></div><div class="ck-xl" id="ckACWRX"></div></div>
 ${card('ckDP','⛰ Dénivelé D+','',null,'m',75,'','dp')}
-<div class="ck-sec">🔋 Moteur aérobie</div>
+</div>
+<div class="ck-sec ck-sec-tg" data-open="0" onclick="_ckToggleSec(this)">🔋 Moteur aérobie<span class="ck-sec-chev">▸</span></div>
+<div class="ck-sec-body" data-sec="0" style="display:none">
 <div class="ck-card"><div class="ck-ch"><div><div class="ck-ct">Z2 pace — allure EF à FC&lt;144<button class="ck-help" onclick="event.stopPropagation();openCkHelp('z2')">?</button></div><div class="ck-cs">indicateur n°1 du développement</div></div><div style="text-align:right"><div style="font-size:22px;font-weight:700;color:#0d9488" id="ck-z2-val">5:54</div><div class="ck-cs">/km</div></div></div><div style="font-size:10px;font-weight:600;margin:3px 0 6px" id="ck-z2-delta"></div><div class="ck-cw" id="ckZ2W"><svg id="ckZ2" height="85" style="display:block;width:100%"></svg><div class="ck-tt" id="ckZ2T"></div></div><div class="ck-xl" id="ckZ2X"></div></div>
 <div class="ck-card"><div class="ck-ch"><div><div class="ck-ct">💓 Découplage cardiaque<button class="ck-help" onclick="event.stopPropagation();openCkHelp('dc')">?</button></div><div class="ck-cs">dérive FC sortie longue · &lt;5% idéal</div></div><div style="font-size:22px;font-weight:700" id="ck-dc-val">—</div></div><div class="ck-cw" id="ckDCW"><svg id="ckDC" height="75" style="display:block;width:100%"></svg><div class="ck-tt" id="ckDCT"></div></div><div class="ck-xl" id="ckDCX"></div></div>
-<div class="ck-sec">📈 Allure &amp; vitesse</div>
+</div>
+<div class="ck-sec ck-sec-tg" data-open="0" onclick="_ckToggleSec(this)">📈 Allure &amp; vitesse<span class="ck-sec-chev">▸</span></div>
+<div class="ck-sec-body" data-sec="0" style="display:none">
 <div class="ck-card"><div class="ck-ch"><div><div class="ck-ct">Progression allure par type<button class="ck-help" onclick="event.stopPropagation();openCkHelp('pace')">?</button></div><div class="ck-cs">EF · marathon · seuil</div></div></div><div class="ck-cw" id="ckPACEW"><svg id="ckPACE" height="95" style="display:block;width:100%"></svg><div class="ck-tt" id="ckPACET"></div></div><div class="ck-xl" id="ckPACEX"></div><div style="display:flex;gap:12px;font-size:10px;color:var(--texte-deux);margin-top:7px"><span><span style="color:#16a34a">●</span> EF</span><span><span style="color:#0d9488">●</span> AM</span><span><span style="color:#f59e0b">●</span> Seuil</span></div></div>
-<div class="ck-sec">❤️ Cardiaque &amp; cadence</div>
+</div>
+<div class="ck-sec ck-sec-tg" data-open="0" onclick="_ckToggleSec(this)">❤️ Cardiaque &amp; cadence<span class="ck-sec-chev">▸</span></div>
+<div class="ck-sec-body" data-sec="0" style="display:none">
 <div class="ck-card"><div class="ck-ch"><div><div class="ck-ct">Zones FC<button class="ck-help" onclick="event.stopPropagation();openCkHelp('fc')">?</button></div><div class="ck-cs" id="ck-fc-sub"></div></div></div><div class="ck-cw" id="ckFCW"><svg id="ckFC" height="100" style="display:block;width:100%"></svg><div class="ck-tt" id="ckFCT"></div></div><div style="font-size:10px;color:var(--texte-deux);text-align:center;margin-top:6px;min-height:14px" id="ck-fc-info">touche une zone</div></div>
 <div class="ck-card"><div class="ck-ch"><div><div class="ck-ct">🦶 Cadence<button class="ck-help" onclick="event.stopPropagation();openCkHelp('cad')">?</button></div><div class="ck-cs">route ~172 spm · trail ~146 spm</div></div><div><div style="font-size:22px;font-weight:700;color:var(--texte)" id="ck-cad-val">172</div><div class="ck-cs">spm</div></div></div><div class="ck-cw" id="ckCADW"><svg id="ckCAD" height="70" style="display:block;width:100%"></svg><div class="ck-tt" id="ckCADT"></div></div><div class="ck-xl" id="ckCADX"></div></div>
-<div class="ck-sec">🔍 Analyse par sortie</div>
+</div>
+<div class="ck-sec ck-sec-tg" data-open="0" onclick="_ckToggleSec(this)">🔍 Analyse par sortie<span class="ck-sec-chev">▸</span></div>
+<div class="ck-sec-body" data-sec="0" style="display:none">
 <div id="ck-runs"></div>
+</div>
 </div>
 <div id="ck-modal" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,.6);z-index:200;align-items:flex-end">
   <div style="background:var(--bg-card,#fff);border-radius:18px 18px 0 0;width:100%;max-height:90vh;overflow-y:auto">
