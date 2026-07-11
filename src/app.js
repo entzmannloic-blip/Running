@@ -681,14 +681,11 @@ function jumpToWeek(num){if(document.getElementById('vue-plan').style.display===
   el.classList.add('wk-flash');setTimeout(()=>el.classList.remove('wk-flash'),1700);}
 let _jumpFabIO=null;
 function _initJumpFabWatch(){
-  const cur=isoWeek(new Date());const el=document.getElementById('wk-'+cur);const fab=document.getElementById('fab-jump-week');
-  if(!el||!fab)return;
-  if(!('IntersectionObserver' in window)){fab.classList.add('visible');return;}
-  if(_jumpFabIO)_jumpFabIO.disconnect();
-  _jumpFabIO=new IntersectionObserver(entries=>{
-    entries.forEach(e=>fab.classList.toggle('visible',!e.isIntersecting));
-  },{threshold:0,rootMargin:'-'+((document.getElementById('appbar')?.offsetHeight||60)+10)+'px 0px 0px 0px'});
-  _jumpFabIO.observe(el);
+  // Le bouton "En cours" est disponible en permanence sur l'onglet Séances (à tout niveau de scroll).
+  const fab=document.getElementById('fab-jump-week');
+  if(!fab)return;
+  if(_jumpFabIO){_jumpFabIO.disconnect();_jumpFabIO=null;}
+  fab.classList.add('visible');
 }
 /* ===== Item 4 — Projection marathon « boule de cristal » ===== */
 function _pace2s(p){if(p==null)return null;const m=String(p).match(/(\d+):(\d+)/);return m?(+m[1]*60+ +m[2]):null;}
