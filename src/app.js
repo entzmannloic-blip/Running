@@ -354,6 +354,36 @@ function _whatsNew(){
     return msg;
   }catch(e){return null;}
 }
+function _timelineHTML(){
+  // Frise "trajectoire vers Nice" : phases de la saison jusqu'à la semaine du marathon.
+  try{
+    if(typeof PHASES==='undefined'||!PHASES.length||typeof RACES==='undefined')return '';
+    const nice=RACES.find(r=>/nice/i.test(r.nom));
+    if(!nice)return '';
+    const niceWeek=(new Date(nice.date)).toLocaleDateString?(function(){const d=new Date(nice.date);const dd=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()));const day=dd.getUTCDay()||7;dd.setUTCDate(dd.getUTCDate()+4-day);const ys=new Date(Date.UTC(dd.getUTCFullYear(),0,1));return Math.ceil((((dd-ys)/86400000)+1)/7);})():45;
+    // Parser les phases, ne garder que celles jusqu'à (et incluant) la semaine du marathon
+    const parsed=PHASES.map(p=>{const m=(p.sem||'').match(/S(\d+)\s*[–-]\s*S?(\d+)?/);return {nom:p.nom,start:m?+m[1]:0,end:m?(+m[2]||+m[1]):0};}).filter(p=>p.start>0);
+    const relevant=parsed.filter(p=>p.start<=niceWeek);
+    if(!relevant.length)return '';
+    const startWk=relevant[0].start;
+    const curWk=isoWeek(new Date());
+    const totalSpan=Math.max(1,niceWeek-startWk);
+    const prog=Math.max(0,Math.min(100,Math.round((curWk-startWk)/totalSpan*100)));
+    const curPhase=relevant.find(p=>curWk>=p.start&&curWk<=p.end)||relevant[relevant.length-1];
+    const jRace=Math.max(0,Math.ceil((new Date(nice.date)-new Date())/86400000));
+    const cible=(typeof PROFIL!=='undefined'&&PROFIL.cible_marathon)?PROFIL.cible_marathon:'3h45';
+    const segs=relevant.map(p=>{
+      const w=((p.end-p.start+1)/totalSpan*100).toFixed(2);
+      const isCur=p===curPhase;
+      return `<div class="tl-seg${isCur?' tl-cur':''}" style="width:${w}%" title="${p.nom}"></div>`;
+    }).join('');
+    return `<div class="timeline-wrap" onclick="showTab('plan')">
+      <div class="tl-head"><span class="tl-phase">${curPhase.nom}</span><span class="tl-week">S${curWk}</span></div>
+      <div class="tl-track">${segs}<div class="tl-fill" style="width:${prog}%"></div><div class="tl-you" style="left:${prog}%"></div></div>
+      <div class="tl-foot"><span>Début S${startWk}</span><span class="tl-goal">🏁 Nice · J-${jRace} · ${cible}</span></div>
+    </div>`;
+  }catch(e){return '';}
+}
 function renderHeader(){
   const cur=isoWeek(new Date());const sc=SEMAINES.find(s=>s.num===cur)||SEMAINES[0];
   const _t=new Date();_t.setHours(0,0,0,0);
@@ -400,7 +430,8 @@ function renderHeader(){
   const _nudgeCard=_nudge?`<button class="coach-nudge cn-${_nudge.tone}" onclick="openCoach()"><span class="cn-ico">${_nudge.icon}</span><span class="cn-txt">${_nudge.txt}</span><span class="cn-go">Coach ›</span></button>`:'';
   const _wn=_whatsNew();
   const _wnCard=_wn?`<div class="whats-new"><span class="wn-ico">${_wn.icon}</span><span class="wn-txt">${_wn.txt}</span></div>`:'';
-  document.getElementById('hero-plan').innerHTML=`${_psCard}${_wnCard}<div class="hx-row">${_formeTile}${_nearTile}</div>${_formeDetail}<div id="canicule-banner" style="display:none"></div>${_cw}${_nudgeCard}<div id="meteo-widget" class="meteo"><div class="meteo-loc">⏳ Météo…</div></div>${_mini?`<div class="hmini-row">${_mini}</div>`:''}`;
+  const _tl=_timelineHTML();
+  document.getElementById('hero-plan').innerHTML=`${_psCard}${_wnCard}<div class="hx-row">${_formeTile}${_nearTile}</div>${_tl}${_formeDetail}<div id="canicule-banner" style="display:none"></div>${_cw}${_nudgeCard}<div id="meteo-widget" class="meteo"><div class="meteo-loc">⏳ Météo…</div></div>${_mini?`<div class="hmini-row">${_mini}</div>`:''}`;
   renderMeteo();
   document.getElementById('maj-foot').innerHTML=_maj;
    try{const _aSe=Object.values(SEANCES_BY_WEEK).flat();const _aF=_aSe.filter(s=>s.realise&&(s.realise.statut==='fait'||s.realise.statut==='partiel')).length;const _aKm=Math.round(_aSe.reduce((a,s)=>a+((s.realise&&s.realise.km)||0),0));const _aP=_aSe.length?Math.round(_aF/_aSe.length*100):0;const _ae=document.getElementById('accueil-annee');const _aStreak=_computeStreak();const _streakTile=_aStreak>=2?`<div class="acc-stat acc-streak"><div class="av">${_aStreak}<span>\u{1F525}</span></div><div class="ak">Sem. d\u2019affil\u00e9e</div></div>`:'';if(_ae)_ae.innerHTML=`<div class="acc-lab">Bilan du plan</div><div class="acc-annee ${_streakTile?'has-streak':''}"><div class="acc-stat"><div class="av">${_aF}</div><div class="ak">Sorties</div></div><div class="acc-stat"><div class="av">${_aKm}<span>km</span></div><div class="ak">R\u00e9alis\u00e9</div></div><div class="acc-stat"><div class="av">${_aP}<span>%</span></div><div class="ak">Pr\u00e9pa plan</div></div>${_streakTile}</div>`;}catch(e){}

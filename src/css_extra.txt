@@ -1031,3 +1031,17 @@ body.nuit .botbar{background:rgba(15,23,42,.82);border-top-color:#1e293b}
 .wn-txt{flex:1;font-size:13px;font-weight:700;color:#92400e}
 @keyframes wnIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
 @media (prefers-reduced-motion:reduce){.whats-new{animation:none}}
+/* ===== Timeline trajectoire vers Nice (UX moment 4) ===== */
+.timeline-wrap{background:var(--blanc);border:1px solid var(--gris-clair);border-radius:var(--rayon);padding:var(--sp-4);margin-top:var(--sp-3);cursor:pointer}
+.tl-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:var(--sp-2)}
+.tl-phase{font-size:13px;font-weight:700;color:var(--texte)}
+.tl-week{font-size:11px;font-weight:700;color:var(--primary);background:var(--primary-fond);border-radius:6px;padding:2px 8px}
+.tl-track{position:relative;display:flex;height:8px;border-radius:99px;overflow:hidden;background:var(--gris-fond);margin:var(--sp-2) 0}
+.tl-seg{height:100%;border-right:2px solid var(--blanc)}
+.tl-seg:last-child{border-right:none}
+.tl-seg.tl-cur{background:rgba(13,148,136,.12)}
+.tl-fill{position:absolute;left:0;top:0;height:100%;background:linear-gradient(90deg,#0d9488,#22d3ee);border-radius:99px;transition:width .4s ease}
+.tl-you{position:absolute;top:50%;width:12px;height:12px;border-radius:50%;background:#0d9488;border:2px solid #fff;box-shadow:0 0 0 2px #0d9488;transform:translate(-50%,-50%)}
+.tl-foot{display:flex;justify-content:space-between;font-size:11px;color:var(--texte-trois)}
+.tl-goal{font-weight:700;color:var(--texte-deux)}
+@media (prefers-reduced-motion:reduce){.tl-fill{transition:none}}
