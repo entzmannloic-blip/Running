@@ -1022,3 +1022,6 @@ body.nuit .botbar{background:rgba(15,23,42,.82);border-top-color:#1e293b}
 .log-celeb.lc-pr.show .lc-card{animation:lcPrPop .5s cubic-bezier(.34,1.56,.64,1)}
 @keyframes lcPrPop{0%{transform:scale(.7)}55%{transform:scale(1.06)}100%{transform:scale(1)}}
 @media (prefers-reduced-motion:reduce){.log-celeb.lc-pr.show .lc-card{animation:none}}
+/* ===== Brief du matin : chaussure + créneau dans la carte séance (UX moment 1) ===== */
+.vdj-shoe{margin-top:8px;font-size:12px;font-weight:700;color:#fff;background:rgba(255,255,255,.14);border-radius:8px;padding:4px 10px;display:inline-block}
+.vdj-depart{margin-top:8px;font-size:12px;color:#fff;background:rgba(249,115,22,.28);border-radius:8px;padding:4px 10px;display:inline-block}

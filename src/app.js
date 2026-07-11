@@ -346,7 +346,8 @@ function renderHeader(){
     const _se=_ps.se;
     const _fit=_se.fit?`<a class="vdj-fit" href="${_se.fit}" download onclick="event.stopPropagation()">⌚ Télécharger la séance</a>`:'';
     const _dist=(_se.metriques&&_se.metriques.Distance)?' · '+_se.metriques.Distance:'';
-    _psCard=`<div class="vdj" onclick="ouvrirSeance(${_ps.wk},${_se.id})"><div class="vdj-lbl">Prochaine séance · ${_lbl}</div><div class="vdj-t">${_se.titre}</div><div class="vdj-s">${_se.type}${_dist} · S${_ps.wk}</div>${_fit}${_tempAdj}</div>`;
+    const _shoe=_se.chaussure?`<div class="vdj-shoe">👟 ${_se.chaussure}</div>`:'';
+    _psCard=`<div class="vdj" onclick="ouvrirSeance(${_ps.wk},${_se.id})"><div class="vdj-lbl">Prochaine séance · ${_lbl}</div><div class="vdj-t">${_se.titre}</div><div class="vdj-s">${_se.type}${_dist} · S${_ps.wk}</div>${_shoe}<div class="vdj-depart" id="vdj-depart" style="display:none"></div>${_fit}${_tempAdj}</div>`;
   }
   // Sprint 1 — Score de forme en tuile compacte
   const _forme=computeFormeScore();
@@ -415,7 +416,13 @@ function _meteoPaint(d){
   // Feature 3 — bannière canicule auto
   const canDays=d.canicule_days||0;
   const canEl=document.getElementById('canicule-banner');
-  if(canEl){if(canDays>=3){canEl.innerHTML=`<span>☀️ <strong>Canicule</strong> · ${canDays}j chauds prévus</span><span class="can-tip">Sorties avant 8h30</span>`;canEl.style.display='flex';}else{canEl.style.display='none';}}
+  if(canEl){if(canDays>=3){canEl.innerHTML=`<span>☀️ <strong>Canicule</strong> · ${canDays}j chauds prévus</span>`;canEl.style.display='flex';}else{canEl.style.display='none';}}
+  const depEl=document.getElementById('vdj-depart');
+  if(depEl){
+    const T=Math.round(d.tomorrow_max!==undefined?d.tomorrow_max:d.temp);
+    if(T>=26){depEl.innerHTML=`🌡️ ${T}° demain — <strong>pars avant 8h30</strong>`;depEl.style.display='block';}
+    else{depEl.style.display='none';}
+  }
 }
 async function renderMeteo(){
   let cached=null;
