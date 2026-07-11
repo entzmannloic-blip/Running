@@ -295,6 +295,14 @@ function _coachNudge(){
     for(const d of done){if(isQuality(d.type)){lastQ=d.date;break;}}
     const daysSinceQ=lastQ?Math.floor((today-new Date(lastQ+'T12:00:00'))/86400000):999;
     const daysSinceAny=done.length?Math.floor((today-new Date(done[0].date+'T12:00:00'))/86400000):999;
+    // Semaine de course : le nudge devient un message de course, jamais un rappel d'inactivité.
+    if(typeof RACES!=='undefined'&&RACES.length){
+      for(const rc of RACES){
+        const jr=Math.round((new Date(rc.date+'T00:00:00')-today)/86400000);
+        if(jr===0)return {tone:'ok',icon:'\u{1F3C1}',txt:'Jour de course : '+rc.nom+' ! Confiance dans ta pr\u00e9pa \u2014 pars prudent, finis fort.'};
+        if(jr>0&&jr<=7)return {tone:'ok',icon:'\u{1F3C1}',txt:rc.nom+' dans '+jr+' jour'+(jr>1?'s':'')+' \u2014 priorit\u00e9 fra\u00eecheur : sorties courtes et faciles, sommeil, glucides.'};
+      }
+    }
     // Priorité aux signaux de risque, puis de relance
     if(acwr>1.5)
       return {tone:'warn',icon:'\u{1F534}',txt:'Ton ACWR est \u00e0 '+acwr.toFixed(2)+' \u2014 charge aigu\u00eb \u00e9lev\u00e9e. Priorise la r\u00e9cup ces prochains jours.'};
@@ -360,11 +368,12 @@ function _whatsNew(){
   }catch(e){return null;}
 }
 function _timelineHTML(){
-  // Frise "trajectoire vers Nice" : phases de la saison jusqu'à la semaine du marathon.
+  // Frise "trajectoire vers l'objectif" : suit la prochaine course à venir, disparaît après la saison.
   try{
     if(typeof PHASES==='undefined'||!PHASES.length||typeof RACES==='undefined')return '';
-    const nice=RACES.find(r=>/nice/i.test(r.nom));
-    if(!nice)return '';
+    const _today=new Date();_today.setHours(0,0,0,0);
+    const nice=RACES.filter(r=>new Date(r.date+'T23:59:00')>=_today).sort((a,b)=>a.date.localeCompare(b.date))[0];
+    if(!nice)return ''; // saison terminée : plus de frise
     const niceWeek=(new Date(nice.date)).toLocaleDateString?(function(){const d=new Date(nice.date);const dd=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()));const day=dd.getUTCDay()||7;dd.setUTCDate(dd.getUTCDate()+4-day);const ys=new Date(Date.UTC(dd.getUTCFullYear(),0,1));return Math.ceil((((dd-ys)/86400000)+1)/7);})():45;
     // Parser les phases, ne garder que celles jusqu'à (et incluant) la semaine du marathon
     const parsed=PHASES.map(p=>{const m=(p.sem||'').match(/S(\d+)\s*[–-]\s*S?(\d+)?/);return {nom:p.nom,start:m?+m[1]:0,end:m?(+m[2]||+m[1]):0};}).filter(p=>p.start>0);
@@ -376,7 +385,8 @@ function _timelineHTML(){
     const prog=Math.max(0,Math.min(100,Math.round((curWk-startWk)/totalSpan*100)));
     const curPhase=relevant.find(p=>curWk>=p.start&&curWk<=p.end)||relevant[relevant.length-1];
     const jRace=Math.max(0,Math.ceil((new Date(nice.date)-new Date())/86400000));
-    const cible=(typeof PROFIL!=='undefined'&&PROFIL.cible_marathon)?PROFIL.cible_marathon:'3h45';
+    const cible=/nice/i.test(nice.nom)?((typeof PROFIL!=='undefined'&&PROFIL.cible_marathon)?PROFIL.cible_marathon:'3h45'):'finisher';
+    const raceName=/nice/i.test(nice.nom)?'Nice':nice.nom;
     const segs=relevant.map(p=>{
       const w=((p.end-p.start+1)/totalSpan*100).toFixed(2);
       const isCur=p===curPhase;
@@ -385,7 +395,7 @@ function _timelineHTML(){
     return `<div class="timeline-wrap" onclick="showTab('plan')">
       <div class="tl-head"><span class="tl-phase">${curPhase.nom}</span><span class="tl-week">S${curWk}</span></div>
       <div class="tl-track">${segs}<div class="tl-fill" style="width:${prog}%"></div><div class="tl-you" style="left:${prog}%"></div></div>
-      <div class="tl-foot"><span>Début S${startWk}</span><span class="tl-goal">🏁 Nice · J-${jRace} · ${cible}</span></div>
+      <div class="tl-foot"><span>Début S${startWk}</span><span class="tl-goal">🏁 ${raceName} · J-${jRace} · ${cible}</span></div>
     </div>`;
   }catch(e){return '';}
 }
@@ -686,11 +696,14 @@ function jumpToWeek(num){if(document.getElementById('vue-plan').style.display===
   el.classList.add('wk-flash');setTimeout(()=>el.classList.remove('wk-flash'),1700);}
 let _jumpFabIO=null;
 function _initJumpFabWatch(){
-  // Le bouton "En cours" est disponible en permanence sur l'onglet Séances (à tout niveau de scroll).
+  // Le bouton "En cours" est disponible en permanence sur l'onglet Séances,
+  // mais seulement si la semaine courante existe dans le plan (sinon il ne mènerait nulle part).
   const fab=document.getElementById('fab-jump-week');
   if(!fab)return;
   if(_jumpFabIO){_jumpFabIO.disconnect();_jumpFabIO=null;}
-  fab.classList.add('visible');
+  const cur=isoWeek(new Date());
+  if(document.getElementById('wk-'+cur))fab.classList.add('visible');
+  else fab.classList.remove('visible');
 }
 /* ===== Item 4 — Projection marathon « boule de cristal » ===== */
 function _pace2s(p){if(p==null)return null;const m=String(p).match(/(\d+):(\d+)/);return m?(+m[1]*60+ +m[2]):null;}
