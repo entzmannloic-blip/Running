@@ -1515,6 +1515,57 @@ function _cFmt(t){
     .replace(/(<li>[\s\S]+?<\/li>\n?)+/g,function(m){return '<ul style="margin:6px 0 6px 14px">'+m+'</ul>';})
     .replace(/\n\n/g,'<br><br>').replace(/\n/g,'<br>');
 }
+function _cReply(txt){
+  const t=txt.toLowerCase();
+  const forme=computeFormeScore();
+  const today=new Date();today.setHours(0,0,0,0);
+  const curWk=isoWeek(today);
+  const sc=SEMAINES.find(s=>s.num===curWk)||{theme:'',km:0};
+  const ps=(typeof prochaineSeance==='function')?prochaineSeance():null;
+  if(/fatigu|crev[e\u00e9]|mal aux|douleur|bless/.test(t)){
+    const warn=forme.score<65?`Ton score de forme est bas (${forme.score}/100) \u2014 le repos est justifi\u00e9.`:`Ton score de forme est \u00e0 ${forme.score}/100, les donn\u00e9es sont bonnes. La fatigue ressentie est probablement normale apr\u00e8s ${sc.theme||'cette p\u00e9riode'}.`;
+    return `${warn}\n\nEn cas de doute : un EF l\u00e9ger 30min FC<144 vaut mieux qu'un repos complet ou une s\u00e9ance forc\u00e9e. Et garde un \u0153il sur ton dos \u2014 ta vigilance connue.`;
+  }
+  if(/demain|prochain|suivant|apr\u00e8s-demain/.test(t)){
+    if(!ps)return 'Toutes les s\u00e9ances de la semaine sont log g\u00e9es ou pass\u00e9es \u{1F389} La suite se cale lundi.';
+    const diff=Math.round((ps.d-today)/86400000);
+    const quand=diff<=0?"aujourd'hui":diff===1?'demain':`dans ${diff} jours`;
+    let msg=`**${ps.se.titre||ps.se.type}** \u2014 ${quand}\n\n${ps.se.sous||ps.se.objectif||''}`;
+    return msg;
+  }
+  if(/forme|score|comment (je|tu|\u00e7a va)|bilan/.test(t)){
+    const c=forme.components||[];
+    let det='';c.forEach(x=>{det+=`\n\u2022 ${x.label} : ${Math.round(x.score)}/100 \u2014 ${x.detail}`;});
+    return `**Forme du jour : ${forme.score}/100 ${forme.trend||''}**\n${det}\n\n\u2192 ${forme.signal||''}`;
+  }
+  if(/nice|saintex|sainte|course|objectif|marathon|j-\d/.test(t)){
+    const R=[{n:'Marathon de Nice',d:'2026-11-08',i:'42,195 km \u00b7 Objectif A \u00b7 3h45 (5:20/km)'},
+             {n:'Saint\u00e9Express',d:'2026-11-28',i:'45 km nuit \u00b7 Objectif B \u00b7 finisher'}];
+    return R.map(x=>{const j=Math.ceil((new Date(x.d)-today)/86400000);return `**${x.n}** \u2014 J-${j}\n${x.i}`;}).join('\n\n');
+  }
+  if(/nutri|gel|[e\u00e9]lectro|hydrat|boire|manger|caf[e\u00e9]/.test(t))
+    return `**Protocole carburant & \u00e9lectrolytes (r\u00e9f\u00e9rence canicule valid\u00e9e)**\n\n\u2022 Boisson d'effort \u00e9lectrolytes z\u00e9ro calorie d\u00e8s le d\u00e9part\n\u2022 ~850 ml/h en continu par forte chaleur (1,5L sur ~1h45)\n\u2022 +1 gel par heure d'effort\n\u2022 Sortie > 2h : ajouter des glucides dans la boisson (les \u00e9lectrolytes seuls ne suffisent plus)\n\n\u26a0\ufe0f La d\u00e9rive de FC en fin de sortie par chaleur = signal hydro-\u00e9lectrolytique, pas une baisse de forme.`;
+  if(/m[e\u00e9]t[e\u00e9]o|chaud|canicule|chaleur/.test(t)){
+    try{const mc=JSON.parse(localStorage.getItem('meteo_cache')||'null');
+      if(mc&&mc.temp){const T=Math.round(mc.temp);
+        if(T>28)return `\u{1F534} **Canicule : ${T}\u00b0C**\n\n\u2022 D\u00e9part avant 8h30\n\u2022 Allure : +20-30s/km\n\u2022 \u00c9lectrolytes d\u00e8s le d\u00e9part, ~850ml/h\n\u2022 FC d\u00e9rive attendue en fin de sortie \u2014 normal`;
+        if(T>22)return `\u{1F7E1} **${T}\u00b0C** \u2014 pars t\u00f4t, allure +10-20s/km, hydratation continue.`;
+        return `\u{1F7E2} **${T}\u00b0C** \u2014 conditions favorables, plan nominal.`;
+      }}catch(e){}
+    return `Par d\u00e9faut en ce moment : canicule persistante \u2014 d\u00e9part avant 8h30, \u00e9lectrolytes d\u00e8s le d\u00e9part, ~850ml/h.`;
+  }
+  if(/chaussure|shoe|clifton|novablast|cascadia|magic|pulse/.test(t)){
+    const g=(typeof GEAR!=='undefined')?GEAR:[];
+    if(!g.length)return 'Donn\u00e9es chaussures non disponibles.';
+    return `**Parc chaussures** \u{1F45F}\n\n`+g.map(x=>`${x.km>1000?'\u26a0\ufe0f':x.km>700?'\u{1F7E1}':'\u{1F7E2}'} **${x.marque} ${x.modele}** \u2014 ${x.km} km`).join('\n')+`\n\n\u2022 Clifton 10 : fin de vie, d\u00e9crassages courts seulement\n\u2022 Magic Speed : qualit\u00e9/AM uniquement\n\u2022 Cascadia : trail\n\u2022 Novablast V : r\u00e9serv\u00e9e Nice`;
+  }
+  if(/allure|vitesse|pace/.test(t))
+    return `**Allures cibles 2026**\n\n\u2022 EF Z2 : 5:50\u20136:05/km (FC<144)\n\u2022 AM marathon : **5:20/km** \u2192 3h45 Nice\n\u2022 Seuil : 4:50\u20135:00/km\n\nZ2 en progression \u2014 objectif automne : gagner 10-15s/km \u00e0 m\u00eame FC.`;
+  if(/repos|r[e\u00e9]cup|day off/.test(t))
+    return `**R\u00e9cup\u00e9ration**\n\n\u2022 48h apr\u00e8s effort intense : EF l\u00e9ger FC<135 OK\n\u2022 72h : retour entra\u00eenement normal\n\u2022 Douleur (dos notamment) : repos complet jusqu'\u00e0 disparition\n\nLa r\u00e9cup\u00e9ration est de l'entra\u00eenement. Tu te construis au repos, pas \u00e0 l'effort.`;
+  const tip=forme.score>=82?'en pleine forme':forme.score>=68?'en bonne forme':'\u00e0 surveiller';
+  return `Tu es ${tip} (${forme.score}/100). Je peux t'aider sur : **ma forme** \u00b7 **demain** \u00b7 **fatigue** \u00b7 **m\u00e9t\u00e9o** \u00b7 **courses** \u00b7 **nutrition** \u00b7 **chaussures** \u00b7 **allures** \u00b7 **r\u00e9cup\u00e9ration**.`;
+}
 function _cAddMsg(role,html){
   const el=document.getElementById('coach-msgs');if(!el)return;
   const t=new Date().toLocaleTimeString('fr',{hour:'2-digit',minute:'2-digit'});
@@ -1595,13 +1646,16 @@ async function coachSend(){
       })
     });
     const d=await res.json();
+    if(!res.ok||!d.content||!d.content[0]||!d.content[0].text)throw new Error('api');
     _cTypingHide();
-    const reply=(d.content&&d.content[0]&&d.content[0].text)||'Je n\u2019ai pas pu r\u00e9pondre. R\u00e9essaie.';
+    const reply=d.content[0].text;
     _cAddMsg('coach',_cFmt(reply));
     _coachHistory.push({role:'assistant',content:reply});
   }catch(e){
     _cTypingHide();
-    _cAddMsg('coach','\u26a0\ufe0f Connexion impossible. V\u00e9rifie ta connexion et r\u00e9essaie.');
+    const local=_cReply(txt);
+    _cAddMsg('coach',_cFmt(local));
+    _coachHistory.push({role:'assistant',content:local});
   }
   inp.disabled=false;if(btn)btn.disabled=false;inp.focus();
 }
