@@ -1025,3 +1025,9 @@ body.nuit .botbar{background:rgba(15,23,42,.82);border-top-color:#1e293b}
 /* ===== Brief du matin : chaussure + créneau dans la carte séance (UX moment 1) ===== */
 .vdj-shoe{margin-top:8px;font-size:12px;font-weight:700;color:#fff;background:rgba(255,255,255,.14);border-radius:8px;padding:4px 10px;display:inline-block}
 .vdj-depart{margin-top:8px;font-size:12px;color:#fff;background:rgba(249,115,22,.28);border-radius:8px;padding:4px 10px;display:inline-block}
+/* ===== Quoi de neuf : carte éphémère de retour (UX moment 2) ===== */
+.whats-new{display:flex;align-items:center;gap:var(--sp-3);background:linear-gradient(135deg,#fef3c7,#fff);border:1px solid #fde68a;border-radius:var(--rayon);padding:var(--sp-3) var(--sp-4);margin-top:var(--sp-3);animation:wnIn .4s ease}
+.wn-ico{flex:0 0 auto;font-size:20px}
+.wn-txt{flex:1;font-size:13px;font-weight:700;color:#92400e}
+@keyframes wnIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+@media (prefers-reduced-motion:reduce){.whats-new{animation:none}}

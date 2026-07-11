@@ -324,6 +324,36 @@ function _computeStreak(){
     return streak;
   }catch(e){return 0;}
 }
+function _whatsNew(){
+  // Détecte ce qui a changé depuis la dernière visite (nouvelle séance, PR, forme, streak).
+  // Ephémère : ne se montre qu'une fois par changement (signature sauvegardée immédiatement).
+  try{
+    const done=[];
+    Object.entries(SEANCES_BY_WEEK).forEach(([wk,ss])=>ss.forEach(s=>{
+      if(s.realise&&s.realise.statut==='fait'&&s.date)done.push({date:s.date,km:s.realise.km||0,pr:(parseInt(s.realise.pr,10)||0)+(parseInt(s.realise.ach,10)||0)});
+    }));
+    done.sort((a,b)=>b.date.localeCompare(a.date));
+    const lastDate=done.length?done[0].date:'';
+    const lastPr=done.length?done[0].pr:0;
+    const lastKm=done.length?done[0].km:0;
+    const forme=(typeof computeFormeScore==='function')?computeFormeScore().score:null;
+    const streak=(typeof _computeStreak==='function')?_computeStreak():0;
+    const cur={lastDate,forme,streak};
+    let prev=null;try{prev=JSON.parse(localStorage.getItem('wn_seen')||'null');}catch(e){}
+    localStorage.setItem('wn_seen',JSON.stringify(cur));
+    if(!prev)return null; // première visite : rien à comparer
+    let msg=null;
+    if(lastDate&&lastDate>prev.lastDate){
+      if(lastPr>0)msg={icon:'\u{1F3C5}',txt:lastPr+' record'+(lastPr>1?'s':'')+' battu'+(lastPr>1?'s':'')+' depuis ta derni\u00e8re visite !'};
+      else msg={icon:'\u2705',txt:'Nouvelle s\u00e9ance logg\u00e9e : '+String(lastKm).replace('.',',')+' km'};
+    }else if(streak>(prev.streak||0)&&streak>=2){
+      msg={icon:'\u{1F525}',txt:streak+' semaines d\u2019affil\u00e9e maintenant !'};
+    }else if(forme!==null&&prev.forme!==null&&Math.abs(forme-prev.forme)>=8){
+      msg=forme>prev.forme?{icon:'\u{1F4C8}',txt:'Ta forme a progress\u00e9 : '+prev.forme+' \u2192 '+forme}:null;
+    }
+    return msg;
+  }catch(e){return null;}
+}
 function renderHeader(){
   const cur=isoWeek(new Date());const sc=SEMAINES.find(s=>s.num===cur)||SEMAINES[0];
   const _t=new Date();_t.setHours(0,0,0,0);
@@ -368,7 +398,9 @@ function renderHeader(){
   const _cw=`<button class="cw-link" onclick="jumpToWeek(${sc.num})"><span class="cw-pin">📍</span><span class="cw-txt">Tu es en <strong>S${sc.num} · ${sc.theme}</strong></span><span class="cw-arr">voir dans le plan →</span></button>`;
   const _nudge=_coachNudge();
   const _nudgeCard=_nudge?`<button class="coach-nudge cn-${_nudge.tone}" onclick="openCoach()"><span class="cn-ico">${_nudge.icon}</span><span class="cn-txt">${_nudge.txt}</span><span class="cn-go">Coach ›</span></button>`:'';
-  document.getElementById('hero-plan').innerHTML=`${_psCard}<div class="hx-row">${_formeTile}${_nearTile}</div>${_formeDetail}<div id="canicule-banner" style="display:none"></div>${_cw}${_nudgeCard}<div id="meteo-widget" class="meteo"><div class="meteo-loc">⏳ Météo…</div></div>${_mini?`<div class="hmini-row">${_mini}</div>`:''}`;
+  const _wn=_whatsNew();
+  const _wnCard=_wn?`<div class="whats-new"><span class="wn-ico">${_wn.icon}</span><span class="wn-txt">${_wn.txt}</span></div>`:'';
+  document.getElementById('hero-plan').innerHTML=`${_psCard}${_wnCard}<div class="hx-row">${_formeTile}${_nearTile}</div>${_formeDetail}<div id="canicule-banner" style="display:none"></div>${_cw}${_nudgeCard}<div id="meteo-widget" class="meteo"><div class="meteo-loc">⏳ Météo…</div></div>${_mini?`<div class="hmini-row">${_mini}</div>`:''}`;
   renderMeteo();
   document.getElementById('maj-foot').innerHTML=_maj;
    try{const _aSe=Object.values(SEANCES_BY_WEEK).flat();const _aF=_aSe.filter(s=>s.realise&&(s.realise.statut==='fait'||s.realise.statut==='partiel')).length;const _aKm=Math.round(_aSe.reduce((a,s)=>a+((s.realise&&s.realise.km)||0),0));const _aP=_aSe.length?Math.round(_aF/_aSe.length*100):0;const _ae=document.getElementById('accueil-annee');const _aStreak=_computeStreak();const _streakTile=_aStreak>=2?`<div class="acc-stat acc-streak"><div class="av">${_aStreak}<span>\u{1F525}</span></div><div class="ak">Sem. d\u2019affil\u00e9e</div></div>`:'';if(_ae)_ae.innerHTML=`<div class="acc-lab">Bilan du plan</div><div class="acc-annee ${_streakTile?'has-streak':''}"><div class="acc-stat"><div class="av">${_aF}</div><div class="ak">Sorties</div></div><div class="acc-stat"><div class="av">${_aKm}<span>km</span></div><div class="ak">R\u00e9alis\u00e9</div></div><div class="acc-stat"><div class="av">${_aP}<span>%</span></div><div class="ak">Pr\u00e9pa plan</div></div>${_streakTile}</div>`;}catch(e){}
