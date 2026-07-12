@@ -306,7 +306,11 @@ function _coachNudge(){
     // Priorité aux signaux de risque, puis de relance
     if(acwr>1.5)
       return {tone:'warn',icon:'\u{1F534}',txt:'Ton ACWR est \u00e0 '+acwr.toFixed(2)+' \u2014 charge aigu\u00eb \u00e9lev\u00e9e. Priorise la r\u00e9cup ces prochains jours.'};
-    if(daysSinceAny>=5&&daysSinceAny<900)
+    // Phase "Maintien — Road trip USA" (S36-39) : le plan prévoit peu de course, on n'alarme pas sur l'inactivité.
+    const _inUSA=cur>=36&&cur<=39;
+    if(_inUSA&&daysSinceAny>=4&&daysSinceAny<900)
+      return {tone:'info',icon:'\u{1F30E}',txt:'Phase maintien (road trip) \u2014 randos et temps de pied comptent. Cours quand c\u2019est possible, sans pression.'};
+    if(daysSinceAny>=5&&daysSinceAny<900&&!_inUSA)
       return {tone:'info',icon:'\u{1F440}',txt:daysSinceAny+' jours sans sortie logg\u00e9e. Tout va bien ? Une sortie facile relancerait la machine.'};
     if(acwr<0.7&&daysSinceAny<5)
       return {tone:'info',icon:'\u{1F4C8}',txt:'Charge basse (ACWR '+acwr.toFixed(2)+') \u2014 de la marge pour ajouter du volume si la forme suit.'};
@@ -535,7 +539,7 @@ async function renderMeteo(){
     localStorage.setItem('meteo_cache',JSON.stringify(d));
     _meteoPaint(d);
   }catch(e){
-    if(!cached){const el=document.getElementById('meteo-widget');if(el)el.innerHTML='<div style="font-size:.75rem;color:var(--texte-trois)">🌡️ Météo indisponible</div>';}
+    if(!cached){const el=document.getElementById('meteo-widget');if(el)el.innerHTML='<button onclick="renderMeteo()" style="width:100%;text-align:left;background:none;border:none;font-size:.75rem;color:var(--texte-trois);cursor:pointer;padding:0" aria-label="Réessayer de charger la météo">🌡️ Météo indisponible · <span style="color:var(--primary);font-weight:700">réessayer</span></button>';}
   }
 }
 
@@ -886,16 +890,16 @@ function renderDash(){const el=document.getElementById('dash-contenu');
     <div class="kpi-r">Meilleurs efforts réels depuis ton Strava · à comparer avec tes projections actuelles. Le semi 2022 reste ta référence officielle (course).</div>
     <table style="width:100%;border-collapse:collapse;font-size:.84rem">
       <thead><tr style="color:var(--texte-trois);font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em">
-        <th style="text-align:left;padding:7px 6px;border-bottom:1px solid var(--gris-clair)">Distance</th>
-        <th style="text-align:center;padding:7px 6px;border-bottom:1px solid var(--gris-clair)">Record / référence</th>
-        <th style="text-align:center;padding:7px 6px;border-bottom:1px solid var(--gris-clair)">Meilleur effort 2026</th>
-        <th style="text-align:right;padding:7px 6px;border-bottom:1px solid var(--gris-clair)">Projeté aujourd'hui</th>
+        <th style="text-align:left;padding:8px 6px;border-bottom:1px solid var(--gris-clair)">Distance</th>
+        <th style="text-align:center;padding:8px 6px;border-bottom:1px solid var(--gris-clair)">Record / référence</th>
+        <th style="text-align:center;padding:8px 6px;border-bottom:1px solid var(--gris-clair)">Meilleur effort 2026</th>
+        <th style="text-align:right;padding:8px 6px;border-bottom:1px solid var(--gris-clair)">Projeté aujourd'hui</th>
       </tr></thead>
       <tbody>${RECORDS_PERF.map((r,i)=>`<tr style="border-bottom:1px solid var(--gris-clair)">
-        <td style="padding:9px 6px;font-weight:800">${r.dist}</td>
-        <td style="padding:9px 6px;text-align:center"><div style="font-weight:700">${r.temps_rec||'—'}</div><div style="font-size:.7rem;color:var(--texte-trois)">${r.record_sub}</div></td>
-        <td style="padding:9px 6px;text-align:center"><div style="font-weight:700;color:#0d9488">${r.temps_act}</div><div style="font-size:.7rem;color:var(--texte-trois)">${r.actuel_sub}</div></td>
-        <td style="padding:9px 6px;text-align:right"><div style="font-weight:700">${r.actuel}</div></td>
+        <td style="padding:8px 6px;font-weight:800">${r.dist}</td>
+        <td style="padding:8px 6px;text-align:center"><div style="font-weight:700">${r.temps_rec||'—'}</div><div style="font-size:.7rem;color:var(--texte-trois)">${r.record_sub}</div></td>
+        <td style="padding:8px 6px;text-align:center"><div style="font-weight:700;color:#0d9488">${r.temps_act}</div><div style="font-size:.7rem;color:var(--texte-trois)">${r.actuel_sub}</div></td>
+        <td style="padding:8px 6px;text-align:right"><div style="font-weight:700">${r.actuel}</div></td>
       </tr>`).join('')}</tbody>
     </table>
     <div style="margin-top:14px"><div class="kpi-t" style="font-size:.88rem;margin-bottom:8px">Allures de course estimées (Riegel)</div>
@@ -1222,7 +1226,7 @@ function ouvrirSemaine(num){const s=SEMAINES.find(x=>x.num===num);const ph=PHASE
     if(se.fit)tags.push('<span class="seance-fit">⌚ .fit</span>');
     if(se.opt)tags.push('<span class="seance-tag tag-opt">Optionnelle</span>');
     if(isSkipped&&r.reason)tags.push(`<span class="seance-tag" style="color:#92400e;background:#fef9c3">⏭ ${r.reason}</span>`);
-    const rs=r.km?`<div class="seance-desc" style="color:#15803d;font-weight:700;margin-top:3px">✓ ${r.km} km${r.allure?' · '+r.allure:''}</div>`:'';
+    const rs=r.km?`<div class="seance-desc" style="color:#15803d;font-weight:700;margin-top:4px">✓ ${r.km} km${r.allure?' · '+r.allure:''}</div>`:'';
     const menuBtn=(!isDone&&!isSkipped)?`<button class="sm-btn" onclick="event.stopPropagation();openSM(${num},'${se.id}')">···</button>`:'';
     const rightEl=isDone
       ?`<div class="seance-fleche sc-check">✓</div>`
@@ -1808,21 +1812,21 @@ function renderPalmares(){
 <div style="font-size:22px;font-weight:700;color:var(--texte);letter-spacing:-.02em;margin-bottom:2px">Courses</div>
 <div style="font-size:11px;color:var(--texte-deux);margin-bottom:14px">À venir &amp; passées · objectifs et résultats</div>${_aVenir}<div class="crs-lab">Passées</div>
 <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px">
-  <div style="background:var(--bg-card,#fff);border:.5px solid var(--bord-card,#e2e8f0);border-radius:12px;padding:10px;text-align:center"><div style="font-size:20px;font-weight:700;color:var(--texte)">${P.length}</div><div style="font-size:9px;text-transform:uppercase;letter-spacing:.05em;color:var(--texte-deux);margin-top:3px">Courses</div></div>
-  <div style="background:var(--bg-card,#fff);border:.5px solid var(--bord-card,#e2e8f0);border-radius:12px;padding:10px;text-align:center"><div style="font-size:20px;font-weight:700;color:var(--texte)">${totalKm.toFixed(0)}</div><div style="font-size:9px;text-transform:uppercase;letter-spacing:.05em;color:var(--texte-deux);margin-top:3px">km courus</div></div>
-  <div style="background:var(--bg-card,#fff);border:.5px solid var(--bord-card,#e2e8f0);border-radius:12px;padding:10px;text-align:center"><div style="font-size:20px;font-weight:700;color:var(--texte)">${(totalDplus/1000).toFixed(1)}k</div><div style="font-size:9px;text-transform:uppercase;letter-spacing:.05em;color:var(--texte-deux);margin-top:3px">D+ cumulé</div></div>
+  <div style="background:var(--bg-card,#fff);border:.5px solid var(--bord-card,#e2e8f0);border-radius:12px;padding:10px;text-align:center"><div style="font-size:20px;font-weight:700;color:var(--texte)">${P.length}</div><div style="font-size:9px;text-transform:uppercase;letter-spacing:.05em;color:var(--texte-deux);margin-top:4px">Courses</div></div>
+  <div style="background:var(--bg-card,#fff);border:.5px solid var(--bord-card,#e2e8f0);border-radius:12px;padding:10px;text-align:center"><div style="font-size:20px;font-weight:700;color:var(--texte)">${totalKm.toFixed(0)}</div><div style="font-size:9px;text-transform:uppercase;letter-spacing:.05em;color:var(--texte-deux);margin-top:4px">km courus</div></div>
+  <div style="background:var(--bg-card,#fff);border:.5px solid var(--bord-card,#e2e8f0);border-radius:12px;padding:10px;text-align:center"><div style="font-size:20px;font-weight:700;color:var(--texte)">${(totalDplus/1000).toFixed(1)}k</div><div style="font-size:9px;text-transform:uppercase;letter-spacing:.05em;color:var(--texte-deux);margin-top:4px">D+ cumulé</div></div>
 </div>
 ${P.slice().sort((a,b)=>b.date.localeCompare(a.date)).map((p,i)=>{
   const typeLabel=types[p.type]||p.type;
   const d=new Date(p.date+'T12:00:00');
   const mois=['janv.','févr.','mars','avr.','mai','juin','juil.','août','sept.','oct.','nov.','déc.'];
   const dateStr=d.getDate()+' '+mois[d.getMonth()]+' '+d.getFullYear();
-  const classGen=p.classement_gen?`<span style="font-size:11px;font-weight:600;padding:2px 7px;border-radius:99px;background:#f0fdfa;color:#0f766e">#${p.classement_gen}${p.total_finishers?' / '+p.total_finishers:''} général</span>`:'';
-  const classCat=p.classement_cat?`<span style="font-size:11px;font-weight:600;padding:2px 7px;border-radius:99px;background:#f0fdf4;color:#15803d">#${p.classement_cat} cat.</span>`:'';
+  const classGen=p.classement_gen?`<span style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:99px;background:#f0fdfa;color:#0f766e">#${p.classement_gen}${p.total_finishers?' / '+p.total_finishers:''} général</span>`:'';
+  const classCat=p.classement_cat?`<span style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:99px;background:#f0fdf4;color:#15803d">#${p.classement_cat} cat.</span>`:'';
   return`<div style="background:var(--bg-card,#fff);border:.5px solid var(--bord-card,#e2e8f0);border-radius:14px;margin-bottom:10px;overflow:hidden">
     <div style="display:flex;align-items:stretch">
       <div style="width:5px;background:${p.accent};flex:0 0 5px"></div>
-      <div style="padding:12px 13px;flex:1;min-width:0">
+      <div style="padding:12px 12px;flex:1;min-width:0">
         <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px">
           <div>
             <div style="font-size:11px;color:var(--texte-deux);margin-bottom:2px">${typeLabel} · ${dateStr}</div>
@@ -1834,15 +1838,15 @@ ${P.slice().sort((a,b)=>b.date.localeCompare(a.date)).map((p,i)=>{
             <div style="font-size:10px;color:var(--texte-deux)">${p.allure?p.allure+'/km':''}</div>
           </div>
         </div>
-        <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px">
-          <span style="font-size:11px;font-weight:600;padding:2px 7px;border-radius:99px;background:var(--gris-fond,#f1f5f9);color:var(--texte-deux)">${p.distance} km</span>
-          <span style="font-size:11px;font-weight:600;padding:2px 7px;border-radius:99px;background:var(--gris-fond,#f1f5f9);color:var(--texte-deux)">D+ ${p.dplus} m</span>
-          ${p.fc_moy?`<span style="font-size:11px;font-weight:600;padding:2px 7px;border-radius:99px;background:#fee2e2;color:#b91c1c">❤️ ${p.fc_moy}/${p.fc_max}</span>`:''}
-          ${p.meteo?`<span style="font-size:11px;padding:2px 7px;border-radius:99px;background:var(--gris-fond,#f1f5f9);color:var(--texte-deux)">🌡️ ${p.meteo}</span>`:''}
+        <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px">
+          <span style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:99px;background:var(--gris-fond,#f1f5f9);color:var(--texte-deux)">${p.distance} km</span>
+          <span style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:99px;background:var(--gris-fond,#f1f5f9);color:var(--texte-deux)">D+ ${p.dplus} m</span>
+          ${p.fc_moy?`<span style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:99px;background:#fee2e2;color:#b91c1c">❤️ ${p.fc_moy}/${p.fc_max}</span>`:''}
+          ${p.meteo?`<span style="font-size:11px;padding:2px 8px;border-radius:99px;background:var(--gris-fond,#f1f5f9);color:var(--texte-deux)">🌡️ ${p.meteo}</span>`:''}
           ${classGen}${classCat}
         </div>
         ${p.chaussures?`<div style="font-size:11px;color:var(--texte-deux);margin-bottom:6px">👟 ${p.chaussures}</div>`:''}
-        <div style="font-size:12px;color:var(--texte-deux);line-height:1.55;background:var(--gris-fond,#f8fafc);border-radius:8px;padding:9px 10px">${p.bilan}</div>
+        <div style="font-size:12px;color:var(--texte-deux);line-height:1.55;background:var(--gris-fond,#f8fafc);border-radius:8px;padding:8px 10px">${p.bilan}</div>
       </div>
     </div>
   </div>`;
@@ -2028,7 +2032,7 @@ function _ckOpenRun(i){
   const el=document.getElementById('ck-modal');if(!el)return;
   el.querySelector('#ck-m-title').textContent=r.title;
   el.querySelector('#ck-m-sub').textContent=r.date+' · '+r.km+' km · '+r.al+'/km';
-  el.querySelector('#ck-m-metrics').innerHTML=[['Distance',r.km+' km'],['Allure',r.al+'/km'],['Effort',r.re],['FC moy',r.fcm+' bpm'],['FC max',r.fcx+' bpm'],['Cadence',r.cad+' spm'],['D+',r.dp+' m'],['Calories',r.cal]].map(m=>`<div style="background:var(--gris-fond);border-radius:9px;padding:8px;text-align:center"><div style="font-size:14px;font-weight:700;color:var(--texte)">${m[1]}</div><div style="font-size:8.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--texte-deux);margin-top:3px">${m[0]}</div></div>`).join('');
+  el.querySelector('#ck-m-metrics').innerHTML=[['Distance',r.km+' km'],['Allure',r.al+'/km'],['Effort',r.re],['FC moy',r.fcm+' bpm'],['FC max',r.fcx+' bpm'],['Cadence',r.cad+' spm'],['D+',r.dp+' m'],['Calories',r.cal]].map(m=>`<div style="background:var(--gris-fond);border-radius:9px;padding:8px;text-align:center"><div style="font-size:14px;font-weight:700;color:var(--texte)">${m[1]}</div><div style="font-size:8.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--texte-deux);margin-top:4px">${m[0]}</div></div>`).join('');
   el.style.display='flex';
   if(r.hasStreams){
     const H=140,n=st.km.length,xs=st.km.map(d=>10+d/st.km[n-1]*(280));
@@ -2154,7 +2158,7 @@ function renderCockpit(){
 <div style="padding:var(--sp-3) var(--sp-3) var(--sp-10)">
 <div style="font-size:22px;font-weight:700;color:var(--texte);letter-spacing:-.02em;margin-bottom:2px">Cockpit</div>
 <div style="font-size:11px;color:var(--texte-deux);margin-bottom:var(--sp-4)">Glisse sur les courbes · touche une barre · tap une sortie</div>
-<div class="ck-hero" onclick="openCkHelp('forme')">
+<div class="ck-hero" role="button" tabindex="0" onclick="openCkHelp('forme')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openCkHelp('forme');}">
   <div class="ck-hero-l">
     <div class="ck-hero-lbl">Forme du jour</div>
     <div class="ck-hero-val" style="color:${_fcol}">${_f.score}<span class="ck-hero-tr">${_ftrend}</span></div>
@@ -2186,12 +2190,12 @@ ${card('ckDP','⛰ Dénivelé D+','',null,'m',75,'','dp')}
 </div>
 <div class="ck-sec ck-sec-tg" data-open="0" onclick="_ckToggleSec(this)">🔋 Moteur aérobie<span class="ck-sec-chev">▸</span></div>
 <div class="ck-sec-body" data-sec="0" style="display:none">
-<div class="ck-card"><div class="ck-ch"><div><div class="ck-ct">Z2 pace — allure EF à FC&lt;144<button class="ck-help" onclick="event.stopPropagation();openCkHelp('z2')">?</button></div><div class="ck-cs">indicateur n°1 du développement</div></div><div style="text-align:right"><div style="font-size:22px;font-weight:700;color:#0d9488" id="ck-z2-val">5:54</div><div class="ck-cs">/km</div></div></div><div style="font-size:10px;font-weight:600;margin:3px 0 6px" id="ck-z2-delta"></div><div class="ck-cw" id="ckZ2W"><svg id="ckZ2" height="85" style="display:block;width:100%"></svg><div class="ck-tt" id="ckZ2T"></div></div><div class="ck-xl" id="ckZ2X"></div></div>
+<div class="ck-card"><div class="ck-ch"><div><div class="ck-ct">Z2 pace — allure EF à FC&lt;144<button class="ck-help" onclick="event.stopPropagation();openCkHelp('z2')">?</button></div><div class="ck-cs">indicateur n°1 du développement</div></div><div style="text-align:right"><div style="font-size:22px;font-weight:700;color:#0d9488" id="ck-z2-val">5:54</div><div class="ck-cs">/km</div></div></div><div style="font-size:10px;font-weight:600;margin:4px 0 6px" id="ck-z2-delta"></div><div class="ck-cw" id="ckZ2W"><svg id="ckZ2" height="85" style="display:block;width:100%"></svg><div class="ck-tt" id="ckZ2T"></div></div><div class="ck-xl" id="ckZ2X"></div></div>
 <div class="ck-card"><div class="ck-ch"><div><div class="ck-ct">💓 Découplage cardiaque<button class="ck-help" onclick="event.stopPropagation();openCkHelp('dc')">?</button></div><div class="ck-cs">dérive FC sortie longue · &lt;5% idéal</div></div><div style="font-size:22px;font-weight:700" id="ck-dc-val">—</div></div><div class="ck-cw" id="ckDCW"><svg id="ckDC" height="75" style="display:block;width:100%"></svg><div class="ck-tt" id="ckDCT"></div></div><div class="ck-xl" id="ckDCX"></div></div>
 </div>
 <div class="ck-sec ck-sec-tg" data-open="0" onclick="_ckToggleSec(this)">📈 Allure &amp; vitesse<span class="ck-sec-chev">▸</span></div>
 <div class="ck-sec-body" data-sec="0" style="display:none">
-<div class="ck-card"><div class="ck-ch"><div><div class="ck-ct">Progression allure par type<button class="ck-help" onclick="event.stopPropagation();openCkHelp('pace')">?</button></div><div class="ck-cs">EF · marathon · seuil</div></div></div><div class="ck-cw" id="ckPACEW"><svg id="ckPACE" height="95" style="display:block;width:100%"></svg><div class="ck-tt" id="ckPACET"></div></div><div class="ck-xl" id="ckPACEX"></div><div style="display:flex;gap:12px;font-size:10px;color:var(--texte-deux);margin-top:7px"><span><span style="color:#16a34a">●</span> EF</span><span><span style="color:#0d9488">●</span> AM</span><span><span style="color:#f59e0b">●</span> Seuil</span></div></div>
+<div class="ck-card"><div class="ck-ch"><div><div class="ck-ct">Progression allure par type<button class="ck-help" onclick="event.stopPropagation();openCkHelp('pace')">?</button></div><div class="ck-cs">EF · marathon · seuil</div></div></div><div class="ck-cw" id="ckPACEW"><svg id="ckPACE" height="95" style="display:block;width:100%"></svg><div class="ck-tt" id="ckPACET"></div></div><div class="ck-xl" id="ckPACEX"></div><div style="display:flex;gap:12px;font-size:10px;color:var(--texte-deux);margin-top:8px"><span><span style="color:#16a34a">●</span> EF</span><span><span style="color:#0d9488">●</span> AM</span><span><span style="color:#f59e0b">●</span> Seuil</span></div></div>
 </div>
 <div class="ck-sec ck-sec-tg" data-open="0" onclick="_ckToggleSec(this)">❤️ Cardiaque &amp; cadence<span class="ck-sec-chev">▸</span></div>
 <div class="ck-sec-body" data-sec="0" style="display:none">
@@ -2401,7 +2405,7 @@ function soumettreQuickLog(){
     const info=card.querySelector('.seance-info');
     if(info&&!info.querySelector('.ql-real'))
       info.querySelector('.seance-desc').insertAdjacentHTML('afterend',
-        `<div class="seance-desc ql-real" style="color:#15803d;font-weight:700;margin-top:3px">✓ ${km} km${allure?' · '+allure:''}</div>`);
+        `<div class="seance-desc ql-real" style="color:#15803d;font-weight:700;margin-top:4px">✓ ${km} km${allure?' · '+allure:''}</div>`);
   }
   renderHeader();
   const toast=document.getElementById('ql-toast');
