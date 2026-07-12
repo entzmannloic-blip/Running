@@ -1798,11 +1798,69 @@ function checkAutoSync(){
 /* ===================================================================
    PALMARÈS — Historique des courses officielles
    =================================================================== */
+function _wrappedData(){
+  // Chiffres de la saison, calculés depuis les vraies séances loggées.
+  const done=[];
+  Object.entries(SEANCES_BY_WEEK).forEach(([wk,ss])=>ss.forEach(s=>{
+    if(s.realise&&(s.realise.statut==='fait'||s.realise.statut==='partiel'))done.push(s);
+  }));
+  const km=Math.round(done.reduce((a,s)=>a+(s.realise.km||0),0));
+  let dplus=0;done.forEach(s=>{const m=(s.realise.commentaire||'').match(/D\+\s*(\d+)\s*m/);if(m)dplus+=+m[1];});
+  const longest=done.reduce((mx,s)=>(s.realise.km||0)>mx.km?{km:s.realise.km,titre:s.titre}:mx,{km:0,titre:''});
+  const pr=done.reduce((a,s)=>a+(parseInt(s.realise.pr,10)||0),0);
+  let min=0;done.forEach(s=>{const t=s.realise.temps||'';const h=t.match(/(\d+)h(\d+)/);const m2=t.match(/(\d+)\s*min/);if(h)min+=(+h[1])*60+(+h[2]);else if(m2)min+=+m2[1];});
+  const streak=(typeof _computeStreak==='function')?_computeStreak():0;
+  return {n:done.length,km:km,dplus:dplus,longest:longest,pr:pr,heures:Math.round(min/60),streak:streak};
+}
+function openWrapped(){
+  const d=_wrappedData();
+  const eiffel=(d.dplus/330).toFixed(1); // Tour Eiffel = 330m
+  const paris=Math.round(d.km/2.4); // longueur approx d'un tour du périph parisien ~35km... on prend un repère parlant: distance Lyon->? Simplifions: équiv. en % d'un marathon
+  const marathons=(d.km/42.195).toFixed(1);
+  const cards=[
+    {bg:'linear-gradient(160deg,#0f172a,#1e3a5f)',ico:'\u{1F3C3}',big:d.n,unit:'sorties',sub:'C\u2019est parti pour ta saison en chiffres'},
+    {bg:'linear-gradient(160deg,#0d9488,#0891b2)',ico:'\u{1F4CF}',big:d.km,unit:'km parcourus',sub:'Soit '+marathons+' marathons bout \u00e0 bout'},
+    {bg:'linear-gradient(160deg,#b45309,#f59e0b)',ico:'\u26F0\uFE0F',big:d.dplus,unit:'m\u00e8tres de D+',sub:eiffel+'\u00d7 la Tour Eiffel, grimp\u00e9s avec les jambes'},
+    {bg:'linear-gradient(160deg,#7c3aed,#a78bfa)',ico:'\u23F1\uFE0F',big:d.heures,unit:'heures d\u2019effort',sub:'De transpiration bien plac\u00e9e'},
+    {bg:'linear-gradient(160deg,#be123c,#fb7185)',ico:'\u{1F3C5}',big:d.pr,unit:'records battus',sub:'Des segments et des perfos qui tombent'},
+    {bg:'linear-gradient(160deg,#0f766e,#5eead4)',ico:'\u{1F525}',big:d.streak,unit:'semaines d\u2019affil\u00e9e',sub:'La r\u00e9gularit\u00e9, ton vrai super-pouvoir'},
+    {bg:'linear-gradient(160deg,#1e293b,#475569)',ico:'\u{1F3AF}',big:'Nice',unit:'',sub:'Prochain chapitre : 3h45 au Marathon de Nice. On y va.',isFinal:true}
+  ];
+  let idx=0;
+  const ov=document.createElement('div');ov.id='wrapped-ov';ov.className='wrapped-ov';
+  ov.innerHTML=`<div class="wr-bars"></div><button class="wr-close" onclick="_wrappedClose()" aria-label="Fermer">\u2715</button><div class="wr-stage"></div><div class="wr-hint">tap pour continuer</div>`;
+  document.body.appendChild(ov);
+  const bars=ov.querySelector('.wr-bars');
+  bars.innerHTML=cards.map((_,i)=>`<div class="wr-bar"><div class="wr-bar-fill" data-b="${i}"></div></div>`).join('');
+  const stage=ov.querySelector('.wr-stage');
+  requestAnimationFrame(()=>ov.classList.add('show'));
+  function render(i){
+    const c=cards[i];
+    stage.style.background=c.bg;
+    stage.innerHTML=`<div class="wr-card ${c.isFinal?'wr-final':''}">
+      <div class="wr-ico">${c.ico}</div>
+      <div class="wr-big">${c.big}</div>
+      ${c.unit?`<div class="wr-unit">${c.unit}</div>`:''}
+      <div class="wr-sub">${c.sub}</div>
+      ${c.isFinal?'<button class="wr-share" onclick="event.stopPropagation();_wrappedClose()">Terminer \u{1F44A}</button>':''}
+    </div>`;
+    // barres de progression
+    ov.querySelectorAll('.wr-bar-fill').forEach((f,bi)=>{f.style.width=bi<i?'100%':bi===i?'100%':'0%';f.style.transition=bi===i?'width 3.4s linear':'none';});
+    if(navigator.vibrate&&!_reduceMotion())try{navigator.vibrate(8)}catch(e){}
+  }
+  render(0);
+  let timer=setTimeout(next,3600);
+  function next(){clearTimeout(timer);idx++;if(idx>=cards.length){return;}render(idx);if(idx<cards.length-1)timer=setTimeout(next,3600);}
+  ov._next=next;ov._timer=()=>timer;
+  stage.onclick=()=>{if(idx<cards.length-1){next();}};
+}
+function _wrappedClose(){const ov=document.getElementById('wrapped-ov');if(!ov)return;ov.classList.remove('show');setTimeout(()=>ov.remove(),300);}
 function renderPalmares(){
   const el=document.getElementById('palmares-contenu');if(!el)return;
   const P=(typeof PALMARES!=='undefined'?PALMARES:DATA.PALMARES)||[];
   const types={'trail':'🏔️ Trail','trail_nuit':'🌙 Trail nuit','route':'🛣️ Route','semi':'🏃 Semi-marathon','marathon':'🏅 Marathon'};
   const totalKm=P.reduce((a,p)=>a+p.distance,0);
+  const _wd=(typeof _wrappedData==='function')?_wrappedData():{n:0,km:0,dplus:0};
   const totalDplus=P.reduce((a,p)=>a+(p.dplus||0),0);
   const _tdy=new Date();_tdy.setHours(0,0,0,0);
   const _moisC=['janv.','f\u00e9vr.','mars','avr.','mai','juin','juil.','ao\u00fbt','sept.','oct.','nov.','d\u00e9c.'];
@@ -1810,7 +1868,7 @@ function renderPalmares(){
   const _aVenir=_up.length?'<div class="crs-lab">\u00c0 venir</div>'+_up.map(r=>{const ds=r.d.getDate()+' '+_moisC[r.d.getMonth()]+' '+r.d.getFullYear();return `<button class="crs-up"${r.dossier?` onclick="ouvrirDossier('${r.dossier}')"`:''}><span class="crs-jx">J-${r.dn}</span><span class="crs-mid"><span class="crs-nom">${r.nom}</span><span class="crs-date">${ds}</span></span>${r.dossier?'<span class="crs-go">Dossier \u203a</span>':''}</button>`;}).join(''):''; 
   el.innerHTML=`<div style="padding:12px 12px 40px">
 <div style="font-size:22px;font-weight:700;color:var(--texte);letter-spacing:-.02em;margin-bottom:2px">Courses</div>
-<div style="font-size:11px;color:var(--texte-deux);margin-bottom:14px">À venir &amp; passées · objectifs et résultats</div>${_aVenir}<div class="crs-lab">Passées</div>
+<div style="font-size:11px;color:var(--texte-deux);margin-bottom:14px">À venir &amp; passées · objectifs et résultats</div><button class="wr-launch" onclick="openWrapped()"><span class="wrl-ico">✨</span><span class="wrl-txt"><span class="wrl-t1">Ta saison en chiffres</span><span class="wrl-t2">${_wd.n} sorties · ${_wd.km} km · ${_wd.dplus} m D+</span></span><span class="wrl-go">▶</span></button>${_aVenir}<div class="crs-lab">Passées</div>
 <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px">
   <div style="background:var(--bg-card,#fff);border:.5px solid var(--bord-card,#e2e8f0);border-radius:12px;padding:10px;text-align:center"><div style="font-size:20px;font-weight:700;color:var(--texte)">${P.length}</div><div style="font-size:9px;text-transform:uppercase;letter-spacing:.05em;color:var(--texte-deux);margin-top:4px">Courses</div></div>
   <div style="background:var(--bg-card,#fff);border:.5px solid var(--bord-card,#e2e8f0);border-radius:12px;padding:10px;text-align:center"><div style="font-size:20px;font-weight:700;color:var(--texte)">${totalKm.toFixed(0)}</div><div style="font-size:9px;text-transform:uppercase;letter-spacing:.05em;color:var(--texte-deux);margin-top:4px">km courus</div></div>
