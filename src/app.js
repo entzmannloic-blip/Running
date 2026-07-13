@@ -1351,6 +1351,94 @@ function logSeance(wk,id){
 }
 function unlogSeance(wk,id){const se=findSeance(wk,id);if(!se)return;const logs=loadLogs();delete logs[logId(wk,id)];saveLogs(logs);se.realise={statut:'a_faire'};_afterLog(wk,id);}
 /* ===== Cockpit — aides contextuelles ===== */
+const _REPLAY_DATA={
+  "28_6":{titre:"Petit Croisse Baulet",date:"12 juillet",dplus:530,dist:11.04,
+    alt:[1910,1893,1882,1866,1859,1850,1840,1827,1815,1808,1815,1818,1820,1825,1808,1800,1789,1779,1765,1753,1740,1731,1732,1738,1748,1771,1800,1828,1845,1834,1814,1793,1780,1797,1781,1760,1746,1732,1718,1745,1758,1771,1764,1764,1750,1735,1727,1746,1768,1763,1748,1728,1731,1724,1737,1742,1757,1783,1806,1834,1864,1897,1919,1945,1973,2000,1982,1953,1918,1887,1851,1817,1788,1766,1745,1742,1727,1700,1669,1644,1622,1601,1571,1546,1520,1490,1453,1423,1388,1353,1324,1299,1290,1283,1271,1261,1251,1241,1236,1230],
+    hr:[91,93,90,93,85,87,87,84,87,93,118,93,99,121,92,87,90,83,85,82,84,89,84,99,116,152,157,160,113,101,98,106,120,111,107,101,106,115,106,158,150,141,120,122,137,136,122,164,155,125,131,140,140,125,148,136,154,163,169,168,172,172,162,162,162,137,142,148,142,141,140,142,146,133,141,158,154,142,144,146,145,150,140,141,146,138,156,149,157,144,144,140,143,153,156,162,165,164,166,166],
+    dist_km:[0,0.11,0.22,0.33,0.45,0.56,0.67,0.78,0.89,1,1.11,1.23,1.34,1.45,1.56,1.67,1.78,1.9,2.01,2.12,2.23,2.34,2.45,2.56,2.68,2.79,2.9,3.01,3.12,3.23,3.35,3.46,3.57,3.68,3.79,3.9,4.01,4.13,4.24,4.35,4.46,4.57,4.68,4.79,4.91,5.02,5.13,5.24,5.35,5.46,5.57,5.69,5.8,5.91,6.02,6.13,6.24,6.36,6.47,6.58,6.69,6.8,6.91,7.03,7.14,7.25,7.36,7.47,7.58,7.69,7.81,7.92,8.03,8.14,8.25,8.36,8.47,8.59,8.7,8.81,8.92,9.03,9.14,9.25,9.37,9.48,9.59,9.7,9.81,9.92,10.04,10.15,10.26,10.37,10.48,10.6,10.71,10.82,10.93,11.04]}
+};
+function openReplay(key){
+  const d=_REPLAY_DATA[key];if(!d)return;
+  const N=d.alt.length;
+  const W=340,H=150,PAD=8;
+  const amin=Math.min(...d.alt),amax=Math.max(...d.alt);
+  const dmax=d.dist_km[N-1];
+  const x=i=>PAD+(d.dist_km[i]/dmax)*(W-2*PAD);
+  const y=a=>H-PAD-((a-amin)/(amax-amin||1))*(H-2*PAD);
+  // Chemin complet du profil
+  let path='M'+x(0)+','+y(d.alt[0]);
+  for(let i=1;i<N;i++)path+=' L'+x(i)+','+y(d.alt[i]);
+  const areaPath=path+' L'+x(N-1)+','+H+' L'+x(0)+','+H+' Z';
+  const ov=document.createElement('div');ov.id='replay-ov';ov.className='replay-ov';
+  ov.innerHTML=`
+    <button class="rp-close" onclick="_replayClose()" aria-label="Fermer">\u2715</button>
+    <div class="rp-head"><div class="rp-title">${d.titre}</div><div class="rp-date">${d.date} \u00b7 ${d.dist} km \u00b7 D+ ${d.dplus} m</div></div>
+    <div class="rp-chart">
+      <svg viewBox="0 0 ${W} ${H}" class="rp-svg" preserveAspectRatio="none">
+        <defs><linearGradient id="rpg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0d9488" stop-opacity=".45"/><stop offset="1" stop-color="#0d9488" stop-opacity="0"/></linearGradient></defs>
+        <path d="${areaPath}" fill="url(#rpg)" opacity=".5"/>
+        <path d="${path}" fill="none" stroke="#334155" stroke-width="1.5" opacity=".35"/>
+        <path id="rp-trace" d="${path}" fill="none" stroke="#0d9488" stroke-width="2.5" stroke-linecap="round"/>
+        <circle id="rp-dot" r="5" fill="#0d9488" stroke="#fff" stroke-width="2"/>
+      </svg>
+    </div>
+    <div class="rp-stats">
+      <div class="rp-stat"><div class="rp-sv" id="rp-alt">\u2014</div><div class="rp-sl">altitude</div></div>
+      <div class="rp-stat"><div class="rp-sv" id="rp-hr" style="color:#ef4444">\u2014</div><div class="rp-sl">FC bpm</div></div>
+      <div class="rp-stat"><div class="rp-sv" id="rp-dist">\u2014</div><div class="rp-sl">km</div></div>
+    </div>
+    <div class="rp-phase" id="rp-phase"></div>
+    <button class="rp-replay" id="rp-btn" onclick="_replayRun('${key}')">\u25B6 Rejouer</button>`;
+  document.body.appendChild(ov);
+  requestAnimationFrame(()=>ov.classList.add('show'));
+  const trace=ov.querySelector('#rp-trace');
+  const len=trace.getTotalLength();
+  trace.style.strokeDasharray=len;trace.style.strokeDashoffset=len;
+  _replayRun(key);
+}
+let _replayRAF=null;
+function _replayRun(key){
+  const d=_REPLAY_DATA[key];if(!d)return;
+  const ov=document.getElementById('replay-ov');if(!ov)return;
+  const N=d.alt.length;
+  const W=340,H=150,PAD=8;
+  const amin=Math.min(...d.alt),amax=Math.max(...d.alt),dmax=d.dist_km[N-1];
+  const x=i=>PAD+(d.dist_km[i]/dmax)*(W-2*PAD);
+  const y=a=>H-PAD-((a-amin)/(amax-amin||1))*(H-2*PAD);
+  const trace=ov.querySelector('#rp-trace'),dot=ov.querySelector('#rp-dot');
+  const len=trace.getTotalLength();
+  const altEl=ov.querySelector('#rp-alt'),hrEl=ov.querySelector('#rp-hr'),distEl=ov.querySelector('#rp-dist'),phaseEl=ov.querySelector('#rp-phase'),btn=ov.querySelector('#rp-btn');
+  if(_replayRAF)cancelAnimationFrame(_replayRAF);
+  btn.style.opacity='.4';btn.style.pointerEvents='none';
+  const reduce=(typeof _reduceMotion==='function')&&_reduceMotion();
+  const DUR=reduce?300:7000;
+  const t0=performance.now();
+  function frame(now){
+    let p=Math.min(1,(now-t0)/DUR);
+    const fi=p*(N-1);const i=Math.floor(fi),f=fi-i;
+    const cur=Math.min(N-1,i+1);
+    // interpolation
+    const alt=Math.round(d.alt[i]+(d.alt[cur]-d.alt[i])*f);
+    const hr=Math.round(d.hr[i]+(d.hr[cur]-d.hr[i])*f);
+    const dk=(d.dist_km[i]+(d.dist_km[cur]-d.dist_km[i])*f);
+    trace.style.strokeDashoffset=len*(1-p);
+    dot.setAttribute('cx',x(i)+(x(cur)-x(i))*f);
+    dot.setAttribute('cy',y(d.alt[i])+(y(d.alt[cur])-y(d.alt[i]))*f);
+    altEl.textContent=alt+' m';hrEl.textContent=hr;distEl.textContent=dk.toFixed(1);
+    // phase narrative
+    const slope=cur>i?(d.alt[cur]-d.alt[i]):0;
+    if(alt>=1980)phaseEl.textContent='\u{1F3D4}\uFE0F Sommet du Croisse Baulet \u2014 2000 m !';
+    else if(slope>8)phaseEl.textContent='\u26F0\uFE0F \u00c7a grimpe fort \u2014 marche efficace';
+    else if(slope<-8)phaseEl.textContent='\u{1F3C3} Descente engag\u00e9e \u2014 on d\u00e9roule';
+    else phaseEl.textContent='\u{1F33F} Terrain roulant';
+    // couleur FC selon zone
+    hrEl.style.color=hr>165?'#dc2626':hr>145?'#f59e0b':'#16a34a';
+    if(p<1)_replayRAF=requestAnimationFrame(frame);
+    else{phaseEl.textContent='\u{1F3C1} Sortie termin\u00e9e \u2014 belle grimpette !';btn.style.opacity='1';btn.style.pointerEvents='auto';if(navigator.vibrate&&!reduce)try{navigator.vibrate([10,30,10])}catch(e){}}
+  }
+  _replayRAF=requestAnimationFrame(frame);
+}
+function _replayClose(){if(_replayRAF)cancelAnimationFrame(_replayRAF);const ov=document.getElementById('replay-ov');if(!ov)return;ov.classList.remove('show');setTimeout(()=>ov.remove(),300);}
 const _CK_HELP={
   forme:{t:'Forme du jour',c:'#0d9488',body:`<p>La <strong>Forme du jour</strong> est un score de synthèse sur 100 qui résume ton état de préparation actuel, recalculé à chaque ouverture à partir de tes vraies séances loggées.</p>
     <div class="ch-rule"><div class="ch-dot" style="background:#0d9488"></div><div><strong>ACWR (30%)</strong> : équilibre entre ta charge récente et ta charge de fond. Le cœur du score.</div></div>
@@ -2815,7 +2903,7 @@ function ouvrirSeance(num,id){const se=(SEANCES_BY_WEEK[num]||[]).find(x=>x.id==
   const leg=(se.segments?[...new Set(se.segments.map(s=>s.couleur))].map(c=>LEGMAP[c]||['#94a3b8',c]).map(x=>`<div class="legende-item"><div class="legende-puce" style="background:${x[0]}"></div>${x[1]}</div>`).join(''):se.legende.map(l=>`<div class="legende-item"><div class="legende-puce" style="background:${l.c}"></div>${l.l}</div>`).join(''));
   const coach=se.coach.map(c=>`<div class="coach-carte"><div class="coach-titre">${c.titre}</div><p class="coach-texte">${c.texte}</p></div>`).join('');
   const viz=se.segments?`<div class="sd-section">Visualisation chronologique</div><div class="viz-wrap"><div class="viz-entete"><span class="viz-label">Structure de la séance</span><span class="viz-hint">Clique un segment</span></div><div class="barre-scroll"><div class="barre-piste" id="piste"></div></div><div class="detail-panneau" id="dpan"><div class="detail-nom" id="dnom"></div><div class="detail-role" id="drole"></div><div class="detail-grille" id="dgr"></div></div></div>`:'';
-  contenu.innerHTML=`<div class="sd-hero"><div class="hero-badges"><span class="sd-badge" style="background:${se.accent}22;color:${se.accent}">${se.sport}</span>${catBadge(se.cat)}${stChip((se.realise||{}).statut||'a_faire')}</div><h2 class="sd-titre">${se.titre}</h2><p class="sd-sous">${se.sous}</p><div class="sd-metriques">${metr}</div>${se.chaussure?`<div class="shoe-chip">👟 Chaussure conseillée — ${se.chaussure}</div>`:''}${se.fit?`<a class="fit-btn" href="${se.fit}" download>⌚ Télécharger la séance</a>`:''}</div><div class="sd-corps">${ttsBarSeance}<div class="sd-section">Intensité ressentie (RPE)</div><div class="rpe-wrap"><div class="rpe-info"><div class="rpe-label">RPE</div><div class="rpe-val" style="color:${rpeColor(se.rpe)}">${se.rpe}<span style="font-size:.8rem;color:var(--texte-trois);font-weight:600">/10</span></div></div><div class="rpe-scale">${rpeScale(se.rpe)}</div></div><div class="sd-section">Objectif</div><div class="callout callout-obj">${se.objectif}</div>${coachAvant(num,se)}<div class="sd-section">Légende</div><div class="legende">${leg}</div><div class="sd-section">Déroulé</div><div class="struct">${struct}</div>${viz}<div class="sd-section">Bénéfices recherchés</div><div class="callout callout-ben">${se.benefices}</div><div class="sd-section">Conseil du coach</div><div class="coach-grille">${coach}</div>${se.nutrition?`<div class="sd-section">Nutrition de séance</div><div class="nutri"><div class="nutri-t">🍌 ${se.nutrition.titre}</div>${se.nutrition.items.map(i=>`<div class="nutri-l"><b>${i[0]}</b><span>${i[1]}</span></div>`).join('')}</div>`:''}<div class="sd-section">Points de vigilance</div><div class="callout callout-vig">${se.vigilance}</div>${realiseBloc(num,se)}</div>`;
+  contenu.innerHTML=`<div class="sd-hero"><div class="hero-badges"><span class="sd-badge" style="background:${se.accent}22;color:${se.accent}">${se.sport}</span>${catBadge(se.cat)}${stChip((se.realise||{}).statut||'a_faire')}</div><h2 class="sd-titre">${se.titre}</h2><p class="sd-sous">${se.sous}</p><div class="sd-metriques">${metr}</div>${se.chaussure?`<div class="shoe-chip">👟 Chaussure conseillée — ${se.chaussure}</div>`:''}${se.fit?`<a class="fit-btn" href="${se.fit}" download>⌚ Télécharger la séance</a>`:''}</div><div class="sd-corps">${ttsBarSeance}${_REPLAY_DATA[num+'_'+se.id]?`<button class="rp-launch" onclick="openReplay('${num}_${se.id}')"><span class="rpl-ico">🎬</span><span class="rpl-txt"><span class="rpl-t1">Revoir cette sortie</span><span class="rpl-t2">Replay animé du profil · altitude, FC, distance</span></span><span class="rpl-go">▶</span></button>`:''}<div class="sd-section">Intensité ressentie (RPE)</div><div class="rpe-wrap"><div class="rpe-info"><div class="rpe-label">RPE</div><div class="rpe-val" style="color:${rpeColor(se.rpe)}">${se.rpe}<span style="font-size:.8rem;color:var(--texte-trois);font-weight:600">/10</span></div></div><div class="rpe-scale">${rpeScale(se.rpe)}</div></div><div class="sd-section">Objectif</div><div class="callout callout-obj">${se.objectif}</div>${coachAvant(num,se)}<div class="sd-section">Légende</div><div class="legende">${leg}</div><div class="sd-section">Déroulé</div><div class="struct">${struct}</div>${viz}<div class="sd-section">Bénéfices recherchés</div><div class="callout callout-ben">${se.benefices}</div><div class="sd-section">Conseil du coach</div><div class="coach-grille">${coach}</div>${se.nutrition?`<div class="sd-section">Nutrition de séance</div><div class="nutri"><div class="nutri-t">🍌 ${se.nutrition.titre}</div>${se.nutrition.items.map(i=>`<div class="nutri-l"><b>${i[0]}</b><span>${i[1]}</span></div>`).join('')}</div>`:''}<div class="sd-section">Points de vigilance</div><div class="callout callout-vig">${se.vigilance}</div>${realiseBloc(num,se)}</div>`;
   ouvrir();if(se.segments)initBarre(se);
 }
 function initBarre(se){const piste=document.getElementById('piste');if(!piste)return;const pan=document.getElementById('dpan'),dnom=document.getElementById('dnom'),drole=document.getElementById('drole'),dgr=document.getElementById('dgr');const total=se.segments[se.segments.length-1].fin;
