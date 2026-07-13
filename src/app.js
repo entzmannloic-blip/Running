@@ -438,34 +438,6 @@ function _timelineHTML(){
     </div>`;
   }catch(e){return '';}
 }
-function _livingHero(){
-  // Bannière vivante : coureur animé sur un chemin au coucher de soleil, avec message contextuel.
-  const h=new Date().getHours();
-  let salut='Bonne séance';
-  if(h<10)salut='Bon footing matinal';else if(h<14)salut='Belle journée pour courir';else if(h<19)salut='Prêt pour ta sortie';else salut='Bonne sortie du soir';
-  // J-x course à venir
-  let sub='';
-  try{
-    if(typeof RACES!=='undefined'&&RACES.length){
-      const t=new Date();t.setHours(0,0,0,0);
-      const next=RACES.map(r=>({nom:r.nom,j:Math.ceil((new Date(r.date+'T00:00:00')-t)/86400000)})).filter(r=>r.j>=0).sort((a,b)=>a.j-b.j)[0];
-      if(next){const nm=/nice/i.test(next.nom)?'Nice':next.nom;sub=`J-${next.j} avant ${nm}`;}
-    }
-  }catch(e){}
-  return `<div class="living-hero" aria-hidden="true">
-    <svg class="lh-svg" viewBox="0 0 390 130" preserveAspectRatio="xMidYMid slice">
-      <defs>
-        <linearGradient id="lhSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1e3a5f"/><stop offset="55%" stop-color="#c2612e"/><stop offset="100%" stop-color="#f0a04b"/></linearGradient>
-      </defs>
-      <rect width="390" height="130" fill="url(#lhSky)"/>
-      <circle class="lh-sun" cx="310" cy="86" r="26" fill="#ffd89e" opacity=".9"/>
-      <path class="lh-hills lh-hills-far" d="M0,100 Q95,72 195,96 T390,90 L390,130 L0,130 Z" fill="#2d3f5a" opacity=".55"/>
-      <path class="lh-hills lh-hills-near" d="M0,112 Q120,92 240,110 T390,104 L390,130 L0,130 Z" fill="#22304a" opacity=".8"/>
-      <g class="lh-runner"><text x="0" y="0" font-size="26">\u{1F3C3}</text></g>
-    </svg>
-    <div class="lh-txt"><div class="lh-salut">${salut}, Loïc</div>${sub?`<div class="lh-sub">${sub}</div>`:''}</div>
-  </div>`;
-}
 function renderHeader(){
   const cur=isoWeek(new Date());const sc=SEMAINES.find(s=>s.num===cur)||SEMAINES[0];
   const _t=new Date();_t.setHours(0,0,0,0);
@@ -513,7 +485,7 @@ function renderHeader(){
   const _wn=_whatsNew();
   const _wnCard=_wn?`<div class="whats-new"><span class="wn-ico">${_wn.icon}</span><span class="wn-txt">${_wn.txt}</span></div>`:'';
   const _tl=_timelineHTML();
-  document.getElementById('hero-plan').innerHTML=`${_livingHero()}${_psCard}${_wnCard}<div class="hx-row">${_formeTile}${_nearTile}</div>${_tl}${_formeDetail}<div id="canicule-banner" style="display:none"></div>${_cw}${_nudgeCard}<div id="meteo-widget" class="meteo"><div class="meteo-loc">⏳ Météo…</div></div>${_mini?`<div class="hmini-row">${_mini}</div>`:''}`;
+  document.getElementById('hero-plan').innerHTML=`${_psCard}${_wnCard}<div class="hx-row">${_formeTile}${_nearTile}</div>${_tl}${_formeDetail}<div id="canicule-banner" style="display:none"></div>${_cw}${_nudgeCard}<div id="meteo-widget" class="meteo"><div class="meteo-loc">⏳ Météo…</div></div>${_mini?`<div class="hmini-row">${_mini}</div>`:''}`;
   renderMeteo();
   document.getElementById('maj-foot').innerHTML=_maj;
    try{const _aSe=Object.values(SEANCES_BY_WEEK).flat();const _aF=_aSe.filter(s=>s.realise&&(s.realise.statut==='fait'||s.realise.statut==='partiel')).length;const _aKm=Math.round(_aSe.reduce((a,s)=>a+((s.realise&&s.realise.km)||0),0));const _aP=_aSe.length?Math.round(_aF/_aSe.length*100):0;const _ae=document.getElementById('accueil-annee');const _aStreak=_computeStreak();const _streakTile=_aStreak>=2?`<div class="acc-stat acc-streak"><div class="av">${_aStreak}<span>\u{1F525}</span></div><div class="ak">Sem. d\u2019affil\u00e9e</div></div>`:'';if(_ae)_ae.innerHTML=`<div class="acc-lab">Bilan du plan</div><div class="acc-annee ${_streakTile?'has-streak':''}"><div class="acc-stat"><div class="av">${_aF}</div><div class="ak">Sorties</div></div><div class="acc-stat"><div class="av">${_aKm}<span>km</span></div><div class="ak">R\u00e9alis\u00e9</div></div><div class="acc-stat"><div class="av">${_aP}<span>%</span></div><div class="ak">Pr\u00e9pa plan</div></div>${_streakTile}</div>`;}catch(e){}
