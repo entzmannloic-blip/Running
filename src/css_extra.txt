@@ -1122,3 +1122,19 @@ body.nuit .botbar{background:rgba(15,23,42,.82);border-top-color:#1e293b}
 .vo2-help::after{content:"";position:absolute;top:-12px;left:-12px;right:-12px;bottom:-12px}
 .vo2-range{font-size:11px;color:var(--texte-trois);font-weight:600;margin-bottom:2px}
 .vo2-qual{font-size:12.5px;font-weight:700;color:var(--primary)}
+/* ===== Hero vivant (coureur au coucher de soleil) ===== */
+.living-hero{position:relative;height:130px;border-radius:var(--rayon);overflow:hidden;margin-bottom:var(--sp-3);box-shadow:0 4px 16px -6px rgba(0,0,0,.3)}
+.lh-svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+.lh-sun{animation:lhSun 5s ease-in-out infinite}
+@keyframes lhSun{0%,100%{opacity:.8}50%{opacity:1}}
+.lh-hills-far{animation:lhDriftFar 34s linear infinite}
+.lh-hills-near{animation:lhDriftNear 20s linear infinite}
+@keyframes lhDriftFar{from{transform:translateX(0)}to{transform:translateX(-14px)}}
+@keyframes lhDriftNear{from{transform:translateX(0)}to{transform:translateX(-22px)}}
+.lh-runner{animation:lhRun 1.9s linear infinite}
+.lh-runner text{filter:drop-shadow(0 2px 3px rgba(0,0,0,.35))}
+@keyframes lhRun{0%{transform:translate(70px,104px)}25%{transform:translate(150px,101px)}50%{transform:translate(230px,104px)}75%{transform:translate(150px,101px)}100%{transform:translate(70px,104px)}}
+.lh-txt{position:absolute;left:var(--sp-4);top:var(--sp-3);z-index:2}
+.lh-salut{font-size:17px;font-weight:800;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.4);letter-spacing:-.01em}
+.lh-sub{display:inline-block;margin-top:6px;font-size:11.5px;font-weight:700;color:#fff;background:rgba(0,0,0,.28);border-radius:99px;padding:3px 10px;backdrop-filter:blur(2px)}
+@media (prefers-reduced-motion:reduce){.lh-sun,.lh-hills-far,.lh-hills-near,.lh-runner{animation:none}.lh-runner{transform:translate(150px,101px)}}
