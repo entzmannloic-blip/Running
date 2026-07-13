@@ -214,30 +214,38 @@ function _dynamicACWR(){
 
 /* ===== Score de forme composite (Sprint A Roadmap) ===== */
 function _estimVO2(){
-  // Estimation VDOT (méthode Jack Daniels) à partir des vrais records de course.
-  // On retient la meilleure VDOT (l'effort le plus révélateur du potentiel aérobie).
+  // Estimation VDOT (Jack Daniels) multi-records : pondère les 3 distances,
+  // affiche une valeur centrale + une fourchette de confiance + un profil.
   try{
     if(typeof RECORDS_PERF==='undefined'||!RECORDS_PERF.length)return null;
-    function toMin(t){ // "22:52" ou "1h52:39" -> minutes
-      t=String(t).trim();
-      let h=0,m=0,s=0;
+    function toMin(t){
+      t=String(t).trim();let h=0,m=0,s=0;
       if(t.includes('h')){const p=t.split('h');h=+p[0];const r=p[1].split(':');m=+r[0];s=+(r[1]||0);}
       else{const r=t.split(':');m=+r[0];s=+(r[1]||0);}
       return h*60+m+s/60;
     }
-    const distM={'5 km':5000,'10 km':10000,'Semi 21,1':21097};
-    let best=null;
+    // poids : le 10 km est l'effort de référence le plus fiable ; le semi (souvent plus ancien/moins optimal) pèse moins
+    const cfg={'5 km':{d:5000,w:1.0},'10 km':{d:10000,w:1.2},'Semi 21,1':{d:21097,w:0.7}};
+    const per=[];let acc=0,wsum=0;
     RECORDS_PERF.forEach(r=>{
-      const dm=distM[r.dist];const tm=toMin(r.temps_rec||r.record);
-      if(!dm||!tm||tm<=0)return;
-      const v=dm/tm; // m/min
+      const c=cfg[r.dist];if(!c)return;
+      const tm=toMin(r.temps_rec||r.record);if(!tm||tm<=0)return;
+      const v=c.d/tm;
       const vo2=-4.60+0.182258*v+0.000104*v*v;
       const pct=0.8+0.1894393*Math.exp(-0.012778*tm)+0.2989558*Math.exp(-0.1932605*tm);
       const vdot=vo2/pct;
-      if(!best||vdot>best.vdot)best={vdot:vdot,dist:r.dist,temps:r.temps_rec||r.record};
+      per.push({dist:r.dist,temps:r.temps_rec||r.record,vdot:vdot,w:c.w});
+      acc+=vdot*c.w;wsum+=c.w;
     });
-    if(!best)return null;
-    return {vo2:Math.round(best.vdot),source:best.dist,temps:best.temps};
+    if(!per.length)return null;
+    const central=acc/wsum;
+    const vals=per.map(p=>p.vdot);
+    const lo=Math.min(...vals),hi=Math.max(...vals);
+    // profil : si la VDOT sur courtes distances >> longues => plutôt "vitesse", sinon "endurant"
+    const court=per.find(p=>p.dist==='5 km'),longg=per.find(p=>/Semi/.test(p.dist));
+    let profil='équilibré';
+    if(court&&longg){const ecart=court.vdot-longg.vdot;if(ecart>3)profil='plutôt vitesse';else if(ecart<-1)profil='plutôt endurance';}
+    return {vo2:Math.round(central),lo:Math.round(lo),hi:Math.round(hi),profil:profil,details:per.map(p=>({dist:p.dist,temps:p.temps,vdot:Math.round(p.vdot)}))};
   }catch(e){return null;}
 }
 function computeFormeScore(){
@@ -1467,6 +1475,13 @@ function _replayRun(key){
 }
 function _replayClose(){if(_replayRAF)cancelAnimationFrame(_replayRAF);const ov=document.getElementById('replay-ov');if(!ov)return;ov.classList.remove('show');setTimeout(()=>ov.remove(),300);}
 const _CK_HELP={
+  vo2:{t:'VO\u2082max estimé',c:'#0d9488',body:`<p>Le <strong>VO\u2082max</strong> est le débit maximal d'oxygène que ton corps peut consommer à l'effort, exprimé en <strong>ml/kg/min</strong>. C'est une mesure de ta <strong>cylindrée aérobie</strong> : plus il est élevé, plus ton moteur peut fournir d'énergie longtemps.</p>
+    <p>Ici il est <strong>estimé</strong> (pas mesuré en labo) à partir de tes vrais chronos, via la méthode <strong>VDOT de Jack Daniels</strong> — la référence en physiologie de la course. Les trois distances sont combinées, le 10 km pesant le plus (l'effort le plus fiable).</p>
+    <div class="ch-rule"><div class="ch-dot" style="background:#94a3b8"></div><div><strong>35-42</strong> : coureur loisir régulier</div></div>
+    <div class="ch-rule"><div class="ch-dot" style="background:#0d9488"></div><div><strong>42-48</strong> : bon niveau amateur confirmé \u2014 <em>tu es ici</em></div></div>
+    <div class="ch-rule"><div class="ch-dot" style="background:#16a34a"></div><div><strong>48-55</strong> : coureur performant (clubs, bons classements)</div></div>
+    <div class="ch-rule"><div class="ch-dot" style="background:#f59e0b"></div><div><strong>55-65+</strong> : niveau régional à élite</div></div>
+    <p style="margin-top:12px"><strong>À retenir :</strong> le VO\u2082max est en partie génétique et bouge lentement. Pour ton marathon, ce qui compte le plus au quotidien c'est ton <strong>seuil</strong> et ta <strong>durabilité</strong>, qui progressent bien plus vite. Ton VO\u2082max ici sert de repère de potentiel \u2014 il montera si tu bats un chrono.</p>`},
   forme:{t:'Forme du jour',c:'#0d9488',body:`<p>La <strong>Forme du jour</strong> est un score de synthèse sur 100 qui résume ton état de préparation actuel, recalculé à chaque ouverture à partir de tes vraies séances loggées.</p>
     <div class="ch-rule"><div class="ch-dot" style="background:#0d9488"></div><div><strong>ACWR (30%)</strong> : équilibre entre ta charge récente et ta charge de fond. Le cœur du score.</div></div>
     <div class="ch-rule"><div class="ch-dot" style="background:#16a34a"></div><div><strong>Adhérence (25%)</strong> : régularité sur les 2 dernières semaines — as-tu fait ce qui était prévu ?</div></div>
@@ -2320,29 +2335,25 @@ function _vo2Reveal(force){
   const v=_estimVO2();if(!v)return;
   const arc=document.getElementById('vo2-arc'),val=document.getElementById('vo2-val'),foot=document.getElementById('vo2-foot');
   if(!arc||!val)return;
-  // échelle : VO2max de 30 (bas) à 60 (élite amateur) sur le demi-cercle
   const lo=30,hi=60,frac=Math.max(0,Math.min(1,(v.vo2-lo)/(hi-lo)));
   const LEN=251;
   const reduce=(typeof _reduceMotion==='function')&&_reduceMotion();
-  // interprétation qualitative
   let qual='';
-  if(v.vo2>=52)qual='excellent';else if(v.vo2>=45)qual='très bon';else if(v.vo2>=40)qual='bon niveau amateur';else qual='en construction';
-  // marathon théorique (fourchette prudente selon VDOT)
+  if(v.vo2>=55)qual='niveau performant';else if(v.vo2>=48)qual='très bon niveau';else if(v.vo2>=42)qual='bon niveau amateur';else if(v.vo2>=38)qual='coureur régulier';else qual='en construction';
   let maraStr='';
   if(v.vo2>=46)maraStr='~3h20-3h35';else if(v.vo2>=42)maraStr='~3h35-3h50';else if(v.vo2>=38)maraStr='~3h50-4h10';else maraStr='~4h10+';
+  const footHTML=`<div class="vo2-range">fourchette ${v.lo}\u2013${v.hi} · profil ${v.profil}</div><div class="vo2-qual">${qual} · marathon théorique ${maraStr}</div>`;
   if(reduce){
-    arc.style.strokeDashoffset=LEN*(1-frac);val.textContent=v.vo2;
-    foot.innerHTML=`${qual} · marathon théorique ${maraStr}`;
-    return;
+    arc.style.strokeDashoffset=LEN*(1-frac);val.textContent=v.vo2;foot.innerHTML=footHTML;return;
   }
   const DUR=1400,t0=performance.now();
   function frame(now){
     const p=Math.min(1,(now-t0)/DUR);
-    const e=1-Math.pow(1-p,3); // ease-out cubic
+    const e=1-Math.pow(1-p,3);
     arc.style.strokeDashoffset=LEN*(1-frac*e);
     val.textContent=Math.round(v.vo2*e);
     if(p<1)requestAnimationFrame(frame);
-    else{val.textContent=v.vo2;foot.innerHTML=`${qual} · marathon théorique ${maraStr}`;if(navigator.vibrate)try{navigator.vibrate(12)}catch(e){}}
+    else{val.textContent=v.vo2;foot.innerHTML=footHTML;if(navigator.vibrate)try{navigator.vibrate(12)}catch(e){}}
   }
   requestAnimationFrame(frame);
 }
@@ -2368,9 +2379,9 @@ function renderCockpit(){
     <div class="ck-hero-sig">${_f.signal||''}</div>
   </div>
 </div>
-${(function(){const v=_estimVO2();if(!v)return '';return `<div class="vo2-card" onclick="_vo2Reveal(true)" role="button" tabindex="0">
-  <div class="vo2-top"><span class="vo2-lbl">VO\u2082max estimé</span><span class="vo2-src">d'après ton ${v.source} en ${v.temps}</span></div>
-  <div class="vo2-gauge"><svg viewBox="0 0 200 110" class="vo2-svg"><path d="M20,100 A80,80 0 0,1 180,100" fill="none" stroke="#e2e8f0" stroke-width="12" stroke-linecap="round"/><path id="vo2-arc" d="M20,100 A80,80 0 0,1 180,100" fill="none" stroke="#0d9488" stroke-width="12" stroke-linecap="round" stroke-dasharray="251" stroke-dashoffset="251"/></svg>
+${(function(){const v=_estimVO2();if(!v)return '';return `<div class="vo2-card">
+  <div class="vo2-top"><span class="vo2-lbl">VO\u2082max estimé <button class="vo2-help" onclick="event.stopPropagation();openCkHelp('vo2')" aria-label="Qu'est-ce que le VO2max ?">?</button></span><span class="vo2-src">d'après tes 3 records (5/10/semi)</span></div>
+  <div class="vo2-gauge" onclick="_vo2Reveal(true)" role="button" tabindex="0"><svg viewBox="0 0 200 110" class="vo2-svg"><path d="M20,100 A80,80 0 0,1 180,100" fill="none" stroke="#e2e8f0" stroke-width="12" stroke-linecap="round"/><path id="vo2-arc" d="M20,100 A80,80 0 0,1 180,100" fill="none" stroke="#0d9488" stroke-width="12" stroke-linecap="round" stroke-dasharray="251" stroke-dashoffset="251"/></svg>
     <div class="vo2-num"><span id="vo2-val">0</span><span class="vo2-unit">ml/kg/min</span></div></div>
   <div class="vo2-foot" id="vo2-foot"></div>
 </div>`;})()}

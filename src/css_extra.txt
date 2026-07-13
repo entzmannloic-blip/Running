@@ -1117,3 +1117,8 @@ body.nuit .botbar{background:rgba(15,23,42,.82);border-top-color:#1e293b}
 .vo2-num #vo2-val{font-size:40px;font-weight:900;color:var(--texte);letter-spacing:-.03em;font-variant-numeric:tabular-nums;line-height:1}
 .vo2-unit{display:block;font-size:11px;color:var(--texte-trois);margin-top:2px;font-weight:600}
 .vo2-foot{text-align:center;font-size:12.5px;font-weight:700;color:var(--primary);margin-top:var(--sp-2);min-height:16px}
+/* ===== VO2max : point d'aide + fourchette ===== */
+.vo2-help{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;background:var(--gris-fond,#f1f5f9);border:.5px solid var(--gris-clair);color:var(--texte-deux);font-size:10px;font-weight:800;cursor:pointer;margin-left:4px;padding:0;vertical-align:middle;position:relative}
+.vo2-help::after{content:"";position:absolute;top:-12px;left:-12px;right:-12px;bottom:-12px}
+.vo2-range{font-size:11px;color:var(--texte-trois);font-weight:600;margin-bottom:2px}
+.vo2-qual{font-size:12.5px;font-weight:700;color:var(--primary)}
