@@ -1105,3 +1105,15 @@ body.nuit .botbar{background:rgba(15,23,42,.82);border-top-color:#1e293b}
 .rp-phase{font-size:15px;font-weight:700;color:#5eead4;text-align:center;min-height:24px;margin-bottom:20px;transition:color .3s}
 .rp-replay{background:#fff;color:#0b0b0f;border:none;border-radius:99px;padding:13px 30px;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit}
 @media (prefers-reduced-motion:reduce){.replay-ov{transition:opacity .1s}}
+/* ===== VO2max révélé (jauge animée) ===== */
+.vo2-card{background:var(--blanc);border:1px solid var(--gris-clair);border-radius:var(--rayon);padding:var(--sp-4);margin-bottom:var(--sp-4);cursor:pointer}
+.vo2-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:var(--sp-2);gap:var(--sp-2)}
+.vo2-lbl{font-size:13px;font-weight:800;color:var(--texte)}
+.vo2-src{font-size:10.5px;color:var(--texte-trois);text-align:right}
+.vo2-gauge{position:relative;display:flex;flex-direction:column;align-items:center}
+.vo2-svg{width:200px;max-width:100%;height:auto;display:block}
+.vo2-arc-anim{transition:stroke-dashoffset 1.4s cubic-bezier(.16,1,.3,1)}
+.vo2-num{position:absolute;bottom:2px;left:0;right:0;text-align:center}
+.vo2-num #vo2-val{font-size:40px;font-weight:900;color:var(--texte);letter-spacing:-.03em;font-variant-numeric:tabular-nums;line-height:1}
+.vo2-unit{display:block;font-size:11px;color:var(--texte-trois);margin-top:2px;font-weight:600}
+.vo2-foot{text-align:center;font-size:12.5px;font-weight:700;color:var(--primary);margin-top:var(--sp-2);min-height:16px}

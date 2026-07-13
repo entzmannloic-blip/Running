@@ -57,7 +57,7 @@ function showTab(t){
     document.getElementById('vue-'+id).style.display=t===id?'block':'none';
     document.getElementById('tab-'+id).classList.toggle('actif',t===id);
   });
-  if(t==='cockpit'){renderCockpit();renderDash();}
+  if(t==='cockpit'){renderCockpit();renderDash();setTimeout(()=>{if(typeof _vo2Reveal==='function')_vo2Reveal();},250);}
   if(t==='palmares')renderPalmares();
   if(t==='plan'&&!_planAutoJumped){
     _planAutoJumped=true;
@@ -213,6 +213,33 @@ function _dynamicACWR(){
 }
 
 /* ===== Score de forme composite (Sprint A Roadmap) ===== */
+function _estimVO2(){
+  // Estimation VDOT (méthode Jack Daniels) à partir des vrais records de course.
+  // On retient la meilleure VDOT (l'effort le plus révélateur du potentiel aérobie).
+  try{
+    if(typeof RECORDS_PERF==='undefined'||!RECORDS_PERF.length)return null;
+    function toMin(t){ // "22:52" ou "1h52:39" -> minutes
+      t=String(t).trim();
+      let h=0,m=0,s=0;
+      if(t.includes('h')){const p=t.split('h');h=+p[0];const r=p[1].split(':');m=+r[0];s=+(r[1]||0);}
+      else{const r=t.split(':');m=+r[0];s=+(r[1]||0);}
+      return h*60+m+s/60;
+    }
+    const distM={'5 km':5000,'10 km':10000,'Semi 21,1':21097};
+    let best=null;
+    RECORDS_PERF.forEach(r=>{
+      const dm=distM[r.dist];const tm=toMin(r.temps_rec||r.record);
+      if(!dm||!tm||tm<=0)return;
+      const v=dm/tm; // m/min
+      const vo2=-4.60+0.182258*v+0.000104*v*v;
+      const pct=0.8+0.1894393*Math.exp(-0.012778*tm)+0.2989558*Math.exp(-0.1932605*tm);
+      const vdot=vo2/pct;
+      if(!best||vdot>best.vdot)best={vdot:vdot,dist:r.dist,temps:r.temps_rec||r.record};
+    });
+    if(!best)return null;
+    return {vo2:Math.round(best.vdot),source:best.dist,temps:best.temps};
+  }catch(e){return null;}
+}
 function computeFormeScore(){
   const today=new Date();today.setHours(0,0,0,0);
   const curWk=isoWeek(today);
@@ -2289,6 +2316,36 @@ function _ckSummary(){
     return pts.slice(0,3);
   }catch(e){return [];}
 }
+function _vo2Reveal(force){
+  const v=_estimVO2();if(!v)return;
+  const arc=document.getElementById('vo2-arc'),val=document.getElementById('vo2-val'),foot=document.getElementById('vo2-foot');
+  if(!arc||!val)return;
+  // échelle : VO2max de 30 (bas) à 60 (élite amateur) sur le demi-cercle
+  const lo=30,hi=60,frac=Math.max(0,Math.min(1,(v.vo2-lo)/(hi-lo)));
+  const LEN=251;
+  const reduce=(typeof _reduceMotion==='function')&&_reduceMotion();
+  // interprétation qualitative
+  let qual='';
+  if(v.vo2>=52)qual='excellent';else if(v.vo2>=45)qual='très bon';else if(v.vo2>=40)qual='bon niveau amateur';else qual='en construction';
+  // marathon théorique (fourchette prudente selon VDOT)
+  let maraStr='';
+  if(v.vo2>=46)maraStr='~3h20-3h35';else if(v.vo2>=42)maraStr='~3h35-3h50';else if(v.vo2>=38)maraStr='~3h50-4h10';else maraStr='~4h10+';
+  if(reduce){
+    arc.style.strokeDashoffset=LEN*(1-frac);val.textContent=v.vo2;
+    foot.innerHTML=`${qual} · marathon théorique ${maraStr}`;
+    return;
+  }
+  const DUR=1400,t0=performance.now();
+  function frame(now){
+    const p=Math.min(1,(now-t0)/DUR);
+    const e=1-Math.pow(1-p,3); // ease-out cubic
+    arc.style.strokeDashoffset=LEN*(1-frac*e);
+    val.textContent=Math.round(v.vo2*e);
+    if(p<1)requestAnimationFrame(frame);
+    else{val.textContent=v.vo2;foot.innerHTML=`${qual} · marathon théorique ${maraStr}`;if(navigator.vibrate)try{navigator.vibrate(12)}catch(e){}}
+  }
+  requestAnimationFrame(frame);
+}
 function renderCockpit(){
   const el=document.getElementById('cockpit-contenu');
   if(el.innerHTML.trim()){_ckRenderAll(_ckWin);return;}
@@ -2311,6 +2368,12 @@ function renderCockpit(){
     <div class="ck-hero-sig">${_f.signal||''}</div>
   </div>
 </div>
+${(function(){const v=_estimVO2();if(!v)return '';return `<div class="vo2-card" onclick="_vo2Reveal(true)" role="button" tabindex="0">
+  <div class="vo2-top"><span class="vo2-lbl">VO\u2082max estimé</span><span class="vo2-src">d'après ton ${v.source} en ${v.temps}</span></div>
+  <div class="vo2-gauge"><svg viewBox="0 0 200 110" class="vo2-svg"><path d="M20,100 A80,80 0 0,1 180,100" fill="none" stroke="#e2e8f0" stroke-width="12" stroke-linecap="round"/><path id="vo2-arc" d="M20,100 A80,80 0 0,1 180,100" fill="none" stroke="#0d9488" stroke-width="12" stroke-linecap="round" stroke-dasharray="251" stroke-dashoffset="251"/></svg>
+    <div class="vo2-num"><span id="vo2-val">0</span><span class="vo2-unit">ml/kg/min</span></div></div>
+  <div class="vo2-foot" id="vo2-foot"></div>
+</div>`;})()}
 <div class="ck-toggle" id="ck-tgl">
   <button class="ck-tg" onclick="ckWin(2,this)">2 sem.</button>
   <button class="ck-tg" onclick="ckWin(4,this)">4 sem.</button>
