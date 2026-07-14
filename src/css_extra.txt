@@ -1122,3 +1122,25 @@ body.nuit .botbar{background:rgba(15,23,42,.82);border-top-color:#1e293b}
 .vo2-help::after{content:"";position:absolute;top:-12px;left:-12px;right:-12px;bottom:-12px}
 .vo2-range{font-size:11px;color:var(--texte-trois);font-weight:600;margin-bottom:2px}
 .vo2-qual{font-size:12.5px;font-weight:700;color:var(--primary)}
+/* ═══════════ APPLE POLISH — POC ACCUEIL (fondations épurées) ═══════════ */
+/* Fond global iOS */
+body,.accueil{background:#f2f2f7}
+/* Large Title */
+.lt-wrap{padding:6px 4px 2px;margin-bottom:10px}
+.lt-date{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#6e6e73;margin-bottom:2px}
+.lt-title{font-size:33px;font-weight:800;letter-spacing:-.03em;color:var(--texte);line-height:1.1}
+/* Carte séance : blanc épuré, fini le dégradé sombre */
+.vdj{background:#fff;color:var(--texte);border:none;border-radius:20px;box-shadow:0 1px 2px rgba(0,0,0,.04),0 4px 14px rgba(0,0,0,.05);padding:20px 20px 18px}
+.vdj-lbl{color:var(--primary-deux);letter-spacing:.1em}
+.vdj-t{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:1.45rem;font-weight:800;letter-spacing:-.02em;color:var(--texte)}
+.vdj-s{color:var(--texte-trois)}
+.vdj-shoe{background:var(--gris-fond);color:var(--texte-deux);font-weight:600}
+.vdj-depart{background:#fff7ed;color:#9a3412}
+.vdj-adj{background:#fff7ed;color:#9a3412}
+/* Cartes de l'accueil : zéro bordure, ombre à peine perceptible, rayon généreux */
+.htile,.cw-link,.coach-nudge,.timeline-wrap,.meteo,.hmini,.acc-annee,.forme-detail{border:none!important;border-radius:18px;box-shadow:0 1px 2px rgba(0,0,0,.04),0 3px 10px rgba(0,0,0,.04);background:#fff}
+/* Quoi de neuf : blanc + accent ambre discret au lieu du dégradé jaune */
+.whats-new{background:#fff;border:none;border-left:3px solid #f59e0b;border-radius:14px;box-shadow:0 1px 2px rgba(0,0,0,.04),0 3px 10px rgba(0,0,0,.04)}
+.wn-txt{color:var(--texte-deux)}
+/* Bannière canicule adoucie */
+#canicule-banner{border:none!important;border-radius:14px;box-shadow:0 1px 2px rgba(0,0,0,.04)}
