@@ -1144,3 +1144,31 @@ body,.accueil{background:#f2f2f7}
 .wn-txt{color:var(--texte-deux)}
 /* Bannière canicule adoucie */
 #canicule-banner{border:none!important;border-radius:14px;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+/* ═══════════ APPLE POLISH — STRATE 2 (Séances · Cockpit · Courses) ═══════════ */
+/* Cartes des trois onglets : zéro bordure, ombre douce */
+.sem-carte,.ck-card,.ck-kpi,.ck-summary,.vo2-card,.crs-card,.pal-card,.dash-card{border:none!important;box-shadow:0 1px 2px rgba(0,0,0,.04),0 3px 10px rgba(0,0,0,.04);border-radius:16px;background:#fff}
+/* Hero Cockpit : fini le dégradé sombre — blanc épuré, chiffre vedette */
+.ck-hero{background:#fff!important;border:none;box-shadow:0 1px 2px rgba(0,0,0,.04),0 4px 14px rgba(0,0,0,.05);border-radius:20px}
+.ck-hero-lbl{color:#6e6e73!important}
+.ck-hero-val{color:var(--primary)}
+.ck-hero-sig{color:var(--texte-deux)!important}
+.ck-hero-tr{color:var(--texte-trois)!important}
+/* Toggle fenêtres : segmented control iOS */
+.ck-toggle{background:#e9e9ee;border-radius:10px;padding:2px;top:0}
+.ck-tg{border:none;background:transparent;border-radius:8px;font-weight:600;color:var(--texte-deux)}
+.ck-tg.ck-on{background:#fff;color:var(--texte);box-shadow:0 1px 3px rgba(0,0,0,.12);font-weight:700}
+/* Sections Cockpit repliables : plus aérées */
+.ck-sec{color:var(--texte);letter-spacing:.02em}
+/* Boutons wahoo dégraissés : sobres, blancs, chevron */
+.wr-launch{background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.04),0 3px 10px rgba(0,0,0,.04)}
+.wr-launch::before{display:none}
+.wrl-t1{color:var(--texte)}
+.wrl-t2{color:var(--texte-trois)}
+.wrl-go{color:var(--primary)}
+.rp-launch{background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.04),0 3px 10px rgba(0,0,0,.04)}
+.rpl-t1{color:var(--texte)}
+.rpl-t2{color:var(--texte-trois)}
+.rpl-go{color:var(--primary)}
+/* Fiche séance/semaine : boîte épurée */
+#boite{border:none}
+.sd-section{color:#6e6e73;font-weight:700}

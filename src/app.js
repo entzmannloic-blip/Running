@@ -1999,7 +1999,7 @@ function renderPalmares(){
   const _up=((typeof RACES!=='undefined'?RACES:(typeof DATA!=='undefined'&&DATA.RACES))||[]).map(r=>{const d=new Date(r.date+'T12:00:00');return{nom:r.nom,dossier:r.dossier,d:d,dn:Math.ceil((d-_tdy)/86400000)};}).filter(r=>r.dn>=0).sort((a,b)=>a.dn-b.dn);
   const _aVenir=_up.length?'<div class="crs-lab">\u00c0 venir</div>'+_up.map(r=>{const ds=r.d.getDate()+' '+_moisC[r.d.getMonth()]+' '+r.d.getFullYear();return `<button class="crs-up"${r.dossier?` onclick="ouvrirDossier('${r.dossier}')"`:''}><span class="crs-jx">J-${r.dn}</span><span class="crs-mid"><span class="crs-nom">${r.nom}</span><span class="crs-date">${ds}</span></span>${r.dossier?'<span class="crs-go">Dossier \u203a</span>':''}</button>`;}).join(''):''; 
   el.innerHTML=`<div style="padding:12px 12px 40px">
-<div style="font-size:22px;font-weight:700;color:var(--texte);letter-spacing:-.02em;margin-bottom:2px">Courses</div>
+<div class="lt-title" style="margin-bottom:2px">Courses</div>
 <div style="font-size:11px;color:var(--texte-deux);margin-bottom:14px">À venir &amp; passées · objectifs et résultats</div><button class="wr-launch" onclick="openWrapped()"><span class="wrl-ico">✨</span><span class="wrl-txt"><span class="wrl-t1">Ta saison en chiffres</span><span class="wrl-t2">${_wd.n} sorties · ${_wd.km} km · ${_wd.dplus} m D+</span></span><span class="wrl-go">▶</span></button>${_aVenir}<div class="crs-lab">Passées</div>
 <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px">
   <div style="background:var(--bg-card,#fff);border:.5px solid var(--bord-card,#e2e8f0);border-radius:12px;padding:10px;text-align:center"><div style="font-size:20px;font-weight:700;color:var(--texte)">${P.length}</div><div style="font-size:9px;text-transform:uppercase;letter-spacing:.05em;color:var(--texte-deux);margin-top:4px">Courses</div></div>
@@ -2372,7 +2372,7 @@ function renderCockpit(){
   const _ftrend=_f.trend||'→';
   el.innerHTML=`
 <div style="padding:var(--sp-3) var(--sp-3) var(--sp-10)">
-<div style="font-size:22px;font-weight:700;color:var(--texte);letter-spacing:-.02em;margin-bottom:2px">Cockpit</div>
+<div class="lt-title" style="margin-bottom:2px">Cockpit</div>
 <div style="font-size:11px;color:var(--texte-deux);margin-bottom:var(--sp-4)">Glisse sur les courbes · touche une barre · tap une sortie</div>
 <div class="ck-hero" role="button" tabindex="0" onclick="openCkHelp('forme')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openCkHelp('forme');}">
   <div class="ck-hero-l">
