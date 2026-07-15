@@ -1172,3 +1172,18 @@ body,.accueil{background:#f2f2f7}
 /* Fiche séance/semaine : boîte épurée */
 #boite{border:none}
 .sd-section{color:#6e6e73;font-weight:700}
+/* ═══════════ APPLE POLISH — STRATE 3 (fiches séance/semaine) ═══════════ */
+.sd-hero{border-bottom:none;padding:26px 24px 20px}
+/* Callouts : fond neutre + liseré sémantique fin, fini les aplats colorés */
+.callout{background:var(--gris-fond);border:none!important;border-radius:14px}
+.callout-obj{border-left:3px solid var(--primary)!important}
+.callout-ben{border-left:3px solid #16a34a!important}
+.callout-vig{border-left:3px solid #f59e0b!important}
+/* Chips neutres */
+.shoe-chip{background:var(--gris-fond);border:none;color:var(--texte-deux)}
+/* Modal : rayon généreux */
+#boite{border-radius:22px 22px 0 0}
+/* Sections de fiche : gris Apple */
+.sd-section{letter-spacing:.05em}
+/* Struct/légende/coach : cartes internes adoucies */
+.struct>div,.coach-grille>div,.nutri{border:none;background:var(--gris-fond);border-radius:12px}
