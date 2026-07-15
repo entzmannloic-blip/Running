@@ -2663,12 +2663,22 @@ function initQuickLog(){
 </div>
 <div id="ql-toast" class="ql-toast">Séance enregistrée ✓</div>`);
 }
+function _fcAjusteeBloc(r){
+  // Indicateur "FC ajustée température" : dérive cardiaque thermique ≈ +1 bpm par °C au-dessus de 15°C (plafonné à 15 bpm).
+  if(!r||!r.fc_moy||!r.temp||r.temp<=20)return '';
+  const derive=Math.min(15,Math.round(r.temp-15));
+  const fcAdj=r.fc_moy-derive;
+  const pctReel=Math.round(r.fc_moy/192*100),pctAdj=Math.round(fcAdj/192*100);
+  return `<div class="fc-adj"><div class="fc-adj-top"><span class="fc-adj-t">🌡️ FC ajustée température</span><span class="fc-adj-temp">${r.temp}°C</span></div>
+    <div class="fc-adj-row"><span class="fc-adj-brut">${r.fc_moy} bpm</span><span class="fc-adj-arrow">→</span><span class="fc-adj-val">~${fcAdj} bpm</span><span class="fc-adj-eq">équivalent 15°C</span></div>
+    <div class="fc-adj-note">Par cette chaleur, ton cœur a compensé ~${derive} bpm pour te refroidir. Ton effort réel correspond à ${pctAdj}% FCmax (au lieu des ${pctReel}% affichés) — ta vraie forme est meilleure que ce que le cardio montre.</div></div>`;
+}
 function realiseBloc(num,se){const r=se.realise||{statut:'a_faire'};
   if(r.statut==='a_faire')return `<div class="sd-section">Réalisé & revue du coach</div><div class="realise-empty"><strong>Séance pas encore réalisée.</strong> Log-la ci-dessous dès que c'est fait — le calendrier, la boule de cristal et les records s'activent automatiquement.</div>${logForm(num,se)}`;
   const p=se.metriques;
   const prevu=`<div class="rvp-l"><span>Distance</span><span>${p.Distance||'—'}</span></div><div class="rvp-l"><span>Durée</span><span>${p['Durée']||p['Durée totale']||'—'}</span></div><div class="rvp-l"><span>Allure</span><span>${p.Allure||'—'}</span></div><div class="rvp-l"><span>FC</span><span>${p.FC||'—'}</span></div><div class="rvp-l"><span>RPE</span><span>${p.RPE||'—'}</span></div>`;
   const reb=`<div class="rvp-l"><span>Distance</span><span>${r.km?r.km+' km':'—'}</span></div><div class="rvp-l"><span>Temps</span><span>${r.temps||'—'}</span></div><div class="rvp-l"><span>Allure</span><span>${r.allure||'—'}</span></div><div class="rvp-l"><span>FC moy/max</span><span>${r.fc_moy?r.fc_moy+(r.fc_max?'/'+r.fc_max:''):'—'}</span></div><div class="rvp-l"><span>RPE ressenti</span><span>${r.rpe_ressenti||'—'}</span></div>`;
-  return `<div class="sd-section">Réalisé vs prévu — ${stChip(r.statut)}</div><div class="rvp"><div class="rvp-col"><h5>Prévu</h5>${prevu}</div><div class="rvp-col"><h5>Réalisé</h5>${reb}</div></div>${prCelebration(r)}${coachDebrief(num,se)}${r.commentaire?`<div class="comm-user">« ${r.commentaire} »</div>`:''}<div class="sd-section">Revue du coach</div><div class="rev-coach">${r.revue||'—'}</div>${logForm(num,se)}`;
+  return `<div class="sd-section">Réalisé vs prévu — ${stChip(r.statut)}</div><div class="rvp"><div class="rvp-col"><h5>Prévu</h5>${prevu}</div><div class="rvp-col"><h5>Réalisé</h5>${reb}</div></div>${_fcAjusteeBloc(r)}${prCelebration(r)}${coachDebrief(num,se)}${r.commentaire?`<div class="comm-user">« ${r.commentaire} »</div>`:''}<div class="sd-section">Revue du coach</div><div class="rev-coach">${r.revue||'—'}</div>${logForm(num,se)}`;
 }
 /* ===== Coach IA — contenu pédagogique par type de séance (pourquoi / comment / théorie / lecture) ===== */
 const COACH_THEORY={
