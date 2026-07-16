@@ -57,7 +57,7 @@ function showTab(t){
     document.getElementById('vue-'+id).style.display=t===id?'block':'none';
     document.getElementById('tab-'+id).classList.toggle('actif',t===id);
   });
-  if(t==='cockpit'){renderCockpit();renderDash();setTimeout(()=>{if(typeof _vo2Reveal==='function')_vo2Reveal();if(typeof _effRender==='function')_effRender();},250);}
+  if(t==='cockpit'){renderCockpit();renderDash();setTimeout(()=>{if(typeof _vo2Reveal==='function')_vo2Reveal();if(typeof _effRender==='function')_effRender();if(typeof _heatRender==='function')_heatRender();},250);}
   if(t==='palmares')renderPalmares();
   if(t==='plan'&&!_planAutoJumped){
     _planAutoJumped=true;
@@ -1477,6 +1477,10 @@ function _replayRun(key){
 }
 function _replayClose(){if(_replayRAF)cancelAnimationFrame(_replayRAF);const ov=document.getElementById('replay-ov');if(!ov)return;ov.classList.remove('show');setTimeout(()=>ov.remove(),300);}
 const _CK_HELP={
+  heat:{t:'Acclimatation chaleur',c:'#f59e0b',body:`<p>S'entraîner dans la chaleur déclenche de vraies adaptations : <strong>volume plasmatique augmenté, sudation plus précoce et efficace, dérive cardiaque réduite</strong>. C'est un entraînement dans l'entraînement.</p>
+    <p><strong>Le modèle :</strong> la science situe l'acclimatation quasi complète autour de <strong>8-10 expositions sur 2-3 semaines</strong>. Ce score compte tes séances courues à plus de 25°C (météo réelle de Lyon) sur les 21 derniers jours : 8 expositions = 100 %.</p>
+    <p><strong>Le bénéfice chiffré :</strong> bien acclimaté, ta dérive cardiaque thermique diminue d'environ un tiers — à 30°C, ton cœur compense ~10 bpm au lieu de ~15. Concrètement : les sorties chaudes qui te frustraient te coûtent de moins en moins.</p>
+    <p><strong>À savoir :</strong> l'adaptation se perd en 2-3 semaines sans exposition (le score redescend naturellement). Et elle a un bonus caché : une partie des gains (volume plasmatique) persiste à la fraîche — l'été te prépare aussi pour novembre.</p>`},
   eff:{t:'Efficience aérobie',c:'#0d9488',body:`<p>L'<strong>efficience aérobie</strong> mesure la vitesse que tu produis <strong>par battement de cœur</strong>. C'est l'indicateur le plus fiable de la construction de ton moteur : quand elle monte, tu cours plus vite au même effort — même si les chronos bruts ne le montrent pas.</p>
     <p>Ici on l'exprime en <strong>allure équivalente à 145 bpm</strong> (le cœur de ta zone d'endurance), moyennée par semaine sur tes footings et sorties route (les trails et le seuil sont exclus, non comparables).</p>
     <p><strong>La correction température :</strong> ta FC de chaque séance est corrigée de la dérive thermique (~1 bpm par °C au-dessus de 15°C) grâce à la météo historique réelle de Lyon au jour et à l'heure de tes sorties (18h par défaut). Sans cette correction, la canicule ferait croire à une régression alors que ton moteur progresse.</p>
@@ -2435,6 +2439,40 @@ async function _effRender(){
     <div class="eff-delta" style="color:${deltaCol}">${deltaTxt}</div>
     ${corrected?'':'<div class="eff-warn">⚠️ Météo historique indisponible — courbe non corrigée de la chaleur, à lire avec prudence.</div>'}`;
 }
+async function _heatRender(){
+  const el=document.getElementById('heat-body');if(!el)return;
+  // Toutes les séances faites des 21 derniers jours (trails inclus — l'exposition compte quel que soit le sport)
+  const today=new Date();today.setHours(0,0,0,0);
+  const lim=new Date(today.getTime()-21*86400000);
+  const sess=[];
+  Object.values(SEANCES_BY_WEEK).forEach(ss=>ss.forEach(s=>{
+    const r=s.realise||{};
+    if(r.statut!=='fait'||!s.date)return;
+    const d=new Date(s.date+'T12:00:00');
+    if(d>=lim&&d<=new Date())sess.push({date:s.date,temp:r.temp||null});
+  }));
+  if(!sess.length){el.innerHTML='<div class="eff-loading">Aucune séance sur les 21 derniers jours.</div>';return;}
+  let temps={};let ok=true;
+  try{temps=await _effTemps(sess);}catch(e){ok=false;}
+  let hot=0,total=0;
+  sess.forEach(s=>{
+    const t=(s.temp!==null)?s.temp:(temps[s.date]!==undefined&&temps[s.date]!==null?temps[s.date]:null);
+    if(t===null)return;
+    total++;if(t>=25)hot++;
+  });
+  if(!ok||total===0){el.innerHTML='<div class="eff-warn">⚠️ Météo historique indisponible — score non calculable pour le moment.</div>';return;}
+  const pct=Math.min(100,Math.round(hot/8*100));
+  const deriveBase=15,deriveNow=Math.round(deriveBase*(1-0.35*pct/100));
+  let msg;
+  if(pct>=85)msg=`Acclimatation quasi complète — ta dérive à 30°C devrait être tombée à ~${deriveNow} bpm (au lieu de ${deriveBase}). Les sorties chaudes te coûtent nettement moins qu'en début d'été.`;
+  else if(pct>=55)msg=`Bonne acclimatation en cours — dérive attendue ~${deriveNow} bpm à 30°C (au lieu de ${deriveBase}). Chaque sortie chaude consolide l'adaptation.`;
+  else if(pct>=25)msg=`Acclimatation partielle — dérive attendue ~${deriveNow} bpm à 30°C. Encore quelques expositions régulières pour en tirer le plein bénéfice.`;
+  else msg=`Peu d'expositions récentes — la chaleur te coûte le tarif plein (~${deriveBase} bpm à 30°C). C'est normal en début d'été ou après une coupure.`;
+  el.innerHTML=`
+    <div class="heat-row"><span class="heat-pct">${pct}%</span><div class="heat-bar"><div class="heat-fill" style="width:${pct}%"></div></div></div>
+    <div class="heat-count">${hot} exposition${hot>1?'s':''} >25°C sur ${total} séance${total>1?'s':''} (21 j)</div>
+    <div class="heat-msg">${msg}</div>`;
+}
 function renderCockpit(){
   const el=document.getElementById('cockpit-contenu');
   if(el.innerHTML.trim()){_ckRenderAll(_ckWin);return;}
@@ -2466,6 +2504,10 @@ ${(function(){const v=_estimVO2();if(!v)return '';return `<div class="vo2-card">
 <div class="eff-card" id="eff-card">
   <div class="vo2-top"><span class="vo2-lbl">Efficience aérobie <button class="vo2-help" onclick="openCkHelp('eff')" aria-label="Qu'est-ce que l'efficience aérobie ?">?</button></span><span class="vo2-src">allure à 145 bpm · corrigée température</span></div>
   <div class="eff-body" id="eff-body"><div class="eff-loading">⏳ Analyse des conditions météo de tes séances…</div></div>
+</div>
+<div class="eff-card" id="heat-card">
+  <div class="vo2-top"><span class="vo2-lbl">Acclimatation chaleur <button class="vo2-help" onclick="openCkHelp('heat')" aria-label="Qu'est-ce que l'acclimatation chaleur ?">?</button></span><span class="vo2-src">expositions &gt;25°C · 21 derniers jours</span></div>
+  <div class="eff-body" id="heat-body"><div class="eff-loading">⏳ Calcul de tes expositions à la chaleur…</div></div>
 </div>
 <div class="ck-toggle" id="ck-tgl">
   <button class="ck-tg" onclick="ckWin(2,this)">2 sem.</button>
