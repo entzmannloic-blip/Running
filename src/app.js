@@ -57,7 +57,7 @@ function showTab(t){
     document.getElementById('vue-'+id).style.display=t===id?'block':'none';
     document.getElementById('tab-'+id).classList.toggle('actif',t===id);
   });
-  if(t==='cockpit'){renderCockpit();renderDash();setTimeout(()=>{if(typeof _vo2Reveal==='function')_vo2Reveal();},250);}
+  if(t==='cockpit'){renderCockpit();renderDash();setTimeout(()=>{if(typeof _vo2Reveal==='function')_vo2Reveal();if(typeof _effRender==='function')_effRender();},250);}
   if(t==='palmares')renderPalmares();
   if(t==='plan'&&!_planAutoJumped){
     _planAutoJumped=true;
@@ -1477,6 +1477,10 @@ function _replayRun(key){
 }
 function _replayClose(){if(_replayRAF)cancelAnimationFrame(_replayRAF);const ov=document.getElementById('replay-ov');if(!ov)return;ov.classList.remove('show');setTimeout(()=>ov.remove(),300);}
 const _CK_HELP={
+  eff:{t:'Efficience aérobie',c:'#0d9488',body:`<p>L'<strong>efficience aérobie</strong> mesure la vitesse que tu produis <strong>par battement de cœur</strong>. C'est l'indicateur le plus fiable de la construction de ton moteur : quand elle monte, tu cours plus vite au même effort — même si les chronos bruts ne le montrent pas.</p>
+    <p>Ici on l'exprime en <strong>allure équivalente à 145 bpm</strong> (le cœur de ta zone d'endurance), moyennée par semaine sur tes footings et sorties route (les trails et le seuil sont exclus, non comparables).</p>
+    <p><strong>La correction température :</strong> ta FC de chaque séance est corrigée de la dérive thermique (~1 bpm par °C au-dessus de 15°C) grâce à la météo historique réelle de Lyon au jour et à l'heure de tes sorties (18h par défaut). Sans cette correction, la canicule ferait croire à une régression alors que ton moteur progresse.</p>
+    <p><strong>Comment la lire :</strong> la tendance sur 4-8 semaines compte, pas les variations d'une semaine (sommeil, parcours, vent...). Une amélioration de 5-15 s/km par mois en phase de développement est un excellent rythme.</p>`},
   vo2:{t:'VO\u2082max estimé',c:'#0d9488',body:`<p>Le <strong>VO\u2082max</strong> est le débit maximal d'oxygène que ton corps peut consommer à l'effort, exprimé en <strong>ml/kg/min</strong>. C'est une mesure de ta <strong>cylindrée aérobie</strong> : plus il est élevé, plus ton moteur peut fournir d'énergie longtemps.</p>
     <p>Ici il est <strong>estimé</strong> (pas mesuré en labo) à partir de tes vrais chronos, via la méthode <strong>VDOT de Jack Daniels</strong> — la référence en physiologie de la course. Les trois distances sont combinées, le 10 km pesant le plus (l'effort le plus fiable).</p>
     <div class="ch-rule"><div class="ch-dot" style="background:#94a3b8"></div><div><strong>35-42</strong> : coureur loisir régulier</div></div>
@@ -2359,6 +2363,78 @@ function _vo2Reveal(force){
   }
   requestAnimationFrame(frame);
 }
+function _effSessions(){
+  // Séances aérobies route comparables (EF = vitesse / FC corrigée température)
+  const out=[];
+  function paceMin(p){const m=/(\d+):(\d+)\s*\/km/.exec(p||'');return m?(+m[1]+ +m[2]/60):null;}
+  Object.entries(SEANCES_BY_WEEK).forEach(([wk,ss])=>ss.forEach(s=>{
+    const r=s.realise||{};
+    if(r.statut!=='fait'||s.sport==='Trail')return;
+    const pace=paceMin(r.allure),fc=r.fc_moy;
+    if(!pace||!fc||fc>=162||!s.date)return;
+    out.push({wk:+wk,date:s.date,pace:pace,fc:fc,temp:r.temp||null});
+  }));
+  try{(S24R.runs||[]).forEach(run=>{
+    const pace=paceMin(run.allure),fc=run.fc;
+    if(pace&&fc&&fc<162&&run.iso)out.push({wk:24,date:run.iso,pace:pace,fc:fc,temp:null});
+  });}catch(e){}
+  return out.sort((a,b)=>a.date<b.date?-1:1);
+}
+async function _effTemps(sessions){
+  // Température historique à 18h (heure de course habituelle) via Open-Meteo archive, cache localStorage
+  const need=sessions.filter(s=>s.temp===null).map(s=>s.date);
+  if(!need.length)return {};
+  let cache={};
+  try{cache=JSON.parse(localStorage.getItem('eff_temp_cache')||'{}');}catch(e){}
+  const missing=[...new Set(need)].filter(d=>cache[d]===undefined);
+  if(missing.length){
+    const lo=missing.reduce((a,b)=>a<b?a:b),hi=missing.reduce((a,b)=>a>b?a:b);
+    const url=`https://archive-api.open-meteo.com/v1/archive?latitude=45.7578&longitude=4.8320&start_date=${lo}&end_date=${hi}&hourly=temperature_2m&timezone=Europe%2FParis`;
+    const resp=await fetch(url);
+    const j=await resp.json();
+    if(j.hourly&&j.hourly.time){
+      j.hourly.time.forEach((t,i)=>{
+        if(t.endsWith('T18:00')){cache[t.slice(0,10)]=j.hourly.temperature_2m[i];}
+      });
+      try{localStorage.setItem('eff_temp_cache',JSON.stringify(cache));}catch(e){}
+    }
+  }
+  return cache;
+}
+async function _effRender(){
+  const el=document.getElementById('eff-body');if(!el)return;
+  const sessions=_effSessions();
+  if(sessions.length<4){el.innerHTML='<div class="eff-loading">Pas encore assez de séances comparables.</div>';return;}
+  let temps={};
+  let corrected=true;
+  try{temps=await _effTemps(sessions);}catch(e){corrected=false;}
+  // EF par séance avec FC corrigée
+  sessions.forEach(s=>{
+    const t=(s.temp!==null)?s.temp:(temps[s.date]!==undefined&&temps[s.date]!==null?temps[s.date]:null);
+    const derive=(t!==null&&corrected)?Math.min(15,Math.max(0,Math.round(t-15))):0;
+    s.t=t;s.fca=s.fc-derive;s.ef=(1000/s.pace)/s.fca;
+  });
+  // moyenne par semaine
+  const byw={};sessions.forEach(s=>{(byw[s.wk]=byw[s.wk]||[]).push(s.ef);});
+  const weeks=Object.keys(byw).map(Number).sort((a,b)=>a-b);
+  const series=weeks.map(w=>({wk:w,ef:byw[w].reduce((a,b)=>a+b,0)/byw[w].length}));
+  const cur=series[series.length-1];
+  const ref=series.length>=4?series[series.length-4]:series[0];
+  function pace145(ef){const p=1000/(ef*145);return Math.floor(p)+':'+String(Math.round((p%1)*60)).padStart(2,'0');}
+  const deltaSec=Math.round((1000/(ref.ef*145)-1000/(cur.ef*145))*60);
+  const deltaTxt=deltaSec>3?`▲ ${deltaSec} s/km gagnées à effort égal depuis S${ref.wk}`:deltaSec<-3?`▼ ${-deltaSec} s/km perdues depuis S${ref.wk} (fatigue ou données bruitées)`:`stable depuis S${ref.wk}`;
+  const deltaCol=deltaSec>3?'#16a34a':deltaSec<-3?'#f59e0b':'var(--texte-trois)';
+  // sparkline
+  const efs=series.map(s=>s.ef),mn=Math.min(...efs),mx=Math.max(...efs),rg=(mx-mn)||1;
+  const W=280,H=44;
+  const pts=series.map((s,i)=>`${(i/(series.length-1))*W},${H-4-((s.ef-mn)/rg)*(H-10)}`).join(' ');
+  el.innerHTML=`
+    <div class="eff-main"><span class="eff-val">${pace145(cur.ef)}<span class="eff-unit">/km</span></span><span class="eff-lbl">à 145 bpm cette semaine</span></div>
+    <svg viewBox="0 0 ${W} ${H}" class="eff-spark"><polyline points="${pts}" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round"/><circle cx="${W}" cy="${H-4-((cur.ef-mn)/rg)*(H-10)}" r="3.5" fill="var(--primary)"/></svg>
+    <div class="eff-weeks">${series.map(s=>'S'+s.wk).join(' · ')}</div>
+    <div class="eff-delta" style="color:${deltaCol}">${deltaTxt}</div>
+    ${corrected?'':'<div class="eff-warn">⚠️ Météo historique indisponible — courbe non corrigée de la chaleur, à lire avec prudence.</div>'}`;
+}
 function renderCockpit(){
   const el=document.getElementById('cockpit-contenu');
   if(el.innerHTML.trim()){_ckRenderAll(_ckWin);return;}
@@ -2387,6 +2463,10 @@ ${(function(){const v=_estimVO2();if(!v)return '';return `<div class="vo2-card">
     <div class="vo2-num"><span id="vo2-val">0</span><span class="vo2-unit">ml/kg/min</span></div></div>
   <div class="vo2-foot" id="vo2-foot"></div>
 </div>`;})()}
+<div class="eff-card" id="eff-card">
+  <div class="vo2-top"><span class="vo2-lbl">Efficience aérobie <button class="vo2-help" onclick="openCkHelp('eff')" aria-label="Qu'est-ce que l'efficience aérobie ?">?</button></span><span class="vo2-src">allure à 145 bpm · corrigée température</span></div>
+  <div class="eff-body" id="eff-body"><div class="eff-loading">⏳ Analyse des conditions météo de tes séances…</div></div>
+</div>
 <div class="ck-toggle" id="ck-tgl">
   <button class="ck-tg" onclick="ckWin(2,this)">2 sem.</button>
   <button class="ck-tg" onclick="ckWin(4,this)">4 sem.</button>

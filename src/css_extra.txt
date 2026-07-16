@@ -1198,3 +1198,14 @@ body,.accueil{background:#f2f2f7}
 .fc-adj-val{font-size:22px;font-weight:800;color:var(--primary);font-variant-numeric:tabular-nums}
 .fc-adj-eq{font-size:11px;color:var(--texte-trois);font-weight:600}
 .fc-adj-note{font-size:12px;color:var(--texte-deux);line-height:1.5}
+/* ===== Efficience aérobie ===== */
+.eff-card{background:#fff;border:none;border-radius:16px;box-shadow:0 1px 2px rgba(0,0,0,.04),0 3px 10px rgba(0,0,0,.04);padding:var(--sp-4);margin-bottom:var(--sp-4)}
+.eff-loading{font-size:12px;color:var(--texte-trois);padding:12px 0;text-align:center}
+.eff-main{display:flex;align-items:baseline;gap:10px;margin:6px 0 10px}
+.eff-val{font-size:34px;font-weight:900;letter-spacing:-.03em;color:var(--texte);font-variant-numeric:tabular-nums}
+.eff-unit{font-size:15px;font-weight:700;color:var(--texte-trois)}
+.eff-lbl{font-size:12px;color:var(--texte-deux);font-weight:600}
+.eff-spark{width:100%;height:44px;display:block;margin-bottom:4px}
+.eff-weeks{font-size:10px;color:var(--texte-trois);text-align:right;margin-bottom:8px}
+.eff-delta{font-size:13px;font-weight:800}
+.eff-warn{font-size:11px;color:#9a3412;background:#fff7ed;border-radius:10px;padding:8px 10px;margin-top:8px}
