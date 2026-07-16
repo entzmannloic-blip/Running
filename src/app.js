@@ -982,6 +982,10 @@ overlay.addEventListener('click',e=>{if(e.target===overlay)fermer()});
 (function(){const to=document.getElementById('theoOverlay');if(to)to.addEventListener('click',e=>{if(e.target===to)closeTheory();});})();
 document.addEventListener('keydown',e=>{if(e.key!=='Escape')return;
   // Ferme l'overlay actuellement ouvert (priorité au plus au-dessus)
+  var wr=document.getElementById('wrapped-ov');
+  if(wr){_wrappedClose();return;}
+  var rp=document.getElementById('replay-ov');
+  if(rp){_replayClose();return;}
   var coach=document.getElementById('coach-ov');
   if(coach&&coach.classList.contains('open')){if(typeof closeCoach==='function')closeCoach();return;}
   var help=document.getElementById('ck-help-ov');
@@ -1967,6 +1971,7 @@ function openWrapped(){
     {bg:'linear-gradient(160deg,#1e293b,#475569)',ico:'\u{1F3AF}',big:'Nice',unit:'',sub:'Prochain chapitre : 3h45 au Marathon de Nice. On y va.',isFinal:true}
   ];
   let idx=0;
+  const old=document.getElementById('wrapped-ov');if(old)old.remove();
   const ov=document.createElement('div');ov.id='wrapped-ov';ov.className='wrapped-ov';
   ov.innerHTML=`<div class="wr-bars"></div><button class="wr-close" onclick="_wrappedClose()" aria-label="Fermer">\u2715</button><div class="wr-stage"></div><div class="wr-hint">tap pour continuer</div>`;
   document.body.appendChild(ov);
@@ -1990,11 +1995,11 @@ function openWrapped(){
   }
   render(0);
   let timer=setTimeout(next,3600);
-  function next(){clearTimeout(timer);idx++;if(idx>=cards.length){return;}render(idx);if(idx<cards.length-1)timer=setTimeout(next,3600);}
-  ov._next=next;ov._timer=()=>timer;
+  function next(){clearTimeout(timer);if(!document.body.contains(ov))return;idx++;if(idx>=cards.length){return;}render(idx);if(idx<cards.length-1)timer=setTimeout(next,3600);}
+  ov._stopTimer=()=>clearTimeout(timer);
   stage.onclick=()=>{if(idx<cards.length-1){next();}};
 }
-function _wrappedClose(){const ov=document.getElementById('wrapped-ov');if(!ov)return;ov.classList.remove('show');setTimeout(()=>ov.remove(),300);}
+function _wrappedClose(){const ov=document.getElementById('wrapped-ov');if(!ov)return;if(ov._stopTimer)ov._stopTimer();ov.classList.remove('show');setTimeout(()=>ov.remove(),300);}
 function renderPalmares(){
   const el=document.getElementById('palmares-contenu');if(!el)return;
   const P=(typeof PALMARES!=='undefined'?PALMARES:DATA.PALMARES)||[];
@@ -2384,24 +2389,34 @@ function _effSessions(){
   });}catch(e){}
   return out.sort((a,b)=>a.date<b.date?-1:1);
 }
+let _effTempsPromise=null;
 async function _effTemps(sessions){
-  // Température historique à 18h (heure de course habituelle) via Open-Meteo archive, cache localStorage
+  // Température historique à 18h via Open-Meteo archive · cache localStorage · fetch partagé entre les cartes
   const need=sessions.filter(s=>s.temp===null).map(s=>s.date);
   if(!need.length)return {};
   let cache={};
   try{cache=JSON.parse(localStorage.getItem('eff_temp_cache')||'{}');}catch(e){}
   const missing=[...new Set(need)].filter(d=>cache[d]===undefined);
   if(missing.length){
-    const lo=missing.reduce((a,b)=>a<b?a:b),hi=missing.reduce((a,b)=>a>b?a:b);
-    const url=`https://archive-api.open-meteo.com/v1/archive?latitude=45.7578&longitude=4.8320&start_date=${lo}&end_date=${hi}&hourly=temperature_2m&timezone=Europe%2FParis`;
-    const resp=await fetch(url);
-    const j=await resp.json();
+    if(!_effTempsPromise){
+      const lo=missing.reduce((a,b)=>a<b?a:b),hi=missing.reduce((a,b)=>a>b?a:b);
+      const url=`https://archive-api.open-meteo.com/v1/archive?latitude=45.7578&longitude=4.8320&start_date=${lo}&end_date=${hi}&hourly=temperature_2m&timezone=Europe%2FParis`;
+      _effTempsPromise=fetch(url).then(r=>r.json()).finally(()=>{setTimeout(()=>{_effTempsPromise=null;},100);});
+    }
+    const j=await _effTempsPromise;
     if(j.hourly&&j.hourly.time){
       j.hourly.time.forEach((t,i)=>{
         if(t.endsWith('T18:00')){cache[t.slice(0,10)]=j.hourly.temperature_2m[i];}
       });
-      try{localStorage.setItem('eff_temp_cache',JSON.stringify(cache));}catch(e){}
     }
+    // marquer null les dates demandées mais non résolues (évite le refetch en boucle)
+    missing.forEach(d=>{if(cache[d]===undefined)cache[d]=null;});
+    // fusion à l'écriture : ne pas écraser ce qu'une autre carte a écrit en parallèle
+    try{
+      const cur=JSON.parse(localStorage.getItem('eff_temp_cache')||'{}');
+      cache=Object.assign(cur,cache);
+      localStorage.setItem('eff_temp_cache',JSON.stringify(cache));
+    }catch(e){}
   }
   return cache;
 }
