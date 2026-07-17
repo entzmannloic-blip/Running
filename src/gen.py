@@ -595,6 +595,47 @@ for n,ss in WEEKS.items():
         arr[0]["realise"]={"statut":"fait","km":10.35,"temps":"1h00","allure":"5:48/km","fc_moy":147,"fc_max":161,"temp":30,"rpe_ressenti":5,"commentaire":"10,35 km en 1h00 \u00b7 d\u00e9part 19h44 sous forte chaleur \u00b7 allure 5:48/km tr\u00e8s r\u00e9guli\u00e8re (laps 5:48-5:56, km 2 en 5:28) \u00b7 FC 147/161 (76 % FCmax) \u00b7 cadence 175 spm \u00b7 RE 94 \u00b7 810 kcal \u00b7 plat (berges de Lyon, D+ 31 m) \u00b7 Novablast 5 J. Lundi-mardi en repos (montagne avec les amis, fatigue ressentie) \u2014 semaine d\u00e9marr\u00e9e mercredi volontairement. D\u00e9rive cardiaque mod\u00e9r\u00e9e en fin de sortie (140\u2192155), classique sous chaleur.","pr":0,"ach":0,"pr_detail":[],
         "revue":"<strong>Le d\u00e9marrage intelligent de la S29 \u2014 exactement ce que je t'avais demand\u00e9.</strong> Deux jours de vrai repos apr\u00e8s le doubl\u00e9 trail du week-end, une fatigue \u00e9cout\u00e9e plut\u00f4t que combattue, et une reprise mercredi en EF propre. C'est la vigilance de la revue S28 appliqu\u00e9e \u00e0 la lettre : d\u00e9marrage doux, sans culpabiliser.<br><br><strong>La s\u00e9ance elle-m\u00eame :</strong> 10,35 km \u00e0 5:48/km d'une r\u00e9gularit\u00e9 remarquable \u2014 les 10 kilom\u00e8tres tiennent dans une fourchette de 8 secondes (hors km 2). FC moyenne 147 (76 % FCmax), c'est le haut de ta Z2 : un poil au-dessus de l'EF id\u00e9al, mais par cette chaleur \u00e0 19h44, c'est en r\u00e9alit\u00e9 tr\u00e8s ma\u00eetris\u00e9. La d\u00e9rive cardiaque (140 en d\u00e9but \u2192 155 en fin) est purement thermique, ton allure n'a pas boug\u00e9 d'un pouce.<br><br><strong>La cadence \u00e0 175 spm</strong> sur du plat, c'est ta belle signature technique habituelle \u2014 rien \u00e0 redire.<br><br><strong>Pour la suite de la semaine :</strong> avec le d\u00e9calage, il te reste 4 s\u00e9ances sur 4 jours (seuil, EF technique, PPG, sortie longue). Mon conseil : jeudi EF + technique en r\u00e9cup\u00e9ration active, vendredi le seuil 2\u00d78 min (les jambes seront fra\u00eeches), samedi PPG l\u00e9g\u00e8re, dimanche la sortie longue. Si tu dois sacrifier une s\u00e9ance, c'est la PPG \u2014 jamais le seuil ni la longue en ce moment. <strong>Reprise s\u00e9rieuse, corps \u00e9cout\u00e9, semaine bien engag\u00e9e.</strong>"}
 
+    if n==30:
+        # Restructuration de la semaine autour du projet ViaRhôna (Vienne -> St-Rambert-d’Albon, 40 km, entre amis)
+        arr[4]["titre"]="ViaRhôna — Vienne → Saint-Rambert-d’Albon"
+        arr[4]["type"]="Sortie longue — ultra-distance plaisir"
+        arr[4]["sport"]="Course à pied"
+        arr[4]["accent"]=BLUE
+        arr[4]["fill"]=95
+        arr[4]["cat"]="sortie-longue"
+        arr[4]["date"]="2026-07-23"
+        arr[4]["chaussure"]="Novablast 5 J"
+        arr[4]["sous"]="40 km en EF très cool avec Yannis (et peut-être Edwige), départ 7h le long de la ViaRhôna. Objectif plaisir, pas performance."
+        arr[4]["metriques"]={"Distance":"~40 km","Durée":"~4h-4h30","Allure":"EF très facile","FC":"Zone 1-2 stricte","RPE":"5-6 (par la durée)","Type":"Ultra-distance plaisir"}
+        arr[4]["objectif"]="De très loin ta plus longue sortie de la saison (près du double de ton record actuel). L’objectif n’est pas la performance mais l’expérience : tenir 4h+ en EF strict, entre amis, sur une piste roulante. <strong>Séance à traiter comme un vrai événement physiologique, pas comme un footing.</strong>"
+        arr[4]["struct"]=[
+          {"nom":"Départ (km 0-10)","txt":"Rester délibérément lent malgré les jambes fraîches et l’excitation du groupe — c’est ici que se joue la réussite des 30 derniers km."},
+          {"nom":"Cœur de sortie (km 10-30)","txt":"Croisère EF strict, hydratation systématique toutes les 20-30 min, gel toutes les 40-45 min dès 45 min d’effort (leçon de la SL du 16/7)."},
+          {"nom":"Fin (km 30-40)","txt":"Écoute des signaux (vertiges, jambes) ; ralentir encore si besoin, marcher si nécessaire — aucune honte, l’objectif est de finir bien, pas vite."}]
+        arr[4]["legende"]=[{"c":GREEN,"l":"EF strict / Zone 1-2"}]
+        arr[4]["benefices"]="Endurance fondamentale extrême, expérience logistique (nutrition/hydratation sur ultra-distance) directement transférable à la préparation SaintExpress 45 km, et un moment fort entre amis."
+        arr[4]["coach"]=[
+          {"titre":"Nutrition — vise large","texte":"Sur 4h+, environ 5 à 6 gels espacés de 40-45 min, plus si possible un peu de salé (biscuits apéritif) passé 2h30. La ViaRhôna traverse des villages (Condrieu, Sablons...) — repérez des points de ravito plutôt que tout porter."},
+          {"titre":"Terrain plat — bonne nouvelle","texte":"Contrairement à tes trails, pas de descente qui martelèle les quadriceps. L’usure vient du temps passé debout, pas du dénivelé — la vigilance dos reste de mise sur la durée."},
+          {"titre":"Le vrai risque : partir trop vite","texte":"À plusieurs, sur du plat, avec les jambes fraîches, l’envie d’accélérer est réelle. Tenir un rythme de conversation les 15-20 premiers km sécurise toute la suite."}]
+        arr[4]["vigilance"]="Départ 7h malin contre la chaleur, mais vers 10h-11h (3-4h de course) ça peut recommencer à chauffer : électrolytes dès le départ. Prévoir large en hydratation (historique : ~2,5 L pour 2h10, donc 4-5 L probables sur 4h+). Aucune séance de qualité dans les 2 jours suivants — cette sortie EST la grosse charge de la semaine."
+        arr[3]["titre"]="Footing de récupération post-ViaRhôna"
+        arr[3]["type"]="Récupération active"
+        arr[3]["sport"]="Course à pied"
+        arr[3]["accent"]=GREEN
+        arr[3]["fill"]=25
+        arr[3]["cat"]="ef"
+        arr[3]["date"]="2026-07-26"
+        arr[3]["chaussure"]="Gel Pulse 16"
+        arr[3]["sous"]="Très facile, courte. Le 40 km de jeudi est déjà ta séance longue de la semaine — ici on récupère, on ne construit pas."
+        arr[3]["metriques"]={"Distance":"~8 km max","Durée":"~45 min","Allure":"Très facile","FC":"Zone 1","RPE":"2-3","Type":"Récupération"}
+        arr[3]["objectif"]="Faire circuler le sang, rien de plus. Si les jambes sont encore lourdes 3 jours après le ViaRhôna, remplace par du repos complet ou de la marche — aucune culpabilité."
+        arr[3]["struct"]=[{"nom":"Corps","txt":"6-8 km à allure de conversation, sur terrain plat. S’arrêter dès que ça tire quelque chose d’inhabituel."}]
+        arr[3]["legende"]=[{"c":GREEN,"l":"Très facile"}]
+        arr[3]["benefices"]="Récupération active post-ultra-distance : circulation, sans coût additionnel pour les fibres déjà sollicitées."
+        arr[3]["coach"]=[{"titre":"La vraie séance de la semaine, c’était jeudi","texte":"Ne cherche pas à « rattraper » du volume ici. Le 40 km a déjà rempli très largement le quota de la semaine."}]
+        arr[3]["vigilance"]="Douleur inhabituelle, gonflement, ou fatigue anormalement persistante → repos complet et on réévalue ensemble."
+
 META=[
 (24,'reprise','Récupération',28,'Légère','—',"Absorber La Circaète : repos actif, footings très faciles, mobilité du dos."),
 (25,'reprise','Reprise & déblocage',52,'Modérée','≈ 85 % facile · 15 % qualité légère',"Relancer une structure : ré-ancrer le vrai easy, vivacité, premier contact allure marathon, longue + carburant."),
@@ -602,7 +643,7 @@ META=[
 (27,'general','Semaine course — Déraille',45,'Course','—',"Affûtage court (3 footings) + Trail Déraille au Lac des Sapins le 5 juillet. Objectif C, plaisir & test nutrition. (21 km allégés + 24 km course.)"),
 (28,'general','Récupération post-Déraille',36,'Récup','100 % facile · récupération active',"Semaine de récupération après le Trail Déraille — footings très faciles, zéro intensité. Le bloc seuil est décalé à S30 pour laisser les jambes assimiler le D+ et la chaleur. La récup n'est pas du temps perdu : c'est là que les adaptations se construisent."),
 (29,'general','Seuil découverte',62,'Soutenue','≈ 80 % facile · 20 % qualité',"Reprise progressive après la semaine de récup : premier vrai contact avec le seuil (2 blocs courts) + longue qui reprend du volume avec finish AM."),
-(30,'general','Seuil + pyramide',72,'Soutenue','≈ 80 % facile · 20 % qualité',"Seuil 3 blocs, rappel pyramide, longue 24 km dont 6 AM."),
+(30,'general','Seuil + ViaRhôna entre amis',88,'Soutenue','≈ 75 % facile · 25 % qualité',"Seuil 3 blocs + projet ViaRhôna 40 km plaisir jeudi (remplace la longue du dimanche, qui devient récup légère)."),
 (31,'general','Test 10 km + recalibrage',70,'Soutenue','≈ 82 % facile · test',"Benchmark 10 km pour recaler les allures avant le bloc spécifique."),
 (32,'seuil','Seuil long',78,'Élevée','≈ 80 % facile · 20 % qualité',"Seuil long (2×15 min) + longue 26 km dont 8 AM. 2ᵉ mobilité ajoutée."),
 (33,'seuil','Allègement',64,'Légère','≈ 85 % facile · 15 % qualité',"Récupération avant le pic pré-USA."),
@@ -917,6 +958,12 @@ JOURNAL=[{"sem":"S24","theme":"Récupération post-Circaète","texte":S24_REALIS
 {"sem":"S26","theme":"Allègement + prépa Déraille","texte":_S26_REVUE},{"sem":"S27","theme":"Semaine course — Trail Déraille","texte":_S27_REVUE}]
 HEATMAP={"2026-01-03": 10.1, "2026-01-05": 11.2, "2026-01-06": 13.0, "2026-01-10": 21.6, "2026-01-12": 10.0, "2026-01-13": 11.3, "2026-01-14": 11.0, "2026-01-15": 14.1, "2026-01-16": 4.0, "2026-01-17": 11.1, "2026-01-20": 11.0, "2026-01-21": 21.1, "2026-01-22": 10.0, "2026-01-23": 3.5, "2026-01-26": 10.3, "2026-01-27": 11.5, "2026-01-28": 10.0, "2026-01-29": 18.2, "2026-01-31": 11.0, "2026-02-02": 14.0, "2026-02-03": 21.2, "2026-02-05": 8.9, "2026-02-06": 11.1, "2026-02-07": 12.1, "2026-02-08": 4.2, "2026-02-09": 20.4, "2026-02-10": 10.2, "2026-02-11": 11.8, "2026-02-16": 10.2, "2026-02-17": 20.0, "2026-02-18": 10.0, "2026-02-20": 10.6, "2026-02-21": 10.0, "2026-02-22": 11.8, "2026-02-23": 10.1, "2026-02-24": 2.5, "2026-02-25": 10.0, "2026-02-26": 12.5, "2026-02-27": 5.0, "2026-03-01": 4.4, "2026-03-02": 11.3, "2026-03-03": 18.0, "2026-03-04": 20.4, "2026-03-05": 17.1, "2026-03-07": 21.2, "2026-03-09": 17.0, "2026-03-10": 16.0, "2026-03-11": 10.0, "2026-03-12": 17.2, "2026-03-15": 4.2, "2026-03-16": 18.1, "2026-03-17": 13.0, "2026-03-18": 14.2, "2026-03-19": 21.2, "2026-03-20": 10.5, "2026-03-23": 13.0, "2026-03-24": 30.1, "2026-03-26": 15.0, "2026-03-27": 10.0, "2026-03-29": 15.0, "2026-03-30": 12.0, "2026-03-31": 13.0, "2026-04-01": 10.0, "2026-04-03": 14.3, "2026-04-04": 21.2, "2026-04-06": 18.6, "2026-04-07": 15.0, "2026-04-09": 24.7, "2026-04-10": 12.0, "2026-04-13": 18.0, "2026-04-14": 14.5, "2026-04-15": 15.1, "2026-04-16": 11.0, "2026-04-18": 30.1, "2026-04-19": 3.8, "2026-04-20": 13.0, "2026-04-21": 17.0, "2026-04-22": 16.0, "2026-04-24": 10.3, "2026-04-26": 4.0, "2026-04-27": 10.7, "2026-04-30": 3.6, "2026-05-01": 42.4, "2026-05-04": 13.0, "2026-05-06": 10.5, "2026-05-08": 11.1, "2026-05-09": 11.1, "2026-05-16": 8.4, "2026-05-18": 17.0, "2026-05-20": 10.0, "2026-05-21": 21.2, "2026-05-22": 22.2, "2026-05-27": 4.6, "2026-05-28": 4.0, "2026-05-29": 16.6, "2026-05-31": 10.0, "2026-06-01": 14.0, "2026-06-02": 12.0, "2026-06-06": 29.8, "2026-06-09": 16.0, "2026-06-10": 10.3, "2026-06-12": 10.0}
 CHANGELOG=[
+  {"build":111,"date":"17 juillet 2026","sha":"","tag":"S30 restructuree pour le projet ViaRhona","items":[
+    "Jeudi 23/7 devient la seance longue de la semaine : ViaRhona Vienne -> Saint-Rambert-d Albon, 40 km en EF entre amis (Yannis, Edwige)",
+    "La sortie longue prevue dimanche (24 km dont 6 AM) est remplacee par un footing de recuperation tres facile (~8 km)",
+    "Fiche ViaRhona complete : nutrition (5-6 gels sur 4h+), hydratation (villages ViaRhona en ravito), consigne de depart lent",
+    "Meta semaine mise a jour : 72 -> 88 km, objectif reformule autour du projet plaisir"
+  ]},
   {"build":110,"date":"17 juillet 2026","sha":"","tag":"S29 : EF+technique loggee, cardio haut explique","items":[
     "Seance loggee : 10,30 km, FC 147/172, 2 derniers km acceleres (5:15 puis 5:11/km) au lieu des lignes droites prevues",
     "Revue coach sur le ressenti cardio haut : explique par la fatigue residuelle de la sortie longue de la veille (RE 222, plus grosse charge de la saison), pas principalement par la chaleur",
