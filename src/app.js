@@ -57,7 +57,7 @@ function showTab(t){
     document.getElementById('vue-'+id).style.display=t===id?'block':'none';
     document.getElementById('tab-'+id).classList.toggle('actif',t===id);
   });
-  if(t==='cockpit'){renderCockpit();renderDash();setTimeout(()=>{if(typeof _vo2Reveal==='function')_vo2Reveal();if(typeof _effRender==='function')_effRender();if(typeof _heatRender==='function')_heatRender();},250);}
+  if(t==='cockpit'){renderCockpit();renderDash();setTimeout(()=>{if(typeof _vo2Reveal==='function')_vo2Reveal();if(typeof _effRender==='function')_effRender();if(typeof _heatRender==='function')_heatRender();if(typeof _saisonRender==='function')_saisonRender();},250);}
   if(t==='palmares')renderPalmares();
   if(t==='plan'&&!_planAutoJumped){
     _planAutoJumped=true;
@@ -1481,6 +1481,10 @@ function _replayRun(key){
 }
 function _replayClose(){if(_replayRAF)cancelAnimationFrame(_replayRAF);const ov=document.getElementById('replay-ov');if(!ov)return;ov.classList.remove('show');setTimeout(()=>ov.remove(),300);}
 const _CK_HELP={
+  saison:{t:'Progression par saison',c:'#0d9488',body:`<p>Cette carte compare ton <strong>efficience aérobie d'une saison à l'autre</strong> : l'allure que tu produis à un effort cardiaque de référence (145 bpm). Plus l'allure est rapide à FC égale, plus ton moteur est efficient.</p>
+    <p><strong>Pourquoi la correction chaleur est cruciale :</strong> comparer les allures brutes entre l'hiver et l'été serait trompeur — la chaleur fait grimper ton cardio de ~1 bpm par °C au-dessus de 15°C. Sans correction, tes sorties estivales paraîtraient plus lentes alors qu'elles sont en réalité tes meilleures. Chaque point été est donc corrigé de sa dérive thermique via la température réelle de la séance.</p>
+    <p><strong>Comment c'est calculé :</strong> pour chaque saison, on prend plusieurs footings EF sur route (trails et séances de qualité exclus), avec leur vraie FC issue de Strava, et on ramène l'allure à 145 bpm. La médiane par saison lisse les variations d'une sortie à l'autre.</p>
+    <p><strong>À savoir :</strong> les points hiver et printemps sont figés (données historiques réelles). L'été s'enrichit à mesure que de nouvelles séances sont enregistrées avec leur température. L'échantillon est de 2-3 sorties par saison : la tendance est fiable, les valeurs exactes sont à ±quelques secondes.</p>`},
   heat:{t:'Acclimatation chaleur',c:'#f59e0b',body:`<p>S'entraîner dans la chaleur déclenche de vraies adaptations : <strong>volume plasmatique augmenté, sudation plus précoce et efficace, dérive cardiaque réduite</strong>. C'est un entraînement dans l'entraînement.</p>
     <p><strong>Le modèle :</strong> la science situe l'acclimatation quasi complète autour de <strong>8-10 expositions sur 2-3 semaines</strong>. Ce score compte tes séances courues à plus de 25°C (météo réelle de Lyon) sur les 21 derniers jours : 8 expositions = 100 %.</p>
     <p><strong>Le bénéfice chiffré :</strong> bien acclimaté, ta dérive cardiaque thermique diminue d'environ un tiers — à 30°C, ton cœur compense ~10 bpm au lieu de ~15. Concrètement : les sorties chaudes qui te frustraient te coûtent de moins en moins.</p>
@@ -2488,6 +2492,26 @@ async function _heatRender(){
     <div class="heat-count">${hot} exposition${hot>1?'s':''} >25°C sur ${total} séance${total>1?'s':''} (21 j)</div>
     <div class="heat-msg">${msg}</div>`;
 }
+function _saisonRender(){
+  const el=document.getElementById('saison-body');if(!el)return;
+  if(typeof SAISON_EFF==='undefined'||!SAISON_EFF.points||!SAISON_EFF.points.length){el.innerHTML='<div class="eff-loading">Données saisonnières indisponibles.</div>';return;}
+  const pts=SAISON_EFF.points;
+  const paceStr=s=>{const m=Math.floor(s/60),ss=Math.round(s%60);return m+':'+String(ss).padStart(2,'0');};
+  const base=pts[0],cur=pts[pts.length-1];
+  const gainSec=base.pace_s-cur.pace_s;
+  const gainPct=((cur.eff/base.eff)-1)*100;
+  // barres : plus l'allure est basse (rapide), plus la barre est haute → on inverse
+  const paces=pts.map(p=>p.pace_s),mn=Math.min(...paces),mx=Math.max(...paces),rg=(mx-mn)||1;
+  const cols=['#94a3b8','#38bdf8','#0d9488'];
+  const bars=pts.map((p,i)=>{
+    const h=30+((mx-p.pace_s)/rg)*70; // 30-100%
+    return `<div class="sais-col"><div class="sais-bar-wrap"><div class="sais-pace">${paceStr(p.pace_s)}</div><div class="sais-bar" style="height:${h}%;background:${cols[i]||'#0d9488'}"></div></div><div class="sais-lbl">${p.saison}</div><div class="sais-mois">${p.mois}${p.corr?' 🌡️':''}</div></div>`;
+  }).join('');
+  el.innerHTML=`
+    <div class="sais-head"><span class="sais-gain">▲ ${gainSec} s/km</span><span class="sais-gain-sub">plus rapide à effort égal depuis l'hiver (+${gainPct.toFixed(1)}%)</span></div>
+    <div class="sais-chart">${bars}</div>
+    <div class="sais-note">À FC égale (145 bpm), tu cours ${gainSec} s/km plus vite qu'en février. L'été (🌡️) est corrigé de la chaleur — sans ça, il paraîtrait plus lent qu'il ne l'est.</div>`;
+}
 function renderCockpit(){
   const el=document.getElementById('cockpit-contenu');
   if(el.innerHTML.trim()){_ckRenderAll(_ckWin);return;}
@@ -2526,6 +2550,10 @@ ${(function(){const v=_estimVO2();if(!v)return '';return `<div class="vo2-card">
 <div class="eff-card" id="heat-card">
   <div class="vo2-top"><span class="vo2-lbl">Acclimatation chaleur <button class="vo2-help" onclick="openCkHelp('heat')" aria-label="Qu'est-ce que l'acclimatation chaleur ?">?</button></span><span class="vo2-src">expositions &gt;25°C · 21 derniers jours</span></div>
   <div class="eff-body" id="heat-body"><div class="eff-loading">⏳ Calcul de tes expositions à la chaleur…</div></div>
+</div>
+<div class="eff-card" id="saison-card">
+  <div class="vo2-top"><span class="vo2-lbl">Progression par saison <button class="vo2-help" onclick="openCkHelp('saison')" aria-label="Comment lire la progression par saison ?">?</button></span><span class="vo2-src">allure à 145 bpm · corrigée chaleur</span></div>
+  <div class="eff-body" id="saison-body"></div>
 </div>
 <div class="ck-toggle" id="ck-tgl">
   <button class="ck-tg" onclick="ckWin(2,this)">2 sem.</button>

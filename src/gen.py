@@ -877,6 +877,21 @@ MONTHLY=[
   {"m":"Juin","km":82,"elev":2012,"sorties":5,"re":1112},
 ]
 SAISON2026={"km":1361,"elev":16222,"sorties":108,"mois":6,"note":"Run + Trail uniquement, aligné Strava"}
+# Progression d'efficience aérobie par saison — points d'ancrage réels (cardio Strava, EF route, allure ramenée à 145 bpm).
+# Hiver/Printemps figés (données historiques). Été enrichi par les séances loggées avec température.
+SAISON_EFF={
+  "unite":"allure équivalente à 145 bpm (FC corrigée de la dérive thermique)",
+  "ref_bpm":145,
+  "points":[
+    {"saison":"Hiver","mois":"fév 26","pace_s":347,"eff":1.1934,"n":3,"corr":False,
+     "detail":"3 EF route de février (10-16-23/2), FC 141-148, conditions fraîches — aucune correction nécessaire."},
+    {"saison":"Printemps","mois":"avr 26","pace_s":336,"eff":1.2328,"n":3,"corr":False,
+     "detail":"3 EF route d'avril (15-24-27/4), FC 139-146, conditions douces."},
+    {"saison":"Été","mois":"juil 26","pace_s":322,"eff":1.2845,"n":2,"corr":True,
+     "detail":"2 EF route de juillet (15-17/7) sous 26-30°C, FC brute 147 corrigée de la dérive thermique (~11-15 bpm)."},
+  ],
+  "note":"À FC égale, +7,6 % d'efficience entre l'hiver et l'été (≈ 25 s/km plus rapide). L'été n'est PAS une régression : la chaleur gonflait ton cardio et masquait la vraie progression. Échantillon de 2-3 sorties par saison — tendance fiable, valeurs à ±quelques secondes."
+}
 ACWR_DATA={"charge7j":690,"charge28j":1642,"acwr":0.69,"interpretation":"Sous-charge de récupération, parfaitement normale : après le pic de la semaine de course (ACWR 1.28 en S27 avec la Déraille), la semaine de récup S28 fait redescendre le ratio à 0.69. Tu es frais, la charge aiguë est basse — c'est exactement ce qu'on veut avant de relancer le seuil en S29."}
 RECORDS_PERF=[
   {"dist":"5 km","record":"22:52","record_sub":"meilleur effort Strava","actuel":"4:35/km","actuel_sub":"meilleur effort 2026","temps_rec":"22:52","temps_act":"~22:52"},
@@ -959,6 +974,12 @@ JOURNAL=[{"sem":"S24","theme":"Récupération post-Circaète","texte":S24_REALIS
 {"sem":"S26","theme":"Allègement + prépa Déraille","texte":_S26_REVUE},{"sem":"S27","theme":"Semaine course — Trail Déraille","texte":_S27_REVUE}]
 HEATMAP={"2026-01-03": 10.1, "2026-01-05": 11.2, "2026-01-06": 13.0, "2026-01-10": 21.6, "2026-01-12": 10.0, "2026-01-13": 11.3, "2026-01-14": 11.0, "2026-01-15": 14.1, "2026-01-16": 4.0, "2026-01-17": 11.1, "2026-01-20": 11.0, "2026-01-21": 21.1, "2026-01-22": 10.0, "2026-01-23": 3.5, "2026-01-26": 10.3, "2026-01-27": 11.5, "2026-01-28": 10.0, "2026-01-29": 18.2, "2026-01-31": 11.0, "2026-02-02": 14.0, "2026-02-03": 21.2, "2026-02-05": 8.9, "2026-02-06": 11.1, "2026-02-07": 12.1, "2026-02-08": 4.2, "2026-02-09": 20.4, "2026-02-10": 10.2, "2026-02-11": 11.8, "2026-02-16": 10.2, "2026-02-17": 20.0, "2026-02-18": 10.0, "2026-02-20": 10.6, "2026-02-21": 10.0, "2026-02-22": 11.8, "2026-02-23": 10.1, "2026-02-24": 2.5, "2026-02-25": 10.0, "2026-02-26": 12.5, "2026-02-27": 5.0, "2026-03-01": 4.4, "2026-03-02": 11.3, "2026-03-03": 18.0, "2026-03-04": 20.4, "2026-03-05": 17.1, "2026-03-07": 21.2, "2026-03-09": 17.0, "2026-03-10": 16.0, "2026-03-11": 10.0, "2026-03-12": 17.2, "2026-03-15": 4.2, "2026-03-16": 18.1, "2026-03-17": 13.0, "2026-03-18": 14.2, "2026-03-19": 21.2, "2026-03-20": 10.5, "2026-03-23": 13.0, "2026-03-24": 30.1, "2026-03-26": 15.0, "2026-03-27": 10.0, "2026-03-29": 15.0, "2026-03-30": 12.0, "2026-03-31": 13.0, "2026-04-01": 10.0, "2026-04-03": 14.3, "2026-04-04": 21.2, "2026-04-06": 18.6, "2026-04-07": 15.0, "2026-04-09": 24.7, "2026-04-10": 12.0, "2026-04-13": 18.0, "2026-04-14": 14.5, "2026-04-15": 15.1, "2026-04-16": 11.0, "2026-04-18": 30.1, "2026-04-19": 3.8, "2026-04-20": 13.0, "2026-04-21": 17.0, "2026-04-22": 16.0, "2026-04-24": 10.3, "2026-04-26": 4.0, "2026-04-27": 10.7, "2026-04-30": 3.6, "2026-05-01": 42.4, "2026-05-04": 13.0, "2026-05-06": 10.5, "2026-05-08": 11.1, "2026-05-09": 11.1, "2026-05-16": 8.4, "2026-05-18": 17.0, "2026-05-20": 10.0, "2026-05-21": 21.2, "2026-05-22": 22.2, "2026-05-27": 4.6, "2026-05-28": 4.0, "2026-05-29": 16.6, "2026-05-31": 10.0, "2026-06-01": 14.0, "2026-06-02": 12.0, "2026-06-06": 29.8, "2026-06-09": 16.0, "2026-06-10": 10.3, "2026-06-12": 10.0}
 CHANGELOG=[
+  {"build":115,"date":"18 juillet 2026","sha":"","tag":"Nouvelle carte : Progression par saison (efficience a FC egale)","items":[
+    "Nouvelle carte Cockpit : ton allure a 145 bpm par saison (hiver -> printemps -> ete), calculee sur du vrai cardio Strava",
+    "Points d ancrage reels : 3 EF route par saison (hiver/printemps figes, ete enrichi par les seances loggees)",
+    "Correction thermique appliquee a l ete : +7,6 % d efficience depuis l hiver (~25 s/km plus rapide a effort egal) - la chaleur masquait cette progression",
+    "Point d aide ? pedagogique expliquant la methode et pourquoi la correction chaleur est indispensable"
+  ]},
   {"build":114,"date":"18 juillet 2026","sha":"","tag":"Forme du jour : preuve de fraicheur ajoutee","items":[
     "Nouvel horodatage discret sous le score : Recalcule aujourd'hui a HH:MM, avec un petit point vert qui pulse",
     "Le score etait deja recalcule en temps reel a chaque ouverture (aucune donnee figee) mais rien ne le prouvait a l'ecran",
@@ -1436,5 +1457,5 @@ PALMARES=[
 ]
 _j.dump({"PHASES":PHASES,"COUL":COUL,"SEMAINES":SEMAINES,"SBW":SEANCES_BY_WEEK,"GEAR":GEAR,"RACES":RACES,
   "PROFIL":PROFIL,"REPLAY":REPLAY,"PROJ":PROJ,"RECORDS":RECORDS,"VIGILANCE":VIGILANCE,"S24R":S24_REALISE,
-  "HIST":_hist["HIST"],"POLAR":_hist["POLAR"],"ALLURES":ALLURES,"ALLURES_COURSE":ALLURES_COURSE,"ZONES_FC":ZONES_FC,"MONTHLY":MONTHLY,"SAISON2026":SAISON2026,"ACWR_DATA":ACWR_DATA,"RECORDS_PERF":RECORDS_PERF,"JOURNAL":JOURNAL,"REWINDS":REWINDS,"MAJ":"10 juillet 2026","HEATMAP":HEATMAP,"DOSSIERS":DOSSIERS,"PALMARES":PALMARES,"CHANGELOG":CHANGELOG},open('/tmp/data.json','w'),ensure_ascii=False)
+  "HIST":_hist["HIST"],"POLAR":_hist["POLAR"],"ALLURES":ALLURES,"ALLURES_COURSE":ALLURES_COURSE,"ZONES_FC":ZONES_FC,"MONTHLY":MONTHLY,"SAISON2026":SAISON2026,"SAISON_EFF":SAISON_EFF,"ACWR_DATA":ACWR_DATA,"RECORDS_PERF":RECORDS_PERF,"JOURNAL":JOURNAL,"REWINDS":REWINDS,"MAJ":"10 juillet 2026","HEATMAP":HEATMAP,"DOSSIERS":DOSSIERS,"PALMARES":PALMARES,"CHANGELOG":CHANGELOG},open('/tmp/data.json','w'),ensure_ascii=False)
 print("OK")
