@@ -2499,6 +2499,8 @@ function renderCockpit(){
   const _f=computeFormeScore();
   const _fcol=_f.color||'#0d9488';
   const _ftrend=_f.trend||'→';
+  const _now=new Date();
+  const _hh=String(_now.getHours()).padStart(2,'0'),_mm=String(_now.getMinutes()).padStart(2,'0');
   el.innerHTML=`
 <div style="padding:var(--sp-3) var(--sp-3) var(--sp-10)">
 <div class="lt-title" style="margin-bottom:2px">Cockpit</div>
@@ -2506,8 +2508,9 @@ function renderCockpit(){
 <div class="ck-hero" role="button" tabindex="0" onclick="openCkHelp('forme')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openCkHelp('forme');}">
   <div class="ck-hero-l">
     <div class="ck-hero-lbl">Forme du jour</div>
-    <div class="ck-hero-val" style="color:${_fcol}">${_f.score}<span class="ck-hero-tr">${_ftrend}</span></div>
+    <div class="ck-hero-val"><span class="ck-hero-num" id="ck-hero-num" style="color:${_fcol}">${_f.score}</span><span class="ck-hero-tr">${_ftrend}</span></div>
     <div class="ck-hero-sig">${_f.signal||''}</div>
+    <div class="ck-hero-fresh"><span class="ck-fresh-dot"></span>Recalculé aujourd\u2019hui à ${_hh}:${_mm}</div>
   </div>
 </div>
 ${(function(){const v=_estimVO2();if(!v)return '';return `<div class="vo2-card">

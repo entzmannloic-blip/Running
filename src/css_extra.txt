@@ -1216,3 +1216,10 @@ body,.accueil{background:#f2f2f7}
 .heat-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,#fbbf24,#ea580c);transition:width .8s cubic-bezier(.16,1,.3,1)}
 .heat-count{font-size:11px;color:var(--texte-trois);font-weight:600;margin-bottom:8px}
 .heat-msg{font-size:12.5px;color:var(--texte-deux);line-height:1.5}
+/* ===== Forme du jour : preuve de fraîcheur (horodatage + replay) ===== */
+.ck-hero-num{display:inline-block;animation:ckHeroPop .5s cubic-bezier(.34,1.56,.64,1)}
+@keyframes ckHeroPop{0%{opacity:0;transform:scale(.85) translateY(4px)}100%{opacity:1;transform:scale(1) translateY(0)}}
+.ck-hero-fresh{display:flex;align-items:center;gap:6px;font-size:10.5px;color:var(--texte-trois);margin-top:8px;font-weight:600}
+.ck-fresh-dot{width:6px;height:6px;border-radius:50%;background:#4ade80;flex:0 0 auto;animation:ckFreshPulse 2.2s ease-in-out infinite}
+@keyframes ckFreshPulse{0%,100%{opacity:.5;transform:scale(1)}50%{opacity:1;transform:scale(1.25)}}
+@media (prefers-reduced-motion:reduce){.ck-hero-num{animation:none}.ck-fresh-dot{animation:none;opacity:1}}
