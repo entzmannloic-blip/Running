@@ -107,9 +107,11 @@ function prochaineSeance(){
 /* ===== Recalcul dynamique des KPI depuis les séances réelles (à chaque chargement) ===== */
 function _weekNumFromKey(k){var m=String(k).match(/(\d+)/);return m?+m[1]:0;}
 function _reFromSeance(s){
-  // 1) RE réel parsé du commentaire ("RE 106")
+  // 1) champ structuré (fiable, ajouté à chaque log)
+  if(s.realise&&typeof s.realise.re==='number')return s.realise.re;
+  // 2) repli : RE réel parsé du commentaire ("RE 106") — anciennes séances non structurées
   if(s.realise&&s.realise.commentaire){var m=s.realise.commentaire.match(/RE\s+(\d+)/);if(m)return +m[1];}
-  // 2) sinon estimation depuis km + type
+  // 3) sinon estimation depuis km + type
   if(!s.realise||!s.realise.km)return 0;
   var km=s.realise.km,t=(s.type||'').toLowerCase();
   var coef=8;
@@ -147,9 +149,15 @@ function _ckRebuild(){
       var r=s.realise;
       if(r&&(r.statut==='fait'||r.statut==='partiel')&&r.km){
         hasReal=true;km+=r.km;re+=_reFromSeance(s);
-        var dm=r.commentaire&&r.commentaire.match(/D\+\s*(\d+)/);if(dm)dplus+=+dm[1];
+        // D+ : champ structuré en priorité, sinon repli regex sur le commentaire
+        var dp=(typeof r.elevation_gain==='number')?r.elevation_gain:null;
+        if(dp===null){var dm=r.commentaire&&r.commentaire.match(/D\+\s*(\d+)/);if(dm)dp=+dm[1];}
+        if(dp!==null)dplus+=dp;
         if(r.fc_moy){fcSum+=r.fc_moy;fcN++;}
-        var cm=r.commentaire&&r.commentaire.match(/cadence\s+(\d+)/);if(cm){var _cv=+cm[1];if(_cv<120)_cv*=2;cadSum+=_cv;cadN++;}
+        // Cadence : champ structuré en priorité, sinon repli regex
+        var cv=(typeof r.cadence==='number')?r.cadence:null;
+        if(cv===null){var cm=r.commentaire&&r.commentaire.match(/cadence\s+(\d+)/);if(cm)cv=+cm[1];}
+        if(cv!==null){if(cv<120)cv*=2;cadSum+=cv;cadN++;}
         if(r.allure){var pm=r.allure.match(/(\d+):(\d+)/);if(pm){paceSum+=(+pm[1])*60+(+pm[2]);paceN++;}}
       }
     });
@@ -185,6 +193,32 @@ function _ckRebuild(){
     ACWR_DATA.acwr=acwrByWeek[lastW];
     ACWR_DATA.charge7j=agg[lastW].re;
     var s28=realWeeks.slice(-4);ACWR_DATA.charge28j=s28.reduce(function(a,w){return a+agg[w].re;},0);
+  }
+  // Reconstruire RUNS (liste "Analyse par sortie") depuis les vraies séances loggées — jamais figé.
+  if(_CK.RUNS){
+    var oldStreams=_CK.STREAMS||{};
+    var allRuns=[];
+    var joursFR=['dim.','lun.','mar.','mer.','jeu.','ven.','sam.'];
+    var moisFR=['janv.','fév.','mars','avr.','mai','juin','juil.','août','sept.','oct.','nov.','déc.'];
+    weeks.forEach(function(wn){
+      var arr=SEANCES_BY_WEEK[String(wn)]||SEANCES_BY_WEEK[wn]||[];
+      arr.forEach(function(s){
+        var r=s.realise;
+        if(!r||(r.statut!=='fait'&&r.statut!=='partiel')||!r.km||!s.date)return;
+        var dt=new Date(s.date+'T12:00:00');
+        var dateStr=isNaN(dt)?s.date:(joursFR[dt.getDay()]+' '+dt.getDate()+' '+moisFR[dt.getMonth()]);
+        var accent=(s.accent)||'#0d9488';
+        var rid=r.activity_id||('w'+wn+'s'+s.id);
+        allRuns.push({id:rid,title:s.titre||s.type,date:dateStr,_sortDate:s.date,type:accent,
+          km:r.km,al:r.allure?(r.allure.match(/(\d+:\d+)/)||[,r.allure])[1]:'—',
+          re:_reFromSeance(s),fcm:r.fc_moy||null,fcx:r.fc_max||null,
+          cad:(typeof r.cadence==='number')?r.cadence:null,
+          dp:(typeof r.elevation_gain==='number')?r.elevation_gain:null,
+          cal:r.calories||null,hasStreams:!!oldStreams[rid]});
+      });
+    });
+    allRuns.sort(function(a,b){return a._sortDate<b._sortDate?1:-1;});
+    _CK.RUNS=allRuns.slice(0,12);
   }
 }
 
@@ -2344,8 +2378,18 @@ function _ckSummary(){
     else pts.push({t:'ok',x:`Charge maîtrisée (ACWR ${acwr.toFixed(2)})`});
     pts.push({t:forme.score>=80?'ok':forme.score>=65?'info':'warn',x:`Forme ${forme.score}/100${forme.signal?' · '+forme.signal:''}`});
     try{
-      const z2=_CK&&_CK.Z2&&_CK.Z2[8]&&_CK.Z2[8].v?_CK.Z2[8].v.filter(x=>x!=null):[];
-      if(z2.length>=2){const d=z2[z2.length-1]-z2[0];if(d<-2)pts.push({t:'ok',x:'Allure Z2 en progression — le moteur aérobie grossit'});else if(d>4)pts.push({t:'info',x:'Allure Z2 en léger recul — normal en récup/chaleur'});}
+      if(typeof _effSessions==='function'){
+        var _sess=_effSessions();
+        var _byw={};_sess.forEach(function(s){(_byw[s.wk]=_byw[s.wk]||[]).push((1000/s.pace)/s.fc);});
+        var _wks=Object.keys(_byw).map(Number).sort(function(a,b){return a-b;});
+        if(_wks.length>=2){
+          var _avg=function(arr){return arr.reduce(function(a,b){return a+b;},0)/arr.length;};
+          var _first=_avg(_byw[_wks[0]]),_last=_avg(_byw[_wks[_wks.length-1]]);
+          var _delta=(_last/_first-1)*100;
+          if(_delta>2)pts.push({t:'ok',x:'Efficience aérobie en progression — le moteur grossit'});
+          else if(_delta<-3)pts.push({t:'info',x:'Efficience en léger recul — normal en récup/chaleur non corrigée'});
+        }
+      }
     }catch(e){}
     return pts.slice(0,3);
   }catch(e){return [];}
