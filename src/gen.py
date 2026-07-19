@@ -1043,6 +1043,12 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":121,"date":"19 juillet 2026","sha":"","tag":"Fix cache : le Service Worker gardait une ancienne version en memoire","items":[
+    "Meme apres suppression + reinstallation de l'app, iOS Safari conserve le Service Worker et son cache tant que les donnees du site ne sont pas videes manuellement -- ce qui bloquait la mise a jour",
+    "Cache du Service Worker invalide de force (nouvelle version) : purge complete de l'ancien cache a la prochaine ouverture",
+    "Le fetch reseau ignore desormais aussi le cache HTTP du navigateur (no-store), pas seulement le cache du Service Worker",
+    "Si le probleme persiste : ouvrir le site dans Safari normal (pas l'icone), recharger, puis rouvrir l'app installee"
+  ]},
   {"build":120,"date":"19 juillet 2026","sha":"","tag":"Fix : cadre trompeur dans le detail de sortie (repere par Loic)","items":[
     "Ouvrir une seance sans streams (la plupart des seances recentes) affichait un texte de dev ambigu (\"Streams disponibles en prod via Strava\") qui ressemblait a un CTA casse",
     "Corrige : message honnete (\"Graphique detaille non disponible\") ; la legende FC/Allure/Altitude et le texte \"glisse sur le graphe\" sont desormais masques quand il n'y a pas de graphe",
