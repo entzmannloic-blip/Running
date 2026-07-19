@@ -2278,8 +2278,11 @@ function _ckOpenRun(i){
   const el=document.getElementById('ck-modal');if(!el)return;
   el.querySelector('#ck-m-title').textContent=r.title;
   el.querySelector('#ck-m-sub').textContent=r.date+' · '+r.km+' km · '+r.al+'/km';
-  el.querySelector('#ck-m-metrics').innerHTML=[['Distance',r.km+' km'],['Allure',r.al+'/km'],['Effort',r.re],['FC moy',r.fcm+' bpm'],['FC max',r.fcx+' bpm'],['Cadence',r.cad+' spm'],['D+',r.dp+' m'],['Calories',r.cal]].map(m=>`<div style="background:var(--gris-fond);border-radius:9px;padding:8px;text-align:center"><div style="font-size:14px;font-weight:700;color:var(--texte)">${m[1]}</div><div style="font-size:8.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--texte-deux);margin-top:4px">${m[0]}</div></div>`).join('');
+  el.querySelector('#ck-m-metrics').innerHTML=[['Distance',r.km+' km'],['Allure',r.al+'/km'],['Effort',r.re],['FC moy',r.fcm?r.fcm+' bpm':'—'],['FC max',r.fcx?r.fcx+' bpm':'—'],['Cadence',r.cad?r.cad+' spm':'—'],['D+',(typeof r.dp==='number')?r.dp+' m':'—'],['Calories',r.cal||'—']].map(m=>`<div style="background:var(--gris-fond);border-radius:9px;padding:8px;text-align:center"><div style="font-size:14px;font-weight:700;color:var(--texte)">${m[1]}</div><div style="font-size:8.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--texte-deux);margin-top:4px">${m[0]}</div></div>`).join('');
   el.style.display='flex';
+  const legendEl=el.querySelector('#ck-m-legend'),captionEl=el.querySelector('#ck-m-caption');
+  if(legendEl)legendEl.style.display=r.hasStreams?'flex':'none';
+  if(captionEl)captionEl.style.display=r.hasStreams?'block':'none';
   if(r.hasStreams){
     const H=140,n=st.km.length,xs=st.km.map(d=>10+d/st.km[n-1]*(280));
     const hrMn=Math.min(...st.hr)-5,hrMx=Math.max(...st.hr)+5;
@@ -2318,7 +2321,7 @@ function _ckOpenRun(i){
     wrap.onmouseleave=()=>{wrap.onmousemove=null;endM();};
   } else {
     const svg=el.querySelector('#ck-m-svg');svg.setAttribute('viewBox','0 0 300 140');
-    svg.innerHTML='<text x="150" y="70" text-anchor="middle" fill="#94a3b8" font-size="12">Streams disponibles en prod via Strava</text>';
+    svg.innerHTML='<text x="150" y="62" text-anchor="middle" fill="#94a3b8" font-size="11.5">Graphique détaillé non disponible</text><text x="150" y="82" text-anchor="middle" fill="#cbd5e1" font-size="10">pour cette sortie — les chiffres ci-dessus sont fiables</text>';
   }
 }
 function _ckRenderAll(win){
@@ -2658,8 +2661,8 @@ ${card('ckDP','⛰ Dénivelé D+','',null,'m',75,'','dp')}
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:12px" id="ck-m-metrics"></div>
       <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--texte-deux);margin-bottom:6px">FC · Allure · Altitude</div>
       <div style="position:relative;touch-action:none" id="ck-m-wrap"><svg id="ck-m-svg" height="140" style="display:block;width:100%"></svg><div class="ck-tt" id="ck-m-tt"></div></div>
-      <div style="display:flex;gap:12px;font-size:10px;color:var(--texte-deux);margin-top:6px"><span><span style="color:#ef4444">●</span> FC</span><span><span style="color:#0d9488">●</span> Allure</span><span><span style="color:#94a3b8">●</span> Altitude</span></div>
-      <div style="font-size:9px;color:#94a3b8;text-align:center;margin-top:4px;font-style:italic">glisse sur le graphe seconde par seconde</div>
+      <div style="display:flex;gap:12px;font-size:10px;color:var(--texte-deux);margin-top:6px" id="ck-m-legend"><span><span style="color:#ef4444">●</span> FC</span><span><span style="color:#0d9488">●</span> Allure</span><span><span style="color:#94a3b8">●</span> Altitude</span></div>
+      <div style="font-size:9px;color:#94a3b8;text-align:center;margin-top:4px;font-style:italic" id="ck-m-caption">glisse sur le graphe seconde par seconde</div>
     </div>
   </div>
 </div>`;
