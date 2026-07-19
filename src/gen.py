@@ -641,6 +641,57 @@ for n,ss in WEEKS.items():
         arr[3]["benefices"]="Récupération active post-ultra-distance : circulation, sans coût additionnel pour les fibres déjà sollicitées."
         arr[3]["coach"]=[{"titre":"La vraie séance de la semaine, c’était jeudi","texte":"Ne cherche pas à « rattraper » du volume ici. Le 40 km a déjà rempli très largement le quota de la semaine."}]
         arr[3]["vigilance"]="Douleur inhabituelle, gonflement, ou fatigue anormalement persistante → repos complet et on réévalue ensemble."
+        arr[0]["titre"]="Footing de récupération"
+        arr[0]["type"]="Récupération active"
+        arr[0]["sport"]="Course à pied"
+        arr[0]["accent"]=GREEN
+        arr[0]["fill"]=25
+        arr[0]["cat"]="ef"
+        arr[0]["date"]="2026-07-20"
+        arr[0]["chaussure"]="Gel Pulse 16"
+        arr[0]["sous"]="Très facile, 30-40 min. Récupération du seuil de dimanche — ou repos complet si les jambes sont lourdes."
+        arr[0]["metriques"]={"Distance":"~6-7 km","Durée":"30-40 min","Allure":"Très facile","FC":"Zone 1","RPE":"2-3","Type":"Récupération"}
+        arr[0]["objectif"]="Faire circuler après le beau seuil de dimanche. Optionnel : gainage/dos pour préparer les lombaires aux 4h de jeudi. Aucune intensité."
+        arr[0]["struct"]=[{"nom":"Corps","txt":"6-7 km à allure de conversation. Si fatigue résiduelle du seuil, remplace par du repos — sans culpabilité."}]
+        arr[0]["legende"]=[{"c":GREEN,"l":"Très facile"}]
+        arr[0]["benefices"]="Récupération active : circulation sanguine, assimilation du seuil, sans coût pour la fraîcheur de jeudi."
+        arr[0]["coach"]=[{"titre":"On pense déjà à jeudi","texte":"Toute la semaine est organisée autour du 40 km. Dès aujourd'hui, on protège la fraîcheur — rien de dur avant l'ultra."}]
+        arr[0]["vigilance"]="Si les jambes sont encore marquées par le seuil, le repos complet est le bon choix."
+        arr[1]["titre"]="Footing facile + lignes droites"
+        arr[1]["type"]="EF + technique"
+        arr[1]["sport"]="Course à pied"
+        arr[1]["accent"]=EF_COLOR
+        arr[1]["fill"]=40
+        arr[1]["cat"]="ef"
+        arr[1]["date"]="2026-07-21"
+        arr[1]["chaussure"]="Novablast 5 J"
+        arr[1]["sous"]="45 min très cool + 5-6 lignes droites en fin. La seule touche de rythme de la semaine — entretien, pas de fatigue."
+        arr[1]["metriques"]={"Distance":"~8 km","Durée":"~45 min","Allure":"EF + 5-6 LD","FC":"Zone 1-2","RPE":"3-4","Type":"EF technique"}
+        arr[1]["objectif"]="Garder le pied vif sans fatiguer avant le 40 km. Les lignes droites (80-100 m en accélération progressive, récup marche) réveillent le système neuromusculaire pour un coût énergétique quasi nul."
+        arr[1]["struct"]=[
+          {"nom":"Corps","txt":"40 min d'EF très facile, allure de conversation."},
+          {"nom":"Lignes droites","txt":"5-6 × 80-100 m en accélération progressive (jamais sprint maximal), récup marche complète entre chaque. On cherche l'aisance, pas la vitesse pure."}]
+        arr[1]["legende"]=[{"c":EF_COLOR,"l":"EF"},{"c":BLUE,"l":"Lignes droites"}]
+        arr[1]["benefices"]="Entretien neuromusculaire et économie de course, sans entamer la fraîcheur — exactement ce qu'il faut 2 jours avant un long effort."
+        arr[1]["coach"]=[{"titre":"Pourquoi pas de seuil cette semaine","texte":"Tu as fait un seuil superbe dimanche (4:24-4:31/km) : ton système seuil a eu sa dose. En remettre lourd avant le 40 km serait contre-productif. Une seule qualité légère suffit."}]
+        arr[1]["vigilance"]="Les lignes droites restent des accélérations progressives contrôlées, jamais des sprints — on ne veut aucune fatigue résiduelle."
+        arr[2]["titre"]="Repos complet"
+        arr[2]["type"]="Repos"
+        arr[2]["sport"]="Repos"
+        arr[2]["accent"]=VIOLET
+        arr[2]["fill"]=0
+        arr[2]["cat"]="repos"
+        arr[2]["opt"]=True
+        arr[2]["date"]="2026-07-22"
+        arr[2]["chaussure"]=None
+        arr[2]["sous"]="Repos complet la veille du 40 km. Fraîcheur maximale pour profiter de l'ultra."
+        arr[2]["metriques"]={"Distance":"—","Durée":"—","Allure":"—","FC":"—","RPE":"0","Type":"Repos"}
+        arr[2]["objectif"]="Arriver frais au 40 km de jeudi. On retire les côtes prévues — du travail de force la veille d'un ultra plaisir serait une erreur. Hydrate-toi bien et prépare ta logistique nutrition."
+        arr[2]["struct"]=[{"nom":"Repos","txt":"Rien de couru. Prépare gels, électrolytes et points de ravito pour demain. Couche-toi tôt."}]
+        arr[2]["legende"]=[{"c":VIOLET,"l":"Repos"}]
+        arr[2]["benefices"]="Fraîcheur maximale et pleins de glycogène avant le plus gros effort de la saison."
+        arr[2]["coach"]=[{"titre":"La veille d'un ultra, on ne construit plus","texte":"Rien de ce que tu ferais aujourd'hui ne te rendrait plus fort jeudi — mais beaucoup de choses pourraient te fatiguer. Le repos est la meilleure séance possible ici."}]
+        arr[2]["vigilance"]="Évite les journées debout épuisantes ; préserve tes jambes pour demain."
 
 META=[
 (24,'reprise','Récupération',28,'Légère','—',"Absorber La Circaète : repos actif, footings très faciles, mobilité du dos."),
@@ -649,7 +700,7 @@ META=[
 (27,'general','Semaine course — Déraille',45,'Course','—',"Affûtage court (3 footings) + Trail Déraille au Lac des Sapins le 5 juillet. Objectif C, plaisir & test nutrition. (21 km allégés + 24 km course.)"),
 (28,'general','Récupération post-Déraille',36,'Récup','100 % facile · récupération active',"Semaine de récupération après le Trail Déraille — footings très faciles, zéro intensité. Le bloc seuil est décalé à S30 pour laisser les jambes assimiler le D+ et la chaleur. La récup n'est pas du temps perdu : c'est là que les adaptations se construisent."),
 (29,'general','Seuil découverte',62,'Soutenue','≈ 80 % facile · 20 % qualité',"Reprise progressive après la semaine de récup : premier vrai contact avec le seuil (2 blocs courts) + longue qui reprend du volume avec finish AM."),
-(30,'general','Seuil + ViaRhôna entre amis',88,'Soutenue','≈ 75 % facile · 25 % qualité',"Seuil 3 blocs + projet ViaRhôna 40 km plaisir jeudi (remplace la longue du dimanche, qui devient récup légère)."),
+(30,'general','Semaine ViaRhôna',72,'Soutenue','≈ 92 % facile · 8 % rythme léger',"Semaine organisée autour du projet ViaRhôna 40 km (jeudi). Une seule touche de rythme (lignes droites mardi), repos la veille, récup après. Seuil et côtes retirés : le 40 km EST la charge de la semaine."),
 (31,'general','Test 10 km + recalibrage',70,'Soutenue','≈ 82 % facile · test',"Benchmark 10 km pour recaler les allures avant le bloc spécifique."),
 (32,'seuil','Seuil long',78,'Élevée','≈ 80 % facile · 20 % qualité',"Seuil long (2×15 min) + longue 26 km dont 8 AM. 2ᵉ mobilité ajoutée."),
 (33,'seuil','Allègement',64,'Légère','≈ 85 % facile · 15 % qualité',"Récupération avant le pic pré-USA."),
@@ -981,6 +1032,12 @@ JOURNAL=[{"sem":"S24","theme":"Récupération post-Circaète","texte":S24_REALIS
 {"sem":"S26","theme":"Allègement + prépa Déraille","texte":_S26_REVUE},{"sem":"S27","theme":"Semaine course — Trail Déraille","texte":_S27_REVUE}]
 HEATMAP={"2026-01-03": 10.1, "2026-01-05": 11.2, "2026-01-06": 13.0, "2026-01-10": 21.6, "2026-01-12": 10.0, "2026-01-13": 11.3, "2026-01-14": 11.0, "2026-01-15": 14.1, "2026-01-16": 4.0, "2026-01-17": 11.1, "2026-01-20": 11.0, "2026-01-21": 21.1, "2026-01-22": 10.0, "2026-01-23": 3.5, "2026-01-26": 10.3, "2026-01-27": 11.5, "2026-01-28": 10.0, "2026-01-29": 18.2, "2026-01-31": 11.0, "2026-02-02": 14.0, "2026-02-03": 21.2, "2026-02-05": 8.9, "2026-02-06": 11.1, "2026-02-07": 12.1, "2026-02-08": 4.2, "2026-02-09": 20.4, "2026-02-10": 10.2, "2026-02-11": 11.8, "2026-02-16": 10.2, "2026-02-17": 20.0, "2026-02-18": 10.0, "2026-02-20": 10.6, "2026-02-21": 10.0, "2026-02-22": 11.8, "2026-02-23": 10.1, "2026-02-24": 2.5, "2026-02-25": 10.0, "2026-02-26": 12.5, "2026-02-27": 5.0, "2026-03-01": 4.4, "2026-03-02": 11.3, "2026-03-03": 18.0, "2026-03-04": 20.4, "2026-03-05": 17.1, "2026-03-07": 21.2, "2026-03-09": 17.0, "2026-03-10": 16.0, "2026-03-11": 10.0, "2026-03-12": 17.2, "2026-03-15": 4.2, "2026-03-16": 18.1, "2026-03-17": 13.0, "2026-03-18": 14.2, "2026-03-19": 21.2, "2026-03-20": 10.5, "2026-03-23": 13.0, "2026-03-24": 30.1, "2026-03-26": 15.0, "2026-03-27": 10.0, "2026-03-29": 15.0, "2026-03-30": 12.0, "2026-03-31": 13.0, "2026-04-01": 10.0, "2026-04-03": 14.3, "2026-04-04": 21.2, "2026-04-06": 18.6, "2026-04-07": 15.0, "2026-04-09": 24.7, "2026-04-10": 12.0, "2026-04-13": 18.0, "2026-04-14": 14.5, "2026-04-15": 15.1, "2026-04-16": 11.0, "2026-04-18": 30.1, "2026-04-19": 3.8, "2026-04-20": 13.0, "2026-04-21": 17.0, "2026-04-22": 16.0, "2026-04-24": 10.3, "2026-04-26": 4.0, "2026-04-27": 10.7, "2026-04-30": 3.6, "2026-05-01": 42.4, "2026-05-04": 13.0, "2026-05-06": 10.5, "2026-05-08": 11.1, "2026-05-09": 11.1, "2026-05-16": 8.4, "2026-05-18": 17.0, "2026-05-20": 10.0, "2026-05-21": 21.2, "2026-05-22": 22.2, "2026-05-27": 4.6, "2026-05-28": 4.0, "2026-05-29": 16.6, "2026-05-31": 10.0, "2026-06-01": 14.0, "2026-06-02": 12.0, "2026-06-06": 29.8, "2026-06-09": 16.0, "2026-06-10": 10.3, "2026-06-12": 10.0}
 CHANGELOG=[
+  {"build":117,"date":"19 juillet 2026","sha":"","tag":"S30 restructuree autour du 40 km (approche coach)","items":[
+    "Semaine reorganisee autour du projet ViaRhona 40 km (jeudi) comme evenement central : une seule touche de rythme, fraicheur protegee",
+    "Seuil et cotes RETIRES (le seuil de dimanche a deja rempli le quota qualite) : lundi recup, mardi EF + lignes droites, mercredi repos complet",
+    "Volume ajuste de 88 a 72 km : c'est la densite d'intensite qu'on reduit, pas le volume (le 40 km s'en charge)",
+    "Chaque fiche detaille le pourquoi coach : proteger la fraicheur avant l'ultra et la recuperation apres"
+  ]},
   {"build":116,"date":"19 juillet 2026","sha":"","tag":"S29 : seuil 30 exceptionnel + revue de semaine","items":[
     "Seance seuil loggee (dimanche, en derniere seance de la semaine) : 2x8 min a 4:24 et 4:31/km, FC ~175, 10 records de segments, Novablast 5 J (-> 609 km)",
     "Blocs courus 10-15 s/km PLUS RAPIDE que la cible de 4:40, ressenti excellent — confirme la progression de la carte saisonniere",
