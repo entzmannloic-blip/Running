@@ -1043,6 +1043,11 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":119,"date":"19 juillet 2026","sha":"","tag":"Fix : le mot Canicule etait trompeur (repere par Loic)","items":[
+    "La banniere disait Canicule des 3 jours prevus a plus de 28\u00b0C, alors que le badge Demain de la meme fonction utilise deja 33\u00b0C comme seuil canicule -- incoherence interne",
+    "Corrige : Canicule reserve aux vrais jours a plus de 33\u00b0C ; un nouveau palier honnete Chaleur (25-33\u00b0C) couvre les jours simplement chauds",
+    "Le mot Canicule ne s'affiche plus que quand c'en est vraiment une"
+  ]},
   {"build":118,"date":"19 juillet 2026","sha":"","tag":"Fix majeur : 3 vues du Cockpit desormais TOUJOURS a jour","items":[
     "Diagnostic : Annee&trophees (heatmap), Analyse du coach (historique) et Analyse par sortie affichaient des donnees figees depuis mi-juin, deconnectees des seances loggees",
     "19 seances retroactivement enrichies avec champs structures (re, cadence, D+) - fondation fiable pour tous les calculs futurs",

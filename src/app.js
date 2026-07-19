@@ -566,10 +566,15 @@ function _meteoPaint(d){
       '</span>'+
     '</div>'+demainHtml+chipHtml;
   if(d.hourly_today||d.hourly_tomorrow)window._wxHourly={today:d.hourly_today||[],tomorrow:d.hourly_tomorrow||[]};
-  // Feature 3 — bannière canicule auto
+  // Feature 3 — bannière chaleur auto (seuils alignés sur le badge "Demain" ci-dessus : >33°C = canicule, >28°C = chaud)
   const canDays=d.canicule_days||0;
+  const warmDays=d.warm_days||0;
   const canEl=document.getElementById('canicule-banner');
-  if(canEl){if(canDays>=3){canEl.innerHTML=`<span>☀️ <strong>Canicule</strong> · ${canDays}j chauds prévus</span>`;canEl.style.display='flex';}else{canEl.style.display='none';}}
+  if(canEl){
+    if(canDays>=2){canEl.innerHTML=`<span>⚠️ <strong>Canicule</strong> · ${canDays}j à plus de 33°C prévus</span>`;canEl.className='canicule-banner canicule-fort';canEl.style.display='flex';}
+    else if(warmDays>=3){canEl.innerHTML=`<span>🌡️ <strong>Chaleur</strong> · ${warmDays}j chauds prévus (25-33°C)</span>`;canEl.className='canicule-banner canicule-doux';canEl.style.display='flex';}
+    else{canEl.style.display='none';}
+  }
   const depEl=document.getElementById('vdj-depart');
   if(depEl){
     const T=Math.round(d.tomorrow_max!==undefined?d.tomorrow_max:d.temp);
@@ -604,9 +609,9 @@ async function renderMeteo(){
       });
     }
     const tMax=hTomorrow.length?Math.max(...hTomorrow.map(x=>x[1])):undefined;
-    let caniculeDays=0;
-    if(j.daily&&j.daily.temperature_2m_max){j.daily.temperature_2m_max.forEach(t=>{if(t>28)caniculeDays++;});}
-    const d={ts:Date.now(),temp:j.current.temperature_2m,app:j.current.apparent_temperature,wind:j.current.wind_speed_10m,code:j.current.weather_code,precip:j.current.precipitation||0,rain,tomorrow_max:tMax,hourly_today:hToday,hourly_tomorrow:hTomorrow,canicule_days:caniculeDays};
+    let caniculeDays=0,warmDays=0;
+    if(j.daily&&j.daily.temperature_2m_max){j.daily.temperature_2m_max.forEach(t=>{if(t>33)caniculeDays++;else if(t>25)warmDays++;});}
+    const d={ts:Date.now(),temp:j.current.temperature_2m,app:j.current.apparent_temperature,wind:j.current.wind_speed_10m,code:j.current.weather_code,precip:j.current.precipitation||0,rain,tomorrow_max:tMax,hourly_today:hToday,hourly_tomorrow:hTomorrow,canicule_days:caniculeDays,warm_days:warmDays};
     localStorage.setItem('meteo_cache',JSON.stringify(d));
     _meteoPaint(d);
   }catch(e){
