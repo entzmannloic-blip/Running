@@ -648,6 +648,10 @@ for n,ss in WEEKS.items():
         arr[0]["fill"]=25
         arr[0]["cat"]="ef"
         arr[0]["date"]="2026-07-20"
+        arr[0]["chaussure"]="HOKA Clifton 10"
+        arr[0]["realise"]={"statut":"fait","km":14.03,"temps":"1h21","allure":"5:48/km","fc_moy":139,"fc_max":154,"re":78,"cadence":175,"elevation_gain":35,"rpe_ressenti":4,"commentaire":"Sortie de récup lundi (rallongée à 14 km car passage chez sa copine pour rapporter le portable) · départ 9h58 · météo nettement plus fraîche que les jours précédents, ressenti sans commune mesure avec la canicule. Objectif piloté au CARDIO (<140 bpm) plutôt qu'à l'allure : FC moyenne 139 (max 154) — objectif atteint. Allure 5:48/km qui en découle, régulière. km 1-3 à FC 128-138 puis stabilisation 137-145, dérive quasi nulle sur 1h20. Cadence 175 spm. RE 78, 6 records de segments, D+ 35m. Fatigue légère en début, vite dissipée, aucune douleur. Clifton 10 (fin de vie).",
+        "pr":6,"ach":6,"pr_detail":[],
+        "revue":"<strong>Exactement la sortie qu'il fallait — et un cas d'école de pilotage au cardio.</strong> Tu voulais du facile après le seuil d'hier, tu as tenu FC 139 de moyenne (sous ta barre des 140), et tu as parfaitement raison : l'allure de 5:48/km n'est que la <em>conséquence</em> de ce cardio maîtrisé, pas un objectif en soi. Par temps plus frais, la même FC produit une allure plus rapide qu'en canicule — c'est la preuve en direct de tout ce qu'on a construit ces dernières semaines.<br><br><strong>La dérive cardiaque quasi nulle</strong> (128-138 en début → 137-145 en croisière, sans envolée sur 1h20) confirme une aisance aérobie réelle : ton corps tient cette intensité sans coût croissant. Le lendemain d'un seuil, c'est un excellent signal de fraîcheur.<br><br><strong>Sortie longue ou pas ?</strong> Ta question est juste. À 14 km / 1h20, c'est une <em>grosse sortie facile</em> plutôt qu'une vraie sortie longue au sens de l'entraînement (qui viserait 1h45-2h+ avec une intention spécifique). Disons : une belle séance d'endurance fondamentale, un cran au-dessus d'un footing de récup classique. Ce n'est pas grave qu'elle soit un peu plus longue que prévu — l'intensité est restée basse, donc le coût est celui d'une récup, pas d'une charge.<br><br><strong>Le seul bémol, mineur :</strong> une récup post-seuil idéale se serait arrêtée vers 8-10 km. Les 14 km ne posent aucun problème vu la FC très basse, mais garde en tête que <strong>jeudi c'est 40 km</strong> — d'ici là, priorité absolue à la fraîcheur. Ta séance de demain (mardi) : vraiment courte et facile, et surtout ne rallonge pas. Mercredi repos, comme prévu. <strong>Tu es dans les clous, le corps répond bien, et tu arrives vers le ViaRhôna exactement comme il faut.</strong>"}
         arr[0]["chaussure"]="Gel Pulse 16"
         arr[0]["sous"]="Très facile, 30-40 min. Récupération du seuil de dimanche — ou repos complet si les jambes sont lourdes."
         arr[0]["metriques"]={"Distance":"~6-7 km","Durée":"30-40 min","Allure":"Très facile","FC":"Zone 1","RPE":"2-3","Type":"Récupération"}
@@ -752,7 +756,7 @@ PHASES=[
 ]
 COUL={p["id"]:p["c"] for p in PHASES}
 GEAR=[
-  {"marque":"HOKA","modele":"Clifton 10","km":1134},
+  {"marque":"HOKA","modele":"Clifton 10","km":1148},
   {"marque":"ASICS","modele":"Novablast 5 J","km":609},
   {"marque":"ASICS","modele":"Novablast 5 V","km":0},
   {"marque":"ASICS","modele":"Gel Pulse 16","km":225},
@@ -1043,6 +1047,12 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":122,"date":"20 juillet 2026","sha":"","tag":"S30 : sortie de recup lundi loggee (pilotee cardio)","items":[
+    "Recup lundi loggee : 14,03 km a 5:48/km, FC 139/154 (objectif <140 bpm atteint), rallongee car passage chez sa copine (Clifton 10 -> 1148 km)",
+    "Cas d ecole de pilotage au cardio : par temps plus frais, la meme FC produit une allure plus rapide -- l allure n est que la consequence du cardio maitrise",
+    "Derive cardiaque quasi nulle sur 1h20 : bonne fraicheur le lendemain du seuil",
+    "Rappel coach : jeudi = 40 km ViaRhona, priorite absolue a la fraicheur d ici la (mardi court et facile, mercredi repos)"
+  ]},
   {"build":121,"date":"19 juillet 2026","sha":"","tag":"Fix cache : le Service Worker gardait une ancienne version en memoire","items":[
     "Meme apres suppression + reinstallation de l'app, iOS Safari conserve le Service Worker et son cache tant que les donnees du site ne sont pas videes manuellement -- ce qui bloquait la mise a jour",
     "Cache du Service Worker invalide de force (nouvelle version) : purge complete de l'ancien cache a la prochaine ouverture",
