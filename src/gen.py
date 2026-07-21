@@ -661,24 +661,28 @@ for n,ss in WEEKS.items():
         arr[0]["benefices"]="Récupération active : circulation sanguine, assimilation du seuil, sans coût pour la fraîcheur de jeudi."
         arr[0]["coach"]=[{"titre":"On pense déjà à jeudi","texte":"Toute la semaine est organisée autour du 40 km. Dès aujourd'hui, on protège la fraîcheur — rien de dur avant l'ultra."}]
         arr[0]["vigilance"]="Si les jambes sont encore marquées par le seuil, le repos complet est le bon choix."
-        arr[1]["titre"]="Footing facile + lignes droites"
-        arr[1]["type"]="EF + technique"
+        arr[1]["titre"]="Séance de vitesse — 8×30 sec VMA"
+        arr[1]["type"]="VMA / vitesse"
         arr[1]["sport"]="Course à pied"
-        arr[1]["accent"]=EF_COLOR
-        arr[1]["fill"]=40
-        arr[1]["cat"]="ef"
+        arr[1]["accent"]=RED
+        arr[1]["fill"]=70
+        arr[1]["cat"]="seuil"
         arr[1]["date"]="2026-07-21"
-        arr[1]["chaussure"]="Novablast 5 J"
-        arr[1]["sous"]="45 min très cool + 5-6 lignes droites en fin. La seule touche de rythme de la semaine — entretien, pas de fatigue."
-        arr[1]["metriques"]={"Distance":"~8 km","Durée":"~45 min","Allure":"EF + 5-6 LD","FC":"Zone 1-2","RPE":"3-4","Type":"EF technique"}
-        arr[1]["objectif"]="Garder le pied vif sans fatiguer avant le 40 km. Les lignes droites (80-100 m en accélération progressive, récup marche) réveillent le système neuromusculaire pour un coût énergétique quasi nul."
+        arr[1]["chaussure"]="ASICS Magic Speed 4"
+        arr[1]["sous"]="Séance de vitesse choisie par envie (hors logique de la semaine ViaRhôna). 8×30 sec en accélération progressive, récup 1'30."
+        arr[1]["metriques"]={"Distance":"7,5 km","Durée":"36:49","Allure":"blocs 4:10 → 3:16/km","FC":"159 moy / 182 max","RPE":"7","Type":"VMA courte"}
+        arr[1]["objectif"]="Stimulus de vitesse pure demandé par Loïc malgré le 40 km de jeudi. Structure 8×30 sec récup 1'30 pour travailler le neuromusculaire. Réalisée en negative split spontané, avec des récups plus actives que prévu."
         arr[1]["struct"]=[
-          {"nom":"Corps","txt":"40 min d'EF très facile, allure de conversation."},
-          {"nom":"Lignes droites","txt":"5-6 × 80-100 m en accélération progressive (jamais sprint maximal), récup marche complète entre chaque. On cherche l'aisance, pas la vitesse pure."}]
-        arr[1]["legende"]=[{"c":EF_COLOR,"l":"EF"},{"c":BLUE,"l":"Lignes droites"}]
-        arr[1]["benefices"]="Entretien neuromusculaire et économie de course, sans entamer la fraîcheur — exactement ce qu'il faut 2 jours avant un long effort."
-        arr[1]["coach"]=[{"titre":"Pourquoi pas de seuil cette semaine","texte":"Tu as fait un seuil superbe dimanche (4:24-4:31/km) : ton système seuil a eu sa dose. En remettre lourd avant le 40 km serait contre-productif. Une seule qualité légère suffit."}]
-        arr[1]["vigilance"]="Les lignes droites restent des accélérations progressives contrôlées, jamais des sprints — on ne veut aucune fatigue résiduelle."
+          {"nom":"Échauffement","txt":"20 min / 3,98 km à 5:02/km, FC montant progressivement de 136 à 162."},
+          {"nom":"8×30 sec","txt":"Intervalles à 4:10, 4:12, 4:11, 4:09, 4:05, 3:44, 3:41 puis 3:16/km — progression pyramidale, pointe finale à 3:16/km. FC de 160 à 182."},
+          {"nom":"Récupérations","txt":"1'30 entre chaque, mais faites actives (~5:00/km, FC restée 160-163) — trop rapides pour une vraie récup neuromusculaire."}]
+        arr[1]["legende"]=[{"c":RED,"l":"Intervalles VMA"},{"c":EF_COLOR,"l":"Échauffement / récup"}]
+        arr[1]["benefices"]="Vitesse pure, recrutement des fibres rapides, pointe à 3:16/km (la plus rapide de la saison sur ce format). Bon ressenti, aucune douleur."
+        arr[1]["coach"]=[{"titre":"Belle séance, mais attention à la fraîcheur","texte":"Progression pyramidale spontanée exemplaire (4:10 → 3:16/km). Point de vigilance : récups trop actives (FC jamais redescendue sous 160), la séance a viré VMA+tempo, plus dure que prévu. Surtout : c'est ta 2e qualité de la semaine avant le 40 km. Mercredi repos ABSOLU, et surveille la fraîcheur jeudi au réveil."}]
+        arr[1]["vigilance"]="Deuxième séance de qualité avant le ViaRhôna : repos complet mercredi impératif, et le 40 km de jeudi devient une sortie à l'écoute si les jambes sont lourdes."
+        arr[1]["realise"]={"statut":"fait","km":7.50,"temps":"36:49","allure":"blocs 4:10 → 3:16/km","fc_moy":159,"fc_max":182,"re":93,"cadence":173,"elevation_gain":35,"rpe_ressenti":7,"commentaire":"Séance de vitesse choisie par envie malgré la semaine ViaRhôna · départ 10h17 · Magic Speed 4 · 7,50 km, 8 records. Échauffement 20 min/3,98 km à 5:02/km (rapide, FC 136→162). Puis 8×30 sec récup 1'30 : intervalles à 4:10, 4:12, 4:11, 4:09, 4:05, 3:44, 3:41 puis 3:16/km — progression pyramidale en negative split, pointe finale à 3:16/km (la plus rapide de la saison). FC des intervalles montant de 160 à 175-182. Récups faites ACTIVES (~5:00/km, FC restée 160-163, trop rapides pour une vraie récup neuromusculaire) car Loïc avait la caisse. Séance qui vire donc VMA+tempo. Excellent ressenti, aucune douleur.",
+        "pr":8,"ach":8,"pr_detail":["Pointe finale à 3:16/km"],
+        "revue":"<strong>Une très belle séance de vitesse — avec un negative split spontané qui en dit long sur ta forme.</strong> Tu as géré exactement comme il faut quand on découvre sa forme du jour : prudent au début (4:10/km), puis tu montes crescendo jusqu'à une <strong>pointe finale à 3:16/km</strong>, ta plus rapide de la saison sur ce format. Ça confirme le potentiel vitesse de ton profil, et le ressenti excellent + zéro douleur, c'est tout bon.<br><br><strong>Le point de vigilance, que tu as toi-même identifié :</strong> tes récups trop actives. À ~5:00/km avec la FC restée à 160-163, ton cœur n'est jamais vraiment redescendu entre les efforts — il monte même de 160 à 182 sur les derniers. Résultat : ta séance a glissé d'une <em>VMA pure</em> vers un mélange <em>tempo + VMA</em>, plus exigeant métaboliquement. Ce n'est pas un défaut, mais c'est à savoir : sur une vraie VMA, les récups doivent te laisser redescendre sous 140 pour que chaque sprint reparte frais et travaille la vitesse pure. Là, tu as fait plus dur.<br><br><strong>Le vrai enjeu maintenant :</strong> c'est ta <strong>2e séance de qualité de la semaine</strong> (après le seuil de dimanche), dans une semaine qui devait en protéger une seule pour préserver le 40 km. Tu le savais, tu as assumé — ton droit. Mais du coup : <strong>mercredi repos ABSOLU, non négociable</strong>, et jeudi tu surveilles ta fraîcheur au réveil. Si les jambes sont lourdes, le ViaRhôna devient une sortie à l'écoute, sans hésiter à raccourcir ou ralentir. Bon choix de chaussure au passage — la Magic Speed 4, c'est exactement son terrain."}
         arr[2]["titre"]="Repos complet"
         arr[2]["type"]="Repos"
         arr[2]["sport"]="Repos"
@@ -761,7 +765,7 @@ GEAR=[
   {"marque":"ASICS","modele":"Novablast 5 V","km":0},
   {"marque":"ASICS","modele":"Gel Pulse 16","km":225},
   {"marque":"Brooks","modele":"Cascadia 19","km":241},
-  {"marque":"ASICS","modele":"Magic Speed 4","km":58},
+  {"marque":"ASICS","modele":"Magic Speed 4","km":66},
 ]
 RACES=[{"nom":"Marathon de Nice","date":"2026-11-08","dossier":"nice"},{"nom":"SaintExpress","date":"2026-11-28","dossier":"saintexpress"}]
 
@@ -1047,6 +1051,12 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":123,"date":"21 juillet 2026","sha":"","tag":"S30 : seance 2 transformee en qualite VMA (choix de Loic)","items":[
+    "La seance 2 (initialement EF + lignes droites) devient une vraie seance de qualite : 8x30 sec VMA choisie par envie malgre la semaine ViaRhona",
+    "Loggee : 7,5 km, FC 159/182, 8 records, negative split spontane des intervalles (4:10 -> pointe finale a 3:16/km, la plus rapide de la saison), Magic Speed 4 (-> 66 km)",
+    "Revue coach : belle seance et beau potentiel vitesse, mais recups trop actives (FC jamais sous 160, vire VMA+tempo) et surtout 2e qualite de la semaine",
+    "Rappel : mercredi repos ABSOLU, et jeudi 40 km a l ecoute de la fraicheur au reveil"
+  ]},
   {"build":122,"date":"20 juillet 2026","sha":"","tag":"S30 : sortie de recup lundi loggee (pilotee cardio)","items":[
     "Recup lundi loggee : 14,03 km a 5:48/km, FC 139/154 (objectif <140 bpm atteint), rallongee car passage chez sa copine (Clifton 10 -> 1148 km)",
     "Cas d ecole de pilotage au cardio : par temps plus frais, la meme FC produit une allure plus rapide -- l allure n est que la consequence du cardio maitrise",
