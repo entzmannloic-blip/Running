@@ -1051,6 +1051,12 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":126,"date":"22 juillet 2026","sha":"","tag":"Decouplage : ajout du bloc dans la fiche de seance","items":[
+    "L indicateur etait uniquement dans le Cockpit (oubli signale par Loic) : il apparait desormais aussi dans la fiche de chaque seance eligible",
+    "Bloc complet dans la fiche : valeur, verdict, jauge avec repere attendu, les deux moities de sortie et la derive brute",
+    "Le point d aide ? est accessible directement depuis la fiche",
+    "Le bloc ne s affiche que sur les seances eligibles avec un KPI valide - invisible ailleurs (verifie sur la seance VMA du 21/7)"
+  ]},
   {"build":125,"date":"22 juillet 2026","sha":"","tag":"Nouvel indicateur : decouplage cardiaque","items":[
     "Nouvelle carte Cockpit : mesure si ta sortie t a coute plus cher a la fin qu au debut (rapport allure/FC degrade entre le debut et la fin)",
     "Jauge avec ton curseur ET le repere attendu, contextualise par la duree et la temperature : c est ta position par rapport a l attendu qui fait le verdict, pas la valeur brute",

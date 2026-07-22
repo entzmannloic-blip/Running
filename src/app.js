@@ -2967,6 +2967,32 @@ function initQuickLog(){
 </div>
 <div id="ql-toast" class="ql-toast">Séance enregistrée ✓</div>`);
 }
+function _decoupBloc(r){
+  // Decouplage cardiaque dans la fiche de seance (calcule au log, jamais recalcule ici).
+  var d=r&&r.decouplage;
+  if(!d||d.qualite!=='fiable'||typeof d.pct!=='number')return '';
+  var v=(typeof _decoupVerdict==='function')?_decoupVerdict(d):{t:'',c:'#0d9488',f:'#f0fdfa'};
+  var num=function(n){return n.toFixed(1).replace('.',',');};
+  var MAXG=14;
+  var posC=Math.max(0,Math.min(100,d.pct/MAXG*100)),posA=Math.max(0,Math.min(100,d.attendu/MAXG*100));
+  var sens=d.pct<d.attendu
+    ? 'Tu es <strong>en dessous de l\'attendu</strong> \u2014 tu as bien tenu ton effort.'
+    : 'Tu es <strong>au-dessus de l\'attendu</strong> \u2014 la fin de sortie t\'a co\u00fbt\u00e9 plus cher.';
+  return '<div class="dcb">'+
+    '<div class="dcb-top"><span class="dcb-t">\ud83d\udcc9 D\u00e9couplage cardiaque '+
+      '<button class="vo2-help" onclick="event.stopPropagation();openCkHelp(\'decoup\')" aria-label="Comment lire le d\u00e9couplage ?">?</button></span>'+
+      '<span class="dcb-chip" style="color:'+v.c+';background:'+v.f+'">'+v.t+'</span></div>'+
+    '<div class="dcb-row"><span class="dcb-val" style="color:'+v.c+'">'+num(d.pct)+' %</span>'+
+      '<span class="dcb-att">attendu ~'+d.attendu+' % \u00b7 '+d.fen_min+' min analys\u00e9es \u00b7 '+d.temp+' \u00b0C</span></div>'+
+    '<div class="dc-gauge" style="height:26px;margin:8px 0 2px"><div class="dc-bar" style="top:8px"></div>'+
+      '<div class="dc-exp" style="top:3px;height:16px;left:calc('+posA+'% - 1px)"></div>'+
+      '<div class="dc-cursor" style="top:1px;height:20px;left:calc('+posC+'% - 2px)"></div></div>'+
+    '<div class="dc-scale" style="margin-bottom:8px"><span>0 %</span><span style="left:21.43%">3</span><span style="left:42.86%">6</span><span style="left:64.29%">9</span><span>14 %</span></div>'+
+    '<div class="dcb-halves"><span>'+d.p1+' \u00b7 '+d.fc1+' bpm</span><span class="dcb-arrow">\u2192</span>'+
+      '<span>'+d.p2+' \u00b7 '+d.fc2+' bpm</span><span class="dcb-bpm">'+(d.bpm>0?'+':'')+num(d.bpm)+' bpm</span></div>'+
+    '<div class="dcb-note">'+sens+' Le d\u00e9couplage compare le co\u00fbt cardiaque de ton allure entre la premi\u00e8re et la seconde moiti\u00e9 de la sortie.</div>'+
+  '</div>';
+}
 function _fcAjusteeBloc(r){
   // Indicateur "FC ajustée température" : dérive cardiaque thermique ≈ +1 bpm par °C au-dessus de 15°C (plafonné à 15 bpm).
   if(!r||!r.fc_moy||!r.temp||r.temp<=20)return '';
@@ -2982,7 +3008,7 @@ function realiseBloc(num,se){const r=se.realise||{statut:'a_faire'};
   const p=se.metriques;
   const prevu=`<div class="rvp-l"><span>Distance</span><span>${p.Distance||'—'}</span></div><div class="rvp-l"><span>Durée</span><span>${p['Durée']||p['Durée totale']||'—'}</span></div><div class="rvp-l"><span>Allure</span><span>${p.Allure||'—'}</span></div><div class="rvp-l"><span>FC</span><span>${p.FC||'—'}</span></div><div class="rvp-l"><span>RPE</span><span>${p.RPE||'—'}</span></div>`;
   const reb=`<div class="rvp-l"><span>Distance</span><span>${r.km?r.km+' km':'—'}</span></div><div class="rvp-l"><span>Temps</span><span>${r.temps||'—'}</span></div><div class="rvp-l"><span>Allure</span><span>${r.allure||'—'}</span></div><div class="rvp-l"><span>FC moy/max</span><span>${r.fc_moy?r.fc_moy+(r.fc_max?'/'+r.fc_max:''):'—'}</span></div><div class="rvp-l"><span>RPE ressenti</span><span>${r.rpe_ressenti||'—'}</span></div>`;
-  return `<div class="sd-section">Réalisé vs prévu — ${stChip(r.statut)}</div><div class="rvp"><div class="rvp-col"><h5>Prévu</h5>${prevu}</div><div class="rvp-col"><h5>Réalisé</h5>${reb}</div></div>${_fcAjusteeBloc(r)}${prCelebration(r)}${coachDebrief(num,se)}${r.commentaire?`<div class="comm-user">« ${r.commentaire} »</div>`:''}<div class="sd-section">Revue du coach</div><div class="rev-coach">${r.revue||'—'}</div>${logForm(num,se)}`;
+  return `<div class="sd-section">Réalisé vs prévu — ${stChip(r.statut)}</div><div class="rvp"><div class="rvp-col"><h5>Prévu</h5>${prevu}</div><div class="rvp-col"><h5>Réalisé</h5>${reb}</div></div>${_fcAjusteeBloc(r)}${_decoupBloc(r)}${prCelebration(r)}${coachDebrief(num,se)}${r.commentaire?`<div class="comm-user">« ${r.commentaire} »</div>`:''}<div class="sd-section">Revue du coach</div><div class="rev-coach">${r.revue||'—'}</div>${logForm(num,se)}`;
 }
 /* ===== Coach IA — contenu pédagogique par type de séance (pourquoi / comment / théorie / lecture) ===== */
 const COACH_THEORY={
