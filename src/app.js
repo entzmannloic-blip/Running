@@ -2435,8 +2435,13 @@ function _effSessions(){
   Object.entries(SEANCES_BY_WEEK).forEach(([wk,ss])=>ss.forEach(s=>{
     const r=s.realise||{};
     if(r.statut!=='fait'||s.sport==='Trail')return;
+    // Exclure les séances de qualité : leur allure rapide n'a rien à voir avec l'aisance aérobie EF
+    const t=((s.type||'')+' '+(s.titre||'')).toLowerCase();
+    if(/seuil|vma|tempo|fractionn|intervalle|sp[ée]cifique|allure marathon|c[ôo]tes|vitesse|fartlek/.test(t))return;
     const pace=paceMin(r.allure),fc=r.fc_moy;
     if(!pace||!fc||fc>=162||!s.date)return;
+    // Garde-fou : une vraie séance EF ne descend pas sous ~4:45/km à FC<162 (sinon reliquat de qualité)
+    if(pace<4.75)return;
     out.push({wk:+wk,date:s.date,pace:pace,fc:fc,temp:r.temp||null});
   }));
   try{(S24R.runs||[]).forEach(run=>{

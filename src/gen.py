@@ -1051,6 +1051,12 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":124,"date":"21 juillet 2026","sha":"","tag":"Audit complet des indicateurs + fix efficience aerobie polluee","items":[
+    "Audit automatise des 14 indicateurs du Cockpit : tous alimentes par les vraies seances loggees, aucune erreur JS",
+    "BUG TROUVE ET CORRIGE : la carte Moteur aerobie integrait les seances de QUALITE (seuil dimanche a 4:31/km, VMA du jour a 3:16/km) dans le calcul de l allure a 145 bpm",
+    "Consequence : l efficience affichait 4:21/km, une valeur irrealiste qui n a rien a voir avec l aisance aerobie -- corrigee a 5:17/km",
+    "Double garde-fou ajoute : exclusion par type de seance (seuil/VMA/tempo/cotes/specifique) ET par allure trop rapide pour de l EF (<4:45/km)"
+  ]},
   {"build":123,"date":"21 juillet 2026","sha":"","tag":"S30 : seance 2 transformee en qualite VMA (choix de Loic)","items":[
     "La seance 2 (initialement EF + lignes droites) devient une vraie seance de qualite : 8x30 sec VMA choisie par envie malgre la semaine ViaRhona",
     "Loggee : 7,5 km, FC 159/182, 8 records, negative split spontane des intervalles (4:10 -> pointe finale a 3:16/km, la plus rapide de la saison), Magic Speed 4 (-> 66 km)",
