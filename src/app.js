@@ -2979,7 +2979,7 @@ function _decoupBloc(r){
     ? 'Tu es <strong>en dessous de l\'attendu</strong> \u2014 tu as bien tenu ton effort.'
     : 'Tu es <strong>au-dessus de l\'attendu</strong> \u2014 la fin de sortie t\'a co\u00fbt\u00e9 plus cher.';
   return '<div class="dcb">'+
-    '<div class="dcb-top"><span class="dcb-t">\ud83d\udcc9 D\u00e9couplage cardiaque '+
+    '<div class="dcb-top"><span class="dcb-t">📉 D\u00e9couplage cardiaque '+
       '<button class="vo2-help" onclick="event.stopPropagation();openCkHelp(\'decoup\')" aria-label="Comment lire le d\u00e9couplage ?">?</button></span>'+
       '<span class="dcb-chip" style="color:'+v.c+';background:'+v.f+'">'+v.t+'</span></div>'+
     '<div class="dcb-row"><span class="dcb-val" style="color:'+v.c+'">'+num(d.pct)+' %</span>'+

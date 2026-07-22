@@ -1051,6 +1051,11 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":127,"date":"22 juillet 2026","sha":"","tag":"Correctif : emoji echappe en dur (preflight L04)","items":[
+    "Le bloc decouplage de la fiche contenait un emoji ecrit en paire de substitution echappee au lieu du caractere litteral",
+    "Regle du preflight L04 respectee : emoji litteral uniquement",
+    "Note de rigueur : le build 126 a ete pousse alors que le preflight signalait cet echec - corrige immediatement"
+  ]},
   {"build":126,"date":"22 juillet 2026","sha":"","tag":"Decouplage : ajout du bloc dans la fiche de seance","items":[
     "L indicateur etait uniquement dans le Cockpit (oubli signale par Loic) : il apparait desormais aussi dans la fiche de chaque seance eligible",
     "Bloc complet dans la fiche : valeur, verdict, jauge avec repere attendu, les deux moities de sortie et la derive brute",
