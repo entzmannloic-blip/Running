@@ -57,7 +57,7 @@ function showTab(t){
     document.getElementById('vue-'+id).style.display=t===id?'block':'none';
     document.getElementById('tab-'+id).classList.toggle('actif',t===id);
   });
-  if(t==='cockpit'){renderCockpit();renderDash();setTimeout(()=>{if(typeof _vo2Reveal==='function')_vo2Reveal();if(typeof _effRender==='function')_effRender();if(typeof _heatRender==='function')_heatRender();if(typeof _saisonRender==='function')_saisonRender();},250);}
+  if(t==='cockpit'){renderCockpit();renderDash();setTimeout(()=>{if(typeof _vo2Reveal==='function')_vo2Reveal();if(typeof _effRender==='function')_effRender();if(typeof _heatRender==='function')_heatRender();if(typeof _saisonRender==='function')_saisonRender();if(typeof _decoupRender==='function')_decoupRender();},250);}
   if(t==='palmares')renderPalmares();
   if(t==='plan'&&!_planAutoJumped){
     _planAutoJumped=true;
@@ -1520,6 +1520,18 @@ function _replayRun(key){
 }
 function _replayClose(){if(_replayRAF)cancelAnimationFrame(_replayRAF);const ov=document.getElementById('replay-ov');if(!ov)return;ov.classList.remove('show');setTimeout(()=>ov.remove(),300);}
 const _CK_HELP={
+  decoup:{t:'D\u00e9couplage cardiaque',c:'#0d9488',body:`<p style="font-size:12px;color:var(--texte-trois)">Est-ce que ta sortie t'a co\u00fbt\u00e9 plus cher \u00e0 la fin qu'au d\u00e9but ?</p>
+    <p><strong>L'id\u00e9e en une image.</strong> Imagine un long trajet en voiture : au d\u00e9but tu consommes 5 L/100 km, \u00e0 la fin il t'en faut 6 pour rouler \u00e0 la <strong>m\u00eame vitesse</strong>. Le moteur fatigue. En course, ton <strong>allure</strong> c'est la vitesse produite, ta <strong>FC</strong> c'est ce que \u00e7a te co\u00fbte. Le d\u00e9couplage mesure de combien ce co\u00fbt a augment\u00e9 entre la premi\u00e8re et la seconde moiti\u00e9. Le nom vient de l\u00e0 : au d\u00e9part allure et cardio sont <em>coupl\u00e9s</em> ; quand la fatigue arrive, ils se <em>d\u00e9couplent</em>.</p>
+    <p><strong>Pourquoi pas juste les bpm ?</strong> Parce que les bpm seuls peuvent mentir : si tu ralentis beaucoup en fin de sortie, ta FC reste stable et tout semble parfait, alors que tu t'es d\u00e9grad\u00e9 \u2014 tu l'as juste masqu\u00e9 en levant le pied. Le d\u00e9couplage regarde les deux ensemble, donc impossible de tricher. Les bpm restent affich\u00e9s parce que c'est ce que tu lis sur ta montre, et quand les deux divergent, c'est justement l\u00e0 qu'est l'info.</p>
+    <p><strong>L'\u00e9chelle</strong> \u2014 calibr\u00e9e sur tes propres sorties, pas sur une table g\u00e9n\u00e9rique :<br>
+    <span style="color:#16a34a;font-weight:800">&lt; 3 %</span> footing ma\u00eetris\u00e9, tu es rest\u00e9 dans ta zone de confort<br>
+    <span style="color:#65a30d;font-weight:800">3-6 %</span> conforme, normal sur du long ou du chaud<br>
+    <span style="color:#b45309;font-weight:800">6-9 %</span> sous tension, tu as puis\u00e9 plus que pr\u00e9vu<br>
+    <span style="color:#b91c1c;font-weight:800">&gt; 9 %</span> s\u00e9ance subie : parti trop vite, trop chaud, ou pas assez frais</p>
+    <p><strong>Le trait gris sur la jauge, c'est l'attendu.</strong> Un m\u00eame chiffre ne vaut pas la m\u00eame chose selon les conditions : la tol\u00e9rance s'\u00e9largit d'environ 2 points au-del\u00e0 de 2 h, et de 2 points de plus au-dessus de 25 \u00b0C. <strong>Ce qui compte, c'est ta position par rapport \u00e0 ce rep\u00e8re</strong>, pas la valeur brute : 9 % sur 2h23 en canicule c'est bien tenu, 9 % sur un footing d'une heure au frais beaucoup moins.</p>
+    <p><strong>Comment c'est calcul\u00e9.</strong> \u00c0 partir des donn\u00e9es seconde par seconde de la sortie : on \u00e9carte les 3 premi\u00e8res minutes (mont\u00e9e cardiaque), on d\u00e9tecte et on retire les lignes droites ou acc\u00e9l\u00e9rations finales, on nettoie les arr\u00eats et les d\u00e9crochages du capteur, puis on trace la pente du rapport allure/FC sur toute la fen\u00eatre restante. Quatre contr\u00f4les automatiques valident ensuite le chiffre : stabilit\u00e9 au d\u00e9calage de la fen\u00eatre, concordance entre deux m\u00e9thodes de calcul, taux de points conserv\u00e9s, plausibilit\u00e9 physiologique. <strong>Si un seul \u00e9choue, aucun chiffre n'est affich\u00e9</strong> \u2014 mieux vaut se taire que raconter n'importe quoi.</p>
+    <p><strong>Sur quelles sorties ?</strong> Uniquement les footings et sorties longues sur route, d'au moins 40 minutes exploitables. Les s\u00e9ances de qualit\u00e9 (seuil, VMA, c\u00f4tes) et les trails sont exclus : leur allure varie par construction, le d\u00e9couplage n'y voudrait rien dire.</p>
+    <p><strong>Ce qu'il faut regarder.</strong> Une valeur isol\u00e9e est du bruit ; c'est la <strong>tendance</strong> qui est le signal. Voir ton d\u00e9couplage baisser \u00e0 conditions comparables, c'est la preuve chiffr\u00e9e que ton endurance progresse \u2014 bien plus fiable que l'allure brute, qui d\u00e9pend de la m\u00e9t\u00e9o et de la forme du jour.</p>`},
   saison:{t:'Progression par saison',c:'#0d9488',body:`<p>Cette carte compare ton <strong>efficience aérobie d'une saison à l'autre</strong> : l'allure que tu produis à un effort cardiaque de référence (145 bpm). Plus l'allure est rapide à FC égale, plus ton moteur est efficient.</p>
     <p><strong>Pourquoi la correction chaleur est cruciale :</strong> comparer les allures brutes entre l'hiver et l'été serait trompeur — la chaleur fait grimper ton cardio de ~1 bpm par °C au-dessus de 15°C. Sans correction, tes sorties estivales paraîtraient plus lentes alors qu'elles sont en réalité tes meilleures. Chaque point été est donc corrigé de sa dérive thermique via la température réelle de la séance.</p>
     <p><strong>Comment c'est calculé :</strong> pour chaque saison, on prend plusieurs footings EF sur route (trails et séances de qualité exclus), avec leur vraie FC issue de Strava, et on ramène l'allure à 145 bpm. La médiane par saison lisse les variations d'une sortie à l'autre.</p>
@@ -2569,6 +2581,69 @@ function _saisonRender(){
     <div class="sais-chart">${bars}</div>
     <div class="sais-note">À FC égale (145 bpm), tu cours ${gainSec} s/km plus vite qu'en février. L'été (🌡️) est corrigé de la chaleur — sans ça, il paraîtrait plus lent qu'il ne l'est.</div>`;
 }
+function _decoupRuns(){
+  // Sorties eligibles avec un KPI decouplage valide (calcule au log, jamais recalcule ici)
+  var out=[];
+  Object.keys(SEANCES_BY_WEEK).forEach(function(wk){
+    (SEANCES_BY_WEEK[wk]||[]).forEach(function(s){
+      var r=s.realise||{},d=r.decouplage;
+      if(!d||d.qualite!=='fiable'||typeof d.pct!=='number'||!s.date)return;
+      out.push({date:s.date,titre:s.titre||s.type,km:r.km,d:d});
+    });
+  });
+  return out.sort(function(a,b){return a.date<b.date?-1:1;});
+}
+function _decoupVerdict(d){
+  var ecart=d.pct-d.attendu;
+  if(d.pct<3)                return {t:"Footing ma\u00eetris\u00e9",c:"#16a34a",f:"#dcfce7"};
+  if(ecart<=-2)              return {t:"Bien tenu",c:"#16a34a",f:"#dcfce7"};
+  if(d.pct<6||ecart<=0)      return {t:"Conforme",c:"#65a30d",f:"#ecfccb"};
+  if(d.pct<9||ecart<=1.5)    return {t:"Sous tension",c:"#b45309",f:"#fef3c7"};
+  return {t:"S\u00e9ance subie",c:"#b91c1c",f:"#fee2e2"};
+}
+function _decoupRender(){
+  var el=document.getElementById('decoup-body');if(!el)return;
+  var runs=_decoupRuns();
+  var src=document.getElementById('decoup-src');
+  if(!runs.length){
+    if(src)src.textContent='';
+    el.innerHTML='<div class="eff-loading">Aucune sortie \u00e9ligible pour le moment. Le d\u00e9couplage se calcule sur les footings et sorties longues sur route.</div>';
+    return;
+  }
+  var MAXG=14;
+  var last=runs[runs.length-1],d=last.d,v=_decoupVerdict(d);
+  var fdate=function(iso){var M=['janv.','f\u00e9vr.','mars','avr.','mai','juin','juil.','ao\u00fbt','sept.','oct.','nov.','d\u00e9c.'];
+    var x=new Date(iso+'T12:00:00');return isNaN(x)?iso:(x.getDate()+' '+M[x.getMonth()]);};
+  var num=function(n){return n.toFixed(1).replace('.',',');};
+  if(src)src.innerHTML=fdate(last.date)+' \u00b7 '+last.km+' km<br>'+d.fen_min+' min analys\u00e9es';
+  var posC=Math.max(0,Math.min(100,d.pct/MAXG*100)),posA=Math.max(0,Math.min(100,d.attendu/MAXG*100));
+  var sousDessus=d.pct<d.attendu?'<strong style="color:'+v.c+'">tu es en dessous</strong>':'<strong style="color:'+v.c+'">tu es au-dessus</strong>';
+  var rows=runs.slice().reverse().slice(0,8).map(function(r){
+    var vv=_decoupVerdict(r.d);
+    return '<div class="dc-row"><div class="dc-dot" style="background:'+vv.c+'"></div>'+
+      '<div class="dc-main"><div class="dc-t">'+r.titre+'</div>'+
+      '<div class="dc-s">'+fdate(r.date)+' \u00b7 '+r.km+' km \u00b7 '+r.d.temp+' \u00b0C \u00b7 attendu ~'+r.d.attendu+' %</div></div>'+
+      '<div class="dc-track"><div class="dc-fill" style="width:'+Math.min(100,r.d.pct/MAXG*100)+'%;background:'+vv.c+'"></div></div>'+
+      '<div class="dc-v" style="color:'+vv.c+'">'+num(r.d.pct)+' %</div></div>';
+  }).join('');
+  el.innerHTML=
+    '<div class="dc-hero"><span class="dc-val" style="color:'+v.c+'">'+num(d.pct)+' %</span>'+
+      '<span class="dc-verdict" style="color:'+v.c+';background:'+v.f+'">'+v.t+'</span></div>'+
+    '<div class="dc-sub">Attendu ~'+d.attendu+' % vu la dur\u00e9e ('+d.fen_min+' min) et la temp\u00e9rature ('+d.temp+' \u00b0C) \u2014 '+sousDessus+'.</div>'+
+    '<div class="dc-gauge"><div class="dc-bar"></div>'+
+      '<div class="dc-exp" style="left:calc('+posA+'% - 1px)"></div>'+
+      '<div class="dc-cursor" style="left:calc('+posC+'% - 2px)"></div></div>'+
+    '<div class="dc-scale"><span>0 %</span><span style="left:21.43%">3</span><span style="left:42.86%">6</span><span style="left:64.29%">9</span><span>14 %</span></div>'+
+    '<div class="dc-split">'+
+      '<div class="dc-cell"><b>'+d.p1+' \u00b7 '+d.fc1+'</b><span>1re moiti\u00e9</span></div>'+
+      '<div class="dc-cell"><b>'+d.p2+' \u00b7 '+d.fc2+'</b><span>2e moiti\u00e9</span></div>'+
+      '<div class="dc-cell"><b>'+(d.bpm>0?'+':'')+num(d.bpm)+' bpm</b><span>d\u00e9rive FC</span></div>'+
+    '</div>'+
+    (runs.length>1?'<div class="dc-trend-h">Tes derni\u00e8res sorties \u00e9ligibles</div>'+rows:'')+
+    '<div class="dc-note">'+(runs.length>1
+      ? 'Une valeur isol\u00e9e est du bruit : <strong>c\'est la tendance qui compte</strong>. Voir ce chiffre baisser \u00e0 conditions comparables, c\'est la preuve que ton endurance progresse.'
+      : 'Une seule sortie \u00e9ligible pour l\'instant \u2014 la tendance se construira avec les prochaines.')+'</div>';
+}
 function renderCockpit(){
   const el=document.getElementById('cockpit-contenu');
   if(el.innerHTML.trim()){_ckRenderAll(_ckWin);return;}
@@ -2607,6 +2682,10 @@ ${(function(){const v=_estimVO2();if(!v)return '';return `<div class="vo2-card">
 <div class="eff-card" id="heat-card">
   <div class="vo2-top"><span class="vo2-lbl">Acclimatation chaleur <button class="vo2-help" onclick="openCkHelp('heat')" aria-label="Qu'est-ce que l'acclimatation chaleur ?">?</button></span><span class="vo2-src">expositions &gt;25°C · 21 derniers jours</span></div>
   <div class="eff-body" id="heat-body"><div class="eff-loading">⏳ Calcul de tes expositions à la chaleur…</div></div>
+</div>
+<div class="eff-card" id="decoup-card">
+  <div class="vo2-top"><span class="vo2-lbl">Découplage cardiaque <button class="vo2-help" onclick="openCkHelp('decoup')" aria-label="Comment lire le découplage ?">?</button></span><span class="vo2-src" id="decoup-src"></span></div>
+  <div class="eff-body" id="decoup-body"></div>
 </div>
 <div class="eff-card" id="saison-card">
   <div class="vo2-top"><span class="vo2-lbl">Progression par saison <button class="vo2-help" onclick="openCkHelp('saison')" aria-label="Comment lire la progression par saison ?">?</button></span><span class="vo2-src">allure à 145 bpm · corrigée chaleur</span></div>

@@ -1235,3 +1235,31 @@ body,.accueil{background:#f2f2f7}
 .sais-lbl{font-size:12px;font-weight:700;color:var(--texte);margin-top:8px}
 .sais-mois{font-size:10px;color:var(--texte-trois);font-weight:600}
 .sais-note{font-size:12px;color:var(--texte-deux);line-height:1.5;border-top:1px solid var(--gris-fond);padding-top:10px}
+/* ===== Découplage cardiaque ===== */
+.dc-hero{display:flex;align-items:baseline;gap:10px;margin:8px 0 2px;flex-wrap:wrap}
+.dc-val{font-size:34px;font-weight:900;letter-spacing:-.03em;line-height:1;font-variant-numeric:tabular-nums}
+.dc-verdict{font-size:12.5px;font-weight:800;padding:3px 9px;border-radius:7px}
+.dc-sub{font-size:12px;color:var(--texte-deux);line-height:1.5;margin-top:6px}
+.dc-gauge{position:relative;height:32px;margin:14px 0 4px}
+.dc-bar{position:absolute;top:10px;left:0;right:0;height:9px;border-radius:5px;background:linear-gradient(90deg,#16a34a 0%,#16a34a 21.43%,#84cc16 21.43%,#84cc16 42.86%,#f59e0b 42.86%,#f59e0b 64.29%,#ef4444 64.29%,#ef4444 100%)}
+.dc-cursor{position:absolute;top:2px;width:4px;height:25px;background:var(--texte);border-radius:2px;box-shadow:0 0 0 2.5px #fff;transition:left .8s cubic-bezier(.16,1,.3,1)}
+.dc-exp{position:absolute;top:5px;width:2px;height:19px;background:var(--texte-trois);opacity:.55;border-radius:1px}
+.dc-scale{position:relative;height:13px;font-size:9.5px;color:var(--texte-trois);font-weight:700;margin-top:2px}
+.dc-scale span{position:absolute;transform:translateX(-50%);white-space:nowrap}
+.dc-scale span:first-child{transform:none;left:0}
+.dc-scale span:last-child{transform:none;right:0;left:auto}
+.dc-split{display:flex;gap:7px;margin-top:12px}
+.dc-cell{flex:1;background:var(--gris-fond);border-radius:10px;padding:9px 6px;text-align:center;min-width:0}
+.dc-cell b{display:block;font-size:13px;font-weight:800;font-variant-numeric:tabular-nums;color:var(--texte)}
+.dc-cell span{font-size:8.5px;text-transform:uppercase;letter-spacing:.03em;color:var(--texte-trois);font-weight:700}
+.dc-trend-h{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--texte-trois);margin:16px 0 2px;border-top:1px solid var(--gris-clair);padding-top:12px}
+.dc-row{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--gris-fond)}
+.dc-row:last-of-type{border-bottom:none}
+.dc-dot{width:8px;height:8px;border-radius:50%;flex:0 0 8px}
+.dc-main{flex:1;min-width:0}
+.dc-t{font-size:12px;font-weight:700;color:var(--texte);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dc-s{font-size:9.5px;color:var(--texte-trois);margin-top:1px}
+.dc-track{width:64px;height:7px;background:var(--gris-clair);border-radius:4px;position:relative;overflow:hidden;flex:0 0 64px}
+.dc-fill{position:absolute;left:0;top:0;bottom:0;border-radius:4px;transition:width .7s cubic-bezier(.16,1,.3,1)}
+.dc-v{font-size:12.5px;font-weight:800;width:48px;text-align:right;font-variant-numeric:tabular-nums}
+.dc-note{font-size:11.5px;color:var(--texte-deux);line-height:1.5;border-top:1px solid var(--gris-clair);padding-top:10px;margin-top:12px}
