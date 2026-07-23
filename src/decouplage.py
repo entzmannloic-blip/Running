@@ -29,6 +29,15 @@ Filtres cumulatifs. Une seule condition non remplie => seance non eligible.
   c) Denivele < ~15 m/km.
   d) Streams FC + vitesse disponibles.
   e) Fenetre exploitable >= 40 min APRES nettoyage (voir etape 4).
+  f) Regime STABLE : pas de changement d'allure delibere en cours de sortie.
+     Verifie automatiquement (changement_allure_structurel) par detection de
+     point de rupture. Un ecart durable de plus de 30 s/km => la seance est
+     marquee "non_representatif" et AUCUN chiffre n'est stocke.
+     Cas reel : marathon ViaRhona du 23/07, 15 km seul a 5:36/km puis 23 km
+     avec un partenaire a 6:21/km. Phases isolees : +1,5 % et +8,4 %.
+     Ensemble : +16,9 %, soit "seance subie" alors que le ressenti etait
+     excellent et le finish a 5:15/km. Sans ce garde-fou, la tendance aurait
+     ete polluee par un artefact.
 
 --------------------------------------------------------------------------------
  ETAPE 2 — RECUPERATION
@@ -119,7 +128,7 @@ Strava MCP : get_activity_streams(activity_id, resolution=1000,
      "attendu": 6,         # seuil contextualise
      "p1": "5:52/km", "fc1": 138,   # 1re moitie
      "p2": "5:44/km", "fc2": 140,   # 2e moitie
-     "qualite": "fiable",  # fiable | incertain | non_calculable
+     "qualite": "fiable",  # fiable | incertain | non_calculable | non_representatif
      "algo": "decoup-v1"   # version — indispensable pour recalculer plus tard
   }
 
@@ -197,6 +206,48 @@ def detect_fin(pts, t_debut):
         if len(suite) >= 3 and sum(1 for p in suite if p[2] > seuil_rapide) >= 2:
             return t
     return tmax
+
+
+def changement_allure_structurel(pts, seuil_s_km=30):
+    """
+    Detecte un changement d'allure DELIBERE en cours de sortie (rejoindre un
+    partenaire plus lent, changement de terrain...), qui n'est pas de la fatigue.
+
+    Pourquoi c'est indispensable : le decouplage suppose un effort en regime
+    stable. Sur le marathon ViaRhona du 23/07, Loic a couru 15 km seul a
+    5:36/km puis 23 km avec Yannis a 6:21/km. Chaque phase prise isolement
+    donne +1,5 % et +8,4 % (coherent), mais les deux ensemble donnent +16,9 % :
+    l'indicateur lit le ralentissement social comme un effondrement.
+    Les 4 tests de validation ne l'attrapent pas : ils mesurent la STABILITE du
+    calcul, pas la VALIDITE de l'hypothese de regime stable.
+
+    Methode : detection de POINT DE RUPTURE. On teste chaque instant candidat
+    entre 20 % et 70 % de la fenetre, et on retient la plus grande difference
+    d'allure mediane avant/apres. Une decoupe en tiers fixes ne suffit pas :
+    sur le ViaRhona elle ne mesurait que 20 s/km au lieu des 45 reels, parce
+    que les tiers ne coincidaient pas avec le changement de rythme.
+    Le dernier tiers est exclu du balayage : un finish rapide est normal et
+    deja traite par detect_fin.
+    """
+    if len(pts) < 30:
+        return False, 0
+    t0, t1 = pts[0][0], pts[-1][0]
+    duree = t1 - t0
+    med = lambda L: sorted(L)[len(L) // 2]
+    pire = 0
+    for frac in [x / 20.0 for x in range(4, 15)]:      # 20 % a 70 %
+        tc = t0 + duree * frac
+        av = [p[2] for p in pts if t0 <= p[0] < tc]
+        ap = [p[2] for p in pts if tc <= p[0] <= t0 + duree * 0.85]
+        if len(av) < 10 or len(ap) < 10:
+            continue
+        v1, v2 = med(av), med(ap)
+        if v1 <= 0 or v2 <= 0:
+            continue
+        ecart = 1000 / v2 - 1000 / v1                 # s/km, positif = ralentissement
+        if abs(ecart) > abs(pire):
+            pire = ecart
+    return abs(pire) > seuil_s_km, round(pire)
 
 
 def decoup_regression(pts):
@@ -278,6 +329,15 @@ def analyse(streams, temp=None):
     if duree < DUREE_MIN:
         return {"qualite": "non_calculable",
                 "raison": "fenetre trop courte (%.0f min < %d)" % (duree, DUREE_MIN),
+                "algo": ALGO_VERSION}
+
+    # Garde-fou : changement d'allure delibere => hypothese de regime stable violee
+    change, ecart_s = changement_allure_structurel(fen)
+    if change:
+        return {"qualite": "non_representatif",
+                "raison": "changement d'allure delibere en cours de sortie (%+d s/km au point "
+                          "de rupture) : le decouplage suppose un effort en regime "
+                          "stable" % ecart_s,
                 "algo": ALGO_VERSION}
 
     d_reg = decoup_regression(fen)
