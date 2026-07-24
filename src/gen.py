@@ -1054,6 +1054,17 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":129,"date":"24 juillet 2026","sha":"","tag":"Forme du jour : refonte du modele (fatigue reelle, pas jours de repos)","items":[
+    "Signale par Loic : au lendemain du marathon de 42,5 km, le score affichait 87 avec Fraicheur 85 \u2014 exactement le meme score qu au lendemain d un footing de recuperation",
+    "Cause : la composante Fraicheur ne comptait que les JOURS depuis la derniere seance, sans jamais regarder ce qui avait ete fait",
+    "Corrige : la Fraicheur mesure desormais la FATIGUE RESIDUELLE via la charge sRPE de Foster (ton RPE x la duree), avec decroissance exponentielle sur 3,5 jours",
+    "Echelle auto-calibree sur ta propre mediane, comme le decouplage : 100% = ta fatigue habituelle. Aujourd hui 198%, soit le 98e percentile de ta saison",
+    "ACWR bascule sur une fenetre GLISSANTE 7/28 jours : avant, une semaine a peine commencee etait comparee a des semaines completes, d ou une chute artificielle chaque lundi",
+    "Adherence calculee au prorata : les seances a venir dans la semaine en cours ne penalisent plus",
+    "Nouvelles ponderations : Fraicheur 35% (avant 20), ACWR 25%, Adherence 20%, Efficience 20%",
+    "Resultat du jour : 67 au lieu de 87, avec le message Recuperation en cours - pas de qualite aujourd hui",
+    "Bulle d aide entierement reecrite : methode sRPE, sens de la mediane, fenetre glissante, et rappel que le score est un composite"
+  ]},
   {"build":128,"date":"23 juillet 2026","sha":"","tag":"MARATHON ViaRhona logge + garde-fou decouplage","items":[
     "42,52 km Vienne > Saint-Rambert-d Albon en 4h18 de mouvement : la plus grosse sortie de la saison (charge 367, pres du double de la precedente SL)",
     "15 km seul a 5:36/km FC 142, puis 23 km avec Yannis a 6:21/km, puis finish a 5:16 et 5:15/km sur les km 41-42 apres 40 km dans les jambes",

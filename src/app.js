@@ -223,27 +223,78 @@ function _ckRebuild(){
 }
 
 function _dynamicACWR(){
+  // ACWR sur FENETRE GLISSANTE 7 / 28 jours (definition standard).
+  // Avant : comparaison par semaine calendaire -> une semaine a peine commencee
+  // etait comparee a des semaines completes, d'ou un faux verdict "sous-charge"
+  // chaque debut de semaine, qui remontait mecaniquement le dimanche.
   const today=new Date();today.setHours(0,0,0,0);
-  const curWk=isoWeek(today);
-  const ckRe=typeof _CK!=='undefined'&&_CK.RE?_CK.RE[12]:null;
-  if(!ckRe||!ckRe.v||ckRe.v.length<2){
-    return typeof ACWR_DATA!=='undefined'?ACWR_DATA.acwr||1.0:1.0;
-  }
-  // RE estimé depuis séances loggées semaine courante
-  const RC={EF:7,AM:16,LONG:10,SEUIL:13,TRAIL:22,RENFO:4,default:8};
-  let curRE=0;
-  (SEANCES_BY_WEEK[curWk]||[]).forEach(s=>{
-    if(s.realise&&s.realise.statut==='fait'&&s.realise.km)curRE+=s.realise.km*(RC[s.cat]||RC.default);
+  const DAY=86400000;
+  let c7=0,c28=0;
+  Object.values(SEANCES_BY_WEEK).flat().forEach(function(s){
+    const r=s.realise;
+    if(!r||(r.statut!=='fait'&&r.statut!=='partiel')||!s.date)return;
+    const j=Math.round((today-new Date(s.date+'T00:00:00'))/DAY);
+    if(j<0)return;
+    const re=_reFromSeance(s);
+    if(j<=6)c7+=re;
+    if(j<=27)c28+=re;
   });
-  const series=[...ckRe.v];
-  const lastW=ckRe.w[ckRe.w.length-1];
-  if(curWk>lastW&&curRE>0)series.push(curRE);
-  else if(curWk===lastW&&curRE>series[series.length-1])series[series.length-1]=curRE;
-  // EMA CTL (42j) + ATL (7j) → ACWR = ATL/CTL
-  const aC=1-Math.exp(-7/42),aA=1-Math.exp(-7/7);
-  let ctl=series[0],atl=series[0];
-  series.forEach((v,i)=>{if(i>0){ctl=(1-aC)*ctl+aC*v;atl=(1-aA)*atl+aA*v;}});
-  return ctl>0?+((atl/ctl).toFixed(2)):1.0;
+  if(c28<=0)return typeof ACWR_DATA!=='undefined'?(ACWR_DATA.acwr||1.0):1.0;
+  return +((c7/(c28/4)).toFixed(2));
+}
+
+/* ===== Fatigue residuelle (charge sRPE de Foster) =====
+   Pourquoi : ni l'ACWR (volume) ni un simple comptage de jours de repos ne
+   voient ce qu'une seance a reellement coute. Au lendemain du marathon du
+   23/07 (42,5 km, RPE 7, 4h18) l'app affichait "Fraicheur 85 · 1 jour de
+   repos" : exactement le meme score qu'au lendemain d'un footing de recup.
+   La charge sRPE (RPE x duree) capte l'ecart : le marathon pese 1806 contre
+   258 pour la VMA du 21/07, soit 7 fois plus.
+   L'echelle est auto-calibree sur la mediane de l'historique reel, comme pour
+   le decouplage : aucun seuil generique importe de l'exterieur. */
+const _TAU_FATIGUE=3.5;   // jours - constante de decroissance de la fatigue aigue
+function _sessionMin(t){
+  if(!t)return null;
+  var m=/^(\d+)h(\d+)?:?(\d+)?$/.exec(String(t).trim());
+  if(m)return (+m[1])*60+(+(m[2]||0))+(+(m[3]||0))/60;
+  m=/^(\d+):(\d+)$/.exec(String(t).trim());
+  if(m)return (+m[1])+(+m[2])/60;
+  return null;
+}
+function _srpeSessions(){
+  var out=[];
+  Object.values(SEANCES_BY_WEEK).flat().forEach(function(s){
+    var r=s.realise;
+    if(!r||(r.statut!=='fait'&&r.statut!=='partiel')||!s.date)return;
+    var mn=_sessionMin(r.temps),rpe=r.rpe_ressenti,load=0;
+    if(mn&&rpe)load=rpe*mn; else load=_reFromSeance(s)*1.8;
+    if(load>0)out.push({d:new Date(s.date+'T00:00:00'),load:load});
+  });
+  return out.sort(function(a,b){return a.d-b.d;});
+}
+function _fatigueResiduelle(ref){
+  var sess=_srpeSessions();
+  if(!sess.length)return null;
+  var DAY=86400000;
+  var at=function(j){return sess.reduce(function(a,x){
+    var n=Math.round((j-x.d)/DAY);
+    return n>=0?a+x.load*Math.exp(-n/_TAU_FATIGUE):a;},0);};
+  var cur=at(ref),vals=[];
+  for(var t=sess[0].d.getTime();t<=ref.getTime();t+=DAY){
+    var v=at(new Date(t)); if(v>0)vals.push(v);
+  }
+  vals.sort(function(a,b){return a-b;});
+  var med=vals.length?vals[Math.floor(vals.length/2)]:cur;
+  return {cur:cur,med:med,ratio:med>0?cur/med:1,n:vals.length};
+}
+function _scoreFraicheur(ratio){
+  var pts=[[0.5,100],[1.0,65],[1.5,40],[2.5,12],[4.0,0]];
+  if(ratio<=pts[0][0])return 100;
+  for(var i=0;i<pts.length-1;i++){
+    var a=pts[i][0],sa=pts[i][1],b=pts[i+1][0],sb=pts[i+1][1];
+    if(ratio<=b)return Math.round(sa+(sb-sa)*(ratio-a)/(b-a));
+  }
+  return 0;
 }
 
 /* ===== Score de forme composite (Sprint A Roadmap) ===== */
@@ -285,19 +336,53 @@ function _estimVO2(){
 function computeFormeScore(){
   const today=new Date();today.setHours(0,0,0,0);
   const curWk=isoWeek(today);
-  // 1. ACWR (30%) — dynamique depuis _CK.RE + logs
-  let acwrScore=70,acwrVal=1.0,acwrLabel='—';
-  acwrVal=_dynamicACWR();
+  const DAY=86400000;
+
+  // 1. FRAICHEUR (35%) - fatigue residuelle sRPE, auto-calibree
+  let freshScore=75,freshLabel='—',fat=null;
+  try{fat=_fatigueResiduelle(today);}catch(e){}
+  if(fat&&fat.n>=10){
+    freshScore=_scoreFraicheur(fat.ratio);
+    const r=fat.ratio;
+    if(r<=0.6)freshLabel='Très frais';
+    else if(r<=0.9)freshLabel='Frais';
+    else if(r<=1.2)freshLabel='Fatigue dans ta normale';
+    else if(r<=1.8)freshLabel='Fatigue élevée · récup en cours';
+    else freshLabel='Fatigue très élevée · repos';
+    freshLabel+=' ('+Math.round(r*100)+'% de ta médiane)';
+  }else{
+    const ds=Object.values(SEANCES_BY_WEEK).flat().filter(s=>s.realise&&s.realise.statut==='fait'&&s.date).sort((a,b)=>b.date<a.date?-1:1);
+    if(ds.length){
+      const days=Math.round((today-new Date(ds[0].date+'T00:00:00'))/DAY);
+      if(days===0){freshScore=68;freshLabel='Couru aujourd\'hui';}
+      else if(days===1){freshScore=85;freshLabel='1 jour de repos';}
+      else if(days===2){freshScore=95;freshLabel='2 jours · frais';}
+      else if(days===3){freshScore=85;freshLabel='3 jours · prêt';}
+      else{freshScore=58;freshLabel=days+' jours sans courir';}
+    }
+  }
+
+  // 2. ACWR (25%) - fenetre glissante 7/28 j
+  let acwrScore=70,acwrVal=_dynamicACWR(),acwrLabel='—';
   if(acwrVal>=0.8&&acwrVal<=1.3){acwrScore=100;acwrLabel='Zone optimale ('+acwrVal+')';}
   else if(acwrVal>1.3&&acwrVal<=1.5){acwrScore=58;acwrLabel='⚠ Charge élevée ('+acwrVal+')';}
-  else if(acwrVal>1.5){acwrScore=22;acwrLabel='🔴 Surcharge ('+acwrVal+')';}
+  else if(acwrVal>1.5){acwrScore=22;acwrLabel='Surcharge ('+acwrVal+')';}
   else if(acwrVal>=0.7){acwrScore=72;acwrLabel='Légère sous-charge ('+acwrVal+')';}
   else{acwrScore=44;acwrLabel='Sous-charge ('+acwrVal+')';}
-  // 2. Adhérence 2 sem (25%)
+
+  // 3. ADHERENCE (20%) - au prorata : seules les seances deja echues comptent
   let totalP=0,totalF=0;
-  for(let w=curWk-1;w<=curWk;w++){const ss=SEANCES_BY_WEEK[w]||[];totalP+=ss.filter(s=>!s.opt).length;totalF+=ss.filter(s=>s.realise&&s.realise.statut==='fait').length;}
-  const adherScore=totalP>0?Math.min(100,Math.round(totalF/totalP*108)):75;
-  // 3. Z2 pace trend (25%)
+  for(let w=curWk-1;w<=curWk;w++){
+    (SEANCES_BY_WEEK[w]||[]).forEach(s=>{
+      if(s.opt)return;
+      if(s.date&&new Date(s.date+'T00:00:00')>today)return;
+      totalP++;
+      if(s.realise&&(s.realise.statut==='fait'||s.realise.statut==='partiel'))totalF++;
+    });
+  }
+  const adherScore=totalP>0?Math.min(100,Math.round(totalF/totalP*104)):75;
+
+  // 4. EFFICIENCE (20%)
   const efSess=[];
   Object.entries(SEANCES_BY_WEEK).forEach(([wk,ss])=>ss.forEach(s=>{
     if(s.realise&&s.realise.allure&&(s.cat==='EF'||(s.type||'').includes('EF'))){
@@ -316,32 +401,22 @@ function computeFormeScore(){
     else if(d>-15){z2Score=52;z2Label=Math.round(d)+'s/km ↓';}
     else{z2Score=32;z2Label=Math.round(d)+'s/km ↓↓';}
   }
-  // 4. Fraîcheur (20%)
-  let freshScore=75,freshLabel='—';
-  const doneSess=Object.values(SEANCES_BY_WEEK).flat().filter(s=>s.realise&&s.realise.statut==='fait'&&s.date).sort((a,b)=>b.date.localeCompare(a.date));
-  if(doneSess.length){
-    const days=Math.round((today-new Date(doneSess[0].date+'T00:00:00'))/86400000);
-    if(days===0){freshScore=68;freshLabel='Couru aujourd\'hui';}
-    else if(days===1){freshScore=85;freshLabel='1 jour de repos';}
-    else if(days===2){freshScore=95;freshLabel='2 jours · frais';}
-    else if(days===3){freshScore=85;freshLabel='3 jours · prêt';}
-    else{freshScore=58;freshLabel=days+' jours sans courir';}
-  }
-  const score=Math.round(acwrScore*.30+adherScore*.25+z2Score*.25+freshScore*.20);
+
+  const score=Math.round(freshScore*.35+acwrScore*.25+adherScore*.20+z2Score*.20);
   const color=score>=82?'#0d9488':score>=68?'#16a34a':score>=52?'#f59e0b':'#ef4444';
-  const trend=acwrVal<=1.3&&adherScore>=90?'↑':acwrVal>1.4?'↓':'→';
+  const trend=freshScore>=80&&acwrVal<=1.3?'↑':(freshScore<40||acwrVal>1.4?'↓':'→');
   let signal='';
-  if(acwrVal>1.4)signal='⚠️ Charge élevée · éviter les intensités';
-  else if(adherScore>=98)signal='Adhérence parfaite · plan bien tenu';
-  else if(z2Score>=88)signal='Z2 en progression · forme aérobie solide';
-  else if(freshScore>=90)signal='Bien reposé · prêt pour une qualité';
+  if(freshScore<25)signal='Fatigue importante · repos ou très facile uniquement';
+  else if(freshScore<45)signal='Récupération en cours · pas de qualité aujourd\'hui';
+  else if(acwrVal>1.4)signal='Charge élevée · éviter les intensités';
+  else if(freshScore>=90&&score>=82)signal='Bien reposé · prêt pour une qualité';
   else if(score>=82)signal='Forme au top · continue sur cette lancée';
   else signal='Paramètres équilibrés · maintenir le rythme';
   return{score,trend,color,signal,components:[
+    {label:'Fraîcheur',score:freshScore,detail:freshLabel},
     {label:'ACWR',score:acwrScore,detail:acwrLabel},
-    {label:'Adhérence',score:adherScore,detail:totalF+'/'+totalP+' séances (2 sem.)'},
-    {label:'Z2 pace',score:z2Score,detail:z2Label},
-    {label:'Fraîcheur',score:freshScore,detail:freshLabel}
+    {label:'Adhérence',score:adherScore,detail:totalF+'/'+totalP+' séances échues'},
+    {label:'Efficience',score:z2Score,detail:z2Label}
   ]};
 }
 
@@ -1779,11 +1854,12 @@ function initFormeHelp(){
     </div>
     <div class="fh-sec">Les 4 composantes</div>
     <div class="fh-comps">
-      <div class="fh-comp"><div class="fh-c-head">ACWR <span>30 %</span></div><div class="fh-c-txt">Ratio charge aiguë / charge chronique sur 4 semaines glissantes. Zone idéale : 0,8–1,3. En dessous = sous-entraîné. Au-dessus = surcharge, risque blessure.</div></div>
-      <div class="fh-comp"><div class="fh-c-head">Adhérence <span>25 %</span></div><div class="fh-c-txt">Pourcentage de séances réalisées vs planifiées sur les 2 dernières semaines, hors optionnelles. Reflète ta régularité.</div></div>
-      <div class="fh-comp"><div class="fh-c-head">Z2 pace <span>25 %</span></div><div class="fh-c-txt">Tendance de ton allure sur les footings faciles (EF). Si tu cours de plus en plus vite à même FC, ta forme aérobie progresse — et le score monte.</div></div>
-      <div class="fh-comp"><div class="fh-c-head">Fraîcheur <span>20 %</span></div><div class="fh-c-txt">Jours de repos depuis ta dernière séance. Optimal : 1–2 jours. 0 = couru aujourd'hui (neutre). 4+ jours sans courir = tu perds du fil.</div></div>
+      <div class="fh-comp"><div class="fh-c-head">Fraîcheur <span>35 %</span></div><div class="fh-c-txt">Ta <strong>fatigue résiduelle</strong> aujourd'hui. Chaque séance produit une charge égale à <strong>ton RPE ressenti multiplié par sa durée</strong> (méthode Foster), qui s'estompe progressivement les jours suivants : une séance dure pèse encore lourd à J+1, presque plus à J+7.<br><br>C'est la composante clé pour répondre à « est-ce que je peux forcer aujourd'hui ? ». Elle est comparée à <strong>ta propre médiane</strong> : 100 % = ta fatigue habituelle, 200 % = deux fois ta normale.<br><br><em>Avant, elle comptait seulement les jours de repos : au lendemain d'un marathon elle affichait le même score qu'au lendemain d'un footing. Le RPE corrige exactement ça.</em></div></div>
+      <div class="fh-comp"><div class="fh-c-head">ACWR <span>25 %</span></div><div class="fh-c-txt">Rapport entre ta charge des <strong>7 derniers jours</strong> et ta moyenne sur <strong>28 jours</strong>, en fenêtre glissante. Zone optimale entre 0,8 et 1,3 : tu progresses sans monter trop vite.<br><br><em>Avant, le calcul se faisait par semaine calendaire : une semaine à peine commencée était comparée à des semaines complètes, ce qui faisait chuter le score chaque lundi pour le faire remonter le dimanche.</em></div></div>
+      <div class="fh-comp"><div class="fh-c-head">Adhérence <span>20 %</span></div><div class="fh-c-txt">Part des séances réalisées sur les deux dernières semaines. Seules les séances <strong>déjà échues</strong> sont comptées — celles encore à venir dans la semaine en cours ne pénalisent pas.</div></div>
+      <div class="fh-comp"><div class="fh-c-head">Efficience <span>20 %</span></div><div class="fh-c-txt">Tendance de ton allure sur les footings faciles. Si tu cours plus vite à effort égal, ton moteur aérobie progresse.</div></div>
     </div>
+    <div class="fh-note">💡 Le score est un <strong>composite</strong> : il répond à « comment se passe mon entraînement », pas seulement à « suis-je fatigué ». Au lendemain d'une grosse sortie, l'ACWR et l'adhérence peuvent rester excellents alors que la fraîcheur s'effondre. <strong>Regarde toujours la composante Fraîcheur et le message du jour</strong> avant de décider d'une séance de qualité.</div>
     <div class="fh-note">💡 Tape directement sur la barre "Forme du jour" pour voir le détail de chaque composante avec tes valeurs du jour en temps réel.</div>
     <div class="fh-note" style="background:#f0fdf4;color:#15803d">🎯 L'objectif à long terme : maintenir le score au-dessus de 75 sur les semaines de charge, et au-dessus de 80 pendant les allègements. Le trend (↑ ↓ →) te dit si tu vas dans le bon sens.</div>
   </div>
