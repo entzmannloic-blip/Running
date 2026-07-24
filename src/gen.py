@@ -1054,6 +1054,14 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":131,"date":"24 juillet 2026","sha":"","tag":"Process de livraison en 4 phases + registre anti-oubli","items":[
+    "Loic a raison : Z2, DC et FCZ avaient DEJA ete identifiees comme figees au build 118. Sept series sur dix avaient ete corrigees, ces trois-la non, et le compte rendu presentait le travail comme termine",
+    "Cause racine : rien ne verifiait la COMPLETUDE d une correction. Un humain decidait de ce qui etait fini",
+    "NOUVEAU src/kpi_registry.py : toute serie du Cockpit doit etre declaree LIVE, STATIC ou DERIVED. Une serie LIVE non recalculee par _ckRebuild fait echouer la livraison. Une serie presente dans le code mais absente du registre aussi",
+    "NOUVEAU src/release.py : porte de livraison en 4 phases (recherche, experimentation, test, livraison). Le push est impossible tant que les 3 premieres ne sont pas vertes. Verifie aussi le deploiement Pages apres push",
+    "Les deux controles sont complementaires et ont ete valides par injection de regression : le registre attrape une serie jamais recalculee, l audit attrape une serie recalculee avec de mauvaises valeurs",
+    "Aucune exception possible : un seul echec bloque la livraison"
+  ]},
   {"build":130,"date":"24 juillet 2026","sha":"","tag":"AUDIT COMPLET DU COCKPIT : 3 series figees corrigees + controle permanent","items":[
     "Audit exhaustif demande par Loic apres la Forme du jour non implementee. 159 controles automatises sur les 4 fenetres (2/4/8/12 semaines)",
     "TROUVE : Allure Z2, Derive cardiaque et Zones FC n etaient JAMAIS recalculees - figees au build depuis S26, avec des valeurs devenues incoherentes",
