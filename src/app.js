@@ -138,6 +138,29 @@ function _ckRebuild(){
   // Snapshot one-shot des séries d'allure par type (ef/am/se) issues des données statiques,
   // pour ne pas les perdre quand le moteur reconstruit _CK.PACE (le moteur ne les recalcule pas).
   if(_CK.PACE&&!_CK._PACE_ORIG){try{_CK._PACE_ORIG=JSON.parse(JSON.stringify(_CK.PACE));}catch(e){_CK._PACE_ORIG=null;}}
+  // Sauvegarde unique des series d'origine (historique pre-plan). Sans elle, la
+  // reconstruction ne garderait que les semaines effectivement loggees et les
+  // fenetres 8 et 12 semaines perdraient tout l'historique anterieur au plan.
+  if(!_CK._ORIG){
+    try{_CK._ORIG=JSON.parse(JSON.stringify({VOL:_CK.VOL,RE:_CK.RE,ACWR:_CK.ACWR,DPLUS:_CK.DPLUS,Z2:_CK.Z2,DC:_CK.DC,CAD:_CK.CAD}));}
+    catch(e){_CK._ORIG=null;}
+  }
+  // Reconstitue un dictionnaire semaine -> valeur depuis la plus large fenetre d'origine
+  function _origMap(serie,champ){
+    var m={};
+    try{
+      var src=_CK._ORIG&&_CK._ORIG[serie];
+      if(!src)return m;
+      [12,8,4,2].forEach(function(N){
+        var o=src[N]; if(!o||!o.w)return;
+        o.w.forEach(function(lab,i){
+          var wn=parseInt(String(lab).replace('S',''),10);
+          if(!isNaN(wn)&&m[wn]===undefined){var v=(o[champ]||[])[i];if(v!==undefined&&v!==null)m[wn]=v;}
+        });
+      });
+    }catch(e){}
+    return m;
+  }
   // Collecter les semaines avec des séances réalisées
   var weeks=Object.keys(SEANCES_BY_WEEK).map(_weekNumFromKey).filter(function(n){return n>0;}).sort(function(a,b){return a-b;});
   // Agréger km / RE / D+ / allure / FC / cadence réels par semaine
@@ -145,6 +168,7 @@ function _ckRebuild(){
   weeks.forEach(function(wn){
     var arr=SEANCES_BY_WEEK[String(wn)]||SEANCES_BY_WEEK[wn]||[];
     var km=0,re=0,dplus=0,fcSum=0,fcN=0,cadSum=0,cadN=0,paceSum=0,paceN=0,hasReal=false;
+    var efPaces=[],decoups=[],zoneMin={Z1:0,Z2:0,Z3:0,'Z4+':0};
     arr.forEach(function(s){
       var r=s.realise;
       if(r&&(r.statut==='fait'||r.statut==='partiel')&&r.km){
@@ -158,10 +182,29 @@ function _ckRebuild(){
         var cv=(typeof r.cadence==='number')?r.cadence:null;
         if(cv===null){var cm=r.commentaire&&r.commentaire.match(/cadence\s+(\d+)/);if(cm)cv=+cm[1];}
         if(cv!==null){if(cv<120)cv*=2;cadSum+=cv;cadN++;}
-        if(r.allure){var pm=r.allure.match(/(\d+):(\d+)/);if(pm){paceSum+=(+pm[1])*60+(+pm[2]);paceN++;}}
+        if(r.allure){var pm=r.allure.match(/(\d+):(\d+)/);if(pm){
+          var _ps=(+pm[1])*60+(+pm[2]);paceSum+=_ps;paceN++;
+          // Allure Z2 : uniquement les seances faciles (EF / footing / recuperation)
+          var _t=((s.type||'')+' '+(s.titre||'')).toLowerCase();
+          var _facile=(s.cat==='EF'||s.cat==='ef'||/\bef\b|footing|a[ée]robie|r[ée]cup/.test(_t))
+                      && !/seuil|vma|tempo|fractionn|c[ôo]tes|sp[ée]cifique|vitesse|intervalle/.test(_t);
+          if(_facile)efPaces.push(_ps);
+        }}
+        // Derive cardiaque : on reprend le KPI decouplage valide, calcule au log
+        if(r.decouplage&&r.decouplage.qualite==='fiable'&&typeof r.decouplage.pct==='number')decoups.push(r.decouplage.pct);
+        // Repartition par intensite : zones OFFICIELLES de ZONES_FC (Z1<134, Z2 134-154, Z3 154-167, Z4+ >=167)
+        var _mn=(typeof _sessionMin==='function')?_sessionMin(r.temps):null;
+        if(r.fc_moy&&_mn){
+          var _z=r.fc_moy<134?'Z1':(r.fc_moy<154?'Z2':(r.fc_moy<167?'Z3':'Z4+'));
+          zoneMin[_z]+=_mn;
+        }
       }
     });
-    if(hasReal)agg[wn]={km:+km.toFixed(1),re:re,dplus:dplus,fc:fcN?Math.round(fcSum/fcN):null,cad:cadN?Math.round(cadSum/cadN):null,pace:paceN?Math.round(paceSum/paceN):null};
+    var _med=function(a){if(!a.length)return null;var b=a.slice().sort(function(x,y){return x-y;});return b[Math.floor(b.length/2)];};
+    if(hasReal)agg[wn]={km:+km.toFixed(1),re:re,dplus:dplus,fc:fcN?Math.round(fcSum/fcN):null,cad:cadN?Math.round(cadSum/cadN):null,pace:paceN?Math.round(paceSum/paceN):null,
+      z2:_med(efPaces)?Math.round(_med(efPaces)):null,
+      dc:decoups.length?Math.round(_med(decoups)*100)/100:null,
+      zoneMin:zoneMin};
   });
   var realWeeks=Object.keys(agg).map(Number).sort(function(a,b){return a-b;});
   if(realWeeks.length<2)return; // pas assez de données, on garde _CK figé
@@ -175,24 +218,42 @@ function _ckRebuild(){
     acwrByWeek[w]=ctl>0?+((atl/ctl).toFixed(2)):1.0;
   });
   // Reconstruire les fenêtres 2/4/8/12 de _CK
-  function lastN(n){return realWeeks.slice(-n);}
+  var _origVol=_origMap('VOL','a');
+  var _allWeeks=Object.keys(_origVol).map(Number).concat(realWeeks)
+      .filter(function(v,i,a){return a.indexOf(v)===i;}).sort(function(x,y){return x-y;});
+  function lastN(n){return _allWeeks.slice(-n);}
+  function _val(serie,champ,w,live){
+    if(agg[w]&&live!==undefined&&live!==null)return live;
+    if(agg[w])return live;
+    var m=_origMap(serie,champ); return m[w]!==undefined?m[w]:null;
+  }
   function wlabels(ws){return ws.map(function(w){return 'S'+w;});}
   [2,4,8,12].forEach(function(N){
     var ws=lastN(N);var lbl=wlabels(ws);
-    if(_CK.VOL)_CK.VOL[N]={w:lbl,p:ws.map(function(){return null;}),a:ws.map(function(w){return agg[w].km;})};
-    if(_CK.RE)_CK.RE[N]={w:lbl,v:ws.map(function(w){return agg[w].re;})};
-    if(_CK.ACWR)_CK.ACWR[N]={w:lbl,v:ws.map(function(w){return acwrByWeek[w];})};
-    if(_CK.DPLUS)_CK.DPLUS[N]={w:lbl,v:ws.map(function(w){return agg[w].dplus;})};
-    if(_CK.FCZ&&agg[ws[ws.length-1]].fc){/* FCZ gardé tel quel, structure complexe */}
-    if(_CK.CAD)_CK.CAD[N]={w:lbl,v:ws.map(function(w){return agg[w].cad;})};
-    if(_CK.PACE){var _pp=(_CK._PACE_ORIG&&_CK._PACE_ORIG[N])||{};var _L=lbl.length;var _tail=function(a){return Array.isArray(a)?a.slice(-_L):a;};_CK.PACE[N]={w:lbl,v:ws.map(function(w){return agg[w].pace;}),ef:_tail(_pp.ef),am:_tail(_pp.am),se:_tail(_pp.se)};}
+    if(_CK.VOL)_CK.VOL[N]={w:lbl,p:ws.map(function(){return null;}),a:ws.map(function(w){return _val('VOL','a',w,agg[w]&&agg[w].km);})};
+    if(_CK.RE)_CK.RE[N]={w:lbl,v:ws.map(function(w){return _val('RE','v',w,agg[w]&&agg[w].re);})};
+    if(_CK.ACWR)_CK.ACWR[N]={w:lbl,v:ws.map(function(w){return acwrByWeek[w]!==undefined?acwrByWeek[w]:_val('ACWR','v',w,null);})};
+    if(_CK.DPLUS)_CK.DPLUS[N]={w:lbl,v:ws.map(function(w){return _val('DPLUS','v',w,agg[w]&&agg[w].dplus);})};
+    // Allure Z2 (mediane des seances faciles) — etait FIGEE au build
+    if(_CK.Z2)_CK.Z2[N]={w:lbl,v:ws.map(function(w){return agg[w]?agg[w].z2:null;})};
+    // Derive cardiaque hebdo (mediane des decouplages valides) — etait FIGEE au build
+    if(_CK.DC)_CK.DC[N]={w:lbl,v:ws.map(function(w){return agg[w]?agg[w].dc:null;})};
+    // Repartition par intensite moyenne de seance — etait FIGEE et identique sur les 4 fenetres
+    if(_CK.FCZ){
+      var Z={Z1:0,Z2:0,Z3:0,'Z4+':0},tot=0;
+      ws.forEach(function(w){var zm=(agg[w]&&agg[w].zoneMin)||{};['Z1','Z2','Z3','Z4+'].forEach(function(k){Z[k]+=(zm[k]||0);tot+=(zm[k]||0);});});
+      if(tot>0)_CK.FCZ[N]=[['Z1','#86efac',Math.round(Z.Z1/tot*100)],['Z2','#16a34a',Math.round(Z.Z2/tot*100)],
+                           ['Z3','#f59e0b',Math.round(Z.Z3/tot*100)],['Z4+','#ef4444',Math.round(Z['Z4+']/tot*100)]];
+    }
+    if(_CK.CAD)_CK.CAD[N]={w:lbl,v:ws.map(function(w){return _val('CAD','v',w,agg[w]&&agg[w].cad);})};
+    if(_CK.PACE){var _pp=(_CK._PACE_ORIG&&_CK._PACE_ORIG[N])||{};var _L=lbl.length;var _tail=function(a){return Array.isArray(a)?a.slice(-_L):a;};_CK.PACE[N]={w:lbl,v:ws.map(function(w){return agg[w]?agg[w].pace:null;}),ef:_tail(_pp.ef),am:_tail(_pp.am),se:_tail(_pp.se)};}
   });
   // Mettre à jour ACWR_DATA (valeur de secours) avec la dernière valeur réelle
   if(typeof ACWR_DATA!=='undefined'){
     var lastW=realWeeks[realWeeks.length-1];
     ACWR_DATA.acwr=acwrByWeek[lastW];
-    ACWR_DATA.charge7j=agg[lastW].re;
-    var s28=realWeeks.slice(-4);ACWR_DATA.charge28j=s28.reduce(function(a,w){return a+agg[w].re;},0);
+    ACWR_DATA.charge7j=agg[lastW]?agg[lastW].re:ACWR_DATA.charge7j;
+    var s28=realWeeks.slice(-4);ACWR_DATA.charge28j=s28.reduce(function(a,w){return a+(agg[w]?agg[w].re:0);},0);
   }
   // Reconstruire RUNS (liste "Analyse par sortie") depuis les vraies séances loggées — jamais figé.
   if(_CK.RUNS){
@@ -1673,13 +1734,14 @@ const _CK_HELP={
     <div class="ch-rule"><div class="ch-dot" style="background:#0d9488"></div><div><strong>AM (bleu)</strong> → Allure marathon cible. Doit converger vers 5:20/km pour Nice (objectif 3h45).</div></div>
     <div class="ch-rule"><div class="ch-dot" style="background:#f59e0b"></div><div><strong>Seuil (orange)</strong> → Allure séance AM ou tempo. Reflète ta capacité lactique.</div></div>
     <div class="ch-tip">💡 Glisse le doigt sur le graphe pour voir les 3 valeurs simultanément. L'écart entre EF et seuil = ton amplitude de vitesse. Plus il est grand, meilleur est ton profil de coureur.</div>`},
-  fc:{t:'Zones FC — Distribution',c:'#ef4444',body:`<p>Répartition du temps passé dans chaque zone de fréquence cardiaque sur la semaine sélectionnée. Reflète la structure de ton entraînement.</p>
-    <div class="ch-rule"><div class="ch-dot" style="background:#0d9488"></div><div><strong>Z1 Récup (&lt;130 bpm)</strong> → Échauffement, récupération active. Peut être augmenté.</div></div>
-    <div class="ch-rule"><div class="ch-dot" style="background:#16a34a"></div><div><strong>Z2 Endurance (130–148)</strong> → Moteur aérobie. Doit représenter 70–80% du volume total.</div></div>
-    <div class="ch-rule"><div class="ch-dot" style="background:#f59e0b"></div><div><strong>Z3 Seuil (148–163)</strong> → Zone "grise" : trop dur pour récupérer vite, trop facile pour progresser fort. À limiter.</div></div>
-    <div class="ch-rule"><div class="ch-dot" style="background:#f59e0b"></div><div><strong>Z4 Lactique (163–178)</strong> → Séances AM, tempo. 15–20% du volume = optimal.</div></div>
-    <div class="ch-rule"><div class="ch-dot" style="background:#ef4444"></div><div><strong>Z5 Max (&gt;178)</strong> → Fractionné intense. Réservé aux séances très ciblées.</div></div>
-    <div class="ch-tip">💡 Distribution idéale (entraînement polarisé) : 75–80% Z1-Z2 + 5% Z3 + 15–20% Z4-Z5. Trop de Z3 = entraînement "moyen partout" = progression lente.</div>`},
+  fc:{t:'Répartition par intensité',c:'#ef4444',body:`<p>Part de ton <strong>temps de course</strong> passée dans chaque zone d'intensité, sur la fenêtre sélectionnée. C'est la photo de la structure de ton entraînement.</p>
+    <div class="ch-rule"><div class="ch-dot" style="background:#86efac"></div><div><strong>Z1 Récupération (&lt; 134 bpm)</strong> → échauffement, footing très facile.</div></div>
+    <div class="ch-rule"><div class="ch-dot" style="background:#16a34a"></div><div><strong>Z2 Endurance fondamentale (134–154)</strong> → ton moteur aérobie. Doit représenter 70–80 % du total.</div></div>
+    <div class="ch-rule"><div class="ch-dot" style="background:#f59e0b"></div><div><strong>Z3 Tempo / marathon (154–167)</strong> → allure spécifique marathon.</div></div>
+    <div class="ch-rule"><div class="ch-dot" style="background:#ef4444"></div><div><strong>Z4+ Seuil et au-delà (&gt; 167)</strong> → seuil, VMA. Doit rester minoritaire.</div></div>
+    <div class="ch-tip">💡 Objectif d'un entraînement polarisé : 75–80 % en Z1-Z2, une petite part en Z3, 15–20 % en Z4+. Trop de Z3 = « moyen partout », progression lente.</div>
+    <p style="font-size:11.5px;color:var(--texte-trois);margin-top:10px"><strong>Précision de méthode :</strong> chaque séance est classée par sa <strong>FC moyenne</strong>, puis pondérée par sa durée. Ce n'est donc pas un vrai temps-passé-en-zone seconde par seconde : une séance de fractionné dont la moyenne tombe en Z3 masque les pointes réelles en Z4-Z5. La photo d'ensemble est fiable, la part des zones hautes est sous-estimée.</p>
+    <p style="font-size:11.5px;color:var(--texte-trois)">Les bornes sont celles de ta table de zones officielle (onglet Courses), et non plus des valeurs approximatives qui la contredisaient.</p>`},
   cad:{t:'Cadence (pas/min)',c:'#6366f1',body:`<p>Nombre de pas par minute. La valeur affichée est en SPM (steps per minute = total des deux pieds). Ta cadence naturelle est d'environ 172–174 spm en route.</p>
     <div class="ch-rule"><div class="ch-dot" style="background:#16a34a"></div><div><strong>170–180 spm</strong> → Zone optimale. Limite l'impact au sol et réduit le risque de blessures aux genoux et hanches.</div></div>
     <div class="ch-rule"><div class="ch-dot" style="background:#f59e0b"></div><div><strong>&lt;170 spm</strong> → Foulée trop longue. Augmente les forces d'impact. Surtout visible en fatigue ou en descente trail.</div></div>
@@ -2428,7 +2490,7 @@ function _ckRenderAll(win){
   document.getElementById('ck-vol-sub').textContent=totalKm.toFixed(0)+' km · '+W+' sem.';
   _ckBar('ckRE','ckREW','ckRET','ckREX',D.RE[W],{col:'#0d9488',h:80});
   _ckLine('ckACWR','ckACWRW','ckACWRT','ckACWRX',D.ACWR[W].w,[{v:D.ACWR[W].v,color:'#f59e0b',lbl:''}],v=>v.toFixed(2),{h:65,fill:false,zones:[[0,0.8,'#0d9488'],[0.8,1.3,'#16a34a'],[1.3,2,'#ef4444']]});
-  const al=D.ACWR[W].v[D.ACWR[W].v.length-1];
+  var _av0=D.ACWR[W].v.filter(function(x){return x!=null;});const al=_av0.length?_av0[_av0.length-1]:1.0;
   var _av=document.getElementById('ck-acwr-val');_av.textContent=al.toFixed(2);
   var _acol=al>1.5?'#ef4444':al>1.3?'#f59e0b':al<0.8?'#0d9488':'#16a34a';
   _av.style.color=_acol;_av.classList.remove('warn');
@@ -2437,8 +2499,16 @@ function _ckRenderAll(win){
   var _av2=document.getElementById('ck-acwr-val2');if(_av2){_av2.textContent=al.toFixed(2);_av2.style.color=_acol;}
   _ckBar('ckDP','ckDPW','ckDPT','ckDPX',D.DPLUS[W],{col:'#94a3b8',unit:' m',h:75});
   _ckLine('ckZ2','ckZ2W','ckZ2T','ckZ2X',D.Z2[W].w,[{v:D.Z2[W].v,color:'#0d9488',lbl:'/km'}],_ckSmin,{h:85});
-  document.getElementById('ck-z2-val').textContent=_ckSmin(D.Z2[W].v[D.Z2[W].v.length-1]);
-  const z2d=D.Z2[W].v[0]-D.Z2[W].v[D.Z2[W].v.length-1];document.getElementById('ck-z2-delta').textContent=(z2d>0?'↓ −'+_ckSmin(z2d)+'/km · le moteur grossit 💪':'↑ à surveiller');document.getElementById('ck-z2-delta').style.color=z2d>0?'#16a34a':'#ef4444';
+  var _z2v=D.Z2[W].v.filter(function(x){return x!=null;});
+  document.getElementById('ck-z2-val').textContent=_z2v.length?_ckSmin(_z2v[_z2v.length-1]):'\u2014';
+  // Delta calcule sur les 1re et derniere valeurs NON NULLES : les semaines sans
+  // seance facile laissent des trous, et v[0] pouvait etre null (delta = NaN).
+  var _z2d=(_z2v.length>=2)?(_z2v[0]-_z2v[_z2v.length-1]):null;
+  var _z2e=document.getElementById('ck-z2-delta');
+  if(_z2d===null){_z2e.textContent='pas assez de donn\u00e9es';_z2e.style.color='#94a3b8';}
+  else if(_z2d>2){_z2e.textContent='\u2193 \u2212'+_ckSmin(_z2d)+'/km \u00b7 le moteur grossit 💪';_z2e.style.color='#16a34a';}
+  else if(_z2d>=-2){_z2e.textContent='stable';_z2e.style.color='#64748b';}
+  else {_z2e.textContent='\u2191 +'+_ckSmin(-_z2d)+'/km \u00b7 \u00e0 surveiller';_z2e.style.color='#ef4444';}
   const dcLast=D.DC[W].v.filter(x=>x!=null).pop();_ckLine('ckDC','ckDCW','ckDCT','ckDCX',D.DC[W].w,[{v:D.DC[W].v,color:'#16a34a',lbl:'%'}],v=>v.toFixed(1)+'%',{h:75,zones:[[0,5,'#16a34a'],[5,8,'#f59e0b'],[8,15,'#ef4444']]});
   document.getElementById('ck-dc-val').textContent=dcLast?dcLast.toFixed(1)+'%':'—';document.getElementById('ck-dc-val').style.color=dcLast<5?'#16a34a':dcLast<8?'#f59e0b':'#ef4444';
   _ckLine('ckPACE','ckPACEW','ckPACET','ckPACEX',D.PACE[W].w,[{v:D.PACE[W].ef,color:'#16a34a',lbl:'EF'},{v:D.PACE[W].am,color:'#0d9488',lbl:'AM'},{v:D.PACE[W].se,color:'#f59e0b',lbl:'Seuil'}],_ckSmin,{h:95,fill:false});
@@ -2447,7 +2517,7 @@ function _ckRenderAll(win){
   let fcs='';z.forEach((zone,i)=>{const x=i*gap+gap*0.25,h=zone[2]/mxz*(H-22);fcs+=`<rect class="ck-fcb" data-i="${i}" x="${x}" y="${H-h-10}" width="${bw}" height="${h}" rx="3" fill="${zone[1]}"/><text x="${x+bw/2}" y="${H-h-14}" text-anchor="middle" font-size="11" font-weight="700" fill="${zone[1]}">${zone[2]}%</text><text x="${x+bw/2}" y="${H-1}" text-anchor="middle" font-size="9" fill="#94a3b8">${zone[0]}</text>`;});
   const fcSvg=document.getElementById('ckFC');fcSvg.setAttribute('viewBox',`0 0 300 ${H}`);fcSvg.innerHTML=fcs;
   document.getElementById('ck-fc-sub').textContent=z[1][2]+'% en Z2 · '+W+' sem.';
-  fcSvg.querySelectorAll('.ck-fcb').forEach(b=>b.addEventListener('click',()=>{const zone=z[+b.dataset.i];const ranges={'Z1':'<130 bpm','Z2':'130-144','Z3':'145-165','Z4+':'>165 bpm'};document.getElementById('ck-fc-info').innerHTML=`<strong style="color:${zone[1]}">${zone[0]}</strong> · ${ranges[zone[0]]} · ${zone[2]}%`;}));
+  fcSvg.querySelectorAll('.ck-fcb').forEach(b=>b.addEventListener('click',()=>{const zone=z[+b.dataset.i];const ranges={'Z1':'<134 bpm','Z2':'134-154','Z3':'154-167','Z4+':'>167 bpm'};document.getElementById('ck-fc-info').innerHTML=`<strong style="color:${zone[1]}">${zone[0]}</strong> · ${ranges[zone[0]]} · ${zone[2]}%`;}));
   _ckLine('ckCAD','ckCADW','ckCADT','ckCADX',D.CAD[W].w,[{v:D.CAD[W].v,color:'#06b6d4',lbl:'spm'}],v=>v.toFixed(0)+' spm',{h:70});
   const cadLast=D.CAD[W].v.filter(x=>x!=null).pop();document.getElementById('ck-cad-val').textContent=cadLast?cadLast.toFixed(0):'—';
   // Run list
@@ -2723,7 +2793,7 @@ function _decoupRender(){
 function renderCockpit(){
   const el=document.getElementById('cockpit-contenu');
   if(el.innerHTML.trim()){_ckRenderAll(_ckWin);return;}
-  const FC_RANGE={'Z1':'<130 bpm','Z2':'130-144','Z3':'145-165','Z4+':'>165 bpm'};
+  const FC_RANGE={'Z1':'<134 bpm','Z2':'134-154','Z3':'154-167','Z4+':'>167 bpm'};
   function card(id,title,sub,valId,valSuffix,chartH,extra,helpKey){
     const hb=helpKey?`<button class="ck-help" onclick="event.stopPropagation();openCkHelp('${helpKey}')">?</button>`:'';
     return`<div class="ck-card"><div class="ck-ch"><div><div class="ck-ct">${title}${hb}</div><div class="ck-cs" id="${id}-sub">${sub}</div></div>${valId?`<div style="text-align:right"><div class="ck-big" id="${valId}">—</div>${valSuffix?'<div class="ck-cs">'+valSuffix+'</div>':''}</div>`:''}</div><div class="ck-cw" id="${id}W"><svg id="${id}" height="${chartH}" style="display:block;width:100%"></svg><div class="ck-tt" id="${id}T"></div></div><div class="ck-xl" id="${id}X"></div>${extra||''}</div>`;
