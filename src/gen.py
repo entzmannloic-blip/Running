@@ -25,7 +25,7 @@ def date_for(arr,weeknum):
 import json, re
 CSS=open('/tmp/css.txt').read()
 
-P_REC="6:15-6:45/km"; P_EF="5:50-6:25/km"; P_AM="≈5:15/km"; P_SEUIL="≈4:50/km"; P_TRAIL="à l'effort"
+P_REC="6:15-6:45/km"; P_EF="5:50-6:25/km"; P_AM="≈5:20/km"; P_SEUIL="≈4:50/km"; P_TRAIL="à l'effort"
 P_S30="≈4:40/km"; P_S60="≈4:55/km"; F_S30="172-180"; F_S60="166-174"
 F_REC="<140"; F_EF="135-150"; F_AM="152-163"; F_SEUIL="166-175"
 GREEN="#16a34a";EF_COLOR="#16a34a";BLUE="#0d9488";ORANGE="#f59e0b";VIOLET="#64748b";RED="#ef4444";YELLOW="#94a3b8";TEAL="#0d9488"
@@ -217,19 +217,19 @@ def longrun(dist,dur,mp_km=0,fuel=True,desc=None,heat=False,fill=64):
     else:
         raw.append({"nom":"Corps","role":"EF régulière.","duree":base_min*60,"couleur":"vert","bloc":"—","hauteur":44})
     raw.append({"nom":"Retour au calme","role":"Marche + recharge.","duree":300,"couleur":"vert","bloc":"—","hauteur":28})
-    vig="Pars volontairement lent : la longue se court sur la retenue. Fatigue marquée → réduis la distance mais ne supprime pas la séance."
+    vig="Pars volontairement lent : la longue se court sur la retenue. Fatigue marquée → réduis la distance mais ne supprime pas la séance. COURSE CONTINUE : pas d'arrêt prolongé, ravitaillement en marchant si besoin — c'est précisément ce que le marathon ViaRhôna (56 min d'arrêts) n'a pas entraîné, et ce qui manquera le jour J."
     if heat: vig+=" Été : par forte chaleur, cours à la FC/sensation (pas au chrono) et renforce l'hydratation/électrolytes."
     return dict(titre=("Sortie longue + allure marathon" if mp_km else "Sortie longue endurance"),type=("Sortie longue spécifique" if mp_km else "Sortie longue"),sport="Course à pied",opt=False,accent=(BLUE if mp_km else ORANGE),fill=fill,
       sous=desc or ("La séance clé — endurance + carburant."+(f" Finish {mp_km} km AM." if mp_km else "")),
-      metriques={"Distance":f"~{dist} km tout compris","Durée":f"~{dur} min","Allure":(P_EF+" + AM" if mp_km else P_EF),"FC":F_EF,"RPE":("5-6" if mp_km else "4-5"),"Type":"Longue"},
+      metriques={"Distance":f"~{dist} km tout compris","Durée":f"~{dur} min","Allure":(P_EF+" + AM" if mp_km else P_EF),"FC":(F_EF+" puis "+F_AM if mp_km else F_EF),"RPE":("5-6" if mp_km else "4-5"),"Type":"Longue"},
       objectif=(("Endurance + spécificité : "+f"{mp_km} km à allure marathon en fin de longue" if mp_km else "Reconstruire/entretenir l'endurance fondamentale")+", et roder le carburant. <strong>Séance clé, non optionnelle.</strong>"),
       struct=[{"nom":"Échauffement","txt":"15 min très souples."},
-              {"nom":"Corps","txt":(f"{dist} km en EF régulière, puis {mp_km} km à allure marathon ({P_AM}) pour finir sur fond de fatigue." if mp_km else f"{dist} km à allure facile régulière, plat à légèrement vallonné.")+" Nutrition : boire toutes les 15-20 min, électrolytes dès le départ, 1 gel/30-40 min au-delà d'1h30."},
+              {"nom":"Corps","txt":(f"{dist} km AU TOTAL : les {dist-mp_km} premiers en EF régulière, puis les {mp_km} DERNIERS à allure marathon ({P_AM}) sur fond de fatigue. Enchaînement direct, sans pause entre les deux." if mp_km else f"{dist} km à allure facile régulière, plat à légèrement vallonné.")+" Nutrition : boire toutes les 15-20 min, électrolytes dès le départ, 1 gel/30-40 min au-delà d'1h30."},
               {"nom":"Retour","txt":"Marche 5 min + étirements, recharge hydrique/électrolytes."}],
       benefices="Endurance, oxydation des graisses, résistance à la fatigue"+(", tenue de l'allure cible sur fin de course" if mp_km else "")+" — et rodage du carburant.",
       vigilance=vig,
       legende=[{"c":GREEN,"l":"Facile / EF"}]+([{"c":BLUE,"l":"Allure marathon"}] if (mp_km or fuel) else []),
-      coach=[{"titre":"Le carburant, ta priorité","texte":"La longue est ton labo nutrition. Note ce que tu absorbes et ton ressenti — on cale la stratégie marathon dessus."}],
+      coach=([{"titre":"Le vrai repère : ta FC sur le bloc AM","texte":"Sur le marathon du 23/07 tu as tenu 5:15/km, mais à FC 163-167 — trop haut pour durer 3h45. L'objectif d'ici octobre est de tenir 5:20/km autour de 155-158. Si tu dépasses 165 sur le bloc, l'allure est encore trop rapide pour ton niveau du moment : ralentis à 5:25 et note-le. C'est cette FC, pas le chrono, qui dira si 3h45 est acquis."}] if mp_km else [])+[{"titre":"Le carburant, ta priorité","texte":"La longue est ton labo nutrition. Note ce que tu absorbes et ton ressenti — on cale la stratégie marathon dessus."}],
       segments=segs(raw))
 
 def trailsess(dist,dur,desc,focus,fill=60):
@@ -1166,6 +1166,14 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":134,"date":"26 juillet 2026","sha":"","tag":"Sorties longues recalees sur les enseignements du marathon","items":[
+    "ALLURE MARATHON corrigee de 5:15 a 5:20/km partout : 3h45 sur 42,195 km fait 5:19/km. Le 5:15 correspondait a ce que Loic a tenu 2 km au finish du ViaRhona, mais a FC 163-167 -- insoutenable sur 3h45",
+    "Repere de validation ajoute sur chaque bloc AM : viser 155-158 bpm a 5:20/km d ici octobre. Au-dela de 165, ralentir a 5:25. C est la FC, pas le chrono, qui dira si 3h45 est acquis",
+    "CONTINUITE imposee sur toutes les sorties longues : pas d arret prolonge, ravitaillement en marchant. Le marathon du 23/07 comptait 56 min d arrets -- c est precisement ce qu il n a pas entraine",
+    "Ambiguite levee : les fiches disaient 26 km en EF puis 8 km AM, ce qui se lisait comme 34 km. Desormais 26 km AU TOTAL dont les 8 DERNIERS a allure marathon",
+    "Metrique FC des longues avec bloc AM : affiche desormais les deux zones (135-150 puis 152-163) au lieu de la seule zone EF",
+    "Progression AM inchangee et validee : 8 km (S32) puis 12 (S34, gate) puis 6 (S40, post-USA) puis 12 (S41) puis 14 (S42, seance reine) puis 12 (S43) puis 4 (S44). 76 km cumules a allure marathon avant Nice"
+  ]},
   {"build":133,"date":"26 juillet 2026","sha":"","tag":"S31 restructuree : absorption marathon sous canicule","items":[
     "Meteo France annonce 36-38 C a Lyon mercredi 29 et jeudi 30 (dome de chaleur saharien) : la semaine est reconstruite autour de cette contrainte",
     "Test 10 km REPORTE : un contre-la-montre maximal a J+5 d un marathon mesurerait la fatigue et pas la forme, et recalerait donc les allures sur une mauvaise mesure. A replacer une fois la canicule passee",
