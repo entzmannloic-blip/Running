@@ -98,10 +98,12 @@ Strava MCP : get_activity_streams(activity_id, resolution=1000,
 --------------------------------------------------------------------------------
   Le KPI n'est stocke QUE si les quatre passent :
 
-    1. ROBUSTESSE  : recalcul en decalant le depart dans la plage legitime
-                     (2 a 5 min). Ecart max < 1,5 point.
-                     On ne teste PAS en deca de 2 min : on serait encore dans
-                     la montee cardiaque, ce n'est pas une fenetre valide.
+    1. ROBUSTESSE  : recalcul en decalant le depart VERS LE HAUT (4, 5 et 6
+                     min). Ecart max < 1,5 point.
+                     On ne teste jamais vers le bas : couper plus tot
+                     reintroduit de la montee cardiaque, ce que la fenetre
+                     cherche justement a exclure. Un echec dans ce sens
+                     signalerait un defaut du test, pas du chiffre.
     2. COUPURE FIN : recalcul en decalant la coupure des lignes droites de
                      +/-1 a 2 min. Ecart max < 1,5 point.
                      Remplace un ancien test "regression vs 2 moities" qui
@@ -346,8 +348,14 @@ def analyse(streams, temp=None):
 
     # ---------- ETAPE 6 : boucle de validation ----------
     tests = {}
+    # On ne teste QUE vers le haut : couper plus tot reintroduit de la montee
+    # cardiaque, precisement ce que la fenetre cherche a exclure. Le test
+    # pertinent est donc "si je coupe plus tard, le chiffre bouge-t-il ?".
+    # Cas reel (recup du 26/07) : depart FC a 91 bpm, la montee dure plus de
+    # 2 min ; le point de test a 2 min donnait 14,6 % contre 11,6 % stable
+    # ensuite, et faisait echouer un chiffre parfaitement fiable.
     var = []
-    for delta in (-60, 60, 120):        # 2 a 5 min : en deca on est encore dans la montee cardiaque
+    for delta in (60, 120, 180):
         sub = [p for p in pts if max(0, DEPART + delta) <= p[0] <= t_fin]
         if len(sub) > 15:
             v = decoup_regression(sub)

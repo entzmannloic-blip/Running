@@ -200,7 +200,7 @@ function _ckRebuild(){
         }
       }
     });
-    var _med=function(a){if(!a.length)return null;var b=a.slice().sort(function(x,y){return x-y;});return b[Math.floor(b.length/2)];};
+    var _med=function(a){if(!a.length)return null;var b=a.slice().sort(function(x,y){return x-y;}),n=b.length,h=Math.floor(n/2);return (n%2)?b[h]:(b[h-1]+b[h])/2;};
     if(hasReal)agg[wn]={km:+km.toFixed(1),re:re,dplus:dplus,fc:fcN?Math.round(fcSum/fcN):null,cad:cadN?Math.round(cadSum/cadN):null,pace:paceN?Math.round(paceSum/paceN):null,
       z2:_med(efPaces)?Math.round(_med(efPaces)):null,
       dc:decoups.length?Math.round(_med(decoups)*100)/100:null,
