@@ -710,6 +710,110 @@ for n,ss in WEEKS.items():
         arr[2]["coach"]=[{"titre":"La veille d'un ultra, on ne construit plus","texte":"Rien de ce que tu ferais aujourd'hui ne te rendrait plus fort jeudi — mais beaucoup de choses pourraient te fatiguer. Le repos est la meilleure séance possible ici."}]
         arr[2]["vigilance"]="Évite les journées debout épuisantes ; préserve tes jambes pour demain."
 
+    if n==31:
+        # Semaine reconstruite : absorption du marathon ViaRhona (23/07) sous dome de chaleur.
+        # Meteo France annonce 36-38 C mercredi 29 et jeudi 30 -> la seule qualite est placee
+        # mardi, dernier jour respirable. Le test 10 km prevu initialement est REPORTE :
+        # un contre-la-montre maximal a J+5 d'un marathon mesurerait la fatigue, pas la forme.
+        # Lundi
+        arr[0]["titre"]="Footing d'absorption"
+        arr[0]["type"]="EF aérobie"
+        arr[0]["sport"]="Course à pied"
+        arr[0]["accent"]=GREEN
+        arr[0]["fill"]=22
+        arr[0]["cat"]="ef"
+        arr[0]["date"]="2026-07-27"
+        arr[0]["rpe"]=3.0
+        arr[0]["chaussure"]="Gel Pulse 16"
+        arr[0]["sous"]="8 km très facile au frais. On fait circuler après le marathon, on ne construit rien."
+        arr[0]["metriques"]={"Distance":"~8 km","Durée":"~48 min","Allure":"6:00-6:20/km","FC":"< 140 bpm","RPE":"3","Type":"EF"}
+        arr[0]["objectif"]="Relancer la circulation à J+4 du marathon. L'allure n'a aucune importance : tu pilotes au cardio, tu restes sous 140. Si les jambes sont lourdes, tu écourtes sans discuter."
+        arr[0]["struct"]=[{"nom":"Corps","txt":"8 km à allure de conversation franche. Tu dois pouvoir parler en phrases complètes du début à la fin."}]
+        arr[0]["legende"]=[{"c":GREEN,"l":"Très facile"}]
+        arr[0]["benefices"]="Circulation sanguine, drainage des résidus du marathon, sans coût pour la séance de mardi."
+        arr[0]["coach"]=[{"titre":"Le pied commande","texte":"Premiers pas au réveil : si ça fait mal et que ça s'atténue en marchant, tu ne cours pas. C'est la signature d'une irritation de l'aponévrose plantaire, et elle se traite par le repos, pas en courant dessus."}]
+        arr[0]["vigilance"]="Dernière sortie avant la qualité de mardi : rester vraiment facile, ne pas transformer ce footing en séance."
+        # Mardi — la seule qualite de la semaine
+        arr[1]["titre"]="Séance de vitesse — 6×30 sec"
+        arr[1]["type"]="VMA / vitesse"
+        arr[1]["sport"]="Course à pied"
+        arr[1]["accent"]=RED
+        arr[1]["fill"]=58
+        arr[1]["cat"]="seuil"
+        arr[1]["date"]="2026-07-28"
+        arr[1]["rpe"]=7.0
+        arr[1]["chaussure"]="ASICS Magic Speed 4"
+        arr[1]["sous"]="La seule qualité de la semaine, placée mardi car c'est le dernier jour respirable avant le pic de chaleur."
+        arr[1]["metriques"]={"Distance":"~7 km","Durée":"~40 min","Allure":"4:00-4:10/km sur les 30 sec","FC":"jusqu'à 180 sur les pointes","RPE":"7","Type":"VMA courte"}
+        arr[1]["objectif"]="Entretenir la vivacité neuromusculaire — c'est ce qui récupère le plus vite après un marathon, contrairement à la capacité à soutenir un effort dur et long. D'où le choix de la VMA courte plutôt qu'un seuil, qui taperait dans le système le plus entamé."
+        arr[1]["struct"]=[
+          {"nom":"Échauffement","txt":"20 min minimum, très progressif, + 4 lignes droites de 80 m avant la première accélération. Non négociable : c'est ce qui protège le pied."},
+          {"nom":"6 × 30 sec","txt":"Accélérations à ~4:00-4:10/km, contrôlées (90-95 % de ta vitesse max), jamais en sprint. Récupération 1'30 en marche ou trot TRÈS lent."},
+          {"nom":"Retour au calme","txt":"10 min très facile."}]
+        arr[1]["legende"]=[{"c":GREEN,"l":"Échauffement"},{"c":RED,"l":"30 sec VMA"},{"c":VIOLET,"l":"Récup"}]
+        arr[1]["benefices"]="Réveil du système nerveux et de l'économie de course pour un coût métabolique quasi nul — le meilleur rapport bénéfice/fatigue à J+5 d'un marathon."
+        arr[1]["coach"]=[
+          {"titre":"6 répétitions, pas 8","texte":"Le 21/07 tu en avais fait 8 avec une pointe à 3:16/km, mais tu étais frais. Là tu es à J+5 d'un marathon : on garde le stimulus, on réduit la dose."},
+          {"titre":"La récup doit être VRAIE","texte":"Le 21/07, tes récups à 5:00/km avaient laissé la FC à 160 et fait glisser la séance vers du tempo. Cette fois tu marches ou tu trottes très lentement : c'est ce qui fait la différence entre une VMA propre et une séance coûteuse."}]
+        arr[1]["vigilance"]="Trois conditions : pied silencieux au réveil, échauffement de 20 min minimum, et tu t'arrêtes à 4 ou 5 répétitions si les jambes ne répondent pas. Si le pied parle, on annule et on fait un EF."
+        # Mercredi — canicule
+        arr[2]["titre"]="Footing canicule — départ 6h30"
+        arr[2]["type"]="EF aérobie"
+        arr[2]["sport"]="Course à pied"
+        arr[2]["accent"]=GREEN
+        arr[2]["fill"]=15
+        arr[2]["cat"]="ef"
+        arr[2]["date"]="2026-07-29"
+        arr[2]["rpe"]=2.5
+        arr[2]["chaussure"]="Novablast 5 V"
+        arr[2]["sous"]="5-6 km à l'aube. Journée annoncée à 36-38°C : c'est l'heure qui rend la séance saine, pas la distance."
+        arr[2]["metriques"]={"Distance":"5-6 km","Durée":"30-40 min","Allure":"peu importe","FC":"< 140 bpm","RPE":"2-3","Type":"Circulation"}
+        arr[2]["objectif"]="Bouger sans charger, un lendemain de qualité et en pleine chaleur. Ce n'est pas de l'entraînement, c'est de la circulation. Départ 6h30 impératif : à cette heure tu es autour de 22-24°C contre 36 l'après-midi."
+        arr[2]["struct"]=[{"nom":"Corps","txt":"5-6 km en boucles courtes près de chez toi, pour pouvoir rentrer à tout moment. FC seule pilote, l'allure ne compte pas."}]
+        arr[2]["legende"]=[{"c":GREEN,"l":"Très facile"}]
+        arr[2]["benefices"]="Entretien de la routine et de la circulation, et poursuite du rodage de la Novablast 5 V en vue de Nice."
+        arr[2]["coach"]=[{"titre":"Ton cardio va monter, c'est normal","texte":"Au-dessus de 15°C, ta FC prend environ 1 bpm par degré supplémentaire. À 24°C tu es déjà à +9 bpm pour le même effort. Ne te bats pas contre le chiffre : ralentis."}]
+        arr[2]["vigilance"]="ARRÊT IMMÉDIAT si frissons ou chair de poule par forte chaleur, si tu cesses de transpirer, en cas de mal de tête qui s'installe, de nausée ou de confusion. Ce sont les signes d'un coup de chaleur. Électrolytes avant, eau sur toi même sur 6 km."
+        # Samedi — sortie longue raccourcie
+        arr[3]["titre"]="Sortie longue — départ à l'aube"
+        arr[3]["type"]="Sortie longue"
+        arr[3]["sport"]="Course à pied"
+        arr[3]["accent"]=BLUE
+        arr[3]["fill"]=42
+        arr[3]["cat"]="sortie-longue"
+        arr[3]["date"]="2026-08-01"
+        arr[3]["rpe"]=4.0
+        arr[3]["chaussure"]="Novablast 5 J"
+        arr[3]["sous"]="12-14 km, départ 6h30. Raccourcie volontairement : c'est le prix des séances ajoutées mercredi et jeudi."
+        arr[3]["metriques"]={"Distance":"12-14 km","Durée":"~1h20","Allure":"6:00-6:20/km","FC":"< 145 bpm","RPE":"4","Type":"EF longue"}
+        arr[3]["objectif"]="Entretenir la caisse sans l'étendre. Après un marathon et une semaine de chaleur, l'enjeu n'est pas d'allonger : c'est de garder le rythme des sorties longues sans creuser la fatigue."
+        arr[3]["struct"]=[
+          {"nom":"Départ","txt":"6h30 impératif. Électrolytes dès le début, eau emportée."},
+          {"nom":"Corps","txt":"12-14 km à allure de conversation. Si la FC dérive au-delà de 150 sans que tu accélères, tu raccourcis à 10-12 km sans état d'âme."}]
+        arr[3]["legende"]=[{"c":BLUE,"l":"EF longue"}]
+        arr[3]["benefices"]="Maintien de l'endurance de base — c'est ce qui survit le mieux aux coupures, et donc ce qui compte le plus avant les trois semaines aux USA."
+        arr[3]["coach"]=[{"titre":"Par 36°C, une sortie longue coûte plus qu'elle ne rapporte","texte":"Souviens-toi de la SL du 16/07 : 23 km en canicule, découplage 9,4 %, vertiges à cause du gel pris trop tard. Ici on part tôt, on raccourcit, et on ne cherche aucune performance."}]
+        arr[3]["vigilance"]="Si la chaleur est déjà forte au départ ou si le pied se manifeste, réduire à 10 km. Rien dans cette sortie ne justifie de prendre un risque."
+        # Jeudi — optionnel
+        arr[4]["titre"]="Footing canicule — optionnel"
+        arr[4]["type"]="EF aérobie"
+        arr[4]["sport"]="Course à pied"
+        arr[4]["accent"]=GREEN
+        arr[4]["fill"]=14
+        arr[4]["cat"]="ef"
+        arr[4]["opt"]=True
+        arr[4]["date"]="2026-07-30"
+        arr[4]["rpe"]=2.5
+        arr[4]["chaussure"]="Novablast 5 V"
+        arr[4]["sous"]="5-6 km à l'aube — ou repos complet si les jambes sont lourdes. Deuxième jour du pic de chaleur."
+        arr[4]["metriques"]={"Distance":"5-6 km","Durée":"30-40 min","Allure":"peu importe","FC":"< 140 bpm","RPE":"2-3","Type":"Circulation"}
+        arr[4]["objectif"]="Séance volontairement optionnelle. C'est J+7 du marathon, deuxième jour à 36-38°C, et tu enchaînerais un quatrième jour de course sur cinq. Le repos est un choix parfaitement valable ici."
+        arr[4]["struct"]=[{"nom":"Corps","txt":"5-6 km très faciles à 6h30, ou rien du tout. Les deux options sont bonnes."}]
+        arr[4]["legende"]=[{"c":GREEN,"l":"Très facile"}]
+        arr[4]["benefices"]="Circulation si le corps répond, récupération supplémentaire sinon."
+        arr[4]["coach"]=[{"titre":"Vendredi devient repos obligatoire","texte":"Si tu cours mercredi ET jeudi, cela fait quatre jours de course en cinq jours à J+4 à J+7 d'un marathon. Vendredi complet devient alors non négociable pour équilibrer la semaine."}]
+        arr[4]["vigilance"]="Mêmes signaux d'arrêt qu'hier. Au moindre doute sur le pied ou sur la fatigue, cette séance saute — elle est là pour ça."
+
 META=[
 (24,'reprise','Récupération',28,'Légère','—',"Absorber La Circaète : repos actif, footings très faciles, mobilité du dos."),
 (25,'reprise','Reprise & déblocage',52,'Modérée','≈ 85 % facile · 15 % qualité légère',"Relancer une structure : ré-ancrer le vrai easy, vivacité, premier contact allure marathon, longue + carburant."),
@@ -718,7 +822,7 @@ META=[
 (28,'general','Récupération post-Déraille',36,'Récup','100 % facile · récupération active',"Semaine de récupération après le Trail Déraille — footings très faciles, zéro intensité. Le bloc seuil est décalé à S30 pour laisser les jambes assimiler le D+ et la chaleur. La récup n'est pas du temps perdu : c'est là que les adaptations se construisent."),
 (29,'general','Seuil découverte',62,'Soutenue','≈ 80 % facile · 20 % qualité',"Reprise progressive après la semaine de récup : premier vrai contact avec le seuil (2 blocs courts) + longue qui reprend du volume avec finish AM."),
 (30,'general','Semaine ViaRhôna',72,'Soutenue','≈ 92 % facile · 8 % rythme léger',"Semaine organisée autour du projet ViaRhôna 40 km (jeudi). Une seule touche de rythme (lignes droites mardi), repos la veille, récup après. Seuil et côtes retirés : le 40 km EST la charge de la semaine."),
-(31,'general','Test 10 km + recalibrage',70,'Soutenue','≈ 82 % facile · test',"Benchmark 10 km pour recaler les allures avant le bloc spécifique."),
+(31,'general','Absorption marathon · canicule',42,'Légère','≈ 90 % facile · une touche de vitesse',"Semaine d'absorption du marathon ViaRhôna sous dôme de chaleur (36-38°C mercredi et jeudi). Une seule qualité, placée mardi au frais. Test 10 km reporté : un contre-la-montre à J+5 d'un marathon mesurerait la fatigue, pas la forme."),
 (32,'seuil','Seuil long',78,'Élevée','≈ 80 % facile · 20 % qualité',"Seuil long (2×15 min) + longue 26 km dont 8 AM. 2ᵉ mobilité ajoutée."),
 (33,'seuil','Allègement',64,'Légère','≈ 85 % facile · 15 % qualité',"Récupération avant le pic pré-USA."),
 (34,'seuil','Pic pré-USA',82,'Élevée','≈ 78 % facile · 22 % qualité',"Plus gros bloc avant le voyage : seuil + longue 28 km dont 12 AM (gate de la reine)."),
@@ -1062,6 +1166,14 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":133,"date":"26 juillet 2026","sha":"","tag":"S31 restructuree : absorption marathon sous canicule","items":[
+    "Meteo France annonce 36-38 C a Lyon mercredi 29 et jeudi 30 (dome de chaleur saharien) : la semaine est reconstruite autour de cette contrainte",
+    "Test 10 km REPORTE : un contre-la-montre maximal a J+5 d un marathon mesurerait la fatigue et pas la forme, et recalerait donc les allures sur une mauvaise mesure. A replacer une fois la canicule passee",
+    "Volume 70 -> 42 km. Lundi EF 8 km, mardi VMA 6x30 (seule qualite, placee au dernier jour frais), mercredi et jeudi footings courts a 6h30, vendredi repos obligatoire, samedi sortie longue raccourcie a 12-14 km",
+    "VMA reduite de 8 a 6 repetitions vs le 21/07 : meme stimulus, dose adaptee a J+5 d un marathon. Consigne explicite sur la vraie recuperation entre les reps (le 21/07 les recups a 5:00/km avaient fait glisser la seance vers du tempo)",
+    "Fiches canicule : depart 6h30 imperatif, pilotage au cardio uniquement, signaux d arret d un coup de chaleur listes, rappel de la derive d environ 1 bpm par degre au-dessus de 15 C",
+    "Champ RPE des 5 seances realigne sur les metriques annoncees : la fiche VMA affichait encore 9/10, valeur residuelle de l ancien test 10 km"
+  ]},
   {"build":132,"date":"26 juillet 2026","sha":"","tag":"S30 bouclee : recup dimanche loggee + revue de la plus grosse semaine","items":[
     "Recup post-marathon J+3 loggee : 10,13 km a 5:56/km, FC 146/161, 27 degres en fin de journee, Novablast 5 V etrennee (0 -> 10 km)",
     "Derive cardiaque 11,6 % (attendu 8) : km 0-2 a 5:41/km FC 137 puis km 8-10 a 6:00/km FC 148. Loic a RALENTI de 19 s/km pendant que sa FC montait de 11 bpm -- son ressenti est confirme par les donnees",
