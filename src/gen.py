@@ -716,46 +716,47 @@ for n,ss in WEEKS.items():
         # mardi, dernier jour respirable. Le test 10 km prevu initialement est REPORTE :
         # un contre-la-montre maximal a J+5 d'un marathon mesurerait la fatigue, pas la forme.
         # Lundi
-        arr[0]["titre"]="Footing d'absorption"
-        arr[0]["type"]="EF aérobie"
+        arr[0]["titre"]="EF + 6×30 sec — séance avancée"
+        arr[0]["type"]="VMA / vitesse"
+        arr[0]["accent"]=RED
+        arr[0]["fill"]=52
+        arr[0]["cat"]="seuil"
+        arr[0]["rpe"]=6.5
+        arr[0]["realise"]={"statut":"fait","km":10.02,"temps":"56:06","allure":"5:36/km","fc_moy":148,"fc_max":188,"re":79,"cadence":175,"elevation_gain":39,"temp":29,"rpe_ressenti":6,
+        "commentaire":"S\u00e9ance de qualit\u00e9 avanc\u00e9e du mardi au lundi \u00b7 d\u00e9part 11h07, ~29\u00b0C \u00b7 10,02 km. Structure : 6,12 km d'EF \u00e0 5:48/km (FC moyenne 140,8, 42 % des relev\u00e9s sous 140) puis 6\u00d730 sec r\u00e9cup 30 sec, puis 15 min de retour au calme. INTERVALLES en negative split parfait 6/6 : 4:22 \u2192 3:59 \u2192 3:52 \u2192 3:29 \u2192 3:20 \u2192 2:57/km. Pointe finale \u00e0 2:57/km, soit 19 s/km plus rapide que le meilleur intervalle du 21/07 (3:16). FC max 188 (plafond personnel 192). Redescente cardiaque difficile : sous 155 en 1 min mais pr\u00e8s de 8 min pour passer sous 150, FC rest\u00e9e entre 145 et 167 sur les 15 min de retour au calme. 5 records. Novablast 5 V (10 \u2192 20 km). G\u00eane au pied gauche toujours pr\u00e9sente, non douloureuse en courant.",
+        "pr":5,"ach":5,"pr_detail":[],
+        "revue":"<strong>Meilleure s\u00e9ance de vitesse de ta saison, et de loin \u2014 quatre jours apr\u00e8s un marathon.</strong> Tes six intervalles sont en <strong>negative split parfait 6/6</strong> : 4:22, 3:59, 3:52, 3:29, 3:20, 2:57/km. Pas une seule r\u00e9p\u00e9tition qui d\u00e9croche. C'est exactement le sch\u00e9ma d'ex\u00e9cution qu'on cherche : partir prudent, construire, finir fort.<br><br><strong>Ta pointe \u00e0 2:57/km est un vrai marqueur.</strong> Le 21/07, frais, ton meilleur intervalle \u00e9tait \u00e0 3:16/km. Aujourd'hui, \u00e0 J+4 d'un marathon, tu vas <strong>19 s/km plus vite</strong>. Ta r\u00e9serve de vitesse pure est bien r\u00e9elle, et elle progresse.<br><br><strong>L'\u00e9chauffement \u00e9tait bon :</strong> 6,12 km \u00e0 5:48/km avec une FC moyenne de 140,8 \u2014 tu es rest\u00e9 en endurance sur toute la premi\u00e8re partie, ce qui a prot\u00e9g\u00e9 le pied et pr\u00e9par\u00e9 les jambes. C'est le bon format.<br><br><strong>Sur ta difficult\u00e9 \u00e0 redescendre : ton ressenti est exact.</strong> Tu as touch\u00e9 <strong>188 bpm</strong>, soit ton plafond personnel (192). La redescente a \u00e9t\u00e9 rapide jusqu'\u00e0 155 (1 min), puis <strong>bloqu\u00e9e : pr\u00e8s de 8 minutes pour passer sous 150</strong>, et ta FC est rest\u00e9e entre 145 et 167 sur les 15 min de retour au calme. Trois causes se cumulent : tu es mont\u00e9 plus haut qu'au 21/07 (188 contre 182), tu es \u00e0 J+4 d'un marathon avec une fatigue r\u00e9siduelle encore \u00e9lev\u00e9e, et il faisait 29\u00b0C \u00e0 11h. <strong>Ce n'est pas un signal inqui\u00e9tant</strong> \u2014 c'est le prix normal d'\u00eatre all\u00e9 aussi vite dans ces conditions. \u00c0 surveiller quand m\u00eame : si \u00e7a se reproduit sur une s\u00e9ance plus facile et par temps frais, on regardera de plus pr\u00e8s.<br><br><strong>\u26a0\ufe0f Ce que \u00e7a change pour la semaine.</strong> Tu viens de faire ta qualit\u00e9, en mieux que pr\u00e9vu. La s\u00e9ance de demain n'a donc plus lieu d'\u00eatre : <strong>elle devient du repos</strong>. Et ton pied en est au cinqui\u00e8me jour de g\u00eane continue, aujourd'hui sollicit\u00e9 par une s\u00e9ance intense. Encha\u00eener une deuxi\u00e8me qualit\u00e9 demain serait pr\u00e9cis\u00e9ment la d\u00e9cision qui transforme une g\u00eane en blessure.<br><br><strong>Bon r\u00e9flexe chaussure :</strong> deuxi\u00e8me sortie avec la Novablast 5 V, le rodage avance bien pour Nice."}
         arr[0]["sport"]="Course à pied"
-        arr[0]["accent"]=GREEN
-        arr[0]["fill"]=22
-        arr[0]["cat"]="ef"
         arr[0]["date"]="2026-07-27"
         arr[0]["rpe"]=3.0
         arr[0]["chaussure"]="Gel Pulse 16"
-        arr[0]["sous"]="8 km très facile au frais. On fait circuler après le marathon, on ne construit rien."
-        arr[0]["metriques"]={"Distance":"~8 km","Durée":"~48 min","Allure":"6:00-6:20/km","FC":"< 140 bpm","RPE":"3","Type":"EF"}
-        arr[0]["objectif"]="Relancer la circulation à J+4 du marathon. L'allure n'a aucune importance : tu pilotes au cardio, tu restes sous 140. Si les jambes sont lourdes, tu écourtes sans discuter."
-        arr[0]["struct"]=[{"nom":"Corps","txt":"8 km à allure de conversation franche. Tu dois pouvoir parler en phrases complètes du début à la fin."}]
-        arr[0]["legende"]=[{"c":GREEN,"l":"Très facile"}]
-        arr[0]["benefices"]="Circulation sanguine, drainage des résidus du marathon, sans coût pour la séance de mardi."
+        arr[0]["sous"]="Séance de qualité avancée du mardi : EF puis 6×30 sec. La canicule arrive mercredi, autant placer la vitesse au frais."
+        arr[0]["metriques"]={"Distance":"~10 km","Durée":"~56 min","Allure":"EF 5:50/km + 6×30 sec","FC":"140 en EF, jusqu'à 188 sur les pointes","RPE":"6","Type":"VMA courte"}
+        arr[0]["objectif"]="Entretenir la vivacité neuromusculaire — le système qui récupère le plus vite après un marathon. Échauffement long en EF pour protéger le pied, puis 6 accélérations courtes avec récupération complète."
+        arr[0]["struct"]=[{"nom":"Échauffement","txt":"6 km d'EF progressive à ~5:50/km, FC sous 145."},{"nom":"6 × 30 sec","txt":"Accélérations progressives, récupération 30 sec entre chaque."},{"nom":"Retour au calme","txt":"15 min très faciles."}]
+        arr[0]["legende"]=[{"c":GREEN,"l":"EF"},{"c":RED,"l":"30 sec"},{"c":VIOLET,"l":"Récup"}]
+        arr[0]["benefices"]="Réveil neuromusculaire et économie de course, pour un coût métabolique modéré."
         arr[0]["coach"]=[{"titre":"Le pied commande","texte":"Premiers pas au réveil : si ça fait mal et que ça s'atténue en marchant, tu ne cours pas. C'est la signature d'une irritation de l'aponévrose plantaire, et elle se traite par le repos, pas en courant dessus."}]
-        arr[0]["vigilance"]="Dernière sortie avant la qualité de mardi : rester vraiment facile, ne pas transformer ce footing en séance."
+        arr[0]["vigilance"]="Séance intense réalisée avec une gêne au pied encore présente : la suite de la semaine doit rester très facile."
         # Mardi — la seule qualite de la semaine
-        arr[1]["titre"]="Séance de vitesse — 6×30 sec"
-        arr[1]["type"]="VMA / vitesse"
-        arr[1]["sport"]="Course à pied"
-        arr[1]["accent"]=RED
-        arr[1]["fill"]=58
-        arr[1]["cat"]="seuil"
+        arr[1]["titre"]="Repos — la qualité a été faite hier"
+        arr[1]["type"]="Repos"
+        arr[1]["sport"]="Repos"
+        arr[1]["accent"]=VIOLET
+        arr[1]["fill"]=0
+        arr[1]["cat"]="repos"
+        arr[1]["opt"]=True
         arr[1]["date"]="2026-07-28"
-        arr[1]["rpe"]=7.0
-        arr[1]["chaussure"]="ASICS Magic Speed 4"
-        arr[1]["sous"]="La seule qualité de la semaine, placée mardi car c'est le dernier jour respirable avant le pic de chaleur."
-        arr[1]["metriques"]={"Distance":"~7 km","Durée":"~40 min","Allure":"4:00-4:10/km sur les 30 sec","FC":"jusqu'à 180 sur les pointes","RPE":"7","Type":"VMA courte"}
-        arr[1]["objectif"]="Entretenir la vivacité neuromusculaire — c'est ce qui récupère le plus vite après un marathon, contrairement à la capacité à soutenir un effort dur et long. D'où le choix de la VMA courte plutôt qu'un seuil, qui taperait dans le système le plus entamé."
-        arr[1]["struct"]=[
-          {"nom":"Échauffement","txt":"20 min minimum, très progressif, + 4 lignes droites de 80 m avant la première accélération. Non négociable : c'est ce qui protège le pied."},
-          {"nom":"6 × 30 sec","txt":"Accélérations à ~4:00-4:10/km, contrôlées (90-95 % de ta vitesse max), jamais en sprint. Récupération 1'30 en marche ou trot TRÈS lent."},
-          {"nom":"Retour au calme","txt":"10 min très facile."}]
-        arr[1]["legende"]=[{"c":GREEN,"l":"Échauffement"},{"c":RED,"l":"30 sec VMA"},{"c":VIOLET,"l":"Récup"}]
-        arr[1]["benefices"]="Réveil du système nerveux et de l'économie de course pour un coût métabolique quasi nul — le meilleur rapport bénéfice/fatigue à J+5 d'un marathon."
-        arr[1]["coach"]=[
-          {"titre":"6 répétitions, pas 8","texte":"Le 21/07 tu en avais fait 8 avec une pointe à 3:16/km, mais tu étais frais. Là tu es à J+5 d'un marathon : on garde le stimulus, on réduit la dose."},
-          {"titre":"La récup doit être VRAIE","texte":"Le 21/07, tes récups à 5:00/km avaient laissé la FC à 160 et fait glisser la séance vers du tempo. Cette fois tu marches ou tu trottes très lentement : c'est ce qui fait la différence entre une VMA propre et une séance coûteuse."}]
-        arr[1]["vigilance"]="Trois conditions : pied silencieux au réveil, échauffement de 20 min minimum, et tu t'arrêtes à 4 ou 5 répétitions si les jambes ne répondent pas. Si le pied parle, on annule et on fait un EF."
+        arr[1]["rpe"]=0
+        arr[1]["chaussure"]=None
+        arr[1]["sous"]="Repos complet : la séance de vitesse a été avancée à lundi et très bien exécutée. Rien à ajouter aujourd'hui."
+        arr[1]["metriques"]={"Distance":"—","Durée":"—","Allure":"—","FC":"—","RPE":"0","Type":"Repos"}
+        arr[1]["objectif"]="Repos complet. Deux raisons : la qualité prévue ici a été faite hier (6×30 en negative split parfait, pointe à 2:57/km), et la gêne au pied gauche en est à son cinquième jour. Enchaîner une seconde séance intense serait exactement la décision qui transforme une gêne en blessure."
+        arr[1]["struct"]=[{"nom":"Repos","txt":"Rien de couru. Marche, hydratation, et surveillance du pied : test des premiers pas au réveil."}]
+        arr[1]["legende"]=[{"c":VIOLET,"l":"Repos"}]
+        arr[1]["benefices"]="Assimilation de la séance de vitesse d'hier et poursuite de la récupération du marathon. Le repos est ici la séance la plus productive."
+        arr[1]["coach"]=[{"titre":"Tu as déjà encaissé la séance","texte":"La qualité de la semaine est faite, et mieux que prévu : negative split sur 6/6 avec une pointe 19 s/km plus rapide qu'au 21/07. Il n'y a rien à gagner à en refaire une aujourd'hui, seulement du risque à prendre."},{"titre":"Cinquième jour de gêne au pied","texte":"Elle n'est pas douloureuse en courant, mais elle ne disparaît pas non plus. Une journée sans impact est le meilleur moyen de la laisser se calmer avant les footings de mercredi et jeudi."}]
+        arr[1]["vigilance"]="Si la gêne au pied persiste au-delà de cette semaine ou devient douloureuse aux premiers pas du matin, consulter sans attendre."
         # Mercredi — canicule
         arr[2]["titre"]="Footing canicule — départ 6h30"
         arr[2]["type"]="EF aérobie"
@@ -822,7 +823,7 @@ META=[
 (28,'general','Récupération post-Déraille',36,'Récup','100 % facile · récupération active',"Semaine de récupération après le Trail Déraille — footings très faciles, zéro intensité. Le bloc seuil est décalé à S30 pour laisser les jambes assimiler le D+ et la chaleur. La récup n'est pas du temps perdu : c'est là que les adaptations se construisent."),
 (29,'general','Seuil découverte',62,'Soutenue','≈ 80 % facile · 20 % qualité',"Reprise progressive après la semaine de récup : premier vrai contact avec le seuil (2 blocs courts) + longue qui reprend du volume avec finish AM."),
 (30,'general','Semaine ViaRhôna',72,'Soutenue','≈ 92 % facile · 8 % rythme léger',"Semaine organisée autour du projet ViaRhôna 40 km (jeudi). Une seule touche de rythme (lignes droites mardi), repos la veille, récup après. Seuil et côtes retirés : le 40 km EST la charge de la semaine."),
-(31,'general','Absorption marathon · canicule',42,'Légère','≈ 90 % facile · une touche de vitesse',"Semaine d'absorption du marathon ViaRhôna sous dôme de chaleur (36-38°C mercredi et jeudi). Une seule qualité, placée mardi au frais. Test 10 km reporté : un contre-la-montre à J+5 d'un marathon mesurerait la fatigue, pas la forme."),
+(31,'general','Absorption marathon · canicule',40,'Légère','≈ 88 % facile · une touche de vitesse',"Semaine d'absorption du marathon ViaRhôna sous dôme de chaleur (36-38°C mercredi et jeudi). Qualité faite dès le lundi (6×30 en negative split), mardi devenu repos. Test 10 km reporté : un contre-la-montre à J+5 d'un marathon mesurerait la fatigue, pas la forme."),
 (32,'seuil','Seuil long',78,'Élevée','≈ 80 % facile · 20 % qualité',"Seuil long (2×15 min) + longue 26 km dont 8 AM. 2ᵉ mobilité ajoutée."),
 (33,'seuil','Allègement',64,'Légère','≈ 85 % facile · 15 % qualité',"Récupération avant le pic pré-USA."),
 (34,'seuil','Pic pré-USA',82,'Élevée','≈ 78 % facile · 22 % qualité',"Plus gros bloc avant le voyage : seuil + longue 28 km dont 12 AM (gate de la reine)."),
@@ -877,7 +878,7 @@ COUL={p["id"]:p["c"] for p in PHASES}
 GEAR=[
   {"marque":"HOKA","modele":"Clifton 10","km":1148},
   {"marque":"ASICS","modele":"Novablast 5 J","km":651},
-  {"marque":"ASICS","modele":"Novablast 5 V","km":10},
+  {"marque":"ASICS","modele":"Novablast 5 V","km":20},
   {"marque":"ASICS","modele":"Gel Pulse 16","km":225},
   {"marque":"Brooks","modele":"Cascadia 19","km":241},
   {"marque":"ASICS","modele":"Magic Speed 4","km":66},
@@ -1166,6 +1167,14 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":135,"date":"27 juillet 2026","sha":"","tag":"Seance de vitesse du lundi loggee, mardi devient repos","items":[
+    "Qualite avancee du mardi au lundi (canicule des mercredi) : 10,02 km, EF 6,12 km a 5:48/km FC 140,8 puis 6x30 sec, FC max 188, 5 records",
+    "NEGATIVE SPLIT PARFAIT 6/6 : 4:22, 3:59, 3:52, 3:29, 3:20, 2:57/km. Pointe finale 19 s/km plus rapide que le meilleur intervalle du 21/07 (3:16), et ce a J+4 d un marathon",
+    "Redescente cardiaque analysee (ressenti confirme) : sous 155 en 1 min mais pres de 8 min pour passer sous 150, FC entre 145 et 167 sur les 15 min de retour au calme. Trois causes cumulees : 188 bpm atteints (plafond 192), fatigue residuelle du marathon, 29 degres a 11h",
+    "MARDI TRANSFORME EN REPOS : la qualite de la semaine est faite, et la gene au pied gauche en est a son cinquieme jour consecutif. Une seconde seance intense serait la decision qui transforme une gene en blessure",
+    "Novablast 5 V 10 -> 20 km (rodage en vue de Nice). Volume S31 ajuste a 40 km",
+    "CORRECTIF OUTILLAGE : audit_cockpit.py avait la semaine courante EN DUR (30). Il a donc bloque la livraison en comparant la mauvaise fenetre alors que l app affichait correctement S31. La semaine est desormais calculee automatiquement -- l outil de controle ne doit pas reproduire le defaut de valeur figee qu il est cense detecter"
+  ]},
   {"build":134,"date":"26 juillet 2026","sha":"","tag":"Sorties longues recalees sur les enseignements du marathon","items":[
     "ALLURE MARATHON corrigee de 5:15 a 5:20/km partout : 3h45 sur 42,195 km fait 5:19/km. Le 5:15 correspondait a ce que Loic a tenu 2 km au finish du ViaRhona, mais a FC 163-167 -- insoutenable sur 3h45",
     "Repere de validation ajoute sur chaque bloc AM : viser 155-158 bpm a 5:20/km d ici octobre. Au-dela de 165, ralentir a 5:25. C est la FC, pas le chrono, qui dira si 3h45 est acquis",

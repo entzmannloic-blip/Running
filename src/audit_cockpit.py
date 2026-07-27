@@ -42,7 +42,28 @@ import statistics as st
 
 DATA = '/tmp/data.json'
 HTML = '/mnt/user-data/outputs/plan-entrainement.html'
-CURWK = 30                      # semaine courante du plan
+
+
+def semaine_courante():
+    """
+    Semaine ISO du jour, bornee aux semaines reellement presentes dans le plan.
+
+    Surtout PAS de constante en dur : une valeur figee ici a fait echouer l'audit
+    le 27/07 (il comparait encore la fenetre S30 alors que l'app affichait
+    correctement S31). C'est exactement le type de valeur en dur qui avait cause
+    les series figees du Cockpit — l'outil de controle ne doit pas reproduire le
+    defaut qu'il est cense detecter.
+    """
+    import datetime, json as _json
+    iso = datetime.date.today().isocalendar()[1]
+    try:
+        dispo = [int(k) for k in _json.load(open(DATA))['SBW'].keys()]
+        return max(min(dispo), min(iso, max(dispo)))
+    except Exception:
+        return iso
+
+
+CURWK = semaine_courante()
 
 
 # ---------------------------------------------------------------- utilitaires
