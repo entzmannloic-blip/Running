@@ -739,42 +739,46 @@ for n,ss in WEEKS.items():
         arr[0]["coach"]=[{"titre":"Le pied commande","texte":"Premiers pas au réveil : si ça fait mal et que ça s'atténue en marchant, tu ne cours pas. C'est la signature d'une irritation de l'aponévrose plantaire, et elle se traite par le repos, pas en courant dessus."}]
         arr[0]["vigilance"]="Séance intense réalisée avec une gêne au pied encore présente : la suite de la semaine doit rester très facile."
         # Mardi — la seule qualite de la semaine
-        arr[1]["titre"]="Repos — la qualité a été faite hier"
-        arr[1]["type"]="Repos"
-        arr[1]["sport"]="Repos"
-        arr[1]["accent"]=VIOLET
-        arr[1]["fill"]=0
-        arr[1]["cat"]="repos"
-        arr[1]["opt"]=True
+        arr[1]["titre"]="EF pilotée au cardio"
+        arr[1]["type"]="EF aérobie"
+        arr[1]["sport"]="Course à pied"
+        arr[1]["accent"]=GREEN
+        arr[1]["fill"]=26
+        arr[1]["cat"]="ef"
         arr[1]["date"]="2026-07-28"
-        arr[1]["rpe"]=0
-        arr[1]["chaussure"]=None
-        arr[1]["sous"]="Repos complet : la séance de vitesse a été avancée à lundi et très bien exécutée. Rien à ajouter aujourd'hui."
-        arr[1]["metriques"]={"Distance":"—","Durée":"—","Allure":"—","FC":"—","RPE":"0","Type":"Repos"}
-        arr[1]["objectif"]="Repos complet. Deux raisons : la qualité prévue ici a été faite hier (6×30 en negative split parfait, pointe à 2:57/km), et la gêne au pied gauche en est à son cinquième jour. Enchaîner une seconde séance intense serait exactement la décision qui transforme une gêne en blessure."
-        arr[1]["struct"]=[{"nom":"Repos","txt":"Rien de couru. Marche, hydratation, et surveillance du pied : test des premiers pas au réveil."}]
-        arr[1]["legende"]=[{"c":VIOLET,"l":"Repos"}]
-        arr[1]["benefices"]="Assimilation de la séance de vitesse d'hier et poursuite de la récupération du marathon. Le repos est ici la séance la plus productive."
-        arr[1]["coach"]=[{"titre":"Tu as déjà encaissé la séance","texte":"La qualité de la semaine est faite, et mieux que prévu : negative split sur 6/6 avec une pointe 19 s/km plus rapide qu'au 21/07. Il n'y a rien à gagner à en refaire une aujourd'hui, seulement du risque à prendre."},{"titre":"Cinquième jour de gêne au pied","texte":"Elle n'est pas douloureuse en courant, mais elle ne disparaît pas non plus. Une journée sans impact est le meilleur moyen de la laisser se calmer avant les footings de mercredi et jeudi."}]
-        arr[1]["vigilance"]="Si la gêne au pied persiste au-delà de cette semaine ou devient douloureuse aux premiers pas du matin, consulter sans attendre."
+        arr[1]["rpe"]=3.5
+        arr[1]["chaussure"]="HOKA Clifton 10"
+        arr[1]["realise"]={"statut":"fait","km":10.03,"temps":"1h01","allure":"6:06/km","fc_moy":138,"fc_max":149,"re":49,"cadence":178,"elevation_gain":32,"temp":28,"rpe_ressenti":4,
+        "decouplage":{"pct":2.98,"bpm":1.4,"fen_min":60,"temp":28,"attendu":8,"p1":"5:59/km","fc1":138,"p2":"5:59/km","fc2":139,"qualite":"fiable","algo":"decoup-v1"},
+        "commentaire":"EF pilot\u00e9e au cardio \u00b7 d\u00e9part 9h09, ~28\u00b0C et air tr\u00e8s sec \u00b7 10,03 km en 1h01 \u00e0 6:06/km. OBJECTIF CARDIO PLEINEMENT ATTEINT : FC moyenne 138 (max 149), 66 % des relev\u00e9s sous 140 bpm, 100 % sous 150, ZERO seconde au-dessus de 150. D\u00e9couplage 2,98 % pour 8 % attendu \u2014 allure identique entre les deux moiti\u00e9s (5:59/km) avec seulement +1 bpm. RE 49, le plus bas depuis longtemps. G\u00eane au pied gauche d\u00e9crite comme un bleu ressenti \u00e0 chaque pas, sans emp\u00eacher de courir. Chauss\u00e9 en Clifton 10 (1148 km, paire en fin de vie).",
+        "pr":0,"ach":0,"pr_detail":[],
+        "revue":"<strong>Ta meilleure s\u00e9ance de pilotage cardiaque de la saison.</strong> FC moyenne 138, jamais au-dessus de 149, <strong>z\u00e9ro seconde pass\u00e9e au-dessus de 150 bpm</strong> sur une heure par 28\u00b0C et air sec. Tu voulais courir au cardio : c'est fait, et de mani\u00e8re exemplaire.<br><br><strong>Sur ton allure de 6:06 que tu trouves \u00ab pas incroyable \u00bb \u2014 c'est une erreur de lecture.</strong> Le d\u00e9couplage le prouve : <strong>2,98 % contre 8 % attendu</strong> vu la chaleur. Concr\u00e8tement, tu as couru la seconde moiti\u00e9 \u00e0 la m\u00eame allure que la premi\u00e8re (5:59/km) avec seulement <strong>+1 bpm</strong>. C'est le meilleur r\u00e9sultat de toutes tes sorties mesur\u00e9es, r\u00e9cup du 20/07 comprise. L'allure est la cons\u00e9quence de la chaleur, pas de ta forme.<br><br><strong>La comparaison qui compte :</strong> dimanche 26/07, m\u00eame distance, FC moyenne 146 et d\u00e9couplage 11,6 %. Aujourd'hui, FC 138 et d\u00e9couplage 3 %. En deux jours, tu es pass\u00e9 d'une s\u00e9ance subie \u00e0 une s\u00e9ance parfaitement ma\u00eetris\u00e9e \u2014 et c'est le signe que tu absorbes enfin le marathon.<br><br><strong>Ton RE de 49 est le plus bas depuis des semaines</strong> : cette sortie t'a co\u00fbt\u00e9 tr\u00e8s peu. C'est exactement ce qu'on veut d'une EF.<br><br><strong>\u26a0\ufe0f Deux points de vigilance.</strong> Le premier : ton pied. Une g\u00eane compar\u00e9e \u00e0 un bleu ressenti <em>\u00e0 chaque pas</em> et pr\u00e9sente depuis six jours, ce n'est plus anodin. Le second, et il aggrave le premier : <strong>tu as couru en Clifton 10</strong>, la paire \u00e0 1148 km dont on a constat\u00e9 sur photos la d\u00e9lamination de la semelle, le trou dans le mesh et la mousse tass\u00e9e. Courir avec une g\u00eane plantaire dans une chaussure sans amorti, c'est la combinaison qui transforme une irritation en aponev\u00e9rosite. <strong>Sors-les d\u00e9finitivement de la rotation</strong> \u2014 tu as trois paires saines disponibles.<br><br><strong>Demain repos, et c'est parfait.</strong> Tu as encha\u00een\u00e9 vitesse lundi et une heure d'EF aujourd'hui. Profites-en pour laisser le pied se calmer : si la g\u00eane persiste apr\u00e8s cette journ\u00e9e sans impact, il faudra consulter avant la reprise."}
+        arr[1]["sous"]="10 km entièrement pilotés au cardio sous 140 bpm, par temps chaud et air très sec."
+        arr[1]["metriques"]={"Distance":"10,03 km","Durée":"1h01","Allure":"6:06/km","FC":"138 moy · 149 max","RPE":"3-4","Type":"EF"}
+        arr[1]["objectif"]="Sortie entièrement pilotée au cardio : rester sous 140 bpm quoi qu'il en coûte à l'allure. Par temps chaud et air sec, c'est la seule façon de faire de la vraie endurance sans basculer en zone grise."
+        arr[1]["struct"]=[{"nom":"Corps","txt":"10 km à FC constante sous 140 bpm. L'allure est la conséquence, pas l'objectif."}]
+        arr[1]["legende"]=[{"c":GREEN,"l":"EF pilotée FC"}]
+        arr[1]["benefices"]="Endurance fondamentale pure, assimilation de la séance de vitesse de la veille, et validation du pilotage cardiaque par forte chaleur."
+        arr[1]["coach"]=[{"titre":"Le cardio commande, l'allure suit","texte":"Accepter 6:06/km pour tenir 138 bpm par 28°C et air sec, c'est exactement la bonne décision. L'allure lente n'est pas une contre-performance : c'est le prix de la chaleur, et tu l'as payé au bon endroit."}]
+        arr[1]["vigilance"]="Gêne au pied gauche décrite comme un bleu à chaque pas, ressentie en permanence. Chaussures usées utilisées ce jour-là : à ne plus reproduire."
         # Mercredi — canicule
-        arr[2]["titre"]="Footing canicule — départ 6h30"
-        arr[2]["type"]="EF aérobie"
-        arr[2]["sport"]="Course à pied"
-        arr[2]["accent"]=GREEN
-        arr[2]["fill"]=15
-        arr[2]["cat"]="ef"
+        arr[2]["titre"]="Repos complet"
+        arr[2]["type"]="Repos"
+        arr[2]["sport"]="Repos"
+        arr[2]["accent"]=VIOLET
+        arr[2]["fill"]=0
+        arr[2]["cat"]="repos"
         arr[2]["date"]="2026-07-29"
         arr[2]["rpe"]=2.5
-        arr[2]["chaussure"]="Novablast 5 V"
-        arr[2]["sous"]="5-6 km à l'aube. Journée annoncée à 36-38°C : c'est l'heure qui rend la séance saine, pas la distance."
-        arr[2]["metriques"]={"Distance":"5-6 km","Durée":"30-40 min","Allure":"peu importe","FC":"< 140 bpm","RPE":"2-3","Type":"Circulation"}
-        arr[2]["objectif"]="Bouger sans charger, un lendemain de qualité et en pleine chaleur. Ce n'est pas de l'entraînement, c'est de la circulation. Départ 6h30 impératif : à cette heure tu es autour de 22-24°C contre 36 l'après-midi."
-        arr[2]["struct"]=[{"nom":"Corps","txt":"5-6 km en boucles courtes près de chez toi, pour pouvoir rentrer à tout moment. FC seule pilote, l'allure ne compte pas."}]
-        arr[2]["legende"]=[{"c":GREEN,"l":"Très facile"}]
-        arr[2]["benefices"]="Entretien de la routine et de la circulation, et poursuite du rodage de la Novablast 5 V en vue de Nice."
-        arr[2]["coach"]=[{"titre":"Ton cardio va monter, c'est normal","texte":"Au-dessus de 15°C, ta FC prend environ 1 bpm par degré supplémentaire. À 24°C tu es déjà à +9 bpm pour le même effort. Ne te bats pas contre le chiffre : ralentis."}]
-        arr[2]["vigilance"]="ARRÊT IMMÉDIAT si frissons ou chair de poule par forte chaleur, si tu cesses de transpirer, en cas de mal de tête qui s'installe, de nausée ou de confusion. Ce sont les signes d'un coup de chaleur. Électrolytes avant, eau sur toi même sur 6 km."
+        arr[2]["chaussure"]=None
+        arr[2]["sous"]="Repos complet. Pic de canicule à 36-38°C et gêne au pied à surveiller : la meilleure séance du jour est de ne pas courir."
+        arr[2]["metriques"]={"Distance":"—","Durée":"—","Allure":"—","FC":"—","RPE":"0","Type":"Repos"}
+        arr[2]["objectif"]="Journée sans impact. Deux séances consécutives (vitesse lundi, 1h d'EF mardi) et une gêne au pied présente depuis six jours : le repos est ici la décision la plus productive."
+        arr[2]["struct"]=[{"nom":"Repos","txt":"Rien de couru. Hydratation, marche légère, et surveillance du pied : test des premiers pas au réveil."}]
+        arr[2]["legende"]=[{"c":VIOLET,"l":"Repos"}]
+        arr[2]["benefices"]="Assimilation des deux séances précédentes et fenêtre de récupération pour le pied."
+        arr[2]["coach"]=[{"titre":"Sors les Clifton 10 de la rotation","texte":"Tu as couru mardi avec la paire à 1148 km : délamination de la semelle, trou dans le mesh, mousse tassée. Avec une gêne plantaire, c'est la combinaison à éviter absolument. Tu as trois paires saines disponibles."}]
+        arr[2]["vigilance"]="Si la gêne au pied persiste après cette journée de repos complet, consulter avant la reprise. Six jours de gêne continue, c'est le seuil où l'attentisme devient risqué."
         # Samedi — sortie longue raccourcie
         arr[3]["titre"]="Sortie longue — départ à l'aube"
         arr[3]["type"]="Sortie longue"
@@ -876,7 +880,7 @@ PHASES=[
 ]
 COUL={p["id"]:p["c"] for p in PHASES}
 GEAR=[
-  {"marque":"HOKA","modele":"Clifton 10","km":1148},
+  {"marque":"HOKA","modele":"Clifton 10","km":1158},
   {"marque":"ASICS","modele":"Novablast 5 J","km":651},
   {"marque":"ASICS","modele":"Novablast 5 V","km":20},
   {"marque":"ASICS","modele":"Gel Pulse 16","km":225},
@@ -1167,6 +1171,14 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":136,"date":"28 juillet 2026","sha":"","tag":"EF pilotee au cardio loggee + fix composante Efficience","items":[
+    "EF du 28/07 : 10,03 km a 6:06/km, FC moyenne 138 (max 149) par 28 degres et air tres sec. ZERO seconde au-dessus de 150 bpm sur une heure",
+    "Decouplage 2,98 % pour 8 % attendu : allure identique entre les deux moities (5:59/km) avec seulement +1 bpm. Meilleur resultat de toutes les sorties mesurees",
+    "Comparaison parlante : dimanche 26/07 meme distance, FC 146 et decouplage 11,6 %. Aujourd hui FC 138 et decouplage 3 % -- l absorption du marathon progresse",
+    "Mercredi 29/07 passe en repos complet (pic de canicule + gene au pied au 6e jour). Clifton 10 -> 1158 km",
+    "ALERTE MATERIEL : la sortie a ete faite en Clifton 10, paire a 1148 km avec delamination de semelle, trou dans le mesh et mousse tassee. Avec une gene plantaire, c est la combinaison a eviter -- rappel explicite dans la fiche et le conseil coach",
+    "FIX composante Efficience de la Forme du jour : elle comparait des ALLURES BRUTES sans regarder la FC. Une EF deliberement ralentie a 6:06 pour tenir 138 bpm faisait chuter le score a 32/100 alors que le decouplage sortait a 3 %. Elle mesure desormais le rapport allure/FC : 88/100 (+3,2 %)"
+  ]},
   {"build":135,"date":"27 juillet 2026","sha":"","tag":"Seance de vitesse du lundi loggee, mardi devient repos","items":[
     "Qualite avancee du mardi au lundi (canicule des mercredi) : 10,02 km, EF 6,12 km a 5:48/km FC 140,8 puis 6x30 sec, FC max 188, 5 records",
     "NEGATIVE SPLIT PARFAIT 6/6 : 4:22, 3:59, 3:52, 3:29, 3:20, 2:57/km. Pointe finale 19 s/km plus rapide que le meilleur intervalle du 21/07 (3:16), et ce a J+4 d un marathon",

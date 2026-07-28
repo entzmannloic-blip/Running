@@ -444,23 +444,38 @@ function computeFormeScore(){
   const adherScore=totalP>0?Math.min(100,Math.round(totalF/totalP*104)):75;
 
   // 4. EFFICIENCE (20%)
+  // Mesure le rapport ALLURE / FC, pas l'allure brute.
+  // Pourquoi : le 28/07, une EF deliberement ralentie a 6:06/km pour tenir
+  // 138 bpm par 28 C faisait chuter cette composante a 32/100 ("-18s/km"),
+  // alors que le decouplage de cette meme sortie sortait a 3 % (excellent).
+  // L'ancienne version comparait des allures brutes sans voir la FC : elle
+  // punissait donc une bonne decision de pilotage cardiaque.
   const efSess=[];
   Object.entries(SEANCES_BY_WEEK).forEach(([wk,ss])=>ss.forEach(s=>{
-    if(s.realise&&s.realise.allure&&(s.cat==='EF'||(s.type||'').includes('EF'))){
-      const p=s.realise.allure.replace('/km','').split(':');
-      if(p.length===2)efSess.push({wk:+wk,pace:+p[0]*60+(+p[1]||0)});
-    }
+    const r=s.realise;
+    if(!r||!r.allure||r.statut!=='fait')return;
+    const t=((s.type||'')+' '+(s.titre||'')).toLowerCase();
+    if(/seuil|vma|tempo|fractionn|c[ôo]tes|sp[ée]cifique|vitesse|intervalle/.test(t))return;
+    if(!(s.cat==='EF'||s.cat==='ef'||/\bef\b|footing|a[ée]robie|r[ée]cup/.test(t)))return;
+    const p=r.allure.replace('/km','').split(':');
+    if(p.length!==2||!r.fc_moy)return;
+    const pace=+p[0]*60+(+p[1]||0);
+    if(!pace)return;
+    // efficience = vitesse (m/s) par battement ; plus c'est haut, mieux c'est
+    efSess.push({wk:+wk,eff:(1000/pace)/r.fc_moy});
   }));
   let z2Score=72,z2Label='—';
-  const rEf=efSess.filter(x=>x.wk>=curWk-1).map(x=>x.pace);
-  const oEf=efSess.filter(x=>x.wk<curWk-1&&x.wk>=curWk-5).map(x=>x.pace);
+  const rEf=efSess.filter(x=>x.wk>=curWk-1).map(x=>x.eff);
+  const oEf=efSess.filter(x=>x.wk<curWk-1&&x.wk>=curWk-5).map(x=>x.eff);
   if(rEf.length&&oEf.length){
-    const d=(oEf.reduce((a,b)=>a+b)/oEf.length)-(rEf.reduce((a,b)=>a+b)/rEf.length);
-    if(d>15){z2Score=100;z2Label='+'+Math.round(d)+'s/km ↑↑';}
-    else if(d>5){z2Score=88;z2Label='+'+Math.round(d)+'s/km ↑';}
-    else if(d>-5){z2Score=75;z2Label='Stable';}
-    else if(d>-15){z2Score=52;z2Label=Math.round(d)+'s/km ↓';}
-    else{z2Score=32;z2Label=Math.round(d)+'s/km ↓↓';}
+    const moy=a=>a.reduce((x,y)=>x+y,0)/a.length;
+    const d=(moy(rEf)/moy(oEf)-1)*100;   // % de gain d'efficience
+    const pc=(d>0?'+':'')+d.toFixed(1)+' %';
+    if(d>4){z2Score=100;z2Label=pc+' ↑↑';}
+    else if(d>1.5){z2Score=88;z2Label=pc+' ↑';}
+    else if(d>-1.5){z2Score=75;z2Label='Stable ('+pc+')';}
+    else if(d>-4){z2Score=52;z2Label=pc+' ↓';}
+    else{z2Score=32;z2Label=pc+' ↓↓';}
   }
 
   const score=Math.round(freshScore*.35+acwrScore*.25+adherScore*.20+z2Score*.20);
