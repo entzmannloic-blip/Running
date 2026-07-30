@@ -1175,6 +1175,13 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":138,"date":"30 juillet 2026","sha":"","tag":"Fix : le bouton fermer disparaissait en scrollant dans une fiche","items":[
+    "Signale par Loic : fallait remonter tout en haut de la fiche pour la fermer. Diagnostic confirme par mesure : le bouton passait de 18px a -582px des le premier scroll",
+    "Cause racine identifiee : le bouton etait bien en position sticky, mais se calait par rapport a .modale-boite (overflow:hidden), pas par rapport au conteneur qui defile reellement a l ecran (.modale-overlay)",
+    "Corrige a la racine : c est desormais .modale-boite elle-meme qui defile (overflow-y:auto, hauteur bornee a la fenetre). Le sticky se calcule alors sur le bon conteneur, celui que l oeil voit defiler",
+    "Verifie sur toutes les fiches (seance, semaine), en scroll partiel et total, avec clic reel sur le bouton, en mobile et desktop -- le bouton fermer reste visible et fonctionnel a tout moment",
+    "Aucun ajout de bouton supplementaire : celui qui existait deja fonctionne enfin comme prevu"
+  ]},
   {"build":137,"date":"30 juillet 2026","sha":"","tag":"Premier test allure marathon chiffre (tunnel Croix-Rousse)","items":[
     "14,09 km (echauffement + 4x2 km a allure marathon, recup 2 min), GPS perdu sous tunnel : lecture basee sur FC (fiable) et les intervalles manuels Garmin",
     "Bloc le plus instructif : bloc 2 a FC 152,3 (pile la cible 155-158) produit 5:29/km. C est la donnee la plus fiable pour situer le niveau actuel a FC cible",
