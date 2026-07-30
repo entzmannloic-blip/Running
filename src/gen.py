@@ -779,6 +779,7 @@ for n,ss in WEEKS.items():
         arr[2]["benefices"]="Assimilation des deux séances précédentes et fenêtre de récupération pour le pied."
         arr[2]["coach"]=[{"titre":"Sors les Clifton 10 de la rotation","texte":"Tu as couru mardi avec la paire à 1148 km : délamination de la semelle, trou dans le mesh, mousse tassée. Avec une gêne plantaire, c'est la combinaison à éviter absolument. Tu as trois paires saines disponibles."}]
         arr[2]["vigilance"]="Si la gêne au pied persiste après cette journée de repos complet, consulter avant la reprise. Six jours de gêne continue, c'est le seuil où l'attentisme devient risqué."
+        arr[2]["realise"]={"statut":"fait","commentaire":"Repos complet respecté. Amélioration nette de la gêne au pied dès le lendemain."}
         # Samedi — sortie longue raccourcie
         arr[3]["titre"]="Sortie longue — départ à l'aube"
         arr[3]["type"]="Sortie longue"
@@ -800,24 +801,27 @@ for n,ss in WEEKS.items():
         arr[3]["coach"]=[{"titre":"Par 36°C, une sortie longue coûte plus qu'elle ne rapporte","texte":"Souviens-toi de la SL du 16/07 : 23 km en canicule, découplage 9,4 %, vertiges à cause du gel pris trop tard. Ici on part tôt, on raccourcit, et on ne cherche aucune performance."}]
         arr[3]["vigilance"]="Si la chaleur est déjà forte au départ ou si le pied se manifeste, réduire à 10 km. Rien dans cette sortie ne justifie de prendre un risque."
         # Jeudi — optionnel
-        arr[4]["titre"]="Footing canicule — optionnel"
-        arr[4]["type"]="EF aérobie"
+        arr[4]["titre"]="Tunnel Croix-Rousse — blocs allure marathon"
+        arr[4]["type"]="Spécifique marathon"
         arr[4]["sport"]="Course à pied"
-        arr[4]["accent"]=GREEN
-        arr[4]["fill"]=14
-        arr[4]["cat"]="ef"
-        arr[4]["opt"]=True
+        arr[4]["accent"]=BLUE
+        arr[4]["fill"]=48
+        arr[4]["cat"]="sortie-longue"
         arr[4]["date"]="2026-07-30"
         arr[4]["rpe"]=2.5
         arr[4]["chaussure"]="Novablast 5 V"
-        arr[4]["sous"]="5-6 km à l'aube — ou repos complet si les jambes sont lourdes. Deuxième jour du pic de chaleur."
-        arr[4]["metriques"]={"Distance":"5-6 km","Durée":"30-40 min","Allure":"peu importe","FC":"< 140 bpm","RPE":"2-3","Type":"Circulation"}
-        arr[4]["objectif"]="Séance volontairement optionnelle. C'est J+7 du marathon, deuxième jour à 36-38°C, et tu enchaînerais un quatrième jour de course sur cinq. Le repos est un choix parfaitement valable ici."
-        arr[4]["struct"]=[{"nom":"Corps","txt":"5-6 km très faciles à 6h30, ou rien du tout. Les deux options sont bonnes."}]
-        arr[4]["legende"]=[{"c":GREEN,"l":"Très facile"}]
-        arr[4]["benefices"]="Circulation si le corps répond, récupération supplémentaire sinon."
-        arr[4]["coach"]=[{"titre":"Vendredi devient repos obligatoire","texte":"Si tu cours mercredi ET jeudi, cela fait quatre jours de course en cinq jours à J+4 à J+7 d'un marathon. Vendredi complet devient alors non négociable pour équilibrer la semaine."}]
-        arr[4]["vigilance"]="Mêmes signaux d'arrêt qu'hier. Au moindre doute sur le pied ou sur la fatigue, cette séance saute — elle est là pour ça."
+        arr[4]["realise"]={"statut":"fait","km":14.09,"temps":"1h16","allure":"5:26/km","fc_moy":158,"fc_max":172,"re":171,"cadence":173,"elevation_gain":42,"temp":26,"rpe_ressenti":7,
+        "commentaire":"Tunnel de la Croix-Rousse \u00b7 d\u00e9part 9h57 \u00b7 14,09 km en 1h16. Structure : \u00e9chauffement 4,26 km \u00e0 5:45/km (FC 144,3), puis 4\u00d72 km \u00e0 allure marathon avec 2 min de r\u00e9cup entre chaque, GPS perdu sous le tunnel (rep\u00e8res uniquement via les intervalles manuels du Garmin). BLOC 1 : 4:54/km moy (splits tr\u00e8s irr\u00e9guliers 5:34 puis 4:15, sur-correction apr\u00e8s d\u00e9part trop prudent) FC 161,6. BLOC 2 : 5:29/km (5:31 et 5:28, tr\u00e8s r\u00e9gulier mais jug\u00e9 trop lent) FC 152,3. BLOC 3 : 5:05/km (5:41 puis 4:29, \u00e0 nouveau irr\u00e9gulier) FC 163,2. BLOC 4 : 5:07/km (5:07 et 5:06, le mieux ex\u00e9cut\u00e9) FC 165,5. RE 171. Douleur au pied gauche r\u00e9apparue apr\u00e8s 10-12 km (aucune douleur avant) \u2014 boucle de retour \u00e9court\u00e9e par pr\u00e9caution, retour direct sans terminer le parcours pr\u00e9vu. Novablast 5 V (20 \u2192 34 km).",
+        "pr":8,"ach":8,"pr_detail":[],
+        "revue":"<strong>Ta premi\u00e8re vraie donn\u00e9e chiffr\u00e9e allure/FC pour Nice \u2014 et elle est plut\u00f4t encourageante.</strong> Le probl\u00e8me du GPS sous tunnel a rendu la r\u00e9gulation d'allure difficile en temps r\u00e9el, mais gr\u00e2ce \u00e0 la FC (qui ne d\u00e9pend pas du GPS) et \u00e0 tes intervalles manuels, on peut quand m\u00eame en tirer une lecture solide.<br><br><strong>Le bloc le plus instructif est le 2 :</strong> \u00e0 FC 152,3 \u2014 pile dans ta zone cible (155-158) \u2014 tu as produit <strong>5:29/km</strong>. C'est la donn\u00e9e la plus fiable de la s\u00e9ance : elle situe pr\u00e9cis\u00e9ment ton niveau actuel \u00e0 la FC que tu dois apprendre \u00e0 tenir 3h45. L'\u00e9cart avec 5:20 est de 9 secondes au kilom\u00e8tre \u2014 pas norm\u00e9ment.<br><br><strong>Le bloc 4 confirme une progression :</strong> tr\u00e8s bien ex\u00e9cut\u00e9, r\u00e9gulier (5:07 puis 5:06), \u00e0 FC 165,5. C'est <strong>plus rapide qu'au marathon \u00e0 FC comparable</strong> (5:15/km \u00e0 163-167 le 23/07). M\u00eame si c'est encore au-dessus de ta FC cible, la tendance va dans le bon sens.<br><br><strong>Sur tes blocs 1 et 3, irr\u00e9guliers</strong> (5:34\u21924:15 puis 5:41\u21924:29) : c'est exactement le probl\u00e8me du rep\u00e8re perdu que tu d\u00e9cris, pas un souci de forme. Sans allure affich\u00e9e, on sur-corrige apr\u00e8s avoir jug\u00e9 le d\u00e9but trop prudent. C'est une lecture utile sur la difficult\u00e9 \u00e0 piloter au ressenti pur \u2014 le repos et la r\u00e9p\u00e9tition r\u00e9soudront \u00e7a.<br><br><strong>Ta propre conclusion est juste :</strong> tu es en capacit\u00e9 de tenir 5:20/km, il faut maintenant travailler la r\u00e9gularit\u00e9 \u00e0 cette allure pr\u00e9cise \u2014 id\u00e9alement sur piste ou parcours balis\u00e9 pour retrouver un vrai rep\u00e8re GPS.<br><br><strong>\u26a0\ufe0f Le point le plus important : la douleur au pied est revenue apr\u00e8s 10-12 km, sp\u00e9cifiquement sur une s\u00e9ance \u00e0 allure soutenue.</strong> C'est une information pr\u00e9cieuse qu'on n'avait pas encore : tes EF faciles ne la d\u00e9clenchent pas, mais l'allure marathon prolong\u00e9e oui. Ta d\u00e9cision d'\u00e9courter plut\u00f4t que de boucler la boucle pr\u00e9vue est exactement le bon r\u00e9flexe.<br><br><strong>Demain repos complet, non n\u00e9gociable.</strong> La suite se d\u00e9cide au ressenti : si la douleur a totalement disparu apr\u00e8s une journ\u00e9e, deux jours de repos peuvent suffire avant la sortie longue de samedi \u2014 mais si elle persiste, mieux vaut un troisi\u00e8me jour et d\u00e9caler la sortie longue plut\u00f4t que de forcer. On ne joue pas cette d\u00e9cision \u00e0 la l\u00e9g\u00e8re : une allure marathon qui r\u00e9veille une g\u00eane plantaire est le signal le plus s\u00e9rieux depuis le marathon."}
+        arr[4]["sous"]="Échauffement puis 4×2 km à allure marathon dans le tunnel de la Croix-Rousse (frais), récup 2 min entre chaque."
+        arr[4]["metriques"]={"Distance":"14,09 km","Durée":"1h16","Allure":"4×2 km entre 4:54 et 5:29/km","FC":"152-165 sur les blocs","RPE":"7","Type":"Allure marathon"}
+        arr[4]["objectif"]="Premier vrai test de l'allure marathon (5:20/km) en conditions réelles, à l'abri de la canicule. Le tunnel offre la fraîcheur mais pas de signal GPS : le repère devient la sensation et la FC, pas l'allure affichée en direct."
+        arr[4]["struct"]=[{"nom":"Échauffement","txt":"4,26 km en EF à 5:45/km."},{"nom":"4 × 2 km","txt":"Dans le tunnel, à sensation d'allure marathon. Récupération 2 min en trot très lent entre chaque bloc."},{"nom":"Retour au calme","txt":"Terminé écourté sur gêne au pied réapparue — bonne décision de ne pas boucler la boucle prévue."}]
+        arr[4]["legende"]=[{"c":GREEN,"l":"Échauffement"},{"c":BLUE,"l":"Bloc AM"},{"c":VIOLET,"l":"Récup"}]
+        arr[4]["benefices"]="Premier repère chiffré du couple allure/FC à allure marathon, indispensable pour suivre la progression vers Nice."
+        arr[4]["coach"]=[{"titre":"Le vrai repère : bloc 4 (5:07/km à FC 165,5)","texte":"C'est ton bloc le mieux exécuté, allures très régulières (5:07 puis 5:06). À FC 165, tu produis 5:07/km \u2014 plus vite que sur le marathon (5:15 à FC 163-167). C'est un signal encourageant de progression, même s'il reste au-dessus de ta cible FC (155-158)."},{"titre":"Le bloc 2 est le plus instructif","texte":"À FC 152,3 (dans ta cible), tu as produit 5:29/km. C'est l'information la plus fiable de la séance : elle situe précisément où tu en es aujourd'hui à FC cible, sans l'a-coup du repère GPS perdu."}]
+        arr[4]["vigilance"]="Douleur au pied réapparue après 10-12 km, sur une séance à allure soutenue \u2014 contrairement aux EF faciles qui ne la déclenchent pas. C'est une information utile : le pied tolère l'endurance mais pas encore l'allure marathon prolongée. Repos complet demain, décision sur la suite en fonction de la douleur."
 
 META=[
 (24,'reprise','Récupération',28,'Légère','—',"Absorber La Circaète : repos actif, footings très faciles, mobilité du dos."),
@@ -882,7 +886,7 @@ COUL={p["id"]:p["c"] for p in PHASES}
 GEAR=[
   {"marque":"HOKA","modele":"Clifton 10","km":1158},
   {"marque":"ASICS","modele":"Novablast 5 J","km":651},
-  {"marque":"ASICS","modele":"Novablast 5 V","km":20},
+  {"marque":"ASICS","modele":"Novablast 5 V","km":34},
   {"marque":"ASICS","modele":"Gel Pulse 16","km":225},
   {"marque":"Brooks","modele":"Cascadia 19","km":241},
   {"marque":"ASICS","modele":"Magic Speed 4","km":66},
@@ -1171,6 +1175,15 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":137,"date":"30 juillet 2026","sha":"","tag":"Premier test allure marathon chiffre (tunnel Croix-Rousse)","items":[
+    "14,09 km (echauffement + 4x2 km a allure marathon, recup 2 min), GPS perdu sous tunnel : lecture basee sur FC (fiable) et les intervalles manuels Garmin",
+    "Bloc le plus instructif : bloc 2 a FC 152,3 (pile la cible 155-158) produit 5:29/km. C est la donnee la plus fiable pour situer le niveau actuel a FC cible",
+    "Bloc 4 (le mieux execute, 5:07 et 5:06/km tres regulier) a FC 165,5 -- plus rapide qu au marathon a FC comparable (5:15/km a 163-167 le 23/07) : tendance encourageante",
+    "Blocs 1 et 3 irreguliers (sur-correction apres perte de repere GPS), coherent avec le ressenti de Loic -- pas un signal de forme",
+    "ALERTE : douleur au pied reapparue apres 10-12 km, specifiquement sur cette seance a allure soutenue (les EF faciles ne la declenchent pas). Boucle de retour ecourtee par precaution -- bonne decision",
+    "Repos du 29/07 marque fait (oubli). Novablast 5 V 20 -> 34 km",
+    "Decouplage non calculable sur cette seance (blocs a intensites deliberement variees) : comportement attendu, le garde-fou fonctionne"
+  ]},
   {"build":136,"date":"28 juillet 2026","sha":"","tag":"EF pilotee au cardio loggee + fix composante Efficience","items":[
     "EF du 28/07 : 10,03 km a 6:06/km, FC moyenne 138 (max 149) par 28 degres et air tres sec. ZERO seconde au-dessus de 150 bpm sur une heure",
     "Decouplage 2,98 % pour 8 % attendu : allure identique entre les deux moities (5:59/km) avec seulement +1 bpm. Meilleur resultat de toutes les sorties mesurees",
