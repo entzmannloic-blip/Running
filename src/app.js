@@ -1164,10 +1164,15 @@ function renderDash(){const el=document.getElementById('dash-contenu');
 }
 
 /* ===== MODALE ===== */
+/* Verrou du scroll de la page sous la modale. Le seul body.style.overflow='hidden'
+   ne suffisait pas : c'est l'element <html> qui gere le defilement, donc la page
+   continuait de scroller et emportait le bouton fermer hors de l'ecran, meme avec
+   le sticky corrige. On memorise la position pour la restituer a la fermeture. */
+let _scrollLockY=0;
 const overlay=document.getElementById('overlay'),boite=document.getElementById('boite'),topbar=document.getElementById('topbar'),contenu=document.getElementById('contenu');
 let segActif=null;
-function ouvrir(){overlay.classList.add('ouverte');document.body.style.overflow='hidden';overlay.scrollTop=0;boite.scrollTop=0;}
-function fermer(){if(typeof ttsStop==='function')ttsStop();overlay.classList.remove('ouverte');document.body.style.overflow='';setTimeout(()=>{contenu.innerHTML='';topbar.innerHTML='';},300);}
+function ouvrir(){overlay.classList.add('ouverte');_scrollLockY=window.scrollY||document.documentElement.scrollTop||0;document.documentElement.style.overflow='hidden';document.body.style.overflow='hidden';document.body.style.position='fixed';document.body.style.top=(-_scrollLockY)+'px';document.body.style.left='0';document.body.style.right='0';overlay.scrollTop=0;boite.scrollTop=0;}
+function fermer(){if(typeof ttsStop==='function')ttsStop();overlay.classList.remove('ouverte');document.documentElement.style.overflow='';document.body.style.overflow='';document.body.style.position='';document.body.style.top='';document.body.style.left='';document.body.style.right='';window.scrollTo(0,_scrollLockY||0);setTimeout(()=>{contenu.innerHTML='';topbar.innerHTML='';},300);}
 overlay.addEventListener('click',e=>{if(e.target===overlay)fermer()});
 (function(){const to=document.getElementById('theoOverlay');if(to)to.addEventListener('click',e=>{if(e.target===to)closeTheory();});})();
 document.addEventListener('keydown',e=>{if(e.key!=='Escape')return;

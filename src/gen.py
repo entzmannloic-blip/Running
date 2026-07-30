@@ -1175,6 +1175,14 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":139,"date":"30 juillet 2026","sha":"","tag":"Fix (2e passe) : bouton fermer toujours absent en scrollant","items":[
+    "Loic a signale que le build 138 n avait pas regle le probleme, capture a l appui. Il avait raison",
+    "Erreur de methode de ma part : mon test utilisait un scroll programmatique (scrollTo) au lieu d un vrai scroll molette/doigt. Le premier ne reproduisait pas le bug, le second si",
+    "Vraie cause racine : a l ouverture d une fiche, seul body.style.overflow=hidden etait pose. Or c est l element <html> qui gere le defilement -> la PAGE ENTIERE continuait de scroller sous la modale et emportait le bouton hors de l ecran, malgre le sticky corrige au build 138",
+    "Corrige : verrou complet du scroll de page (html + body en position fixed) a l ouverture, avec memorisation et restitution exacte de la position de lecture a la fermeture",
+    "Verifie par scroll REEL a la molette sur 4 tailles d ecran (iPhone SE, 14, Pro Max, desktop) : page immobile, bouton a 18px, cliquable, position restituee apres fermeture",
+    "Le correctif CSS du build 138 reste necessaire : les deux problemes etaient reels et se cumulaient"
+  ]},
   {"build":138,"date":"30 juillet 2026","sha":"","tag":"Fix : le bouton fermer disparaissait en scrollant dans une fiche","items":[
     "Signale par Loic : fallait remonter tout en haut de la fiche pour la fermer. Diagnostic confirme par mesure : le bouton passait de 18px a -582px des le premier scroll",
     "Cause racine identifiee : le bouton etait bien en position sticky, mais se calait par rapport a .modale-boite (overflow:hidden), pas par rapport au conteneur qui defile reellement a l ecran (.modale-overlay)",
