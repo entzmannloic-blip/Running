@@ -57,7 +57,7 @@ function showTab(t){
     document.getElementById('vue-'+id).style.display=t===id?'block':'none';
     document.getElementById('tab-'+id).classList.toggle('actif',t===id);
   });
-  if(t==='cockpit'){renderCockpit();renderDash();setTimeout(()=>{if(typeof _vo2Reveal==='function')_vo2Reveal();if(typeof _effRender==='function')_effRender();if(typeof _heatRender==='function')_heatRender();if(typeof _saisonRender==='function')_saisonRender();if(typeof _decoupRender==='function')_decoupRender();},250);}
+  if(t==='cockpit'){renderCockpit();renderDash();setTimeout(()=>{if(typeof _vo2Reveal==='function')_vo2Reveal();if(typeof _effRender==='function')_effRender();if(typeof _heatRender==='function')_heatRender();if(typeof _saisonRender==='function')_saisonRender();if(typeof _decoupRender==='function')_decoupRender();if(typeof _profilRender==='function')_profilRender();},250);}
   if(t==='palmares')renderPalmares();
   if(t==='plan'&&!_planAutoJumped){
     _planAutoJumped=true;
@@ -1676,6 +1676,19 @@ function _replayRun(key){
 }
 function _replayClose(){if(_replayRAF)cancelAnimationFrame(_replayRAF);const ov=document.getElementById('replay-ov');if(!ov)return;ov.classList.remove('show');setTimeout(()=>ov.remove(),300);}
 const _CK_HELP={
+  profil:{t:'Profil de coureur',c:'#0d9488',body:`<p style="font-size:12px;color:var(--texte-trois)">Sept qualités notées sur 99, calculées uniquement sur tes séances réelles.</p>
+    <p><strong>Comment lire.</strong> Plus une pointe s'éloigne du centre, plus tu es fort sur cette qualité. La forme du polygone raconte ton profil : un coureur complet a une forme régulière, un spécialiste a une forme allongée dans une direction.</p>
+    <p><strong>Les sept axes :</strong><br>
+    <strong>Vitesse</strong> — ta meilleure pointe sur 30 secondes, mesurée sur tes séances de VMA.<br>
+    <strong>Seuil</strong> — la meilleure allure tenue sur un bloc de seuil.<br>
+    <strong>Endurance</strong> — ta plus longue sortie et ton volume hebdomadaire moyen sur 4 semaines.<br>
+    <strong>Durabilité</strong> — ta capacité à tenir un effort sans que le coût cardiaque grimpe : c'est la médiane de tes découplages mesurés.<br>
+    <strong>Allure marathon</strong> — l'allure que tu produis à FC 148-162, hors séances de qualité. <strong>C'est l'axe le plus important pour Nice</strong> : il mesure directement ta capacité à produire l'allure cible au bon coût cardiaque.<br>
+    <strong>Montagne</strong> — le dénivelé encaissé, utile pour SaintExpress.<br>
+    <strong>Constance</strong> — ton assiduité (séances par semaine) et la régularité de ton volume.</p>
+    <p><strong>Deux lectures du même radar.</strong> Le <strong>profil général</strong> est la moyenne simple des sept axes. L'<strong>indice Nice</strong> les pondère selon leur importance pour le marathon : allure marathon 25 %, endurance 25 %, durabilité 20 %, seuil 15 %, constance 10 %, vitesse 5 % — et la montagne compte pour zéro, puisqu'elle n'aidera pas le 8 novembre.</p>
+    <p><strong>L'échelle.</strong> Les bornes sont celles d'un coureur amateur : <strong>1 correspond à un débutant, 99 à un très bon amateur</strong>. Ce n'est volontairement pas une échelle élite — l'objectif est que la note bouge visiblement quand tu progresses, pas de te comparer à des professionnels.</p>
+    <p><strong>Ce que ça n'est pas.</strong> Ni une prédiction de performance, ni une note de valeur. C'est une photo de tes qualités relatives à un instant donné, utile pour voir où concentrer le travail. Les axes reposant sur peu de séances (seuil, montagne) bougeront plus brutalement : regarde la tendance sur plusieurs semaines, pas la variation d'un jour à l'autre.</p>`},
   decoup:{t:'D\u00e9couplage cardiaque',c:'#0d9488',body:`<p style="font-size:12px;color:var(--texte-trois)">Est-ce que ta sortie t'a co\u00fbt\u00e9 plus cher \u00e0 la fin qu'au d\u00e9but ?</p>
     <p><strong>L'id\u00e9e en une image.</strong> Imagine un long trajet en voiture : au d\u00e9but tu consommes 5 L/100 km, \u00e0 la fin il t'en faut 6 pour rouler \u00e0 la <strong>m\u00eame vitesse</strong>. Le moteur fatigue. En course, ton <strong>allure</strong> c'est la vitesse produite, ta <strong>FC</strong> c'est ce que \u00e7a te co\u00fbte. Le d\u00e9couplage mesure de combien ce co\u00fbt a augment\u00e9 entre la premi\u00e8re et la seconde moiti\u00e9. Le nom vient de l\u00e0 : au d\u00e9part allure et cardio sont <em>coupl\u00e9s</em> ; quand la fatigue arrive, ils se <em>d\u00e9couplent</em>.</p>
     <p><strong>Pourquoi pas juste les bpm ?</strong> Parce que les bpm seuls peuvent mentir : si tu ralentis beaucoup en fin de sortie, ta FC reste stable et tout semble parfait, alors que tu t'es d\u00e9grad\u00e9 \u2014 tu l'as juste masqu\u00e9 en levant le pied. Le d\u00e9couplage regarde les deux ensemble, donc impossible de tricher. Les bpm restent affich\u00e9s parce que c'est ce que tu lis sur ta montre, et quand les deux divergent, c'est justement l\u00e0 qu'est l'info.</p>
@@ -2810,6 +2823,144 @@ function _decoupRender(){
       ? 'Une valeur isol\u00e9e est du bruit : <strong>c\'est la tendance qui compte</strong>. Voir ce chiffre baisser \u00e0 conditions comparables, c\'est la preuve que ton endurance progresse.'
       : 'Une seule sortie \u00e9ligible pour l\'instant \u2014 la tendance se construira avec les prochaines.')+'</div>';
 }
+/* ===== PROFIL DE COUREUR (radar 7 axes) =====
+   Chaque axe est note sur 99 avec des bornes AMATEUR (1 = debutant,
+   99 = tres bon amateur), volontairement pas une echelle elite : l'objectif
+   est que la note bouge visiblement quand Loic progresse.
+   Deux lectures : PROFIL GENERAL (moyenne simple) et INDICE NICE (pondere
+   par la pertinence marathon, la montagne y pesant zero). */
+function _profilNote(v,pire,mieux){
+  if(pire===mieux)return 50;
+  return Math.max(1,Math.min(99,Math.round((v-pire)/(mieux-pire)*99)));
+}
+function _profilPaceS(a){var m=/(\d+):(\d+)/.exec(a||'');return m?(+m[1])*60+(+m[2]):null;}
+function _profilEstQualite(s){
+  var t=((s.type||'')+' '+(s.titre||'')).toLowerCase();
+  return /seuil|vma|vitesse|fractionn|intervalle|c[ôo]tes|tempo/.test(t);
+}
+function _profilAxes(){
+  var S=[];
+  Object.keys(SEANCES_BY_WEEK).forEach(function(wk){
+    (SEANCES_BY_WEEK[wk]||[]).forEach(function(s){
+      var r=s.realise;
+      if(r&&r.statut==='fait'&&r.km)S.push({w:+wk,s:s,r:r});
+    });
+  });
+  if(S.length<5)return null;
+  var CUR=Math.max.apply(null,S.map(function(x){return x.w;}));
+  var med=function(a){if(!a.length)return null;var b=a.slice().sort(function(x,y){return x-y;});
+    var n=b.length,h=Math.floor(n/2);return n%2?b[h]:(b[h-1]+b[h])/2;};
+  var moy=function(a){return a.length?a.reduce(function(x,y){return x+y;},0)/a.length:0;};
+  var ecart=function(a){var m=moy(a);return Math.sqrt(moy(a.map(function(x){return (x-m)*(x-m);})));};
+  var fmt=function(p){p=Math.round(p);return Math.floor(p/60)+':'+String(p%60).padStart(2,'0');};
+
+  // 1. VITESSE — meilleure pointe sur les seances de vitesse
+  // On extrait TOUTES les allures du commentaire et on garde la plus rapide :
+  // la premiere occurrence est souvent celle de l'echauffement, pas la pointe.
+  var pointes=[];
+  S.filter(function(x){return /vma|vitesse/i.test((x.s.type||'')+(x.s.titre||''));})
+   .forEach(function(x){
+     var txt=x.r.commentaire||'',m,re=/(\d):(\d\d)\/km/g,loc=[];
+     while((m=re.exec(txt))!==null){var v=(+m[1])*60+(+m[2]);if(v>=150&&v<=400)loc.push(v);}
+     if(loc.length)pointes.push(Math.min.apply(null,loc));
+   });
+  var pointe=pointes.length?Math.min.apply(null,pointes):null;
+  var vit=pointe?_profilNote(pointe,270,170):50;
+
+  // 2. SEUIL — meilleure allure tenue sur un bloc seuil
+  var seuils=S.filter(function(x){return /seuil/i.test((x.s.type||'')+(x.s.titre||''));})
+    .map(function(x){return _profilPaceS(x.r.allure);}).filter(Boolean);
+  var seu=seuils.length?_profilNote(Math.min.apply(null,seuils),360,240):50;
+
+  // 3. ENDURANCE — plus longue sortie + volume hebdo moyen
+  var plusLong=Math.max.apply(null,S.map(function(x){return x.r.km;}));
+  var vols=[];for(var w=CUR-3;w<=CUR;w++){
+    vols.push(S.filter(function(x){return x.w===w;}).reduce(function(a,x){return a+x.r.km;},0));}
+  var end=Math.round(_profilNote(plusLong,10,42)*0.6+_profilNote(moy(vols),25,75)*0.4);
+
+  // 4. DURABILITE — mediane des decouplages valides
+  var dcs=S.map(function(x){return x.r.decouplage;})
+    .filter(function(d){return d&&d.qualite==='fiable'&&typeof d.pct==='number';})
+    .map(function(d){return d.pct;});
+  var dcm=dcs.length?med(dcs):null;
+  var dur=dcm!==null?_profilNote(dcm,12,3):50;
+
+  // 5. ALLURE MARATHON — allure produite a FC 148-162 hors seances de qualite.
+  //    C'est l'axe le plus important pour Nice : il mesure directement
+  //    la capacite a produire l'allure cible au bon cout cardiaque.
+  var amc=S.filter(function(x){
+      return !_profilEstQualite(x.s)&&x.r.fc_moy&&x.r.fc_moy>=148&&x.r.fc_moy<=162
+             &&_profilPaceS(x.r.allure)&&x.w>=CUR-7;})
+    .map(function(x){return _profilPaceS(x.r.allure);});
+  var amp=amc.length?med(amc):null;
+  var am=amp!==null?_profilNote(amp,370,300):50;
+
+  // 6. MONTAGNE — pour SaintExpress, sans poids dans l'indice Nice
+  var dmax=Math.max.apply(null,S.map(function(x){return x.r.elevation_gain||0;}));
+  var dtot=S.reduce(function(a,x){return a+(x.r.elevation_gain||0);},0);
+  var mon=Math.round(_profilNote(dmax,50,1000)*0.6+_profilNote(dtot,300,5000)*0.4);
+
+  // 7. CONSTANCE — assiduite + regularite du volume (remplace l'ecart-type de
+  //    cadence de la v1, qui variait legitimement selon le type de seance)
+  var nbs=[];for(var w2=CUR-3;w2<=CUR;w2++){
+    nbs.push(S.filter(function(x){return x.w===w2;}).length);}
+  var cv=moy(vols)>0?ecart(vols)/moy(vols)*100:40;
+  var con=Math.round(_profilNote(moy(nbs),2,5.5)*0.6+_profilNote(cv,40,10)*0.4);
+
+  var axes=[
+    {k:'VITESSE',v:vit,d:pointe?('pointe '+fmt(pointe)+'/km sur 30 sec'):'—'},
+    {k:'SEUIL',v:seu,d:seuils.length?(fmt(Math.min.apply(null,seuils))+'/km sur bloc seuil'):'—'},
+    {k:'ENDURANCE',v:end,d:Math.round(plusLong)+' km max · '+Math.round(moy(vols))+' km/sem'},
+    {k:'DURABILITÉ',v:dur,d:dcm!==null?('découplage médian '+dcm.toFixed(1).replace('.',',')+' %'):'—'},
+    {k:'ALLURE MARATHON',v:am,d:amp!==null?(fmt(amp)+'/km à FC 148-162 · '+amc.length+' sorties'):'—'},
+    {k:'MONTAGNE',v:mon,d:dmax+' m D+ max · '+dtot+' m cumulés'},
+    {k:'CONSTANCE',v:con,d:moy(nbs).toFixed(1).replace('.',',')+' séances/sem · volume ±'+Math.round(cv)+' %'}
+  ];
+  var POIDS={'ALLURE MARATHON':.25,'ENDURANCE':.25,'DURABILITÉ':.20,'SEUIL':.15,'CONSTANCE':.10,'VITESSE':.05,'MONTAGNE':0};
+  return {axes:axes,
+          general:Math.round(moy(axes.map(function(a){return a.v;}))),
+          nice:Math.round(axes.reduce(function(a,x){return a+x.v*(POIDS[x.k]||0);},0))};
+}
+function _profilCouleur(v){return v>=85?'#0d9488':v>=70?'#16a34a':v>=55?'#84cc16':v>=40?'#f59e0b':'#ef4444';}
+function _profilRender(){
+  var el=document.getElementById('profil-body');if(!el)return;
+  var P=null;try{P=_profilAxes();}catch(e){}
+  if(!P){el.innerHTML='<div class="eff-loading">Pas encore assez de séances loggées.</div>';return;}
+  var A=P.axes,N=A.length,CX=150,CY=128,R=90;
+  var ang=function(i){return -Math.PI/2+i*2*Math.PI/N;};
+  var pt=function(i,r){return [CX+Math.cos(ang(i))*r,CY+Math.sin(ang(i))*r];};
+  var svg='';
+  [0.25,0.5,0.75,1].forEach(function(f){
+    svg+='<polygon class="pr-grid'+(f===0.5?' mid':'')+'" points="'+
+      A.map(function(_,i){return pt(i,R*f).map(function(n){return n.toFixed(1);}).join(',');}).join(' ')+'"/>';});
+  A.forEach(function(_,i){var p=pt(i,R);
+    svg+='<line class="pr-ax" x1="'+CX+'" y1="'+CY+'" x2="'+p[0].toFixed(1)+'" y2="'+p[1].toFixed(1)+'"/>';});
+  svg+='<polygon class="pr-shape" points="'+
+    A.map(function(a,i){return pt(i,R*a.v/99).map(function(n){return n.toFixed(1);}).join(',');}).join(' ')+'"/>';
+  A.forEach(function(a,i){var p=pt(i,R*a.v/99);
+    svg+='<circle class="pr-pt" cx="'+p[0].toFixed(1)+'" cy="'+p[1].toFixed(1)+'" r="3.4"/>';});
+  A.forEach(function(a,i){
+    var p=pt(i,R+20),an='middle';
+    if(p[0]>CX+12)an='start';else if(p[0]<CX-12)an='end';
+    var court=a.k==='ALLURE MARATHON'?'ALL. MARATHON':a.k;
+    svg+='<text class="pr-lbl" x="'+p[0].toFixed(1)+'" y="'+p[1].toFixed(1)+'" text-anchor="'+an+'">'+court+'</text>';
+    svg+='<text class="pr-val" x="'+p[0].toFixed(1)+'" y="'+(p[1]+11).toFixed(1)+'" text-anchor="'+an+'" fill="'+_profilCouleur(a.v)+'">'+a.v+'</text>';});
+  var tri=A.slice().sort(function(x,y){return y.v-x.v;});
+  el.innerHTML=
+    '<div class="pr-glob"><div class="pr-gnum">'+P.nice+'</div><div class="pr-gtxt">'+
+      '<div class="pr-gt">Indice Nice</div>'+
+      '<div class="pr-gs">Profil général '+P.general+' · pondéré pour le marathon<br>'+
+      'Fort : <strong>'+tri[0].k.toLowerCase()+'</strong> · À travailler : <strong>'+tri[N-1].k.toLowerCase()+'</strong></div>'+
+    '</div></div>'+
+    '<svg viewBox="-32 0 364 272" class="pr-svg">'+svg+'</svg>'+
+    '<div class="pr-list">'+A.map(function(a){var c=_profilCouleur(a.v);
+      return '<div class="pr-row"><div class="pr-n" style="color:'+c+'">'+a.k+'</div>'+
+        '<div class="pr-track"><div class="pr-fill" style="width:'+a.v+'%;background:'+c+'"></div></div>'+
+        '<div class="pr-v" style="color:'+c+'">'+a.v+'</div></div>'+
+        '<div class="pr-d">'+a.d+'</div>';}).join('')+'</div>'+
+    '<div class="dc-note">Échelle amateur : <strong>1 = débutant, 99 = très bon amateur</strong>. '+
+    'L\'indice Nice pondère les axes selon leur importance pour le marathon — la montagne y compte pour zéro.</div>';
+}
 function renderCockpit(){
   const el=document.getElementById('cockpit-contenu');
   if(el.innerHTML.trim()){_ckRenderAll(_ckWin);return;}
@@ -2852,6 +3003,10 @@ ${(function(){const v=_estimVO2();if(!v)return '';return `<div class="vo2-card">
 <div class="eff-card" id="decoup-card">
   <div class="vo2-top"><span class="vo2-lbl">Découplage cardiaque <button class="vo2-help" onclick="openCkHelp('decoup')" aria-label="Comment lire le découplage ?">?</button></span><span class="vo2-src" id="decoup-src"></span></div>
   <div class="eff-body" id="decoup-body"></div>
+</div>
+<div class="eff-card" id="profil-card">
+  <div class="vo2-top"><span class="vo2-lbl">Profil de coureur <button class="vo2-help" onclick="openCkHelp('profil')" aria-label="Comment lire le profil ?">?</button></span><span class="vo2-src">7 axes · notés sur 99</span></div>
+  <div class="eff-body" id="profil-body"></div>
 </div>
 <div class="eff-card" id="saison-card">
   <div class="vo2-top"><span class="vo2-lbl">Progression par saison <button class="vo2-help" onclick="openCkHelp('saison')" aria-label="Comment lire la progression par saison ?">?</button></span><span class="vo2-src">allure à 145 bpm · corrigée chaleur</span></div>

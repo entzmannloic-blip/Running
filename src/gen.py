@@ -1210,6 +1210,15 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":141,"date":"2 aout 2026","sha":"","tag":"Nouvelle carte : Profil de coureur (radar 7 axes)","items":[
+    "Radar facon carte de jeu : 7 qualites notees sur 99, toutes calculees sur les seances reellement loggees",
+    "Axes : Vitesse 92 (pointe 2:57/km), Endurance 86 (43 km max, 59 km/sem), Montagne 81, Seuil 79 (4:24/km), Durabilite 76 (decouplage median 5,1 %), Constance 68, ALLURE MARATHON 42",
+    "L axe Allure marathon est le plus important pour Nice : il mesure l allure produite a FC 148-162 hors seances de qualite. A 5:40/km contre 5:20 cible, il revele le vrai point faible -- invisible dans une premiere version du radar",
+    "DEUX LECTURES : profil general 75 (moyenne simple) et INDICE NICE 70 (pondere marathon : allure marathon 25 %, endurance 25 %, durabilite 20 %, seuil 15 %, constance 10 %, vitesse 5 %, montagne 0 %)",
+    "Deux axes de la premiere version corriges : la Montagne ne pese plus sur la note marathon, et la Regularite basee sur l ecart-type de cadence (fausse, la cadence varie legitimement selon le type de seance) devient une vraie Constance d entrainement",
+    "Bug attrape au test : l extraction de la pointe de vitesse prenait la premiere allure du commentaire (echauffement 5:02) au lieu de la plus rapide. Vitesse passait de 1 a 92 apres correction",
+    "Echelle amateur assumee (1 debutant, 99 tres bon amateur) pour que la note bouge visiblement avec la progression"
+  ]},
   {"build":140,"date":"2 aout 2026","sha":"","tag":"S31 bouclee + S32 reconstruite sur la derive d allure","items":[
     "EF du 02/08 loggee : 11,31 km a 5:10/km, FC 154 (max 166), decouplage 3,53 % pour 6 % attendu. Reprise apres 2 jours de repos, pied indolore au depart",
     "DECOUVERTE MAJEURE : derive d allure non intentionnelle. km 0-2 a 5:35/km FC 136, puis acceleration continue jusqu a 4:55/km FC 161 sur les km 10-12. Loic ne l a pas decide -- c est le mecanisme exact qui fait exploser un marathon",

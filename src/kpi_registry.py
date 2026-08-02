@@ -75,6 +75,8 @@ FONCTIONS_KPI = {
     '_heatRender':   'Carte Acclimatation chaleur',
     '_saisonRender': 'Carte Progression par saison',
     '_decoupRender': 'Carte Decouplage cardiaque',
+    '_profilRender': 'Carte Profil de coureur (radar 7 axes)',
+    '_profilAxes':   'Calcul des 7 axes du radar',
     '_decoupBloc':   'Bloc decouplage dans la fiche de seance',
     'computeFormeScore': 'Score Forme du jour',
     '_ckSummary':    'Resume executif du Cockpit',

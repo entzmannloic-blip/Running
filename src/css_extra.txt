@@ -1277,3 +1277,24 @@ body,.accueil{background:#f2f2f7}
 .dcb-arrow{color:var(--texte-trois)}
 .dcb-bpm{margin-left:auto;font-size:11px;color:var(--texte-deux);font-weight:800}
 .dcb-note{font-size:11px;color:var(--texte-deux);line-height:1.5;margin-top:8px}
+/* ===== Profil de coureur (radar) ===== */
+.pr-glob{display:flex;align-items:center;gap:13px;background:linear-gradient(135deg,#0f766e,#0d9488);border-radius:13px;padding:12px 14px;margin:8px 0 4px;color:#fff}
+.pr-gnum{font-size:40px;font-weight:900;line-height:1;letter-spacing:-.03em}
+.pr-gtxt{flex:1;min-width:0}
+.pr-gt{font-size:13.5px;font-weight:800}
+.pr-gs{font-size:10.5px;opacity:.88;margin-top:2px;line-height:1.45}
+.pr-svg{display:block;width:100%;height:auto;margin:4px 0 2px}
+.pr-grid{fill:none;stroke:var(--gris-clair);stroke-width:1}
+.pr-grid.mid{stroke:#cbd5e1;stroke-dasharray:2 3}
+.pr-ax{stroke:var(--gris-clair);stroke-width:1}
+.pr-shape{fill:rgba(13,148,136,.22);stroke:#0d9488;stroke-width:2.4;stroke-linejoin:round;transition:all .9s cubic-bezier(.16,1,.3,1)}
+.pr-pt{fill:#0d9488;stroke:#fff;stroke-width:2}
+.pr-lbl{font-size:8.5px;font-weight:800;fill:var(--texte);letter-spacing:.02em}
+.pr-val{font-size:10.5px;font-weight:900}
+.pr-list{margin-top:10px;border-top:1px solid var(--gris-clair);padding-top:8px}
+.pr-row{display:flex;align-items:center;gap:8px;padding:6px 0 1px}
+.pr-n{font-size:10.5px;font-weight:800;width:92px;flex:0 0 92px}
+.pr-track{flex:1;height:6px;background:var(--gris-clair);border-radius:3px;overflow:hidden}
+.pr-fill{height:100%;border-radius:3px;transition:width .9s cubic-bezier(.16,1,.3,1)}
+.pr-v{font-size:12.5px;font-weight:900;width:24px;text-align:right;font-variant-numeric:tabular-nums}
+.pr-d{font-size:9px;color:var(--texte-trois);margin-left:100px;padding-bottom:3px}
