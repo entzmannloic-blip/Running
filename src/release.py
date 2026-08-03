@@ -166,13 +166,33 @@ def main():
 
     fichiers = {'index.html': f'{OUT}/index.html'}
     for src, dst in [('gen.py', 'src/gen.py'), ('app.js', 'src/app.js'),
+                     ('css.txt', 'src/css.txt'),
                      ('css_extra.txt', 'src/css_extra.txt'),
+                     ('body.html', 'src/body.html'),
+                     ('assemble.py', 'src/assemble.py'),
+                     ('preflight.py', 'src/preflight.py'),
                      ('audit_cockpit.py', 'src/audit_cockpit.py'),
                      ('kpi_registry.py', 'src/kpi_registry.py'),
                      ('release.py', 'src/release.py'),
                      ('decouplage.py', 'src/decouplage.py')]:
         if os.path.exists(f'{WORK}/{src}'):
             fichiers[dst] = f'{WORK}/{src}'
+
+    # Garde-fou structurel : le build 138 avait corrige css.txt, mais le
+    # manifeste de push ne le listait pas -> le fix restait local, invisible
+    # de gen.py/assemble.py/preflight (qui lisent tous /tmp), invisible des
+    # tests (qui tournent sur le meme /tmp), et le build 144 a du refaire
+    # exactement le meme travail six builds plus tard. Desormais, toute
+    # source presente dans le pipeline mais absente du manifeste de push
+    # bloque la livraison au lieu de partir en silence.
+    SOURCES_ATTENDUES = ['gen.py', 'app.js', 'css.txt', 'css_extra.txt',
+                         'body.html', 'assemble.py', 'preflight.py']
+    manquants = [s for s in SOURCES_ATTENDUES
+                 if os.path.exists(f'{WORK}/{s}') and f'src/{s}' not in fichiers]
+    if manquants:
+        print(f"  ECHEC  manifeste de push incomplet : {manquants} existent "
+              f"mais ne seraient pas pousses")
+        return 1
 
     st, ref = req('GET', f'{API}/git/ref/heads/main')
     if st != 200:

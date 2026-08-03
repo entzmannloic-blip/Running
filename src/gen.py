@@ -1222,7 +1222,9 @@ CHANGELOG=[
     "Diagnostic : ce probleme avait DEJA ete corrige aux builds 138 et 139 (le conteneur de scroll etait passe de .modale-overlay a .modale-boite). Mais le fichier src/css.txt reellement present sur GitHub contenait encore l ANCIENNE version sans le correctif -- le fix n avait jamais atteint le depot lors d une session precedente",
     "Le verrou JS du build 139 (_scrollLockY) etait lui bien present et intact : seul le CSS avait regresse",
     "Reapplique a l identique et reverifie par scroll REEL a la molette (pas de scrollTo programmatique) sur iPhone SE, 14, Pro Max et desktop : bouton fixe a 18px, cliquable, ferme la fiche",
-    "Verifie egalement que ce depot-ci est bien pousse sur GitHub avant de considerer la livraison terminee"
+    "Verifie egalement que ce depot-ci est bien pousse sur GitHub avant de considerer la livraison terminee",
+    "CAUSE RACINE TROUVEE APRES COUP : release.py ne poussait jamais css.txt (ni body.html, assemble.py, preflight.py). Le fix restait local a chaque fois, invisible car gen.py/tests tournent sur les memes fichiers locaux",
+    "CORRIGE DANS L OUTIL LUI-MEME : le manifeste de push inclut desormais ces fichiers, et un garde-fou bloque toute livraison future si une source du pipeline manque au manifeste"
   ]},
   {"build":143,"date":"3 aout 2026","sha":"","tag":"S32 : barre de deroule retablie + seances 1 et 2 inversees","items":[
     "Signale par Loic : la seance Allure marathon n affichait AUCUNE barre de deroule, impossible de voir la structure de la seance",
