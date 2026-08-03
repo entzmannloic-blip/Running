@@ -827,38 +827,64 @@ for n,ss in WEEKS.items():
         arr[4]["vigilance"]="Douleur au pied réapparue après 10-12 km, sur une séance à allure soutenue \u2014 contrairement aux EF faciles qui ne la déclenchent pas. C'est une information utile : le pied tolère l'endurance mais pas encore l'allure marathon prolongée. Repos complet demain, décision sur la suite en fonction de la douleur."
 
     if n==32:
-        # Semaine reconstruite sur les enseignements de S31 :
-        #  - le pied tolere ~1h et se reveille sur l'allure soutenue prolongee
-        #  - derive d'allure non intentionnelle (5:35 -> 4:55 le 02/08)
-        # La seance de qualite est desormais en PREMIERE position (mardi 04/08
-        # a la demande de Loic), et elle vient du generateur mp() qui produit
-        # les segments : c'est ce champ qui dessine la barre de deroule, absente
-        # quand la seance etait construite a la main.
+        # Semaine reconstruite sur les enseignements de S31, puis reorganisee
+        # a la demande de Loic : allure marathon remplacee par un fractionne
+        # 8x400m (le 03/08 est saute, Loic ne court pas ce jour-la), longue
+        # avancee au samedi. Ordre final : fractionne / EF / EF+lignes droites
+        # / sortie longue, PPG+mobilite groupees vendredi, repos dimanche.
+
+        # Construction du fractionne AVEC segments (le champ qui dessine la
+        # barre de deroule) : c'est precisement ce qui manquait sur l'ancienne
+        # seance VMA du 30/07, corrige au build 143 pour l'allure marathon,
+        # applique ici des le depart pour ne pas reproduire le trou.
+        _fr_raw=[{"nom":"Échauffement","role":"20 min progressif + 3 lignes droites.","duree":1200,"couleur":"vert","bloc":"—","hauteur":30}]
+        for _i in range(8):
+            _fr_raw.append({"nom":f"400 m #{_i+1}","role":"3:45-3:50/km (~1min30 au 400 m).","duree":90,"couleur":"rouge","bloc":f"×8","hauteur":88})
+            if _i<7:
+                _fr_raw.append({"nom":"Récup","role":"1min30 en trot VRAIMENT lent — FC doit redescendre.","duree":90,"couleur":"orange","bloc":"↓","hauteur":30})
+        _fr_raw.append({"nom":"Retour au calme","role":"10 min très facile.","duree":600,"couleur":"vert","bloc":"—","hauteur":28})
+        _fr_seg=segs(_fr_raw)
+
         arr[0]["date"]="2026-08-04"
-        arr[0]["titre"]="Allure marathon — 3×2 km de retenue"
-        arr[0]["chaussure"]="Novablast 5 J"
-        arr[0]["rpe"]=5.5
-        arr[0]["sous"]="La séance clé de la semaine : apprendre à NE PAS dépasser 5:20/km. Sur parcours dégagé, alerte d'allure activée."
-        arr[0]["metriques"]={"Distance":"~12 km","Durée":"~70 min","Allure":"3×2 km à 5:20/km","FC":"cible 152-158","RPE":"5-6","Type":"Allure marathon"}
-        arr[0]["objectif"]="Remplace le seuil 2×15 min initialement prévu. L'enjeu n'est plus d'aller vite — S31 a prouvé que 5:20 est confortable pour toi — mais de tenir exactement cette allure sans dériver vers le haut. C'est un travail de discipline, pas de forme."
+        arr[0]["titre"]="Fractionné 8×400 m"
+        arr[0]["type"]="VMA / vitesse"
+        arr[0]["sport"]="Course à pied"
+        arr[0]["accent"]=RED
+        arr[0]["fill"]=58
+        arr[0]["cat"]="seuil"
+        arr[0]["rpe"]=6.5
+        arr[0]["chaussure"]="ASICS Magic Speed 4"
+        arr[0]["sous"]="8×400 m à 3:45-3:50/km, récup 1min30 en trot lent. Remplace l'allure marathon initialement prévue — décision de Loïc, ta vitesse (92/99 sur le radar) n'est pas le point faible, mais la séance est jouable en isolé."
+        arr[0]["metriques"]={"Distance":"~9 km","Durée":"~50 min","Allure":"3:45-3:50/km sur le 400 m","FC":"170-180 en fin de série","RPE":"7","Type":"VMA"}
+        arr[0]["objectif"]="Stimulus VO2max classique. L'allure se situe entre ton seuil (4:24-4:31/km) et ta pointe absolue (2:57/km) : assez rapide pour être productif, assez modéré pour répéter 8 fois sans s'effondrer."
         arr[0]["struct"]=[
-          {"nom":"Échauffement","txt":"3 km en EF progressive, FC sous 145."},
-          {"nom":"3 × 2 km à 5:20/km","txt":"Récupération 2 min en trot lent entre les blocs. Sur parcours DÉGAGÉ avec GPS fiable, alerte d'allure Garmin réglée sur 5:15-5:25/km. Consigne : ne jamais descendre sous 5:15."},
-          {"nom":"Retour au calme","txt":"2 km faciles."}]
-        arr[0]["legende"]=[{"c":GREEN,"l":"Échauffement / récup"},{"c":BLUE,"l":"Bloc 5:20"}]
-        arr[0]["benefices"]="Ancrage de l'allure cible et travail de la retenue — le point faible identifié en S31."
+          {"nom":"Échauffement","txt":"20 min progressif + 3 lignes droites."},
+          {"nom":"8 × 400 m","txt":"3:45-3:50/km, récupération 1min30 en trot RÉELLEMENT lent — pas en marche rapide, pas à 5:00/km. Laisse le cardio redescendre franchement entre les répétitions."},
+          {"nom":"Retour au calme","txt":"10 min très facile."}]
+        arr[0]["legende"]=[{"c":GREEN,"l":"Échauffement / récup"},{"c":RED,"l":"400 m"},{"c":ORANGE,"l":"Récup active"}]
+        arr[0]["benefices"]="Puissance aérobie maximale et économie de course à haute vitesse."
         arr[0]["coach"]=[
-          {"titre":"Ton vrai adversaire, c'est l'accélération involontaire","texte":"Dimanche 02/08 tu es passé de 5:35 à 4:55/km sans jamais décider d'accélérer, avec une FC qui monte de 136 à 161. Ici, chaque kilomètre couru sous 5:15 est une erreur d'exécution, même si les sensations sont bonnes. La réussite se mesure à la régularité."},
-          {"titre":"Le repère FC","texte":"Vise 152-158 bpm sur les blocs. En dessous de 150 à 5:20, c'est excellent. Au-dessus de 165, ralentis."}]
-        arr[0]["vigilance"]="Première séance à allure soutenue depuis le réveil du pied le 30/07. Au moindre signal, tu arrêtes après le 2ᵉ bloc."
-        # Lundi 03/08 devient l'EF facile (inversion demandee)
-        arr[1]["date"]="2026-08-03"
-        arr[1]["titre"]="Footing de reprise"
+          {"titre":"La récup doit être un vrai trot lent","texte":"Le 21/07, tes récups à 5:00/km avaient fait dériver la séance vers du tempo au lieu d'une VMA propre. Ici, marche ou trot très lent entre chaque 400 — c'est ce qui fait la différence entre 8 répétitions productives et une séance qui tourne à l'épreuve d'endurance."},
+          {"titre":"Ce n'est pas ta priorité du moment, et c'est assumé","texte":"Ton radar situe ta vitesse à 92/99 contre 42/99 pour l'allure marathon. Cette séance ne fait pas progresser ce qui te limite pour Nice — mais une séance isolée ne casse rien, tant qu'elle ne s'empile pas avec une autre séance dure."}]
+        arr[0]["vigilance"]="Si le pied se manifeste pendant l'échauffement, tu bascules en EF et tu gardes cette séance pour plus tard."
+        arr[0]["segments"]=_fr_seg
+
+        # Mercredi : EF simple (reprend le contenu de l'ancien lundi, decale)
+        arr[1]["date"]="2026-08-05"
+        arr[1]["titre"]="Footing facile"
         arr[1]["chaussure"]="Novablast 5 V"
-        arr[1]["sous"]="45-50 min très faciles, FC sous 145. On vérifie que le pied a bien encaissé la semaine."
-        arr[1]["objectif"]="Reprise prudente. Le pied a montré qu'il tolérait environ une heure : on reste nettement en dessous pour le laisser continuer à se réparer."
-        arr[1]["vigilance"]="Si la gêne est présente dès les premiers pas du matin, cette séance saute."
-        # Dimanche : longue sans bloc AM
+        arr[1]["sous"]="45-50 min très faciles, FC sous 145."
+        arr[1]["objectif"]="Volume aérobie pur, sans intensité — le lendemain du fractionné."
+        arr[1]["vigilance"]="Si la gêne au pied est présente dès les premiers pas du matin, cette séance saute."
+
+        # Jeudi : EF + lignes droites (decale du mercredi)
+        arr[2]["date"]="2026-08-06"
+
+        # Vendredi : PPG (decalee du jeudi, regroupee avec la mobilite)
+        arr[4]["date"]="2026-08-07"
+
+        # Samedi : sortie longue (avancee du dimanche, a la demande de Loic)
+        arr[3]["date"]="2026-08-08"
         arr[3]["sous"]="16 km continus en EF, sans bloc allure marathon. On rallonge la durée avant de rajouter de l'intensité."
         arr[3]["objectif"]="Réduite de 26 à 16 km et sans bloc allure marathon. Raison : le pied n'a pas encore dépassé une heure de course sans se manifester. On teste d'abord la durée en EF pure, on recombinera durée et allure marathon en S33 si tout va bien."
         arr[3]["coach"]=[{"titre":"La durée avant l'intensité","texte":"Ton pied se réveille sur l'allure soutenue prolongée, pas sur l'EF facile. On vérifie donc qu'il encaisse 1h35 en EF avant de recombiner les deux contraintes."}]
@@ -1217,6 +1243,13 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":145,"date":"3 aout 2026","sha":"","tag":"S32 reorganisee : fractionne remplace allure marathon (choix de Loic)","items":[
+    "Fractionne 8x400m ajoute mardi 04/08 en remplacement de l allure marathon initialement prevue -- construit avec segments des le depart (17 blocs, barre de deroule fonctionnelle)",
+    "Lundi 03/08 saute (Loic ne court pas ce jour). Semaine recompactee sur 4 jours de course : fractionne / EF / EF+lignes droites / sortie longue",
+    "Sortie longue avancee du dimanche au SAMEDI 08/08 a la demande de Loic. PPG et mobilite regroupees vendredi 07/08. Dimanche devient repos complet",
+    "Consigne de recuperation explicite dans la fiche : trot reellement lent entre les 400m, pas 5:00/km comme le 21/07 qui avait fait deriver la seance vers du tempo",
+    "Nuance de coach inscrite dans la fiche : la vitesse est deja a 92/99 sur le radar contre 42/99 pour l allure marathon -- seance jouable en isole, pas la priorite de la prepa"
+  ]},
   {"build":144,"date":"3 aout 2026","sha":"","tag":"CORRECTIF DE REGRESSION : le bouton fermer etait de nouveau hors ecran en scrollant","items":[
     "Signale par Loic avec capture : sur la fiche Allure marathon, scroller jusqu a la Visualisation chronologique faisait totalement disparaitre le bouton fermer",
     "Diagnostic : ce probleme avait DEJA ete corrige aux builds 138 et 139 (le conteneur de scroll etait passe de .modale-overlay a .modale-boite). Mais le fichier src/css.txt reellement present sur GitHub contenait encore l ANCIENNE version sans le correctif -- le fix n avait jamais atteint le depot lors d une session precedente",
