@@ -57,7 +57,18 @@ def semaine_courante():
     import datetime, json as _json
     iso = datetime.date.today().isocalendar()[1]
     try:
-        dispo = [int(k) for k in _json.load(open(DATA))['SBW'].keys()]
+        d = _json.load(open(DATA))
+        # On se cale sur la derniere semaine effectivement LOGGEE, pas sur la
+        # semaine calendaire : le lundi matin, la semaine en cours n'a encore
+        # aucune seance et l'app construit ses fenetres sur les semaines qui
+        # portent des donnees. Comparer S29-S32 a ce que l'app calcule sur
+        # S28-S31 produisait de faux ecarts chaque debut de semaine.
+        loggees = [int(w) for w, ss in d['SBW'].items()
+                   if any((x.get('realise') or {}).get('statut') in ('fait', 'partiel')
+                          and (x.get('realise') or {}).get('km') for x in ss)]
+        if loggees:
+            return min(iso, max(loggees))
+        dispo = [int(k) for k in d['SBW'].keys()]
         return max(min(dispo), min(iso, max(dispo)))
     except Exception:
         return iso

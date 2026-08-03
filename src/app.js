@@ -2922,6 +2922,39 @@ function _profilAxes(){
           nice:Math.round(axes.reduce(function(a,x){return a+x.v*(POIDS[x.k]||0);},0))};
 }
 function _profilCouleur(v){return v>=85?'#0d9488':v>=70?'#16a34a':v>=55?'#84cc16':v>=40?'#f59e0b':'#ef4444';}
+/* Ouverture facon pack : l'enveloppe se dechire le long d'un trace cardiaque,
+   puis le radar s'ecrit comme une trace GPS qui s'enregistre.
+   Ne se declenche qu'a la PREMIERE decouverte (memorisee en localStorage),
+   puis reste rejouable via le bouton du pied de carte — sinon l'animation
+   deviendrait une friction a chaque ouverture du Cockpit. */
+var _PROFIL_CLE='profil_ouvert_v1';
+function _profilDejaOuvert(){try{return localStorage.getItem(_PROFIL_CLE)==='1';}catch(e){return true;}}
+function _profilMarquerOuvert(){try{localStorage.setItem(_PROFIL_CLE,'1');}catch(e){}}
+function _profilOuvrir(){
+  var w=document.getElementById('profil-pack');if(!w)return;
+  if(w.classList.contains('ouvert'))return;
+  w.classList.add('ouvert');
+  w.setAttribute('aria-label','Carte revelee');
+  _profilMarquerOuvert();
+  if(navigator.vibrate)try{navigator.vibrate([14,40,22]);}catch(e){}
+  setTimeout(function(){
+    document.querySelectorAll('#profil-body .pr-fill').forEach(function(f){f.style.width=f.dataset.w+'%';});
+  },60);
+  var el=document.getElementById('pr-score');
+  if(el){var cible=+el.dataset.cible||0,t0=performance.now(),D=900;
+    requestAnimationFrame(function tic(t){
+      var k=Math.min(1,(t-t0)/D),e=1-Math.pow(1-k,3);
+      el.textContent=Math.round(cible*e);
+      if(k<1)requestAnimationFrame(tic);});}
+}
+function _profilRejouer(){
+  var w=document.getElementById('profil-pack');if(!w)return;
+  w.classList.remove('ouvert');
+  w.setAttribute('role','button');w.setAttribute('tabindex','0');
+  document.querySelectorAll('#profil-body .pr-fill').forEach(function(f){f.style.width='0';});
+  var el=document.getElementById('pr-score');if(el)el.textContent='0';
+  w.setAttribute('aria-label','Ouvrir ta carte de profil');
+}
 function _profilRender(){
   var el=document.getElementById('profil-body');if(!el)return;
   var P=null;try{P=_profilAxes();}catch(e){}
@@ -2946,20 +2979,56 @@ function _profilRender(){
     svg+='<text class="pr-lbl" x="'+p[0].toFixed(1)+'" y="'+p[1].toFixed(1)+'" text-anchor="'+an+'">'+court+'</text>';
     svg+='<text class="pr-val" x="'+p[0].toFixed(1)+'" y="'+(p[1]+11).toFixed(1)+'" text-anchor="'+an+'" fill="'+_profilCouleur(a.v)+'">'+a.v+'</text>';});
   var tri=A.slice().sort(function(x,y){return y.v-x.v;});
-  el.innerHTML=
-    '<div class="pr-glob"><div class="pr-gnum">'+P.nice+'</div><div class="pr-gtxt">'+
-      '<div class="pr-gt">Indice Nice</div>'+
-      '<div class="pr-gs">Profil général '+P.general+' · pondéré pour le marathon<br>'+
-      'Fort : <strong>'+tri[0].k.toLowerCase()+'</strong> · À travailler : <strong>'+tri[N-1].k.toLowerCase()+'</strong></div>'+
-    '</div></div>'+
+  var scelle=!_profilDejaOuvert();
+  var rangs=[[90,'Élite'],[80,'Compétiteur'],[65,'Affûté'],[50,'Régulier'],[0,'Coureur']];
+  var rang=rangs.filter(function(r){return P.nice>=r[0];})[0][1];
+  var faible=tri[N-1];
+
+  var carte=
+    '<div class="pr-glob"><div class="pr-gnum chiffre" id="pr-score" data-cible="'+P.nice+'">'+(scelle?0:P.nice)+'</div>'+
+      '<div class="pr-gtxt">'+
+        '<span class="pr-rang">'+rang+'</span>'+
+        '<div class="pr-gt">Indice Nice</div>'+
+        '<div class="pr-gs">Profil général '+P.general+' · pondéré pour le marathon<br>'+
+        'Fort : <strong>'+tri[0].k.toLowerCase()+'</strong> · À travailler : <strong>'+faible.k.toLowerCase()+'</strong></div>'+
+      '</div></div>'+
     '<svg viewBox="-32 0 364 272" class="pr-svg">'+svg+'</svg>'+
     '<div class="pr-list">'+A.map(function(a){var c=_profilCouleur(a.v);
       return '<div class="pr-row"><div class="pr-n" style="color:'+c+'">'+a.k+'</div>'+
-        '<div class="pr-track"><div class="pr-fill" style="width:'+a.v+'%;background:'+c+'"></div></div>'+
+        '<div class="pr-track"><div class="pr-fill" data-w="'+a.v+'" style="width:'+(scelle?0:a.v)+'%;background:'+c+'"></div></div>'+
         '<div class="pr-v" style="color:'+c+'">'+a.v+'</div></div>'+
         '<div class="pr-d">'+a.d+'</div>';}).join('')+'</div>'+
     '<div class="dc-note">Échelle amateur : <strong>1 = débutant, 99 = très bon amateur</strong>. '+
-    'L\'indice Nice pondère les axes selon leur importance pour le marathon — la montagne y compte pour zéro.</div>';
+    'L\'indice Nice pondère les axes selon leur importance pour le marathon — la montagne y compte pour zéro. '+
+    '<button class="pr-rejouer" onclick="_profilRejouer()">Refermer et rouvrir</button></div>';
+
+  el.innerHTML=
+    '<div class="pr-pack'+(scelle?'':' ouvert')+'" id="profil-pack"'+
+      (scelle?' role="button" tabindex="0" aria-label="Ouvrir ta carte de profil"':'')+'>'+
+      '<div class="pr-moitie pr-haut"></div><div class="pr-moitie pr-bas"></div>'+
+      '<svg class="pr-ecg" viewBox="0 0 300 76" aria-hidden="true">'+
+        '<path d="M0 38 H54 l7-19 l7 38 l6-26 l5 14 h30 l7-32 l7 52 l6-30 l5 12 h48 l7-22 l7 40 l6-26 l5 12 H300"/></svg>'+
+      '<div class="pr-sceau">'+
+        '<div class="pr-sigle">🏃</div>'+
+        '<div class="pr-sceau-t">Ton profil de coureur</div>'+
+        '<div class="pr-sceau-s">Sept qualités, mesurées sur tes séances. Scellé jusqu\'à maintenant.</div>'+
+        '<div class="pr-appui">Appuie pour déchirer</div>'+
+      '</div>'+
+      '<div class="pr-carte">'+carte+'</div>'+
+    '</div>';
+
+  // Ecouteurs poses SYSTEMATIQUEMENT : apres un rejeu le pack redevient scelle,
+  // il doit rester ouvrable. _profilOuvrir() sort de lui-meme si deja ouvert.
+  var w=document.getElementById('profil-pack');
+  if(w){
+    w.addEventListener('click',function(e){
+      if(e.target.closest('.pr-rejouer'))return;   // le bouton rejouer garde son propre role
+      _profilOuvrir();});
+    w.addEventListener('keydown',function(e){
+      if(e.key==='Enter'||e.key===' '){
+        if(document.activeElement&&document.activeElement.closest('.pr-rejouer'))return;
+        e.preventDefault();_profilOuvrir();}});
+  }
 }
 function renderCockpit(){
   const el=document.getElementById('cockpit-contenu');

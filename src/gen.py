@@ -1210,6 +1210,16 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":142,"date":"3 aout 2026","sha":"","tag":"Ouverture facon pack pour la carte Profil de coureur","items":[
+    "La carte Profil arrive scellee dans une enveloppe qui se dechire LE LONG D UN TRACE CARDIAQUE : le trait bat en boucle, flashe au tap, et la dechirure suit exactement sa forme",
+    "Le radar s ecrit ensuite comme une trace GPS qui s enregistre, puis les noeuds et les barres se posent en cascade et le score compte jusqu a sa valeur",
+    "Parti pris : deux gestes issus du monde de la course (trace cardiaque, trace GPS) plutot qu une ouverture de pack generique de jeu video",
+    "Rangs nommes en culture course : Coureur, Regulier, Affute (Loic a 70), Competiteur, Elite",
+    "Ne se declenche qu a la PREMIERE decouverte (memorise en localStorage), sinon l animation deviendrait une friction a chaque ouverture du Cockpit. Rejouable via un bouton en pied de carte",
+    "BUG ATTRAPE AU TEST : apres un rejeu le pack redevenait scelle mais sans ecouteur de clic -- il etait impossible de le rouvrir. Ecouteurs desormais poses systematiquement, cycle verifie sur 3 rejeux",
+    "CORRECTIF AUDIT : audit_cockpit se calait sur la semaine CALENDAIRE alors que l app construit ses fenetres sur les semaines LOGGEES. Chaque lundi matin, avant la premiere seance, cela produisait de faux ecarts sur les zones FC. L audit suit desormais la derniere semaine loggee",
+    "Accessible au clavier, reduced-motion respecte, vibration legere au tap, verifie sans debordement sur iPhone SE, 14 et Pro Max"
+  ]},
   {"build":141,"date":"2 aout 2026","sha":"","tag":"Nouvelle carte : Profil de coureur (radar 7 axes)","items":[
     "Radar facon carte de jeu : 7 qualites notees sur 99, toutes calculees sur les seances reellement loggees",
     "Axes : Vitesse 92 (pointe 2:57/km), Endurance 86 (43 km max, 59 km/sem), Montagne 81, Seuil 79 (4:24/km), Durabilite 76 (decouplage median 5,1 %), Constance 68, ALLURE MARATHON 42",
