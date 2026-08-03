@@ -321,7 +321,7 @@ W(29,[ef(11,66), thresh(12,68,2,8,"Découverte du seuil : 2 blocs courts, repris
 W(30,[ef(12,72), thresh(13,75,3,8,"Seuil consolidé, 3 blocs."), pyr_hills(45), longrun(24,145,mp_km=6,heat=True), renfo(opt=False)])
 W(31,[ef(11,66,strides=True), benchmark(), ef(10,60), longrun(20,120,heat=True,desc="Longue facile après le test."), renfo(opt=False)])
 # Seuil & pré-USA
-W(32,[ef(8,48), ef(12,70), ef(9,50,strides=True), longrun(16,95,heat=True), renfo(opt=False), mobilite()])
+W(32,[mp(12,70,3,2,"3×2 km à 5:20/km : travail de RETENUE, ne jamais descendre sous 5:15.",fill=52,warm_min=18,cool_min=12), ef(8,48), ef(9,50,strides=True), longrun(16,95,heat=True), renfo(opt=False), mobilite()])
 W(33,[ef(11,66), thresh(12,70,2,10,"Seuil allégé avant le pic."), ef(10,60,strides=True), longrun(18,108,heat=True,desc="Récup avant le gros bloc."), renfo(opt=True)])
 W(34,[ef(12,72), thresh(14,82,3,12,"Pic seuil pré-voyage.",recup=3), ef(12,72), longrun(28,170,mp_km=12,heat=True,desc="Longue 28 km dont 12 à allure marathon — c'est le GATE de la séance reine : si elle passe bien, on validera 14 km AM en S42."), renfo(opt=False), mobilite()])
 W(35,[ef(12,72,strides=True), thresh(11,66,2,8,"Seuil court, on lève le pied."), ef(10,60), longrun(18,108,heat=True,desc="On prépare le corps au déload du voyage."), renfo(opt=True)])
@@ -828,34 +828,41 @@ for n,ss in WEEKS.items():
 
     if n==32:
         # Semaine reconstruite sur les enseignements de S31 :
-        #  - le pied tolere ~1h de course et se reveille sur l'allure soutenue prolongee
-        #  - Loic derive naturellement vers le haut (5:35 -> 4:55 sans le decider)
-        # Le seuil 2x15 et la SL de 26 km du plan initial etaient trop ambitieux ici.
-        arr[1]["titre"]="Allure marathon — 3×2 km de retenue"
-        arr[1]["type"]="Spécifique marathon"
-        arr[1]["accent"]=BLUE
-        arr[1]["fill"]=52
-        arr[1]["cat"]="sortie-longue"
-        arr[1]["rpe"]=5.5
-        arr[1]["chaussure"]="Novablast 5 J"
-        arr[1]["sous"]="La séance clé de la semaine : apprendre à NE PAS dépasser 5:20/km. Sur parcours dégagé, alerte d'allure activée."
-        arr[1]["metriques"]={"Distance":"~12 km","Durée":"~70 min","Allure":"3×2 km à 5:20/km","FC":"cible 152-158","RPE":"5-6","Type":"Allure marathon"}
-        arr[1]["objectif"]="Remplace le seuil 2×15 min initialement prévu. L'enjeu n'est plus d'aller vite — S31 a prouvé que 5:20 est confortable pour toi — mais de tenir exactement cette allure sans dériver vers le haut. C'est un travail de discipline, pas de forme."
-        arr[1]["struct"]=[
+        #  - le pied tolere ~1h et se reveille sur l'allure soutenue prolongee
+        #  - derive d'allure non intentionnelle (5:35 -> 4:55 le 02/08)
+        # La seance de qualite est desormais en PREMIERE position (mardi 04/08
+        # a la demande de Loic), et elle vient du generateur mp() qui produit
+        # les segments : c'est ce champ qui dessine la barre de deroule, absente
+        # quand la seance etait construite a la main.
+        arr[0]["date"]="2026-08-04"
+        arr[0]["titre"]="Allure marathon — 3×2 km de retenue"
+        arr[0]["chaussure"]="Novablast 5 J"
+        arr[0]["rpe"]=5.5
+        arr[0]["sous"]="La séance clé de la semaine : apprendre à NE PAS dépasser 5:20/km. Sur parcours dégagé, alerte d'allure activée."
+        arr[0]["metriques"]={"Distance":"~12 km","Durée":"~70 min","Allure":"3×2 km à 5:20/km","FC":"cible 152-158","RPE":"5-6","Type":"Allure marathon"}
+        arr[0]["objectif"]="Remplace le seuil 2×15 min initialement prévu. L'enjeu n'est plus d'aller vite — S31 a prouvé que 5:20 est confortable pour toi — mais de tenir exactement cette allure sans dériver vers le haut. C'est un travail de discipline, pas de forme."
+        arr[0]["struct"]=[
           {"nom":"Échauffement","txt":"3 km en EF progressive, FC sous 145."},
           {"nom":"3 × 2 km à 5:20/km","txt":"Récupération 2 min en trot lent entre les blocs. Sur parcours DÉGAGÉ avec GPS fiable, alerte d'allure Garmin réglée sur 5:15-5:25/km. Consigne : ne jamais descendre sous 5:15."},
           {"nom":"Retour au calme","txt":"2 km faciles."}]
-        arr[1]["legende"]=[{"c":GREEN,"l":"Échauffement"},{"c":BLUE,"l":"Bloc 5:20"},{"c":VIOLET,"l":"Récup"}]
-        arr[1]["benefices"]="Ancrage de l'allure cible et travail de la retenue — le point faible identifié en S31."
-        arr[1]["coach"]=[
+        arr[0]["legende"]=[{"c":GREEN,"l":"Échauffement / récup"},{"c":BLUE,"l":"Bloc 5:20"}]
+        arr[0]["benefices"]="Ancrage de l'allure cible et travail de la retenue — le point faible identifié en S31."
+        arr[0]["coach"]=[
           {"titre":"Ton vrai adversaire, c'est l'accélération involontaire","texte":"Dimanche 02/08 tu es passé de 5:35 à 4:55/km sans jamais décider d'accélérer, avec une FC qui monte de 136 à 161. Ici, chaque kilomètre couru sous 5:15 est une erreur d'exécution, même si les sensations sont bonnes. La réussite se mesure à la régularité."},
           {"titre":"Le repère FC","texte":"Vise 152-158 bpm sur les blocs. En dessous de 150 à 5:20, c'est excellent. Au-dessus de 165, ralentis."}]
-        arr[1]["vigilance"]="Première séance à allure soutenue depuis le réveil du pied le 30/07. Au moindre signal, tu arrêtes après le 2ᵉ bloc."
+        arr[0]["vigilance"]="Première séance à allure soutenue depuis le réveil du pied le 30/07. Au moindre signal, tu arrêtes après le 2ᵉ bloc."
+        # Lundi 03/08 devient l'EF facile (inversion demandee)
+        arr[1]["date"]="2026-08-03"
+        arr[1]["titre"]="Footing de reprise"
+        arr[1]["chaussure"]="Novablast 5 V"
+        arr[1]["sous"]="45-50 min très faciles, FC sous 145. On vérifie que le pied a bien encaissé la semaine."
+        arr[1]["objectif"]="Reprise prudente. Le pied a montré qu'il tolérait environ une heure : on reste nettement en dessous pour le laisser continuer à se réparer."
+        arr[1]["vigilance"]="Si la gêne est présente dès les premiers pas du matin, cette séance saute."
+        # Dimanche : longue sans bloc AM
         arr[3]["sous"]="16 km continus en EF, sans bloc allure marathon. On rallonge la durée avant de rajouter de l'intensité."
         arr[3]["objectif"]="Réduite de 26 à 16 km et sans bloc allure marathon. Raison : le pied n'a pas encore dépassé une heure de course sans se manifester. On teste d'abord la durée en EF pure, on recombinera durée et allure marathon en S33 si tout va bien."
         arr[3]["coach"]=[{"titre":"La durée avant l'intensité","texte":"Ton pied se réveille sur l'allure soutenue prolongée, pas sur l'EF facile. On vérifie donc qu'il encaisse 1h35 en EF avant de recombiner les deux contraintes."}]
         arr[3]["vigilance"]="Si la gêne apparaît, tu rentres — même à 10 km. Cette séance est un test de tolérance, pas un objectif kilométrique."
-
 META=[
 (24,'reprise','Récupération',28,'Légère','—',"Absorber La Circaète : repos actif, footings très faciles, mobilité du dos."),
 (25,'reprise','Reprise & déblocage',52,'Modérée','≈ 85 % facile · 15 % qualité légère',"Relancer une structure : ré-ancrer le vrai easy, vivacité, premier contact allure marathon, longue + carburant."),
@@ -1210,6 +1217,13 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":143,"date":"3 aout 2026","sha":"","tag":"S32 : barre de deroule retablie + seances 1 et 2 inversees","items":[
+    "Signale par Loic : la seance Allure marathon n affichait AUCUNE barre de deroule, impossible de voir la structure de la seance",
+    "Cause : la seance avait ete construite a la main dans l override S32, sans le champ segments -- c est lui qui dessine la barre. Les champs struct et legende ne suffisent pas",
+    "Corrige : la seance vient desormais du generateur mp() du plan, qui produit les segments. 7 segments rendus (echauffement, 3 blocs, 2 recups, retour au calme)",
+    "INVERSION demandee : la seance de qualite passe au MARDI 04/08 et l EF de reprise au LUNDI 03/08",
+    "Note : les EF simples n ont volontairement pas de barre dans tout le plan (rien a decomposer) -- seules les seances structurees en ont"
+  ]},
   {"build":142,"date":"3 aout 2026","sha":"","tag":"Ouverture facon pack pour la carte Profil de coureur","items":[
     "La carte Profil arrive scellee dans une enveloppe qui se dechire LE LONG D UN TRACE CARDIAQUE : le trait bat en boucle, flashe au tap, et la dechirure suit exactement sa forme",
     "Le radar s ecrit ensuite comme une trace GPS qui s enregistre, puis les noeuds et les barres se posent en cascade et le score compte jusqu a sa valeur",
