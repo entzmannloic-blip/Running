@@ -1217,6 +1217,13 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":144,"date":"3 aout 2026","sha":"","tag":"CORRECTIF DE REGRESSION : le bouton fermer etait de nouveau hors ecran en scrollant","items":[
+    "Signale par Loic avec capture : sur la fiche Allure marathon, scroller jusqu a la Visualisation chronologique faisait totalement disparaitre le bouton fermer",
+    "Diagnostic : ce probleme avait DEJA ete corrige aux builds 138 et 139 (le conteneur de scroll etait passe de .modale-overlay a .modale-boite). Mais le fichier src/css.txt reellement present sur GitHub contenait encore l ANCIENNE version sans le correctif -- le fix n avait jamais atteint le depot lors d une session precedente",
+    "Le verrou JS du build 139 (_scrollLockY) etait lui bien present et intact : seul le CSS avait regresse",
+    "Reapplique a l identique et reverifie par scroll REEL a la molette (pas de scrollTo programmatique) sur iPhone SE, 14, Pro Max et desktop : bouton fixe a 18px, cliquable, ferme la fiche",
+    "Verifie egalement que ce depot-ci est bien pousse sur GitHub avant de considerer la livraison terminee"
+  ]},
   {"build":143,"date":"3 aout 2026","sha":"","tag":"S32 : barre de deroule retablie + seances 1 et 2 inversees","items":[
     "Signale par Loic : la seance Allure marathon n affichait AUCUNE barre de deroule, impossible de voir la structure de la seance",
     "Cause : la seance avait ete construite a la main dans l override S32, sans le champ segments -- c est lui qui dessine la barre. Les champs struct et legende ne suffisent pas",
