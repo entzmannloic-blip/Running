@@ -869,13 +869,17 @@ for n,ss in WEEKS.items():
         arr[0]["vigilance"]="Si le pied se manifeste pendant l'échauffement, tu bascules en EF et tu gardes cette séance pour plus tard."
         arr[0]["segments"]=_fr_seg
 
+        arr[0]["realise"]={"statut":"partiel","km":10.05,"temps":"1h01","allure":"5:03/km (phase finale)","fc_moy":158,"fc_max":182,"re":123,"cadence":173,"elevation_gain":39,"temp":31,"rpe_ressenti":8,
+        "commentaire":"Fractionn\u00e9 8\u00d7400m en canicule (vigilance orange active) \u00b7 d\u00e9part 8h52, ~31\u00b0C ressentis \u00b7 10,05 km, 1h01 total dont 11 min de pauses non pr\u00e9vues (temps de mouvement 50,8 min). \u00c9chauffement d\u00e9j\u00e0 chaud : 2,72 km \u00e0 FC 165 en fin. SEULEMENT 6 R\u00c9P\u00c9TITIONS SUR 8 r\u00e9alis\u00e9es : allures produites 3:30-3:57/km (dans la cible voire plus rapide), mais r\u00e9cup\u00e9ration impossible entre les blocs \u2014 FC rest\u00e9e coll\u00e9e \u00e0 175-180 m\u00eame en phase de r\u00e9cup, obligeant \u00e0 des pauses suppl\u00e9mentaires de ~2-3 min (4 pauses d\u00e9tect\u00e9es). A termin\u00e9 les 10 km en allure tempo mod\u00e9r\u00e9e (5:03/km) pour FC moyenne 166 \u2014 co\u00fbt cardiaque d'un seuil pour une allure tempo. AUCUNE douleur au pied, y compris en fin de s\u00e9ance et en r\u00e9cup\u00e9ration. Magic Speed 4.",
+        "pr":9,"ach":9,"pr_detail":[],
+        "revue":"<strong>Tu as pris la bonne d\u00e9cision, et les donn\u00e9es le confirment sans ambigu\u00eft\u00e9.</strong> Ton \u00e9chauffement terminait d\u00e9j\u00e0 \u00e0 FC 165 \u2014 un \u00e9chauffement facile ne fait jamais \u00e7a. La chaleur pesait avant m\u00eame la premi\u00e8re r\u00e9p\u00e9tition.<br><br><strong>Le point le plus important : ta vitesse n'\u00e9tait pas le probl\u00e8me.</strong> Tes tentatives de 400 tournent entre 3:30 et 3:57/km \u2014 tu as souvent \u00e9t\u00e9 <em>plus rapide</em> que la cible de 3:45-3:50. Musculairement et en allure pure, tu avais largement le niveau. <strong>Ce qui a c\u00e9d\u00e9, c'est la r\u00e9cup\u00e9ration entre les efforts</strong> : ta FC restait coll\u00e9e \u00e0 175-180 bpm m\u00eame pendant les phases cens\u00e9es \u00eatre faciles. Un c\u0153ur qui ne redescend plus entre les blocs, c'est le signal physiologique exact d'une chaleur qui a chang\u00e9 la donne, pas d'un manque de forme.<br><br><strong>La comparaison avec dimanche est parlante.</strong> M\u00eame toi, m\u00eame niveau de forme : FC 150-154 dimanche pour un effort mod\u00e9r\u00e9, FC 166-180 aujourd'hui pour un effort comparable ou moindre. Seule la temp\u00e9rature a boug\u00e9. Ce n'est pas qu'une impression \u2014 <strong>Lyon est actuellement en vigilance orange canicule</strong>, confirm\u00e9 par M\u00e9t\u00e9o-France.<br><br><strong>La fin de s\u00e9ance le confirme aussi</strong> : 5:03/km \u2014 une allure tempo mod\u00e9r\u00e9e \u2014 t'a co\u00fbt\u00e9 une FC moyenne de 166, soit le tarif normal d'un seuil. M\u00eame le \u00ab plan B \u00bb tournait cher.<br><br><strong>La vraie bonne nouvelle du jour : z\u00e9ro douleur au pied</strong>, y compris en fin de s\u00e9ance et en r\u00e9cup\u00e9ration, apr\u00e8s une sortie exigeante. C'est un signal solide que la g\u00eane de fin juillet est derri\u00e8re toi.<br><br><strong>Ce que \u00e7a change pour la suite de la semaine.</strong> La vigilance canicule reste active. Les s\u00e9ances de mercredi et jeudi doivent imp\u00e9rativement partir tr\u00e8s t\u00f4t (6h30 maximum), rester pilot\u00e9es au cardio et non \u00e0 l'allure, et rester courtes. La sortie longue de samedi m\u00e9ritera la m\u00eame vigilance \u2014 d\u00e9part \u00e0 l'aube non n\u00e9gociable. <strong>6 r\u00e9p\u00e9titions sur 8 dans ces conditions, c'est un bon r\u00e9sultat, pas un \u00e9chec.</strong>"}
         # Mercredi : EF simple (reprend le contenu de l'ancien lundi, decale)
         arr[1]["date"]="2026-08-05"
         arr[1]["titre"]="Footing facile"
         arr[1]["chaussure"]="Novablast 5 V"
         arr[1]["sous"]="45-50 min très faciles, FC sous 145."
         arr[1]["objectif"]="Volume aérobie pur, sans intensité — le lendemain du fractionné."
-        arr[1]["vigilance"]="Si la gêne au pied est présente dès les premiers pas du matin, cette séance saute."
+        arr[1]["vigilance"]="Canicule toujours active (vigilance orange). Départ 6h30 maximum, FC seule pilote — ignore l'allure. Si la gêne au pied est présente dès les premiers pas du matin, cette séance saute."
 
         # Jeudi : EF + lignes droites (decale du mercredi)
         arr[2]["date"]="2026-08-06"
@@ -888,7 +892,7 @@ for n,ss in WEEKS.items():
         arr[3]["sous"]="16 km continus en EF, sans bloc allure marathon. On rallonge la durée avant de rajouter de l'intensité."
         arr[3]["objectif"]="Réduite de 26 à 16 km et sans bloc allure marathon. Raison : le pied n'a pas encore dépassé une heure de course sans se manifester. On teste d'abord la durée en EF pure, on recombinera durée et allure marathon en S33 si tout va bien."
         arr[3]["coach"]=[{"titre":"La durée avant l'intensité","texte":"Ton pied se réveille sur l'allure soutenue prolongée, pas sur l'EF facile. On vérifie donc qu'il encaisse 1h35 en EF avant de recombiner les deux contraintes."}]
-        arr[3]["vigilance"]="Si la gêne apparaît, tu rentres — même à 10 km. Cette séance est un test de tolérance, pas un objectif kilométrique."
+        arr[3]["vigilance"]="Canicule toujours active. Départ à l'aube non négociable (6h30 max), électrolytes dès le départ. Si la gêne apparaît, tu rentres — même à 10 km. Cette séance est un test de tolérance, pas un objectif kilométrique."
 META=[
 (24,'reprise','Récupération',28,'Légère','—',"Absorber La Circaète : repos actif, footings très faciles, mobilité du dos."),
 (25,'reprise','Reprise & déblocage',52,'Modérée','≈ 85 % facile · 15 % qualité légère',"Relancer une structure : ré-ancrer le vrai easy, vivacité, premier contact allure marathon, longue + carburant."),
@@ -1243,6 +1247,15 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":146,"date":"4 aout 2026","sha":"","tag":"Fractionne du 04/08 : la canicule a decide, pas le manque de forme","items":[
+    "Seance marquee PARTIELLE (6 repetitions sur 8, 4 pauses non prevues de 2-3 min). Lyon confirme en vigilance orange canicule par Meteo-France au moment de la seance",
+    "Reconstruction depuis les streams bruts : echauffement deja a FC 165 en fin, allures de repetition reellement produites entre 3:30 et 3:57/km (dans la cible voire plus rapide que prescrit)",
+    "Le facteur limitant n etait PAS la vitesse mais la recuperation : FC restee collee a 175-180 meme en phase de recup censee etre facile -- signature physiologique de la chaleur, pas d un manque de forme",
+    "Phase finale a allure tempo (5:03/km) a coute une FC moyenne de 166, soit le tarif normal d un seuil : la chaleur a change toute l equation du jour",
+    "Comparaison chiffree avec dimanche 02/08 : FC 150-154 pour effort modere alors, FC 166-180 aujourd hui pour effort comparable -- seule la temperature a bouge",
+    "Bonne nouvelle : ZERO douleur au pied, y compris en fin de seance et en recuperation, apres une sortie exigeante",
+    "Vigilance canicule renforcee sur les seances restantes de la semaine (EF mercredi, sortie longue samedi) : depart 6h30 max, pilotage FC exclusif"
+  ]},
   {"build":145,"date":"3 aout 2026","sha":"","tag":"S32 reorganisee : fractionne remplace allure marathon (choix de Loic)","items":[
     "Fractionne 8x400m ajoute mardi 04/08 en remplacement de l allure marathon initialement prevue -- construit avec segments des le depart (17 blocs, barre de deroule fonctionnelle)",
     "Lundi 03/08 saute (Loic ne court pas ce jour). Semaine recompactee sur 4 jours de course : fractionne / EF / EF+lignes droites / sortie longue",
