@@ -250,6 +250,14 @@ def main():
             p.evaluate("document.getElementById('rwoverlay').style.display='none'")
         p.evaluate("showTab('cockpit')")
         p.wait_for_timeout(2200)
+        # Le Cockpit est desormais decoupe en 3 zones (Aujourd'hui / Progression /
+        # Analyse) : les graphes et le selecteur de fenetre vivent en zone 3.
+        # On s'y place avant de tester, sinon les elements sont masques.
+        try:
+            p.evaluate("_ckZone(3)")
+            p.wait_for_timeout(600)
+        except Exception:
+            pass
 
         # --- 1. series numeriques, 4 fenetres
         for N in (2, 4, 8, 12):

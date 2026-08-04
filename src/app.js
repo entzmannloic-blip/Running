@@ -2818,10 +2818,15 @@ function _decoupRender(){
       '<div class="dc-cell"><b>'+d.p2+' \u00b7 '+d.fc2+'</b><span>2e moiti\u00e9</span></div>'+
       '<div class="dc-cell"><b>'+(d.bpm>0?'+':'')+num(d.bpm)+' bpm</b><span>d\u00e9rive FC</span></div>'+
     '</div>'+
-    (runs.length>1?'<div class="dc-trend-h">Tes derni\u00e8res sorties \u00e9ligibles</div>'+rows:'')+
-    '<div class="dc-note">'+(runs.length>1
-      ? 'Une valeur isol\u00e9e est du bruit : <strong>c\'est la tendance qui compte</strong>. Voir ce chiffre baisser \u00e0 conditions comparables, c\'est la preuve que ton endurance progresse.'
-      : 'Une seule sortie \u00e9ligible pour l\'instant \u2014 la tendance se construira avec les prochaines.')+'</div>';
+    '';
+  // La liste de tendance (491 px pour 7 sorties) partait le detail utile sous
+  // 5 ecrans de scroll : elle vit desormais dans la zone Progression.
+  var elT=document.getElementById('decoup-trend-body');
+  if(elT){
+    elT.innerHTML=(runs.length>1)
+      ? rows+'<div class="dc-note">Une valeur isol\u00e9e est du bruit : <strong>c\'est la tendance qui compte</strong>. Voir ce chiffre baisser \u00e0 conditions comparables, c\'est la preuve que ton endurance progresse.</div>'
+      : '<div class="eff-loading">Une seule sortie \u00e9ligible pour l\'instant \u2014 la tendance se construira avec les prochaines.</div>';
+  }
 }
 /* ===== PROFIL DE COUREUR (radar 7 axes) =====
    Chaque axe est note sur 99 avec des bornes AMATEUR (1 = debutant,
@@ -3030,6 +3035,26 @@ function _profilRender(){
         e.preventDefault();_profilOuvrir();}});
   }
 }
+/* Bascule des 3 zones du Cockpit.
+   Principe d'organisation : la FREQUENCE DE DECISION, pas le type de donnee.
+   Zone 1 "Aujourd'hui"  -> ce qui decide de la seance du jour (forme, resume,
+                            charge/ACWR, verdict de la derniere sortie)
+   Zone 2 "Progression"  -> ce qui se lit a la semaine ou au mois
+   Zone 3 "Analyse"      -> les graphes detailles, consultes occasionnellement
+   Avant ce decoupage, le Cockpit faisait 5318 px (6,3 ecrans) : tout ce qui
+   se trouvait au-dela du 2e ecran n'etait jamais consulte, y compris le
+   resume executif qui est pourtant l'information la plus actionnable. */
+var _ckZoneActive=1;
+function _ckZone(n,el){
+  _ckZoneActive=n;
+  document.querySelectorAll('#vue-cockpit .ck-zone').forEach(function(z){
+    z.style.display=(+z.dataset.zone===n)?'':'none';});
+  document.querySelectorAll('#vue-cockpit .ck-z').forEach(function(b){b.classList.remove('ck-z-on');});
+  if(el)el.classList.add('ck-z-on');
+  else{var b=document.querySelector('#vue-cockpit .ck-z:nth-child('+n+')');if(b)b.classList.add('ck-z-on');}
+  var v=document.getElementById('vue-cockpit');if(v)v.scrollTop=0;
+  window.scrollTo(0,0);
+}
 function renderCockpit(){
   const el=document.getElementById('cockpit-contenu');
   if(el.innerHTML.trim()){_ckRenderAll(_ckWin);return;}
@@ -3047,6 +3072,8 @@ function renderCockpit(){
 <div style="padding:var(--sp-3) var(--sp-3) var(--sp-10)">
 <div class="lt-title" style="margin-bottom:2px">Cockpit</div>
 <div style="font-size:11px;color:var(--texte-deux);margin-bottom:var(--sp-4)">Glisse sur les courbes · touche une barre · tap une sortie</div>
+<div class="ck-zones" role="tablist"><button class="ck-z ck-z-on" role="tab" onclick="_ckZone(1,this)">Aujourd'hui</button><button class="ck-z" role="tab" onclick="_ckZone(2,this)">Progression</button><button class="ck-z" role="tab" onclick="_ckZone(3,this)">Analyse</button></div>
+<div class="ck-zone" data-zone="1">
 <div class="ck-hero" role="button" tabindex="0" onclick="openCkHelp('forme')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openCkHelp('forme');}">
   <div class="ck-hero-l">
     <div class="ck-hero-lbl">Forme du jour</div>
@@ -3061,6 +3088,23 @@ ${(function(){const v=_estimVO2();if(!v)return '';return `<div class="vo2-card">
     <div class="vo2-num"><span id="vo2-val">0</span><span class="vo2-unit">ml/kg/min</span></div></div>
   <div class="vo2-foot" id="vo2-foot"></div>
 </div>`;})()}
+<div class="ck-summary" id="ck-summary"></div>
+<div class="ck-kpis">
+  <div class="ck-kpi"><div class="ck-kv" id="ck-km-val">—<span class="ck-ku">km</span></div><div class="ck-kl" id="ck-km-lbl">fenêtre</div><div class="ck-kd up">cumulé</div></div>
+  <div class="ck-kpi"><div class="ck-kv" id="ck-re-val">—</div><div class="ck-kl" id="ck-re-lbl">Effort</div><div class="ck-kd up">cumulé</div></div>
+  <div class="ck-kpi"><div class="ck-kv" id="ck-acwr-val">0.69</div><div class="ck-kl">ACWR</div><div class="ck-kd">frais</div></div>
+  <div class="ck-kpi"><div class="ck-kv" id="ck-cad-kpi">—<span class="ck-ku">spm</span></div><div class="ck-kl">Cadence</div><div class="ck-kd" id="ck-cad-d">moy.</div></div>
+</div>
+
+<div class="eff-card" id="decoup-card">
+  <div class="vo2-top"><span class="vo2-lbl">Découplage cardiaque <button class="vo2-help" onclick="openCkHelp('decoup')" aria-label="Comment lire le découplage ?">?</button></span><span class="vo2-src" id="decoup-src"></span></div>
+  <div class="eff-body" id="decoup-body"></div>
+</div>
+</div><div class="ck-zone" data-zone="2" style="display:none">
+<div class="eff-card" id="profil-card">
+  <div class="vo2-top"><span class="vo2-lbl">Profil de coureur <button class="vo2-help" onclick="openCkHelp('profil')" aria-label="Comment lire le profil ?">?</button></span><span class="vo2-src">7 axes · notés sur 99</span></div>
+  <div class="eff-body" id="profil-body"></div>
+</div>
 <div class="eff-card" id="eff-card">
   <div class="vo2-top"><span class="vo2-lbl">Efficience aérobie <button class="vo2-help" onclick="openCkHelp('eff')" aria-label="Qu'est-ce que l'efficience aérobie ?">?</button></span><span class="vo2-src">allure à 145 bpm · corrigée température</span></div>
   <div class="eff-body" id="eff-body"><div class="eff-loading">⏳ Analyse des conditions météo de tes séances…</div></div>
@@ -3069,31 +3113,22 @@ ${(function(){const v=_estimVO2();if(!v)return '';return `<div class="vo2-card">
   <div class="vo2-top"><span class="vo2-lbl">Acclimatation chaleur <button class="vo2-help" onclick="openCkHelp('heat')" aria-label="Qu'est-ce que l'acclimatation chaleur ?">?</button></span><span class="vo2-src">expositions &gt;25°C · 21 derniers jours</span></div>
   <div class="eff-body" id="heat-body"><div class="eff-loading">⏳ Calcul de tes expositions à la chaleur…</div></div>
 </div>
-<div class="eff-card" id="decoup-card">
-  <div class="vo2-top"><span class="vo2-lbl">Découplage cardiaque <button class="vo2-help" onclick="openCkHelp('decoup')" aria-label="Comment lire le découplage ?">?</button></span><span class="vo2-src" id="decoup-src"></span></div>
-  <div class="eff-body" id="decoup-body"></div>
-</div>
-<div class="eff-card" id="profil-card">
-  <div class="vo2-top"><span class="vo2-lbl">Profil de coureur <button class="vo2-help" onclick="openCkHelp('profil')" aria-label="Comment lire le profil ?">?</button></span><span class="vo2-src">7 axes · notés sur 99</span></div>
-  <div class="eff-body" id="profil-body"></div>
-</div>
 <div class="eff-card" id="saison-card">
   <div class="vo2-top"><span class="vo2-lbl">Progression par saison <button class="vo2-help" onclick="openCkHelp('saison')" aria-label="Comment lire la progression par saison ?">?</button></span><span class="vo2-src">allure à 145 bpm · corrigée chaleur</span></div>
   <div class="eff-body" id="saison-body"></div>
 </div>
+<div class="eff-card" id="decoup-trend-card">
+  <div class="vo2-top"><span class="vo2-lbl">Durabilité — tendance <button class="vo2-help" onclick="openCkHelp('decoup')" aria-label="Comment lire le découplage ?">?</button></span><span class="vo2-src">découplage · sorties éligibles</span></div>
+  <div class="eff-body" id="decoup-trend-body"></div>
+</div>
+</div><div class="ck-zone" data-zone="3" style="display:none">
 <div class="ck-toggle" id="ck-tgl">
   <button class="ck-tg" onclick="ckWin(2,this)">2 sem.</button>
   <button class="ck-tg" onclick="ckWin(4,this)">4 sem.</button>
   <button class="ck-tg ck-on" onclick="ckWin(8,this)">8 sem.</button>
   <button class="ck-tg" onclick="ckWin(12,this)">12 sem.</button>
 </div>
-<div class="ck-kpis">
-  <div class="ck-kpi"><div class="ck-kv" id="ck-km-val">—<span class="ck-ku">km</span></div><div class="ck-kl" id="ck-km-lbl">fenêtre</div><div class="ck-kd up">cumulé</div></div>
-  <div class="ck-kpi"><div class="ck-kv" id="ck-re-val">—</div><div class="ck-kl" id="ck-re-lbl">Effort</div><div class="ck-kd up">cumulé</div></div>
-  <div class="ck-kpi"><div class="ck-kv" id="ck-acwr-val">0.69</div><div class="ck-kl">ACWR</div><div class="ck-kd">frais</div></div>
-  <div class="ck-kpi"><div class="ck-kv" id="ck-cad-kpi">—<span class="ck-ku">spm</span></div><div class="ck-kl">Cadence</div><div class="ck-kd" id="ck-cad-d">moy.</div></div>
-</div>
-<div class="ck-summary" id="ck-summary"></div>
+
 <div class="ck-sec ck-sec-tg" data-open="1" onclick="_ckToggleSec(this)">📊 Volume &amp; charge<span class="ck-sec-chev">▾</span></div>
 <div class="ck-sec-body" data-sec="1">
 <div class="ck-sec">📈 Performance Management Chart</div>
@@ -3139,7 +3174,9 @@ ${card('ckDP','⛰ Dénivelé D+','',null,'m',75,'','dp')}
       <div style="font-size:9px;color:#94a3b8;text-align:center;margin-top:4px;font-style:italic" id="ck-m-caption">glisse sur le graphe seconde par seconde</div>
     </div>
   </div>
-</div>`;
+</div>
+</div>
+`;
   _ckRenderAll(_ckWin);
 }
 function ckWin(w,el){_ckWin=w;document.querySelectorAll('.ck-tg').forEach(b=>b.classList.remove('ck-on'));el.classList.add('ck-on');_ckRenderAll(w);}

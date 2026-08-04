@@ -1247,6 +1247,17 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":147,"date":"4 aout 2026","sha":"","tag":"Refonte du Cockpit : 3 zones par frequence de decision","items":[
+    "Constat mesure : le Cockpit faisait 5318 px, soit 6,3 ecrans. Tout ce qui depassait le 2e ecran n etait jamais consulte -- y compris le RESUME EXECUTIF, pourtant l information la plus actionnable, enterre a l ecran 3,4",
+    "Principe retenu : organiser par FREQUENCE DE DECISION (le modele mental du coach), pas par type de donnee",
+    "AUJOURD HUI (1,2 ecran) : forme du jour, resume executif remonte, KPI charge/ACWR remontes, verdict de la derniere sortie",
+    "PROGRESSION (2,3 ecrans) : profil de coureur, efficience, acclimatation chaleur, progression saison, tendance de durabilite",
+    "ANALYSE (1,3 ecran) : les 6 sections graphiques et le selecteur de fenetre 2/4/8/12",
+    "Carte Decouplage scindee : le verdict du jour reste en zone 1 (913 -> 312 px), la liste de tendance des 7 sorties part en zone Progression. Gain de 491 px sur le premier ecran",
+    "Un scroll ne montre pas ce qu il cache : le selecteur de zones ANNONCE ce qui existe. On passe d un acces par endurance a un acces par intention",
+    "Les 17 bulles d aide sont integralement preservees -- c est la signature pedagogique de l app",
+    "audit_cockpit adapte : il bascule en zone 3 avant de tester les graphes, sinon ils sont masques"
+  ]},
   {"build":146,"date":"4 aout 2026","sha":"","tag":"Fractionne du 04/08 : la canicule a decide, pas le manque de forme","items":[
     "Seance marquee PARTIELLE (6 repetitions sur 8, 4 pauses non prevues de 2-3 min). Lyon confirme en vigilance orange canicule par Meteo-France au moment de la seance",
     "Reconstruction depuis les streams bruts : echauffement deja a FC 165 en fin, allures de repetition reellement produites entre 3:30 et 3:57/km (dans la cible voire plus rapide que prescrit)",

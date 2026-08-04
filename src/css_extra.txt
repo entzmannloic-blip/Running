@@ -1369,3 +1369,14 @@ body,.accueil{background:#f2f2f7}
   .pr-moitie,.pr-carte,.pr-ecg path,.pr-carte .pr-shape{animation:none!important;transition-duration:.01ms!important}
   .pr-carte .pr-shape{stroke-dashoffset:0}
 }
+/* ===== Zones du Cockpit (segmented control) ===== */
+.ck-zones{display:flex;gap:4px;background:var(--gris-clair);border-radius:11px;padding:3px;margin:0 0 var(--sp-4)}
+.ck-z{flex:1;border:none;background:none;font:inherit;font-size:12.5px;font-weight:700;color:var(--texte-deux);
+  padding:8px 4px;border-radius:9px;cursor:pointer;transition:background .18s,color .18s,box-shadow .18s;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ck-z-on{background:#fff;color:var(--primary);box-shadow:0 1px 3px rgba(0,0,0,.09)}
+.ck-z:focus-visible{outline:2px solid var(--primary);outline-offset:1px}
+/* compactage des lignes de tendance : 66px -> 46px */
+.dc-row{padding:5px 0}
+.dc-t{font-size:11.5px}
+.dc-s{font-size:9px}
