@@ -729,10 +729,10 @@ _COURSES_.slice(0,2).forEach(function(r){
 _chips.push('<button class="achip achip-plan" onclick="jumpToWeek('+sc.num+')">'+'<span class="achip-v">S'+sc.num+'</span><span class="achip-k">'+_PCT_+'% du plan</span></button>');
 _chips.push('<button class="achip achip-meteo" id="achip-meteo" onclick="_ouvrirMeteo()">'+'<span class="achip-v" id="achip-meteo-v">\u00b7\u00b7\u00b7</span><span class="achip-k">m\u00e9t\u00e9o</span></button>');
 if(_nudge){_chips.push('<button class="achip achip-coach cn-'+_nudge.tone+'" onclick="openCoach()">'+'<span class="achip-v">'+_nudge.icon+'</span><span class="achip-k">coach</span></button>');}
-document.getElementById('hero-plan').innerHTML=_lt+_psCard+_wnCard+_formeDetail+'<div class="achip-row">'+_chips.join('')+'</div>'+'<div id="canicule-banner" style="display:none"></div>'+'<div id="meteo-widget" class="meteo" style="display:none"><div class="meteo-loc">\u23f3</div></div>'+_BILAN_;
+document.getElementById('hero-plan').innerHTML=_lt+_psCard+_wnCard+_formeDetail+'<div class="achip-row">'+_chips.join('')+'</div>'+'<div id="canicule-banner" style="display:none"></div>'+'<div id="meteo-widget" class="meteo" style="display:none"><div class="meteo-loc">\u23f3</div></div>';
   renderMeteo();
   document.getElementById('maj-foot').innerHTML=_maj;
-   try{const _aSe=Object.values(SEANCES_BY_WEEK).flat();const _aF=_aSe.filter(s=>s.realise&&(s.realise.statut==='fait'||s.realise.statut==='partiel')).length;const _aKm=Math.round(_aSe.reduce((a,s)=>a+((s.realise&&s.realise.km)||0),0));const _aP=_aSe.length?Math.round(_aF/_aSe.length*100):0;const _ae=document.getElementById('accueil-annee');const _aStreak=_computeStreak();const _streakTile=_aStreak>=2?`<div class="acc-stat acc-streak"><div class="av">${_aStreak}<span>\u{1F525}</span></div><div class="ak">Sem. d\u2019affil\u00e9e</div></div>`:'';if(_ae)_ae.innerHTML=`<div class="acc-lab">Bilan du plan</div><div class="acc-annee ${_streakTile?'has-streak':''}"><div class="acc-stat"><div class="av">${_aF}</div><div class="ak">Sorties</div></div><div class="acc-stat"><div class="av">${_aKm}<span>km</span></div><div class="ak">R\u00e9alis\u00e9</div></div><div class="acc-stat"><div class="av">${_aP}<span>%</span></div><div class="ak">Pr\u00e9pa plan</div></div>${_streakTile}</div>`;}catch(e){}
+   try{const _aSe=Object.values(SEANCES_BY_WEEK).flat();const _aF=_aSe.filter(s=>s.realise&&(s.realise.statut==='fait'||s.realise.statut==='partiel')&&s.realise.km).length;/* on ne compte que les seances AVEC kilometrage : le bilan affichait 31 sorties quand la ligne de puces en comptait 30, les seances de PPG et de mobilite etant comptees ici mais pas la. Deux chiffres contradictoires pour la meme chose sur le meme ecran. */const _aKm=Math.round(_aSe.reduce((a,s)=>a+((s.realise&&s.realise.km)||0),0));const _aP=_aSe.length?Math.round(_aF/_aSe.length*100):0;const _ae=document.getElementById('accueil-annee');const _aStreak=_computeStreak();const _streakTile=_aStreak>=2?`<div class="acc-stat acc-streak"><div class="av">${_aStreak}<span>\u{1F525}</span></div><div class="ak">Sem. d\u2019affil\u00e9e</div></div>`:'';if(_ae)_ae.innerHTML=`<div class="acc-lab">Bilan du plan</div><div class="acc-annee ${_streakTile?'has-streak':''}"><div class="acc-stat"><div class="av">${_aF}</div><div class="ak">Sorties</div></div><div class="acc-stat"><div class="av">${_aKm}<span>km</span></div><div class="ak">R\u00e9alis\u00e9</div></div><div class="acc-stat"><div class="av">${_aP}<span>%</span></div><div class="ak">Pr\u00e9pa plan</div></div>${_streakTile}</div>`;}catch(e){}
   const _ab=document.getElementById('appbar');if(_ab&&document.documentElement)document.documentElement.style.setProperty('--appbar-h',_ab.offsetHeight+'px');
 }
 
@@ -2236,7 +2236,13 @@ function checkAutoSync(){
     for(const s of(SEANCES_BY_WEEK[wk]||[])){
       if(!s.date||s.opt)continue;
       const d=new Date(s.date+'T00:00:00');
-      if((+d===+today||+d===+yest)&&(!s.realise||s.realise.statut!=='fait')){
+      /* Une seance loggee en PARTIEL est loggee : elle ne doit pas declencher
+         l alerte. Le fractionne du 04/08, interrompu en canicule a 6 repetitions
+         sur 8, etait enregistre en partiel et l accueil affichait quand meme
+         "Seance hier non loggee" -- une alerte qui contredit la realite est
+         ce qui casse le plus la confiance dans l outil. */
+      var _st=s.realise&&s.realise.statut;
+      if((+d===+today||+d===+yest)&&!(_st==='fait'||_st==='partiel')){
         const k='as_'+s.id;if(localStorage.getItem(k))continue;
         const hero=document.getElementById('hero-plan');if(!hero)return;
         const bar=document.createElement('div');bar.className='as-bar';

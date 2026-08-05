@@ -1479,3 +1479,9 @@ body,.accueil{background:#f2f2f7}
 .abil-i b{font-size:20px;font-weight:900;letter-spacing:-.03em;color:var(--texte);font-variant-numeric:tabular-nums;line-height:1}
 .abil-i span{font-size:9px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--texte-trois)}
 .meteo-sheet{display:block!important;background:none;border:none;box-shadow:none;padding:0}
+/* Contraste des valeurs de puces : 3,74:1 sur fond blanc, sous la norme WCAG AA
+   (4,5:1). Les teintes colorees des puces course/chaud/tiede etaient trop
+   claires pour du texte. On assombrit sans changer l'identite. */
+.achip-race .achip-v{color:#0b7c72}
+.achip-chaud .achip-v{color:#b91c1c}
+.achip-tiede .achip-v{color:#b45309}

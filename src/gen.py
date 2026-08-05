@@ -1258,6 +1258,13 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":154,"date":"6 aout 2026","sha":"","tag":"Accueil : suppression des residus, objectif 18/20","items":[
+    "BILAN AFFICHE EN DOUBLE : le bloc historique et celui ajoute au build 153 coexistaient, avec des chiffres CONTRADICTOIRES (31 sorties contre 30). Cause : l ancien comptait les seances de PPG et mobilite, le nouveau non",
+    "Resolu en gardant le bloc historique (plus riche : il porte aussi le pourcentage de prepa et la serie de semaines) et en alignant son comptage sur les seances AVEC kilometrage. Un seul bilan, un seul chiffre",
+    "ALERTE FANTOME : Seance hier non loggee s affichait alors que le fractionne du 04/08 etait bien enregistre -- en PARTIEL. Le controle testait statut !== fait et ignorait le statut partiel. Une alerte qui contredit la realite est ce qui casse le plus la confiance dans un outil",
+    "CONTRASTE : les valeurs des puces sortaient a 3,74:1 sur fond blanc, sous la norme WCAG AA de 4,5:1. Teintes assombries a 5,07:1 sans changer l identite visuelle",
+    "Resultat : 716 -> 571 px (0,7 ecran sur iPhone 14), 37 -> 27 unites visibles. Cibles tactiles toutes au-dessus de 44 px, aucun bouton sans libelle accessible"
+  ]},
   {"build":153,"date":"6 aout 2026","sha":"","tag":"Accueil epure : puces compactes au lieu de conteneurs pleine largeur","items":[
     "Retour de Loic : l ecran renvoyait une impression de desordre, comme si sa prepa etait fouillis. Mesure : 50 unites d information, 130 mots, 7 blocs pleine largeur sur 1,4 ecran",
     "Diagnostic : le probleme n etait pas la quantite d information mais le fait que CHAQUE information reclamait un conteneur entier -- une banniere pleine largeur pour dire qu il fait chaud, une autre pour un simple lien vers le plan",
