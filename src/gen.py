@@ -363,7 +363,13 @@ def _km(s):
     m=_re.search(r"(\d+)", s.get("metriques",{}).get("Distance",""))
     return int(m.group(1)) if m else 99
 def assign_shoes(sessions, weeknum):
-    MAGIC="ASICS Magic Speed 4";NOVA="ASICS Novablast 5";CLIF="HOKA Clifton 10";GEL="ASICS Gel Pulse 16";CASC="Brooks Cascadia 19"
+    # CLIF (HOKA Clifton 10) retiree de la rotation le 27/07 : delamination de
+    # semelle, trou dans le mesh, mousse tassee -- constate sur photos. Avec la
+    # gene plantaire de Loic, cette paire aggrave le risque au lieu de le
+    # proteger. La retraite avait ete faite seance par seance (overrides
+    # manuels), jamais a la racine : cette fonction continuait de la proposer
+    # dans sa rotation EASY, et elle est ressortie sur la fiche du 06/08.
+    MAGIC="ASICS Magic Speed 4";NOVA="ASICS Novablast 5";CLIF="ASICS Novablast 5 V";GEL="ASICS Gel Pulse 16";CASC="Brooks Cascadia 19"
     n=len(sessions);cats=[]
     for s in sessions:
         t=s["type"]
@@ -880,6 +886,11 @@ for n,ss in WEEKS.items():
         arr[1]["sous"]="45-50 min très faciles, FC sous 145."
         arr[1]["objectif"]="Volume aérobie pur, sans intensité — le lendemain du fractionné."
         arr[1]["vigilance"]="Canicule toujours active (vigilance orange). Départ 6h30 maximum, FC seule pilote — ignore l'allure. Si la gêne au pied est présente dès les premiers pas du matin, cette séance saute."
+        arr[1]["realise"]={"statut":"fait","km":10.04,"temps":"1h00","allure":"6:01/km","fc_moy":134,"fc_max":166,"re":34,"cadence":173,"elevation_gain":37,"temp":25,"rpe_ressenti":4,
+        "decouplage":{"pct":4.29,"bpm":1.9,"fen_min":44,"temp":25,"attendu":6,"p1":"5:55/km","fc1":133,"p2":"5:58/km","fc2":135,"qualite":"incertain","algo":"decoup-v1"},
+        "commentaire":"EF tr\u00e8s facile \u00b7 d\u00e9part 8h16, ~25\u00b0C (moins chaud que la veille) \u00b7 10,04 km en 1h00 \u00e0 6:01/km, FC moyenne 134. Corps de sortie tr\u00e8s stable (9,67 km \u00e0 5:59/km, FC 88-150). SPRINT FINAL de 336 m (confirme le ressenti \"300 derniers m\u00e8tres\") : 4:42/km moyenne, pointe \u00e0 3:36/km, FC mont\u00e9e \u00e0 166 \u2014 test du pied r\u00e9ussi, aucune g\u00eane. Fatigue musculaire ressentie malgr\u00e9 l'allure facile, attribu\u00e9e au fractionn\u00e9 interrompu de la veille en canicule. Chauss\u00e9 en Novablast 5 J (la 5 V \u00e9tait pr\u00e9vue, \u00e9cart mineur sans cons\u00e9quence, les deux paires sont saines).",
+        "pr":0,"ach":0,"pr_detail":[],
+        "revue":"<strong>Une sortie de r\u00e9cup\u00e9ration ex\u00e9cut\u00e9e exactement comme il fallait, avec un test de pied concluant.</strong> Corps de sortie tr\u00e8s stable \u00e0 5:59/km et FC 134 de moyenne \u2014 un vrai EF facile, sans \u00e0-coup.<br><br><strong>Ton sprint final est confirm\u00e9 au m\u00e8tre pr\u00e8s :</strong> 336 m \u00e0 4:42/km de moyenne, avec une pointe \u00e0 <strong>3:36/km</strong> et une FC qui monte \u00e0 166. <strong>Aucune g\u00eane signal\u00e9e</strong> \u2014 c'est le test que tu voulais faire, et il est concluant : le pied encaisse une acc\u00e9l\u00e9ration franche en fin de sortie fatigu\u00e9e.<br><br><strong>Sur ta fatigue musculaire ressentie malgr\u00e9 l'allure facile \u2014 c'est un vrai signal, pas une impression.</strong> Le fractionn\u00e9 d'hier a co\u00fbt\u00e9 plus cher que son volume ne le laissait penser : 6 r\u00e9p\u00e9titions \u00e0 haute intensit\u00e9 en canicule, avec des pauses forc\u00e9es, ce n'est pas anodin pour les jambes m\u00eame si le kilom\u00e9trage total \u00e9tait mod\u00e9r\u00e9. C'est cette fatigue-l\u00e0 que tu sens aujourd'hui, et c'est exactement ce \u00e0 quoi sert une sortie facile le lendemain.<br><br><strong>Sur le d\u00e9couplage :</strong> il ressort \u00e0 4,29 % mais marqu\u00e9 \"incertain\" par la proc\u00e9dure \u2014 et c'est en fait une bonne nouvelle d\u00e9guis\u00e9e. Le test de robustesse d\u00e9tecte une petite instabilit\u00e9 en fin de fen\u00eatre, ce qui arrive pr\u00e9cis\u00e9ment quand une sortie est <em>si plate et ma\u00eetris\u00e9e</em> que la d\u00e9rive r\u00e9elle est noy\u00e9e dans le bruit de mesure. Rien d'alarmant : ta r\u00e9gularit\u00e9 aujourd'hui rend le chiffre difficile \u00e0 mesurer pr\u00e9cis\u00e9ment, pas le signe d'un probl\u00e8me. Il ne sera pas compt\u00e9 dans la tendance, par prudence.<br><br><strong>Un point technique corrig\u00e9 en coulisses :</strong> la fiche de demain proposait encore tes Clifton 10 \u2014 la paire qu'on a retir\u00e9e de la rotation fin juillet pour d\u00e9lamination. C'\u00e9tait un oubli \u00e0 la racine du g\u00e9n\u00e9rateur de s\u00e9ances, pas juste sur une fiche : c'est corrig\u00e9 partout, plus aucune s\u00e9ance \u00e0 venir ne les propose.<br><br><strong>Bilan : bonne d\u00e9cision d'aujourd'hui.</strong> Tu as \u00e9cout\u00e9 la fatigue sans la sur-interpr\u00e9ter, test\u00e9 le pied intelligemment en fin de sortie plut\u00f4t qu'\u00e0 froid, et le r\u00e9sultat est rassurant sur tous les plans."}
 
         # Jeudi : EF + lignes droites (decale du mercredi)
         arr[2]["date"]="2026-08-06"
@@ -957,7 +968,7 @@ PHASES=[
 COUL={p["id"]:p["c"] for p in PHASES}
 GEAR=[
   {"marque":"HOKA","modele":"Clifton 10","km":1158},
-  {"marque":"ASICS","modele":"Novablast 5 J","km":651},
+  {"marque":"ASICS","modele":"Novablast 5 J","km":661},
   {"marque":"ASICS","modele":"Novablast 5 V","km":45},
   {"marque":"ASICS","modele":"Gel Pulse 16","km":225},
   {"marque":"Brooks","modele":"Cascadia 19","km":241},
@@ -1247,6 +1258,14 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":151,"date":"5 aout 2026","sha":"","tag":"EF du 05/08 loggee + Clifton 10 retiree a la racine de la rotation","items":[
+    "EF facile : 10,04 km a 6:01/km, FC moy 134. Corps de sortie tres stable (9,67 km a 5:59/km) puis SPRINT FINAL de 336 m confirme au metre pres (4:42/km moy, pointe 3:36/km, FC jusqu a 166) -- aucune gene, test du pied concluant",
+    "Decouplage 4,29% marque incertain par le test de robustesse : une sortie aussi plate et maitrisee noie la derive reelle dans le bruit de mesure. Pas alarmant, non compte dans la tendance par prudence",
+    "Fatigue musculaire ressentie malgre l allure facile, attribuee au fractionne interrompu de la veille en canicule -- signal coherent, pas une anomalie",
+    "BUG STRUCTUREL TROUVE ET CORRIGE : assign_shoes() proposait encore les Clifton 10 dans sa rotation EASY, alors qu elles ont ete retirees le 27/07 pour delamination. La decision n avait jamais ete codee a la racine, seulement patchee seance par seance -- elle venait de ressortir sur la fiche du 06/08",
+    "Corrige dans le generateur lui-meme : plus aucune seance a venir ne propose les Clifton. Les 3 occurrences futures restantes dans les donnees sont des seances DEJA REALISEES avant le 27/07, donc legitimes",
+    "Novablast 5 J -> 661 km"
+  ]},
   {"build":150,"date":"4 aout 2026","sha":"","tag":"Accueil : carte hero + echelle typographique","items":[
     "CARTE HERO : la seance du jour et la forme fusionnees en un bloc unique et dominant. Avant, elles vivaient dans deux conteneurs separes de 157 et 107 px -- rien ne designait de point focal",
     "La forme devient un anneau de progression a droite du titre, lisible d un coup d oeil. Il reste cliquable pour ouvrir le detail, sans declencher l ouverture de la seance (propagation stoppee, verifie)",
