@@ -519,25 +519,25 @@ function _coachNudge(){
     if(typeof RACES!=='undefined'&&RACES.length){
       for(const rc of RACES){
         const jr=Math.round((new Date(rc.date+'T00:00:00')-today)/86400000);
-        if(jr===0)return {tone:'ok',icon:'\u{1F3C1}',txt:'Jour de course : '+rc.nom+' ! Confiance dans ta pr\u00e9pa \u2014 pars prudent, finis fort.'};
-        if(jr>0&&jr<=7)return {tone:'ok',icon:'\u{1F3C1}',txt:rc.nom+' dans '+jr+' jour'+(jr>1?'s':'')+' \u2014 priorit\u00e9 fra\u00eecheur : sorties courtes et faciles, sommeil, glucides.'};
+        if(jr===0)return {tone:'ok',icon:'\u{1F3C1}',mot:'jour J',txt:'Jour de course : '+rc.nom+' ! Confiance dans ta pr\u00e9pa \u2014 pars prudent, finis fort.'};
+        if(jr>0&&jr<=7)return {tone:'ok',icon:'\u{1F3C1}',mot:'aff\u00fbtage',txt:rc.nom+' dans '+jr+' jour'+(jr>1?'s':'')+' \u2014 priorit\u00e9 fra\u00eecheur : sorties courtes et faciles, sommeil, glucides.'};
       }
     }
     // Priorité aux signaux de risque, puis de relance
     if(acwr>1.5)
-      return {tone:'warn',icon:'\u{1F534}',txt:'Ton ACWR est \u00e0 '+acwr.toFixed(2)+' \u2014 charge aigu\u00eb \u00e9lev\u00e9e. Priorise la r\u00e9cup ces prochains jours.'};
+      return {tone:'warn',icon:'\u{1F534}',mot:'r\u00e9cup',txt:'Ton ACWR est \u00e0 '+acwr.toFixed(2)+' \u2014 charge aigu\u00eb \u00e9lev\u00e9e. Priorise la r\u00e9cup ces prochains jours.'};
     // Phase "Maintien — Road trip USA" (S36-39) : le plan prévoit peu de course, on n'alarme pas sur l'inactivité.
     const _inUSA=cur>=36&&cur<=39;
     if(_inUSA&&daysSinceAny>=4&&daysSinceAny<900)
-      return {tone:'info',icon:'\u{1F30E}',txt:'Phase maintien (road trip) \u2014 randos et temps de pied comptent. Cours quand c\u2019est possible, sans pression.'};
+      return {tone:'info',icon:'\u{1F30E}',mot:'maintien',txt:'Phase maintien (road trip) \u2014 randos et temps de pied comptent. Cours quand c\u2019est possible, sans pression.'};
     if(daysSinceAny>=5&&daysSinceAny<900&&!_inUSA)
-      return {tone:'info',icon:'\u{1F440}',txt:daysSinceAny+' jours sans sortie logg\u00e9e. Tout va bien ? Une sortie facile relancerait la machine.'};
+      return {tone:'info',icon:'\u{1F440}',mot:'relance',txt:daysSinceAny+' jours sans sortie logg\u00e9e. Tout va bien ? Une sortie facile relancerait la machine.'};
     if(acwr<0.7&&daysSinceAny<5)
-      return {tone:'info',icon:'\u{1F4C8}',txt:'Charge basse (ACWR '+acwr.toFixed(2)+') \u2014 de la marge pour ajouter du volume si la forme suit.'};
+      return {tone:'info',icon:'\u{1F4C8}',mot:'marge',txt:'Charge basse (ACWR '+acwr.toFixed(2)+') \u2014 de la marge pour ajouter du volume si la forme suit.'};
     if(daysSinceQ>=10&&daysSinceQ<900)
-      return {tone:'info',icon:'\u26a1',txt:daysSinceQ+' jours sans s\u00e9ance qualit\u00e9. Un seuil ou un tempo ferait progresser ton chrono.'};
+      return {tone:'info',icon:'\u26a1',mot:'qualit\u00e9 ?',txt:daysSinceQ+' jours sans s\u00e9ance qualit\u00e9. Un seuil ou un tempo ferait progresser ton chrono.'};
     if(forme.score>=85)
-      return {tone:'ok',icon:'\u{1F7E2}',txt:'Forme \u00e0 '+forme.score+'/100 \u2014 excellent moment pour une s\u00e9ance qualit\u00e9 si le plan s\u2019y pr\u00eate.'};
+      return {tone:'ok',icon:'\u{1F7E2}',mot:'qualit\u00e9 OK',txt:'Forme \u00e0 '+forme.score+'/100 \u2014 excellent moment pour une s\u00e9ance qualit\u00e9 si le plan s\u2019y pr\u00eate.'};
     return null;
   }catch(e){return null;}
 }
@@ -728,7 +728,17 @@ _COURSES_.slice(0,2).forEach(function(r){
 });
 _chips.push('<button class="achip achip-plan" onclick="jumpToWeek('+sc.num+')">'+'<span class="achip-v">S'+sc.num+'</span><span class="achip-k">'+_PCT_+'% du plan</span></button>');
 _chips.push('<button class="achip achip-meteo" id="achip-meteo" onclick="_ouvrirMeteo()">'+'<span class="achip-v" id="achip-meteo-v">\u00b7\u00b7\u00b7</span><span class="achip-k">m\u00e9t\u00e9o</span></button>');
-if(_nudge){_chips.push('<button class="achip achip-coach cn-'+_nudge.tone+'" onclick="openCoach()">'+'<span class="achip-v">'+_nudge.icon+'</span><span class="achip-k">coach</span></button>');}
+/* La puce coach affichait uniquement une pastille de couleur : elle occupait
+   une place sans rien dire. Le message utile ("Forme a 88/100, excellent
+   moment pour une qualite") avait ete perdu au compactage du build 153.
+   Elle porte desormais un MOT D ETAT plutot que le score, pour ne pas
+   dupliquer l anneau de forme du hero. Le conseil complet s ouvre au tap. */
+if(_nudge){_chips.push('<button class="achip achip-coach cn-'+_nudge.tone+'" '
+  +'aria-label="Conseil du coach : '+_nudge.txt.replace(/"/g,'')+'" '
+  +'onclick="_ouvrirNudge()">'
+  +'<span class="achip-v achip-mot">'+(_nudge.mot||_nudge.icon)+'</span>'
+  +'<span class="achip-k">coach</span></button>');
+  window._NUDGE_=_nudge;}
 document.getElementById('hero-plan').innerHTML=_lt+_psCard+_wnCard+_formeDetail+'<div class="achip-row">'+_chips.join('')+'</div>'+'<div id="canicule-banner" style="display:none"></div>'+'<div id="meteo-widget" class="meteo" style="display:none"><div class="meteo-loc">\u23f3</div></div>';
   renderMeteo();
   document.getElementById('maj-foot').innerHTML=_maj;
@@ -802,6 +812,15 @@ function _meteoPaint(d){
 /* La meteo passe d une banniere pleine largeur a une puce : l essentiel
    (temperature) est visible en permanence, le detail complet et les creneaux
    d entrainement s ouvrent au tap. */
+/* Feuille du conseil coach : le message complet, plus un acces au coach. */
+function _ouvrirNudge(){
+  var n=window._NUDGE_;if(!n){openCoach();return;}
+  topbar.innerHTML='<span></span><button class="btn-fermer" onclick="fermer()" aria-label="Fermer">\u2715</button>';
+  contenu.innerHTML='<div class="fiche-pad"><h2 class="fiche-h2">'+n.icon+' Conseil du jour</h2>'
+    +'<p style="font-size:15px;line-height:1.6;color:var(--texte-deux);margin:0 0 18px">'+n.txt+'</p>'
+    +'<button class="btn-nav" style="width:100%" onclick="fermer();setTimeout(openCoach,320)">Ouvrir le coach \u203a</button></div>';
+  ouvrir();
+}
 function _ouvrirMeteo(){
   var src=document.getElementById("meteo-widget");
   var html=(src&&src.innerHTML.length>40)?src.innerHTML:"<p style=\"font-size:13px;color:var(--texte-deux)\">M\u00e9t\u00e9o en cours de chargement\u2026</p>";

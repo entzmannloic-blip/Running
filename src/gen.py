@@ -1258,6 +1258,14 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":155,"date":"6 aout 2026","sha":"","tag":"Puce coach : un mot d etat au lieu d un rond vert muet","items":[
+    "Signale par Loic : un rond vert a droite de l accueil, sans aucune information. Cause : au compactage du build 153, j avais garde l icone du conseil coach et JETE le message",
+    "Le conseil perdu disait pourtant quelque chose d utile : Forme a 88/100, excellent moment pour une seance qualite si le plan s y prete",
+    "La puce porte desormais un MOT D ETAT (qualite OK, recup, aff\u00fbtage, relance, marge, maintien, jour J, qualite ?) plutot que le score, pour ne pas dupliquer l anneau de forme du hero",
+    "Le tap ouvre une feuille avec le conseil complet et un acces direct au coach. Meme logique que la puce meteo : l essentiel visible, le detail au tap",
+    "Les 8 messages de _coachNudge enrichis d un mot-cle. Verifie que chacun tient dans la largeur de puce sur iPhone SE, 14 et Pro Max",
+    "aria-label ajoute sur la puce avec le message complet, pour les lecteurs d ecran"
+  ]},
   {"build":154,"date":"6 aout 2026","sha":"","tag":"Accueil : suppression des residus, objectif 18/20","items":[
     "BILAN AFFICHE EN DOUBLE : le bloc historique et celui ajoute au build 153 coexistaient, avec des chiffres CONTRADICTOIRES (31 sorties contre 30). Cause : l ancien comptait les seances de PPG et mobilite, le nouveau non",
     "Resolu en gardant le bloc historique (plus riche : il porte aussi le pourcentage de prepa et la serie de semaines) et en alignant son comptage sur les seances AVEC kilometrage. Un seul bilan, un seul chiffre",
