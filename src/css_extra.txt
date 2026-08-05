@@ -1380,3 +1380,25 @@ body,.accueil{background:#f2f2f7}
 .dc-row{padding:5px 0}
 .dc-t{font-size:11.5px}
 .dc-s{font-size:9px}
+/* ===== Accueil : grammaire visuelle unifiee =====
+   Un seul systeme de rayon, d'ombre et d'espacement pour tous les blocs.
+   Les sections sont separees par un intertitre discret plutot que par des
+   styles de conteneur differents. */
+.ac-grp{margin:0 0 22px}
+.ac-grp-h{display:flex;align-items:center;gap:8px;margin:0 2px 9px}
+.ac-grp-t{font-size:10.5px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--texte-trois)}
+.ac-grp-h::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,var(--gris-clair),transparent)}
+/* tous les blocs directs d'une section partagent le meme rythme */
+.ac-grp > *:not(.ac-grp-h){margin-bottom:10px}
+.ac-grp > *:last-child{margin-bottom:0}
+/* rayon et ombre uniques (avant : 18px / 12px / 14px et une seule ombre sur 7) */
+.ac-grp .vdj,.ac-grp .timeline-wrap,.ac-grp .meteo,.ac-grp .coach-nudge,
+.ac-grp .hx-tile,.ac-grp .cw-link,.ac-grp .forme-detail{
+  border-radius:14px;
+  box-shadow:0 1px 2px rgba(15,23,42,.04),0 2px 8px rgba(15,23,42,.05);
+}
+.ac-grp .meteo{margin-top:0}
+/* la carte du jour reste le point focal : ombre plus marquee */
+.ac-grp[data-grp="now"] .vdj{box-shadow:0 2px 6px rgba(15,23,42,.10),0 10px 26px -8px rgba(13,148,136,.30)}
+/* section Bilan : allegee, c'est du contexte, pas de l'action */
+.ac-grp[data-grp="bilan"] .hmini-row{background:none;box-shadow:none}

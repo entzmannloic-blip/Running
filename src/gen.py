@@ -1247,6 +1247,15 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":149,"date":"4 aout 2026","sha":"","tag":"Accueil : grammaire visuelle unifiee + 4 sections","items":[
+    "Constat mesure : 7 conteneurs visuellement differents empiles dans l ordre de construction des fonctionnalites. 3 systemes de rayon (18/12/14 px), 3 systemes de marge, une seule ombre sur 7 blocs",
+    "L ecran ne fait pourtant qu 1,2 ecran : le probleme n etait pas la longueur mais l absence de grammaire visuelle commune -- l interface paraissait chargee sans l etre",
+    "Regroupement en 4 sections par echelle de temps (Aujourd hui / Ma preparation / Mes echeances / Bilan), meme principe que la refonte du Cockpit",
+    "Intertitres discrets avec filet degrade, un seul systeme de rayon (14 px), une seule echelle d ombre. La carte du jour garde une ombre plus marquee pour rester le point focal",
+    "METEO : l etat d erreur brut (Meteo indisponible - reessayer) n est plus expose. Le bloc disparait silencieusement et retente une minute plus tard. La meteo est un confort, pas une information critique",
+    "Precision d honnetete : l echec meteo observe venait peut-etre uniquement de l environnement de test (domaine bloque). L appel API et le service worker sont corrects -- c est la degradation qui est corrigee, pas necessairement un bug de production",
+    "Verifie sans debordement sur iPhone SE, 14 et Pro Max"
+  ]},
   {"build":148,"date":"4 aout 2026","sha":"","tag":"Cockpit : correction des 3 defauts releves a la notation","items":[
     "DEFAUT 1 (le plus grave) : le selecteur de fenetre 2/4/8/12 n etait visible qu en zone Analyse mais pilotait AUSSI le contenu de la zone Progression -- effet a distance, un chiffre changeait sans controle visible pour l expliquer. Le selecteur est desormais present dans les 3 zones et les 3 exemplaires sont synchronises",
     "DEFAUT 2 : les KPI affichaient un etat sans direction. Ajout d une tendance en pourcentage avec fleche, calculee contre la periode precedente de meme longueur",

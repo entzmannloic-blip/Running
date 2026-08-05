@@ -672,7 +672,17 @@ function renderHeader(){
   const _tl=_timelineHTML();
   const _ltDate=new Date().toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'});
   const _lt=`<div class="lt-wrap"><div class="lt-date">${_ltDate.charAt(0).toUpperCase()+_ltDate.slice(1)}</div><div class="lt-title">Aujourd\u2019hui</div></div>`;
-  document.getElementById('hero-plan').innerHTML=`${_lt}${_psCard}${_wnCard}<div class="hx-row">${_formeTile}${_nearTile}</div>${_tl}${_formeDetail}<div id="canicule-banner" style="display:none"></div>${_cw}${_nudgeCard}<div id="meteo-widget" class="meteo"><div class="meteo-loc">⏳ Météo…</div></div>${_mini?`<div class="hmini-row">${_mini}</div>`:''}`;
+  /* Accueil regroupe par ECHELLE DE TEMPS, meme principe que le Cockpit.
+   Avant : 7 conteneurs visuellement differents (3 systemes de rayon, 3 de
+   marge, une seule ombre sur 7 blocs) empiles dans l'ordre ou les
+   fonctionnalites avaient ete construites. L'ecran paraissait charge alors
+   qu'il ne fait qu'1,2 ecran : le probleme n'etait pas la longueur mais
+   l'absence de grammaire visuelle commune. */
+function _acGrp(id,titre,corps){
+  return '<section class="ac-grp" data-grp="'+id+'">'+
+    '<div class="ac-grp-h"><span class="ac-grp-t">'+titre+'</span></div>'+corps+'</section>';
+}
+document.getElementById('hero-plan').innerHTML=_lt+_acGrp('now','Aujourd\u2019hui',_psCard+_wnCard+'<div class="hx-row">'+_formeTile+_nearTile+'</div>'+_formeDetail+'<div id="canicule-banner" style="display:none"></div>')+_acGrp('prep','Ma pr\u00e9paration',_tl+_nudgeCard+'<div id="meteo-widget" class="meteo"><div class="meteo-loc">\u23f3 M\u00e9t\u00e9o\u2026</div></div>')+_acGrp('ech','Mes \u00e9ch\u00e9ances',_cw)+(_mini?_acGrp('bilan','Bilan','<div class="hmini-row">'+_mini+'</div>'):'');
   renderMeteo();
   document.getElementById('maj-foot').innerHTML=_maj;
    try{const _aSe=Object.values(SEANCES_BY_WEEK).flat();const _aF=_aSe.filter(s=>s.realise&&(s.realise.statut==='fait'||s.realise.statut==='partiel')).length;const _aKm=Math.round(_aSe.reduce((a,s)=>a+((s.realise&&s.realise.km)||0),0));const _aP=_aSe.length?Math.round(_aF/_aSe.length*100):0;const _ae=document.getElementById('accueil-annee');const _aStreak=_computeStreak();const _streakTile=_aStreak>=2?`<div class="acc-stat acc-streak"><div class="av">${_aStreak}<span>\u{1F525}</span></div><div class="ak">Sem. d\u2019affil\u00e9e</div></div>`:'';if(_ae)_ae.innerHTML=`<div class="acc-lab">Bilan du plan</div><div class="acc-annee ${_streakTile?'has-streak':''}"><div class="acc-stat"><div class="av">${_aF}</div><div class="ak">Sorties</div></div><div class="acc-stat"><div class="av">${_aKm}<span>km</span></div><div class="ak">R\u00e9alis\u00e9</div></div><div class="acc-stat"><div class="av">${_aP}<span>%</span></div><div class="ak">Pr\u00e9pa plan</div></div>${_streakTile}</div>`;}catch(e){}
@@ -766,7 +776,14 @@ async function renderMeteo(){
     localStorage.setItem('meteo_cache',JSON.stringify(d));
     _meteoPaint(d);
   }catch(e){
-    if(!cached){const el=document.getElementById('meteo-widget');if(el)el.innerHTML='<button onclick="renderMeteo()" style="width:100%;text-align:left;background:none;border:none;font-size:.75rem;color:var(--texte-trois);cursor:pointer;padding:0" aria-label="Réessayer de charger la météo">🌡️ Météo indisponible · <span style="color:var(--primary);font-weight:700">réessayer</span></button>';}
+    /* Un etat d'erreur brut expose a l'utilisateur est une faute UX : la
+       meteo est un confort, pas une information critique. Si l'appel
+       echoue, le bloc disparait silencieusement et une nouvelle tentative
+       a lieu une minute plus tard, au lieu d'afficher un message technique
+       en permanence sur l'ecran d'accueil. */
+    if(!cached){var _mw=document.getElementById('meteo-widget');
+      if(_mw){_mw.style.display='none';
+        setTimeout(function(){try{renderMeteo();}catch(e){}},60000);}}
   }
 }
 
