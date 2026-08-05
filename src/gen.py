@@ -1258,6 +1258,17 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":153,"date":"6 aout 2026","sha":"","tag":"Accueil epure : puces compactes au lieu de conteneurs pleine largeur","items":[
+    "Retour de Loic : l ecran renvoyait une impression de desordre, comme si sa prepa etait fouillis. Mesure : 50 unites d information, 130 mots, 7 blocs pleine largeur sur 1,4 ecran",
+    "Diagnostic : le probleme n etait pas la quantite d information mais le fait que CHAQUE information reclamait un conteneur entier -- une banniere pleine largeur pour dire qu il fait chaud, une autre pour un simple lien vers le plan",
+    "Reference explicite donnee par Loic : l accueil Strava, qui empile 3 stats dans une ligne compacte plutot que 3 cartes",
+    "REFONTE : une rangee de 5 puces compactes (2 courses, progression du plan, meteo, coach). Chaque puce porte l essentiel (une icone, un chiffre) et ouvre le detail complet au tap",
+    "La meteo passe d une banniere permanente a une puce coloree selon la temperature (rouge au-dessus de 30 degres). Le tap ouvre la meteo complete AVEC les creneaux d entrainement recommandes",
+    "Nouvelle puce de progression : S32, 38% du plan -- l information de parcours qui manquait totalement",
+    "Bilan cumule condense en une ligne de 3 chiffres (30 sorties, 386 km, 8 semaines) au lieu de 8 fragments minuscules en bas d ecran",
+    "BUGS CORRIGES au passage : les sections du build 149 mentaient sur leur contenu (Mes echeances contenait un lien vers le plan, Bilan contenait une course). Variables mal identifiees a l epoque",
+    "Resultat : 1147 -> 716 px, tout tient desormais en UN ecran. 50 -> 46 unites, 130 -> 87 mots"
+  ]},
   {"build":152,"date":"6 aout 2026","sha":"","tag":"Radar : Constance et Endurance faussees par la semaine en cours","items":[
     "Signale par Loic : Constance affichait 21/99, tres bas par rapport aux 68 vus deux jours plus tot",
     "Meme classe de bug que le -57% des tendances KPI corrige au build 148, appliquee a un endroit different : Constance et Endurance calculaient leurs moyennes sur les 4 dernieres semaines EN COMPTANT la semaine en cours, forcement incomplete",

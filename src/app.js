@@ -658,9 +658,10 @@ function renderHeader(){
   const _formeTile=`<button class="htile htile-forme" onclick="document.getElementById('forme-detail').classList.toggle('fd-open')"><span class="ht-k">Forme du jour <span class="ht-help" role="button" tabindex="0" onclick="event.stopPropagation();openFormeHelp()">\u24d8</span></span><span class="ht-v" style="color:${_forme.color}">${_forme.score}<span class="ht-trend">${_forme.trend}</span></span><span class="ht-s">${_forme.signal}</span></button>`;
   const _formeDetail=`<div class="forme-detail" id="forme-detail">${_forme.components.map(c=>`<div class="fd-row"><div class="fd-lbl">${c.label}</div><div class="fd-track"><div class="fd-fill" style="width:${c.score}%;background:${c.score>=80?'#0d9488':c.score>=65?'#16a34a':c.score>=50?'#f59e0b':'#ef4444'}"></div></div><div class="fd-val">${c.detail}</div></div>`).join('')}</div>`;
   // Sprint 1 — courses : la plus proche en tuile, les autres repliees
-  let _nearTile='',_mini='';
+  let _nearTile='',_mini='',_COURSES_=[];
   if(RACES&&RACES.length){
     const _rc=RACES.map(r=>Object.assign({},r,{dn:Math.max(0,Math.ceil((new Date(r.date)-_t)/86400000))})).sort((a,b)=>a.dn-b.dn);
+    _COURSES_=_rc;
     const _n=_rc[0];
     _nearTile=`<button class="htile htile-race" ${_n.dossier?`onclick="ouvrirDossier('${_n.dossier}')"`:''}><span class="ht-k">Prochaine course</span><span class="ht-v">J-${_n.dn}</span><span class="ht-s">${_n.nom}</span>${_n.dossier?'<span class="ht-arr">\u203a</span>':''}</button>`;
     _mini=_rc.slice(1).map(r=>`<button class="hmini" ${r.dossier?`onclick="ouvrirDossier('${r.dossier}')"`:''}><span class="hmini-n">J-${r.dn}</span>${r.nom}${r.dossier?'<span class="hmini-go">\u203a</span>':''}</button>`).join('');
@@ -687,7 +688,48 @@ function _acGrp(id,titre,corps){
   return '<section class="ac-grp" data-grp="'+id+'">'+
     '<div class="ac-grp-h"><span class="ac-grp-t">'+titre+'</span></div>'+corps+'</section>';
 }
-document.getElementById('hero-plan').innerHTML=_lt+_acGrp('now','Aujourd\u2019hui',_psCard+_wnCard+(_nearTile?'<div class="hx-row">'+_nearTile+'</div>':'')+_formeDetail+'<div id="canicule-banner" style="display:none"></div>')+_acGrp('prep','Ma pr\u00e9paration',_tl+_nudgeCard+'<div id="meteo-widget" class="meteo"><div class="meteo-loc">\u23f3 M\u00e9t\u00e9o\u2026</div></div>')+_acGrp('ech','Mes \u00e9ch\u00e9ances',_cw)+(_mini?_acGrp('bilan','Bilan','<div class="hmini-row">'+_mini+'</div>'):'');
+/* REFONTE : des PUCES COMPACTES qui s'ouvrent au tap, au lieu de conteneurs
+   pleine largeur qui s'expliquent eux-memes.
+   Constat : 50 unites d'information, 130 mots, 7 blocs pleine largeur sur
+   1,4 ecran. Le probleme n'etait pas la quantite d'information mais le fait
+   que CHAQUE information reclamait un conteneur entier -- une banniere pleine
+   largeur pour dire qu'il fait chaud, une autre pour un lien vers le plan.
+   Reference explicite : l'accueil Strava, qui empile 3 stats dans une seule
+   ligne compacte plutot que 3 cartes.
+   Chaque puce porte l'essentiel (une icone, un chiffre) et ouvre le detail
+   complet au tap. Rien n'est perdu, tout est hierarchise. */
+/* Progression dans la prepa et bilan cumule : ce sont les seuls chiffres
+   qui disent "regarde ce que tu as construit". Ils etaient tout en bas de
+   l ecran, fragmentes en 8 morceaux minuscules. */
+var _DEB_=24,_FIN_=45;
+try{var _r0=RACES&&RACES[0];if(_r0&&_r0.semaine)_FIN_=_r0.semaine;}catch(e){}
+var _PCT_=Math.max(0,Math.min(100,Math.round((sc.num-_DEB_)/(_FIN_-_DEB_)*100)));
+var _NB_=0,_KM_=0,_SEMOK_=0;
+try{
+  var _vus={};
+  Object.keys(SEANCES_BY_WEEK).forEach(function(w){
+    var n=0;
+    (SEANCES_BY_WEEK[w]||[]).forEach(function(s){
+      var r=s.realise;
+      if(r&&(r.statut==="fait"||r.statut==="partiel")&&r.km){_NB_++;_KM_+=r.km;n++;}
+    });
+    if(n>0)_vus[w]=1;
+  });
+  _SEMOK_=Object.keys(_vus).length;
+}catch(e){}
+var _BILAN_='<div class="abil"><div class="abil-i"><b>'+_NB_+'</b><span>sorties</span></div>'
+  +'<div class="abil-i"><b>'+Math.round(_KM_)+'</b><span>km</span></div>'
+  +'<div class="abil-i"><b>'+_SEMOK_+'</b><span>semaines</span></div></div>';
+var _chips=[];
+_COURSES_.slice(0,2).forEach(function(r){
+  _chips.push('<button class="achip achip-race"'
+    +(r.dossier?' onclick="ouvrirDossier(\''+r.dossier+'\')"':'')
+    +'><span class="achip-v">J-'+r.dn+'</span><span class="achip-k">'+r.nom.split(' ')[0]+'</span></button>');
+});
+_chips.push('<button class="achip achip-plan" onclick="jumpToWeek('+sc.num+')">'+'<span class="achip-v">S'+sc.num+'</span><span class="achip-k">'+_PCT_+'% du plan</span></button>');
+_chips.push('<button class="achip achip-meteo" id="achip-meteo" onclick="_ouvrirMeteo()">'+'<span class="achip-v" id="achip-meteo-v">\u00b7\u00b7\u00b7</span><span class="achip-k">m\u00e9t\u00e9o</span></button>');
+if(_nudge){_chips.push('<button class="achip achip-coach cn-'+_nudge.tone+'" onclick="openCoach()">'+'<span class="achip-v">'+_nudge.icon+'</span><span class="achip-k">coach</span></button>');}
+document.getElementById('hero-plan').innerHTML=_lt+_psCard+_wnCard+_formeDetail+'<div class="achip-row">'+_chips.join('')+'</div>'+'<div id="canicule-banner" style="display:none"></div>'+'<div id="meteo-widget" class="meteo" style="display:none"><div class="meteo-loc">\u23f3</div></div>'+_BILAN_;
   renderMeteo();
   document.getElementById('maj-foot').innerHTML=_maj;
    try{const _aSe=Object.values(SEANCES_BY_WEEK).flat();const _aF=_aSe.filter(s=>s.realise&&(s.realise.statut==='fait'||s.realise.statut==='partiel')).length;const _aKm=Math.round(_aSe.reduce((a,s)=>a+((s.realise&&s.realise.km)||0),0));const _aP=_aSe.length?Math.round(_aF/_aSe.length*100):0;const _ae=document.getElementById('accueil-annee');const _aStreak=_computeStreak();const _streakTile=_aStreak>=2?`<div class="acc-stat acc-streak"><div class="av">${_aStreak}<span>\u{1F525}</span></div><div class="ak">Sem. d\u2019affil\u00e9e</div></div>`:'';if(_ae)_ae.innerHTML=`<div class="acc-lab">Bilan du plan</div><div class="acc-annee ${_streakTile?'has-streak':''}"><div class="acc-stat"><div class="av">${_aF}</div><div class="ak">Sorties</div></div><div class="acc-stat"><div class="av">${_aKm}<span>km</span></div><div class="ak">R\u00e9alis\u00e9</div></div><div class="acc-stat"><div class="av">${_aP}<span>%</span></div><div class="ak">Pr\u00e9pa plan</div></div>${_streakTile}</div>`;}catch(e){}
@@ -709,6 +751,15 @@ function _meteoEmoji(c){
 }
 function _meteoPaint(d){
   const el=document.getElementById('meteo-widget');if(!el)return;
+  try{
+    var _t=(d.temp!==undefined&&!isNaN(+d.temp))?d.temp:d.app;
+    var _cv=document.getElementById('achip-meteo-v');
+    if(_cv&&_t!==undefined&&!isNaN(+_t)){
+      _cv.textContent=Math.round(_t)+'\u00b0';
+      var _cc=document.getElementById('achip-meteo');
+      if(_cc){_cc.classList.toggle('achip-chaud',+_t>=30);_cc.classList.toggle('achip-tiede',+_t>=25&&+_t<30);}
+    }
+  }catch(e){}
   const t=(d.temp!==undefined&&!isNaN(+d.temp))?d.temp:d.app;
   const tempStr=Math.round(t)+'°'+(d.app!==undefined&&Math.round(d.app)!==Math.round(t)?' <small>ressenti '+Math.round(d.app)+'°</small>':'');
   const precipStr=(d.precip!==undefined?d.precip.toFixed(1)+' mm · ':'')+Math.round(d.rain)+'%';
@@ -747,6 +798,16 @@ function _meteoPaint(d){
     if(T>=26){depEl.innerHTML=`🌡️ ${T}° demain — <strong>pars avant 8h30</strong>`;depEl.style.display='block';}
     else{depEl.style.display='none';}
   }
+}
+/* La meteo passe d une banniere pleine largeur a une puce : l essentiel
+   (temperature) est visible en permanence, le detail complet et les creneaux
+   d entrainement s ouvrent au tap. */
+function _ouvrirMeteo(){
+  var src=document.getElementById("meteo-widget");
+  var html=(src&&src.innerHTML.length>40)?src.innerHTML:"<p style=\"font-size:13px;color:var(--texte-deux)\">M\u00e9t\u00e9o en cours de chargement\u2026</p>";
+  topbar.innerHTML='<span></span><button class="btn-fermer" onclick="fermer()" aria-label="Fermer">\u2715</button>';
+  contenu.innerHTML='<div class="fiche-pad"><h2 class="fiche-h2">M\u00e9t\u00e9o \u00e0 Lyon</h2><div class="meteo meteo-sheet">'+html+'</div></div>';
+  ouvrir();
 }
 async function renderMeteo(){
   let cached=null;

@@ -1446,3 +1446,36 @@ body,.accueil{background:#f2f2f7}
 #vue-accueil .acc-lab,#vue-accueil .ak{font-size:var(--t-micro)}
 #vue-accueil .ht-v,#vue-accueil .av{font-size:var(--t-chiffre)}
 #vue-accueil .cn-ico{font-size:var(--t-fort)}
+/* ===== Accueil : puces compactes =====
+   Remplacent 4 conteneurs pleine largeur (course, plan, meteo, coach).
+   Principe emprunte a l'accueil Strava : l'essentiel tient dans une ligne,
+   le detail s'ouvre au tap. */
+.achip-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(0,1fr));gap:8px;margin:12px 0}
+.achip{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+  min-height:60px;padding:9px 4px;border:1px solid var(--gris-clair);border-radius:14px;
+  background:#fff;cursor:pointer;font:inherit;
+  box-shadow:0 1px 2px rgba(15,23,42,.04);transition:transform .15s,box-shadow .15s,border-color .15s}
+.achip:active{transform:scale(.96)}
+.achip:hover{border-color:var(--primary)}
+.achip:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
+.achip-v{font-size:17px;font-weight:900;letter-spacing:-.02em;color:var(--texte);
+  font-variant-numeric:tabular-nums;line-height:1}
+.achip-k{font-size:9px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--texte-trois);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.achip-race .achip-v{color:var(--primary)}
+.achip-chaud{border-color:#fca5a5;background:#fef2f2}
+.achip-chaud .achip-v{color:#dc2626}
+.achip-tiede{border-color:#fcd34d;background:#fffbeb}
+.achip-tiede .achip-v{color:#d97706}
+.achip-coach.cn-ok{border-color:#86efac;background:#f0fdf4}
+.achip-coach.cn-warn{border-color:#fcd34d;background:#fffbeb}
+.achip-coach.cn-alert{border-color:#fca5a5;background:#fef2f2}
+
+/* ===== Bilan cumule : une ligne, trois chiffres ===== */
+.abil{display:flex;gap:0;margin:14px 0 4px;border:1px solid var(--gris-clair);border-radius:14px;
+  overflow:hidden;background:#fff;box-shadow:0 1px 2px rgba(15,23,42,.04)}
+.abil-i{flex:1;display:flex;flex-direction:column;align-items:center;gap:1px;padding:11px 4px}
+.abil-i+.abil-i{border-left:1px solid var(--gris-clair)}
+.abil-i b{font-size:20px;font-weight:900;letter-spacing:-.03em;color:var(--texte);font-variant-numeric:tabular-nums;line-height:1}
+.abil-i span{font-size:9px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--texte-trois)}
+.meteo-sheet{display:block!important;background:none;border:none;box-shadow:none;padding:0}
