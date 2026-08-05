@@ -2932,8 +2932,13 @@ function _profilAxes(){
   var seu=seuils.length?_profilNote(Math.min.apply(null,seuils),360,240):50;
 
   // 3. ENDURANCE — plus longue sortie + volume hebdo moyen
+  // On utilise les 4 dernieres semaines COMPLETES (CUR exclue) : la semaine en
+  // cours est par nature partielle et comparee telle quelle a des semaines
+  // terminees, elle fait chuter artificiellement la moyenne -- exactement le
+  // biais deja corrige sur les tendances des KPI (build 148, le "-57%" du
+  // mardi matin). Meme cause, deux endroits differents : corrige ici aussi.
   var plusLong=Math.max.apply(null,S.map(function(x){return x.r.km;}));
-  var vols=[];for(var w=CUR-3;w<=CUR;w++){
+  var vols=[];for(var w=CUR-4;w<=CUR-1;w++){
     vols.push(S.filter(function(x){return x.w===w;}).reduce(function(a,x){return a+x.r.km;},0));}
   var end=Math.round(_profilNote(plusLong,10,42)*0.6+_profilNote(moy(vols),25,75)*0.4);
 
@@ -2961,7 +2966,11 @@ function _profilAxes(){
 
   // 7. CONSTANCE — assiduite + regularite du volume (remplace l'ecart-type de
   //    cadence de la v1, qui variait legitimement selon le type de seance)
-  var nbs=[];for(var w2=CUR-3;w2<=CUR;w2++){
+  // MEME CORRECTIF que ci-dessus : semaines completes uniquement (CUR-4..CUR-1).
+  // Avant, une semaine a 2 seances sur 6 prevues (mardi de la semaine en cours)
+  // faisait tomber ce score a 21/99 en lisant un simple decalage de calendrier
+  // comme une irregularite d'entrainement.
+  var nbs=[];for(var w2=CUR-4;w2<=CUR-1;w2++){
     nbs.push(S.filter(function(x){return x.w===w2;}).length);}
   var cv=moy(vols)>0?ecart(vols)/moy(vols)*100:40;
   var con=Math.round(_profilNote(moy(nbs),2,5.5)*0.6+_profilNote(cv,40,10)*0.4);

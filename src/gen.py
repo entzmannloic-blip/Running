@@ -1258,6 +1258,13 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":152,"date":"6 aout 2026","sha":"","tag":"Radar : Constance et Endurance faussees par la semaine en cours","items":[
+    "Signale par Loic : Constance affichait 21/99, tres bas par rapport aux 68 vus deux jours plus tot",
+    "Meme classe de bug que le -57% des tendances KPI corrige au build 148, appliquee a un endroit different : Constance et Endurance calculaient leurs moyennes sur les 4 dernieres semaines EN COMPTANT la semaine en cours, forcement incomplete",
+    "Jeudi, S32 n avait que 2 seances sur 6 prevues (20 km) : compare a S29-S31 completes, cela faisait chuter la moyenne de seances/semaine et surtout faisait exploser le coefficient de variation du volume a 40% (le pire cas possible), effondrant le sous-score correspondant a 1/99",
+    "Corrige a la racine : les deux composantes utilisent desormais les 4 dernieres semaines COMPLETES (S28-S31), jamais la semaine en cours. Constance revient a 68, Endurance de 76 a 86",
+    "Ironie assumee : le correctif du build 148 n avait ete applique qu aux tendances des KPI, pas a cet indicateur pourtant construit dans la meme session"
+  ]},
   {"build":151,"date":"5 aout 2026","sha":"","tag":"EF du 05/08 loggee + Clifton 10 retiree a la racine de la rotation","items":[
     "EF facile : 10,04 km a 6:01/km, FC moy 134. Corps de sortie tres stable (9,67 km a 5:59/km) puis SPRINT FINAL de 336 m confirme au metre pres (4:42/km moy, pointe 3:36/km, FC jusqu a 166) -- aucune gene, test du pied concluant",
     "Decouplage 4,29% marque incertain par le test de robustesse : une sortie aussi plate et maitrisee noie la derive reelle dans le bruit de mesure. Pas alarmant, non compte dans la tendance par prudence",
