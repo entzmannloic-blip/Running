@@ -1492,3 +1492,41 @@ body,.accueil{background:#f2f2f7}
 .achip-coach.cn-ok .achip-mot{color:#15803d}
 .achip-coach.cn-info .achip-mot{color:#0b7c72}
 .achip-coach.cn-warn .achip-mot{color:#b45309}
+/* ============================================================
+   CORRECTIFS D'AUDIT — build 156
+   ============================================================ */
+
+/* 2. AFFORDANCE : rien n'indiquait qu'une puce etait tappable. Zero chevron,
+   zero fleche mesures. L'ancien design en avait, je les avais supprimes en
+   compactant. On remet un signal discret mais present : un chevron en coin,
+   qui s'anime au survol. */
+.achip{position:relative}
+.achip::after{content:"\203a";position:absolute;top:5px;right:7px;
+  font-size:12px;font-weight:900;line-height:1;color:var(--gris);
+  opacity:.55;transition:opacity .15s,transform .15s}
+.achip:hover::after,.achip:active::after{opacity:1;transform:translateX(1px)}
+
+/* 3. LE BILAN entre dans le systeme : il avait 18px de rayon, aucune bordure
+   et une ombre differente des puces. Un systeme auquel un element sur deux
+   echappe n'est pas un systeme. */
+#vue-accueil .acc-annee{
+  border-radius:14px!important;
+  border:1px solid var(--gris-clair)!important;
+  box-shadow:0 1px 2px rgba(15,23,42,.04)!important;
+}
+
+/* 5. HIERARCHIE ENTRE PUCES : les 5 faisaient exactement 65px, meme police,
+   meme fond. Une course dans 115 jours pesait autant que la meteo du jour.
+   L'echeance la plus proche devient le point d'entree visuel. */
+/* La grille en fractions produisait des largeurs incoherentes (75/97/89/76/53)
+   car le contenu textuel des puces influence le calcul. On force des colonnes
+   strictement egales, et la hierarchie passe uniquement par le style de la
+   premiere puce -- pas par sa taille. */
+.achip-row{grid-template-columns:repeat(5,minmax(0,1fr))}
+.achip-row .achip-race:first-child{background:linear-gradient(160deg,#f0fdfa,#fff)}
+.achip-row .achip-race:first-child .achip-v{font-size:19px}
+.achip-row .achip-race:first-child{border-color:#99f6e4}
+
+/* 5bis. ECHELLE TYPO : le 11,5px introduit hier pour la puce coach cassait
+   l'echelle que je venais de definir. On revient sur le token existant. */
+.achip-mot{font-size:11px!important}

@@ -677,7 +677,11 @@ function renderHeader(){
   const _wnCard=_wn?`<div class="whats-new"><span class="wn-ico">${_wn.icon}</span><span class="wn-txt">${_wn.txt}</span></div>`:'';
   const _tl=_timelineHTML();
   const _ltDate=new Date().toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'});
-  const _lt=`<div class="lt-wrap"><div class="lt-date">${_ltDate.charAt(0).toUpperCase()+_ltDate.slice(1)}</div><div class="lt-title">Aujourd\u2019hui</div></div>`;
+  /* Le bandeau affichait "Aujourd'hui" juste au-dessus d'une carte annoncant
+   "Prochaine seance - Demain" : une contradiction en plein milieu de l'ecran,
+   et la premiere chose que voit l'utilisateur. On garde la date seule, qui
+   est factuelle et ne peut pas se contredire. */
+  const _lt=`<div class="lt-wrap"><div class="lt-date">${_ltDate.charAt(0).toUpperCase()+_ltDate.slice(1)}</div></div>`;
   /* Accueil regroupe par ECHELLE DE TEMPS, meme principe que le Cockpit.
    Avant : 7 conteneurs visuellement differents (3 systemes de rayon, 3 de
    marge, une seule ombre sur 7 blocs) empiles dans l'ordre ou les
@@ -724,10 +728,10 @@ var _chips=[];
 _COURSES_.slice(0,2).forEach(function(r){
   _chips.push('<button class="achip achip-race"'
     +(r.dossier?' onclick="ouvrirDossier(\''+r.dossier+'\')"':'')
-    +'><span class="achip-v">J-'+r.dn+'</span><span class="achip-k">'+r.nom.split(' ')[0]+'</span></button>');
+    +'><span class="achip-v">J-'+r.dn+'</span><span class="achip-k">'+(/nice/i.test(r.nom)?'Nice':(/saintex/i.test(r.nom)?'SaintEx':r.nom.split(' ')[0].slice(0,9)))+'</span></button>');
 });
-_chips.push('<button class="achip achip-plan" onclick="jumpToWeek('+sc.num+')">'+'<span class="achip-v">S'+sc.num+'</span><span class="achip-k">'+_PCT_+'% du plan</span></button>');
-_chips.push('<button class="achip achip-meteo" id="achip-meteo" onclick="_ouvrirMeteo()">'+'<span class="achip-v" id="achip-meteo-v">\u00b7\u00b7\u00b7</span><span class="achip-k">m\u00e9t\u00e9o</span></button>');
+_chips.push('<button class="achip achip-plan" onclick="jumpToWeek('+sc.num+')">'+'<span class="achip-v">S'+sc.num+'</span><span class="achip-k">'+_PCT_+'% fait</span></button>');
+_chips.push('<button class="achip achip-meteo" id="achip-meteo" onclick="_ouvrirMeteo()">'+'<span class="achip-v" id="achip-meteo-v">\u2014</span><span class="achip-k">m\u00e9t\u00e9o</span></button>');
 /* La puce coach affichait uniquement une pastille de couleur : elle occupait
    une place sans rien dire. Le message utile ("Forme a 88/100, excellent
    moment pour une qualite") avait ete perdu au compactage du build 153.
@@ -866,9 +870,16 @@ async function renderMeteo(){
        echoue, le bloc disparait silencieusement et une nouvelle tentative
        a lieu une minute plus tard, au lieu d'afficher un message technique
        en permanence sur l'ecran d'accueil. */
+    /* Etat vide ASSUME plutot que des points de suspension qui ne se
+       resolvent jamais : la puce indique explicitement l'indisponibilite
+       et reste cliquable pour relancer. */
     if(!cached){var _mw=document.getElementById('meteo-widget');
-      if(_mw){_mw.style.display='none';
-        setTimeout(function(){try{renderMeteo();}catch(e){}},60000);}}
+      if(_mw)_mw.style.display='none';
+      var _cv2=document.getElementById('achip-meteo-v');
+      if(_cv2)_cv2.textContent='n/d';
+      var _ck2=document.querySelector('#achip-meteo .achip-k');
+      if(_ck2)_ck2.textContent='m\u00e9t\u00e9o';
+      setTimeout(function(){try{renderMeteo();}catch(e){}},60000);}
   }
 }
 

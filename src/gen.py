@@ -1258,6 +1258,16 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":156,"date":"6 aout 2026","sha":"","tag":"Correctifs de l audit severe : les 5 defauts releves","items":[
+    "1. CONTRADICTION CENTRALE : le bandeau annoncait Aujourd hui juste au-dessus d une carte disant Prochaine seance - Demain. Premiere chose vue par l utilisateur. Le mot est supprime, la date factuelle reste",
+    "2. AFFORDANCE : zero chevron, zero fleche sur les 5 puces. J avais construit une logique tap-pour-le-detail sans jamais indiquer qu on pouvait taper -- les chevrons de l ancien design avaient saute au compactage. Chevron discret retabli en coin de puce",
+    "3. LE BILAN HORS SYSTEME : 18 px de rayon, aucune bordure, ombre differente des puces. Un systeme auquel un element sur deux echappe n en est pas un. Aligne sur 14 px, bordure et ombre communes",
+    "4. ETAT VIDE METEO : la puce affichait des points de suspension qui ne se resolvent jamais si l API echoue -- exactement le defaut du rond vert muet, corrige a un endroit et laisse a l autre. Elle affiche desormais n/d explicitement",
+    "5. HIERARCHIE : les 5 puces avaient exactement la meme taille, police et fond. L echeance la plus proche se distingue maintenant par un fond degrade et un chiffre plus grand, sans changer sa largeur",
+    "BONUS trouve au test : les libelles etaient TRONQUES sur les 3 formats (Marathon..., SaintExp...). Mesure faite, le mot entier tenait en 49 px sur 52 disponibles -- c est l ellipse que j avais ajoutee en JS qui debordait. Remplacee par des noms courts explicites (Nice, SaintEx)",
+    "Echelle typo : suppression du 11,5 px introduit la veille pour la puce coach, qui cassait l echelle definie le jour meme",
+    "Resultat : 573 -> 538 px, aucune troncature, aucun debordement sur iPhone SE, 14 et Pro Max"
+  ]},
   {"build":155,"date":"6 aout 2026","sha":"","tag":"Puce coach : un mot d etat au lieu d un rond vert muet","items":[
     "Signale par Loic : un rond vert a droite de l accueil, sans aucune information. Cause : au compactage du build 153, j avais garde l icone du conseil coach et JETE le message",
     "Le conseil perdu disait pourtant quelque chose d utile : Forme a 88/100, excellent moment pour une seance qualite si le plan s y prete",
