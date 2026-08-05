@@ -1247,6 +1247,13 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":148,"date":"4 aout 2026","sha":"","tag":"Cockpit : correction des 3 defauts releves a la notation","items":[
+    "DEFAUT 1 (le plus grave) : le selecteur de fenetre 2/4/8/12 n etait visible qu en zone Analyse mais pilotait AUSSI le contenu de la zone Progression -- effet a distance, un chiffre changeait sans controle visible pour l expliquer. Le selecteur est desormais present dans les 3 zones et les 3 exemplaires sont synchronises",
+    "DEFAUT 2 : les KPI affichaient un etat sans direction. Ajout d une tendance en pourcentage avec fleche, calculee contre la periode precedente de meme longueur",
+    "Piege evite au test : la premiere version comparait la semaine EN COURS (incomplete) et affichait -57 % de volume un mardi matin. La semaine courante est desormais exclue du calcul, et l app affiche un tiret plutot qu un chiffre douteux quand l historique est trop court",
+    "DEFAUT 3 : la carte Decouplage en zone Aujourd hui montrait la sortie du 2 aout. Requalifiee en Derniere sortie analysee -- le titre ne promet plus ce qu il ne tient pas",
+    "Zone Aujourd hui stabilisee a 1073 px, soit 1,3 ecran sur iPhone 14"
+  ]},
   {"build":147,"date":"4 aout 2026","sha":"","tag":"Refonte du Cockpit : 3 zones par frequence de decision","items":[
     "Constat mesure : le Cockpit faisait 5318 px, soit 6,3 ecrans. Tout ce qui depassait le 2e ecran n etait jamais consulte -- y compris le RESUME EXECUTIF, pourtant l information la plus actionnable, enterre a l ecran 3,4",
     "Principe retenu : organiser par FREQUENCE DE DECISION (le modele mental du coach), pas par type de donnee",

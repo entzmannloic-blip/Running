@@ -2516,6 +2516,38 @@ function _ckRenderAll(win){
   const kmLbl=document.getElementById('ck-km-lbl');if(kmLbl){kmLbl.textContent=W+' semaines';}
   const reLbl=document.getElementById('ck-re-lbl');if(reLbl){reLbl.textContent='Effort · '+W+' sem.';}
   document.getElementById('ck-re-val').textContent=totalRE;
+  /* TENDANCE des KPI : un chiffre seul dit ou tu es, jamais ou tu vas.
+     On compare la fenetre courante a la fenetre PRECEDENTE de meme longueur
+     (ex. les 8 dernieres semaines contre les 8 d'avant) et on affiche
+     l'ecart en pourcentage avec une fleche. */
+  (function(){
+    function serie(cle,champ){
+      try{var o=_CK[cle]&&_CK[cle][W];if(!o)return null;
+        var a=o[champ]||o.v||o.a;return Array.isArray(a)?a.filter(function(x){return typeof x==='number';}):null;
+      }catch(e){return null;}
+    }
+    function pose(id,vals,inverse){
+      var el=document.getElementById(id);if(!el||!vals)return;
+      // On EXCLUT la semaine en cours : elle est incomplete par nature et
+      // faisait apparaitre des chutes de -57 % un mardi matin, ce qui n'a
+      // aucun sens. On ne compare que des semaines terminees.
+      vals=vals.slice(0,-1);
+      if(vals.length<4){el.textContent='\u2014';el.style.color='var(--texte-trois)';return;}
+      var h=Math.floor(vals.length/2);
+      var av=vals.slice(0,h),ap=vals.slice(h);
+      var moy=function(x){return x.reduce(function(a,b){return a+b;},0)/x.length;};
+      var m1=moy(av),m2=moy(ap);
+      if(!m1){el.textContent='—';return;}
+      var d=(m2-m1)/m1*100;
+      var bon=inverse?(d<0):(d>0);
+      var fl=Math.abs(d)<2?'\u2192':(d>0?'\u2191':'\u2193');
+      el.textContent=fl+' '+(d>0?'+':'')+d.toFixed(0)+'%';
+      el.style.color=Math.abs(d)<2?'var(--texte-trois)':(bon?'#16a34a':'#f59e0b');
+    }
+    pose('ck-km-trend',serie('VOL','a'),false);
+    pose('ck-re-trend',serie('RE','v'),false);
+    pose('ck-cad-trend',serie('CAD','v'),false);
+  })();
   (function(){var se=document.getElementById('ck-summary');if(!se)return;try{var pts=_ckSummary();if(!pts.length){se.style.display='none';return;}se.style.display='';se.innerHTML=pts.map(function(p){var c=p.t==='warn'?'#ef4444':p.t==='ok'?'#16a34a':'#0891b2';return '<div class="cks-row"><span class="cks-dot" style="background:'+c+'"></span><span>'+p.x+'</span></div>';}).join('');}catch(e){se.style.display='none';}})();
   (function(){var cv=document.getElementById('ck-cad-kpi');if(!cv)return;try{var cs=(_CK&&_CK.CAD&&_CK.CAD[W]&&Array.isArray(_CK.CAD[W].v))?_CK.CAD[W].v.filter(x=>x!=null):[];if(cs.length){var srt=cs.slice().sort((a,b)=>a-b);var med=srt[Math.floor(srt.length/2)];cv.innerHTML=Math.round(med)+'<span class="ck-ku">spm</span>';}else{cv.innerHTML='—<span class="ck-ku">spm</span>';}}catch(e){}})();
   _pmcRender(W);
@@ -3089,18 +3121,30 @@ ${(function(){const v=_estimVO2();if(!v)return '';return `<div class="vo2-card">
   <div class="vo2-foot" id="vo2-foot"></div>
 </div>`;})()}
 <div class="ck-summary" id="ck-summary"></div>
+<div class="ck-toggle ck-tgl-sync" data-tgl="1">
+  <button class="ck-tg" onclick="ckWin(2,this)">2 sem.</button>
+  <button class="ck-tg" onclick="ckWin(4,this)">4 sem.</button>
+  <button class="ck-tg ck-on" onclick="ckWin(8,this)">8 sem.</button>
+  <button class="ck-tg" onclick="ckWin(12,this)">12 sem.</button>
+</div>
 <div class="ck-kpis">
-  <div class="ck-kpi"><div class="ck-kv" id="ck-km-val">—<span class="ck-ku">km</span></div><div class="ck-kl" id="ck-km-lbl">fenêtre</div><div class="ck-kd up">cumulé</div></div>
-  <div class="ck-kpi"><div class="ck-kv" id="ck-re-val">—</div><div class="ck-kl" id="ck-re-lbl">Effort</div><div class="ck-kd up">cumulé</div></div>
+  <div class="ck-kpi"><div class="ck-kv" id="ck-km-val">—<span class="ck-ku">km</span></div><div class="ck-kl" id="ck-km-lbl">fenêtre</div><div class="ck-kd" id="ck-km-trend">—</div></div>
+  <div class="ck-kpi"><div class="ck-kv" id="ck-re-val">—</div><div class="ck-kl" id="ck-re-lbl">Effort</div><div class="ck-kd" id="ck-re-trend">—</div></div>
   <div class="ck-kpi"><div class="ck-kv" id="ck-acwr-val">0.69</div><div class="ck-kl">ACWR</div><div class="ck-kd">frais</div></div>
-  <div class="ck-kpi"><div class="ck-kv" id="ck-cad-kpi">—<span class="ck-ku">spm</span></div><div class="ck-kl">Cadence</div><div class="ck-kd" id="ck-cad-d">moy.</div></div>
+  <div class="ck-kpi"><div class="ck-kv" id="ck-cad-kpi">—<span class="ck-ku">spm</span></div><div class="ck-kl">Cadence</div><div class="ck-kd" id="ck-cad-trend">—</div><div class="ck-kd" id="ck-cad-d">moy.</div></div>
 </div>
 
 <div class="eff-card" id="decoup-card">
-  <div class="vo2-top"><span class="vo2-lbl">Découplage cardiaque <button class="vo2-help" onclick="openCkHelp('decoup')" aria-label="Comment lire le découplage ?">?</button></span><span class="vo2-src" id="decoup-src"></span></div>
+  <div class="vo2-top"><span class="vo2-lbl">Dernière sortie analysée <button class="vo2-help" onclick="openCkHelp('decoup')" aria-label="Comment lire le découplage ?">?</button></span><span class="vo2-src" id="decoup-src"></span></div>
   <div class="eff-body" id="decoup-body"></div>
 </div>
 </div><div class="ck-zone" data-zone="2" style="display:none">
+<div class="ck-toggle ck-tgl-sync" data-tgl="2">
+  <button class="ck-tg" onclick="ckWin(2,this)">2 sem.</button>
+  <button class="ck-tg" onclick="ckWin(4,this)">4 sem.</button>
+  <button class="ck-tg ck-on" onclick="ckWin(8,this)">8 sem.</button>
+  <button class="ck-tg" onclick="ckWin(12,this)">12 sem.</button>
+</div>
 <div class="eff-card" id="profil-card">
   <div class="vo2-top"><span class="vo2-lbl">Profil de coureur <button class="vo2-help" onclick="openCkHelp('profil')" aria-label="Comment lire le profil ?">?</button></span><span class="vo2-src">7 axes · notés sur 99</span></div>
   <div class="eff-body" id="profil-body"></div>
@@ -3122,7 +3166,7 @@ ${(function(){const v=_estimVO2();if(!v)return '';return `<div class="vo2-card">
   <div class="eff-body" id="decoup-trend-body"></div>
 </div>
 </div><div class="ck-zone" data-zone="3" style="display:none">
-<div class="ck-toggle" id="ck-tgl">
+<div class="ck-toggle ck-tgl-sync" id="ck-tgl" data-tgl="3">
   <button class="ck-tg" onclick="ckWin(2,this)">2 sem.</button>
   <button class="ck-tg" onclick="ckWin(4,this)">4 sem.</button>
   <button class="ck-tg ck-on" onclick="ckWin(8,this)">8 sem.</button>
@@ -3179,7 +3223,12 @@ ${card('ckDP','⛰ Dénivelé D+','',null,'m',75,'','dp')}
 `;
   _ckRenderAll(_ckWin);
 }
-function ckWin(w,el){_ckWin=w;document.querySelectorAll('.ck-tg').forEach(b=>b.classList.remove('ck-on'));el.classList.add('ck-on');_ckRenderAll(w);}
+/* Le selecteur de fenetre existe en 3 exemplaires, un par zone. Avant, il
+   n'etait present qu'en zone Analyse mais pilotait aussi le contenu de la
+   zone Progression : un effet a distance desorientant, ou un chiffre change
+   sans qu'aucun controle visible ne l'explique. On synchronise desormais
+   l'etat actif sur les trois selecteurs. */
+function ckWin(w,el){_ckWin=w;document.querySelectorAll('.ck-tg').forEach(function(b){b.classList.remove('ck-on');});document.querySelectorAll('.ck-tgl-sync').forEach(function(t){t.querySelectorAll('.ck-tg').forEach(function(b){if(parseInt(b.textContent,10)===w)b.classList.add('ck-on');});});_ckRenderAll(w);if(typeof _effRender==='function'){try{_effRender();}catch(e){}}}
 /* ===== Déplacer / Skipper séance ===== */
 const SM_REASONS=['Fatigue / récupération','Contrainte agenda','Météo défavorable','Repos actif choisi'];
 let _smWk=null,_smId=null,_smReason=null;
