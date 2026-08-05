@@ -627,6 +627,7 @@ function renderHeader(){
   const cur=isoWeek(new Date());const sc=SEMAINES.find(s=>s.num===cur)||SEMAINES[0];
   const _t=new Date();_t.setHours(0,0,0,0);
   const _ps=prochaineSeance();let _psCard='';
+  const _FORME_=computeFormeScore();
   // Feature 2 — ajustement allure selon température
   let _tempAdj='';
   try{const mc=JSON.parse(localStorage.getItem('meteo_cache')||'null');
@@ -646,10 +647,14 @@ function renderHeader(){
     const _fit=_se.fit?`<a class="vdj-fit" href="${_se.fit}" download onclick="event.stopPropagation()">⌚ Télécharger la séance</a>`:'';
     const _dist=(_se.metriques&&_se.metriques.Distance)?' · '+_se.metriques.Distance:'';
     const _shoe=_se.chaussure?`<div class="vdj-shoe">${_se.chaussure}</div>`:'';
-    _psCard=`<div class="vdj" onclick="ouvrirSeance(${_ps.wk},${_se.id})"><div class="vdj-lbl">Prochaine séance · ${_lbl}</div><div class="vdj-t">${_se.titre}</div><div class="vdj-s">${_se.type}${_dist} · S${_ps.wk}</div>${_shoe}<div class="vdj-depart" id="vdj-depart" style="display:none"></div>${_fit}${_tempAdj}</div>`;
+    /* CARTE HERO : la seance du jour et la forme fusionnees en UN bloc dominant.
+     Avant, elles vivaient dans deux conteneurs separes de 157 px et 107 px :
+     rien ne designait de point focal, l oeil ne savait pas par ou commencer.
+     La forme devient un anneau de progression a droite du titre, lisible d un
+     coup d oeil, et reste cliquable pour ouvrir le detail. */
+  _psCard=`<div class="vdj vdj-hero" onclick="ouvrirSeance(${_ps.wk},${_se.id})"><div class="vdj-lbl">Prochaine séance · ${_lbl}</div><div class="vdj-main"><div class="vdj-txt"><div class="vdj-t">${_se.titre}</div><div class="vdj-s">${_se.type}${_dist} · S${_ps.wk}</div>${_shoe}</div><button class="vdj-forme" aria-label="Forme du jour : ${_FORME_.score} sur 100" onclick="event.stopPropagation();document.getElementById('forme-detail').classList.toggle('fd-open')"><svg viewBox="0 0 64 64" class="vdj-ring"><circle cx="32" cy="32" r="27" class="vr-bg"/><circle cx="32" cy="32" r="27" class="vr-fg" stroke="${_FORME_.color}" stroke-dasharray="${(2*Math.PI*27).toFixed(1)}" stroke-dashoffset="${(2*Math.PI*27*(1-_FORME_.score/100)).toFixed(1)}"/></svg><span class="vdj-fv">${_FORME_.score}</span><span class="vdj-fk">forme</span></button></div><div class="vdj-depart" id="vdj-depart" style="display:none"></div>${_fit}${_tempAdj}</div>`;
   }
-  // Sprint 1 — Score de forme en tuile compacte
-  const _forme=computeFormeScore();
+  const _forme=_FORME_;
   const _formeTile=`<button class="htile htile-forme" onclick="document.getElementById('forme-detail').classList.toggle('fd-open')"><span class="ht-k">Forme du jour <span class="ht-help" role="button" tabindex="0" onclick="event.stopPropagation();openFormeHelp()">\u24d8</span></span><span class="ht-v" style="color:${_forme.color}">${_forme.score}<span class="ht-trend">${_forme.trend}</span></span><span class="ht-s">${_forme.signal}</span></button>`;
   const _formeDetail=`<div class="forme-detail" id="forme-detail">${_forme.components.map(c=>`<div class="fd-row"><div class="fd-lbl">${c.label}</div><div class="fd-track"><div class="fd-fill" style="width:${c.score}%;background:${c.score>=80?'#0d9488':c.score>=65?'#16a34a':c.score>=50?'#f59e0b':'#ef4444'}"></div></div><div class="fd-val">${c.detail}</div></div>`).join('')}</div>`;
   // Sprint 1 — courses : la plus proche en tuile, les autres repliees
@@ -682,7 +687,7 @@ function _acGrp(id,titre,corps){
   return '<section class="ac-grp" data-grp="'+id+'">'+
     '<div class="ac-grp-h"><span class="ac-grp-t">'+titre+'</span></div>'+corps+'</section>';
 }
-document.getElementById('hero-plan').innerHTML=_lt+_acGrp('now','Aujourd\u2019hui',_psCard+_wnCard+'<div class="hx-row">'+_formeTile+_nearTile+'</div>'+_formeDetail+'<div id="canicule-banner" style="display:none"></div>')+_acGrp('prep','Ma pr\u00e9paration',_tl+_nudgeCard+'<div id="meteo-widget" class="meteo"><div class="meteo-loc">\u23f3 M\u00e9t\u00e9o\u2026</div></div>')+_acGrp('ech','Mes \u00e9ch\u00e9ances',_cw)+(_mini?_acGrp('bilan','Bilan','<div class="hmini-row">'+_mini+'</div>'):'');
+document.getElementById('hero-plan').innerHTML=_lt+_acGrp('now','Aujourd\u2019hui',_psCard+_wnCard+(_nearTile?'<div class="hx-row">'+_nearTile+'</div>':'')+_formeDetail+'<div id="canicule-banner" style="display:none"></div>')+_acGrp('prep','Ma pr\u00e9paration',_tl+_nudgeCard+'<div id="meteo-widget" class="meteo"><div class="meteo-loc">\u23f3 M\u00e9t\u00e9o\u2026</div></div>')+_acGrp('ech','Mes \u00e9ch\u00e9ances',_cw)+(_mini?_acGrp('bilan','Bilan','<div class="hmini-row">'+_mini+'</div>'):'');
   renderMeteo();
   document.getElementById('maj-foot').innerHTML=_maj;
    try{const _aSe=Object.values(SEANCES_BY_WEEK).flat();const _aF=_aSe.filter(s=>s.realise&&(s.realise.statut==='fait'||s.realise.statut==='partiel')).length;const _aKm=Math.round(_aSe.reduce((a,s)=>a+((s.realise&&s.realise.km)||0),0));const _aP=_aSe.length?Math.round(_aF/_aSe.length*100):0;const _ae=document.getElementById('accueil-annee');const _aStreak=_computeStreak();const _streakTile=_aStreak>=2?`<div class="acc-stat acc-streak"><div class="av">${_aStreak}<span>\u{1F525}</span></div><div class="ak">Sem. d\u2019affil\u00e9e</div></div>`:'';if(_ae)_ae.innerHTML=`<div class="acc-lab">Bilan du plan</div><div class="acc-annee ${_streakTile?'has-streak':''}"><div class="acc-stat"><div class="av">${_aF}</div><div class="ak">Sorties</div></div><div class="acc-stat"><div class="av">${_aKm}<span>km</span></div><div class="ak">R\u00e9alis\u00e9</div></div><div class="acc-stat"><div class="av">${_aP}<span>%</span></div><div class="ak">Pr\u00e9pa plan</div></div>${_streakTile}</div>`;}catch(e){}

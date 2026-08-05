@@ -1247,6 +1247,14 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":150,"date":"4 aout 2026","sha":"","tag":"Accueil : carte hero + echelle typographique","items":[
+    "CARTE HERO : la seance du jour et la forme fusionnees en un bloc unique et dominant. Avant, elles vivaient dans deux conteneurs separes de 157 et 107 px -- rien ne designait de point focal",
+    "La forme devient un anneau de progression a droite du titre, lisible d un coup d oeil. Il reste cliquable pour ouvrir le detail, sans declencher l ouverture de la seance (propagation stoppee, verifie)",
+    "ECHELLE TYPOGRAPHIQUE : 16 tailles distinctes coexistaient sur un seul ecran, dont des quasi-doublons visuellement indistincts (11 et 11,52 px, 20 et 20,8 px, 10 et 10,5 px) heritees de valeurs en rem",
+    "Ramene a 9 tailles sur 6 tokens (--t-micro a --t-chiffre). Les valeurs batardes sont normalisees sur l echelle",
+    "Ces deux points completent la refonte du build 149 : je les avais annonces puis pas livres, ce qui expliquait la note dans le bas de ma fourchette",
+    "Verifie sur iPhone SE, 14 et Pro Max : hero 145 px, aucun debordement, les deux interactions cohabitent"
+  ]},
   {"build":149,"date":"4 aout 2026","sha":"","tag":"Accueil : grammaire visuelle unifiee + 4 sections","items":[
     "Constat mesure : 7 conteneurs visuellement differents empiles dans l ordre de construction des fonctionnalites. 3 systemes de rayon (18/12/14 px), 3 systemes de marge, une seule ombre sur 7 blocs",
     "L ecran ne fait pourtant qu 1,2 ecran : le probleme n etait pas la longueur mais l absence de grammaire visuelle commune -- l interface paraissait chargee sans l etre",

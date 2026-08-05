@@ -1402,3 +1402,47 @@ body,.accueil{background:#f2f2f7}
 .ac-grp[data-grp="now"] .vdj{box-shadow:0 2px 6px rgba(15,23,42,.10),0 10px 26px -8px rgba(13,148,136,.30)}
 /* section Bilan : allegee, c'est du contexte, pas de l'action */
 .ac-grp[data-grp="bilan"] .hmini-row{background:none;box-shadow:none}
+/* ===== Echelle typographique de l'accueil =====
+   16 tailles distinctes coexistaient sur un seul ecran, dont des valeurs quasi
+   identiques (11 px et 11,52 px) : signe qu'aucune echelle n'etait definie.
+   On ramene a 6 tokens, ratio ~1.2, tous multiples cohérents. */
+:root{
+  --t-micro:10px;   /* sur-titres, labels */
+  --t-petit:12px;   /* texte secondaire */
+  --t-base:14px;    /* corps */
+  --t-fort:16px;    /* titres de carte */
+  --t-titre:20px;   /* titre hero */
+  --t-chiffre:26px; /* valeurs mises en avant */
+}
+#vue-accueil .ac-grp-t{font-size:var(--t-micro)}
+#vue-accueil .vdj-lbl{font-size:var(--t-micro);letter-spacing:.14em;text-transform:uppercase;opacity:.72}
+#vue-accueil .vdj-t{font-size:var(--t-titre);line-height:1.2;letter-spacing:-.01em}
+#vue-accueil .vdj-s{font-size:var(--t-petit)}
+#vue-accueil .vdj-shoe,#vue-accueil .vdj-adj{font-size:var(--t-petit)}
+#vue-accueil .ht-k,#vue-accueil .cw-k{font-size:var(--t-micro)}
+#vue-accueil .ht-s{font-size:var(--t-petit)}
+#vue-accueil .tl-phase,#vue-accueil .cn-t{font-size:var(--t-base)}
+
+/* ===== Carte hero ===== */
+.vdj-hero{padding:16px 16px 14px}
+.vdj-main{display:flex;align-items:center;gap:14px;margin-top:6px}
+.vdj-txt{flex:1;min-width:0}
+.vdj-forme{position:relative;flex:0 0 64px;width:64px;height:64px;border:none;background:none;
+  padding:0;cursor:pointer;display:grid;place-items:center}
+.vdj-forme:focus-visible{outline:2px solid #fff;outline-offset:3px;border-radius:50%}
+.vdj-ring{position:absolute;inset:0;width:64px;height:64px;transform:rotate(-90deg)}
+.vr-bg{fill:none;stroke:rgba(255,255,255,.20);stroke-width:5}
+.vr-fg{fill:none;stroke-width:5;stroke-linecap:round;
+  transition:stroke-dashoffset 1.1s cubic-bezier(.16,1,.3,1)}
+.vdj-fv{position:relative;font-size:var(--t-chiffre);font-weight:900;line-height:1;color:#fff;
+  font-variant-numeric:tabular-nums;letter-spacing:-.03em;margin-top:-3px}
+.vdj-fk{position:absolute;bottom:9px;left:0;right:0;text-align:center;
+  font-size:8px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.62)}
+/* Normalisation des quasi-doublons : 11,52 / 10,5 / 9,5 / 20,8 / 19 px etaient
+   des valeurs heritees en rem, visuellement indistinctes de leurs voisines mais
+   qui cassaient l'echelle. On les ramene sur les 6 tokens. */
+#vue-accueil .as-btn,#vue-accueil .cw-arr,#vue-accueil .hmini-go,#vue-accueil .hmini-n,
+#vue-accueil .cn-txt,#vue-accueil .as-x,#vue-accueil strong{font-size:var(--t-petit)}
+#vue-accueil .acc-lab,#vue-accueil .ak{font-size:var(--t-micro)}
+#vue-accueil .ht-v,#vue-accueil .av{font-size:var(--t-chiffre)}
+#vue-accueil .cn-ico{font-size:var(--t-fort)}
