@@ -638,10 +638,11 @@ function renderHeader(){
         /* Deux alertes temperature s'empilaient et disaient presque la meme
            chose : "32 degres demain, pars avant 8h30" puis "32 degres,
            allure cible +30s/km". Fusionnees en une seule ligne. */
-        _tempAdj=`<div class="vdj-adj">🌡️ ${refT}° · allure <strong>+${adj}s/km</strong></div>`;}
+        _tempAdj='';}  /* fusionnee dans la ligne vdj-depart */
     }}catch(e){}
   if(_ps){
     const _diff=Math.round((_ps.d-_t)/86400000);
+    window._psGlobalDiff=_diff;
     const _J=['dimanche','lundi','mardi','mercredi','jeudi','vendredi','samedi'];
     const _M=['janv.','févr.','mars','avr.','mai','juin','juil.','août','sept.','oct.','nov.','déc.'];
     const _jn=_J[_ps.d.getDay()];
@@ -649,13 +650,13 @@ function renderHeader(){
     const _se=_ps.se;
     const _fit=_se.fit?`<a class="vdj-fit" href="${_se.fit}" download onclick="event.stopPropagation()">⌚ Télécharger la séance</a>`:'';
     const _dist=(_se.metriques&&_se.metriques.Distance)?' · '+_se.metriques.Distance:'';
-    const _shoe=_se.chaussure?`<div class="vdj-shoe">${_se.chaussure}</div>`:'';
+    const _shoe='';  /* la chaussure rejoint la ligne d'infos ci-dessous */
     /* CARTE HERO : la seance du jour et la forme fusionnees en UN bloc dominant.
      Avant, elles vivaient dans deux conteneurs separes de 157 px et 107 px :
      rien ne designait de point focal, l oeil ne savait pas par ou commencer.
      La forme devient un anneau de progression a droite du titre, lisible d un
      coup d oeil, et reste cliquable pour ouvrir le detail. */
-  _psCard=`<div class="vdj vdj-hero" onclick="ouvrirSeance(${_ps.wk},${_se.id})"><div class="vdj-lbl">Prochaine séance · ${_lbl}</div><div class="vdj-main"><div class="vdj-txt"><div class="vdj-t">${_se.titre}</div><div class="vdj-s">${_se.type}${_dist} · S${_ps.wk}</div>${_shoe}</div><button class="vdj-forme" aria-label="Forme du jour : ${_FORME_.score} sur 100" onclick="event.stopPropagation();document.getElementById('forme-detail').classList.toggle('fd-open')"><svg viewBox="0 0 64 64" class="vdj-ring"><circle cx="32" cy="32" r="27" class="vr-bg"/><circle cx="32" cy="32" r="27" class="vr-fg" stroke="${_FORME_.color}" stroke-dasharray="${(2*Math.PI*27).toFixed(1)}" stroke-dashoffset="${(2*Math.PI*27*(1-_FORME_.score/100)).toFixed(1)}"/></svg><span class="vdj-fv">${_FORME_.score}</span></button></div><div class="vdj-depart" id="vdj-depart" style="display:none"></div>${_fit}${_tempAdj}</div>`;
+  _psCard=`<div class="vdj vdj-hero" onclick="ouvrirSeance(${_ps.wk},${_se.id})"><div class="vdj-lbl">Prochaine séance · ${_lbl}</div><div class="vdj-main"><div class="vdj-txt"><div class="vdj-t">${_se.titre}</div><div class="vdj-s">${_se.type}${_dist}${_se.chaussure?' · '+_se.chaussure.replace(/^(ASICS|HOKA|Brooks) /,''):''}</div>${_shoe}</div><button class="vdj-forme" aria-label="Forme du jour : ${_FORME_.score} sur 100" onclick="event.stopPropagation();document.getElementById('forme-detail').classList.toggle('fd-open')"><svg viewBox="0 0 64 64" class="vdj-ring"><circle cx="32" cy="32" r="27" class="vr-bg"/><circle cx="32" cy="32" r="27" class="vr-fg" stroke="${_FORME_.color}" stroke-dasharray="${(2*Math.PI*27).toFixed(1)}" stroke-dashoffset="${(2*Math.PI*27*(1-_FORME_.score/100)).toFixed(1)}"/></svg><span class="vdj-fv">${_FORME_.score}</span></button></div><div class="vdj-depart" id="vdj-depart" style="display:none"></div>${_fit}${_tempAdj}</div>`;
   }
   const _forme=_FORME_;
   const _formeTile=`<button class="htile htile-forme" onclick="document.getElementById('forme-detail').classList.toggle('fd-open')"><span class="ht-k">Forme du jour <span class="ht-help" role="button" tabindex="0" onclick="event.stopPropagation();openFormeHelp()">\u24d8</span></span><span class="ht-v" style="color:${_forme.color}">${_forme.score}<span class="ht-trend">${_forme.trend}</span></span><span class="ht-s">${_forme.signal}</span></button>`;
@@ -732,21 +733,27 @@ try{Object.keys(SEANCES_BY_WEEK).forEach(function(w){
 var _BILAN_='<div class="abil"><div class="abil-i"><b>'+_NB_+'</b><span>sorties</span></div>'
   +'<div class="abil-i"><b>'+Math.round(_KM_)+'</b><span>km</span></div>'
   +'<div class="abil-i"><b>'+_SEMOK_+'</b><span>semaines</span></div></div>';
-var _chips=[];
-_chips.push('<button class="achip achip-coach cn-'+(_nudge?_nudge.tone:'info')+'" '
-  +'aria-label="Conseil du coach'+(_nudge?' : '+_nudge.txt.replace(/"/g,''):'')+'" '
-  +'onclick="_ouvrirNudge()">'
-  +'<span class="achip-v achip-mot">'+((_nudge&&_nudge.mot)||'coach')+'</span>'
-  +'<span class="achip-k">conseil</span></button>');
-if(_nudge)window._NUDGE_=_nudge;
-_chips.push('<button class="achip achip-plan" onclick="jumpToWeek('+sc.num+')">'
-  +'<span class="achip-v achip-mot">S'+sc.num+'</span><span class="achip-k">le plan</span></button>');
+/* Les 2 puces sont supprimees : "S32 / le plan" dupliquait le widget Prepa
+   juste dessous, et "marge / conseil" etait incomprehensible -- un mot isole
+   perd son sujet ("marge de quoi ?"). Le conseil du coach redevient une
+   PHRASE, sous la carte du jour : c'est le "quoi faire" qui manquait, et il
+   merite mieux qu'une pastille de 65 px. Modele des suggestions Siri. */
+var _conseil='';
+if(_nudge){
+  window._NUDGE_=_nudge;
+  var _court=_nudge.txt.split(/\s+—\s+|\s+--\s+/)[0];
+  if(_court.length>62)_court=_court.slice(0,60)+'…';
+  _conseil='<button class="ac-tip" onclick="_ouvrirNudge()">'
+    +'<span class="ac-tip-i">'+_nudge.icon+'</span>'
+    +'<span class="ac-tip-t">'+_court+'</span>'
+    +'<span class="ac-tip-a">›</span></button>';
+}
 document.getElementById('hero-plan').innerHTML=
-  _lt+_psCard+_wnCard+_formeDetail
+  _lt+_psCard+_conseil+_wnCard+_formeDetail
     +'<div id="wdg-meteo-slot">'+_wMeteo()+'</div>'
   +_wPrepa(_COURSES_,_PCT_,_NB_,_KM_,_SEMOK_,sc.num)
   +_wCapital(_NB_,_KM_,_SEMOK_,_PR_,_DPLUS_)
-  +'<div class="achip-row achip-row-2">'+_chips.join('')+'</div>'
+  
   +'<div id="canicule-banner" style="display:none!important"></div>'
   +'<div id="meteo-widget" class="meteo" style="display:none"><div class="meteo-loc">⏳</div></div>';
   renderMeteo();
@@ -816,7 +823,14 @@ function _meteoPaint(d){
   const depEl=document.getElementById('vdj-depart');
   if(depEl){
     const T=Math.round(d.tomorrow_max!==undefined?d.tomorrow_max:d.temp);
-    if(T>=26){depEl.innerHTML=`🌡️ ${T}° demain — <strong>pars avant 8h30</strong>`;depEl.style.display='block';}
+    /* Une seule ligne meteo au lieu de deux : meme temperature affichee deux
+       fois, avec d'un cote l'heure de depart et de l'autre l'ajustement
+       d'allure. La meteo n'appelle qu'une decision -- quand partir et a
+       quelle allure -- donc une seule ligne. Le mot "demain" est retire
+       quand la seance est aujourd'hui. */
+    var _qd=(typeof _psGlobalDiff!=='undefined'&&_psGlobalDiff===0)?'':' demain';
+    var _adj=T<26?10:T<30?20:T<34?30:40;
+    if(T>=26){depEl.innerHTML='🌡️ '+T+'° · <strong>avant 8h30</strong> · <strong>+'+_adj+'s/km</strong>';depEl.style.display='block';}
     else{depEl.style.display='none';}
   }
 }

@@ -1258,6 +1258,14 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":161,"date":"6 aout 2026","sha":"","tag":"Accueil : puce marge supprimee, carte du jour densifiee","items":[
+    "PUCE MARGE INCOMPREHENSIBLE : le conseil complet disait Charge basse (ACWR 0,55), de la marge pour ajouter du volume. Compresse en un mot, marge perdait son sujet -- marge de quoi ? L idee du mot d etat ne marchait que pour recup ou aff\u00fbtage, pas pour les conseils nuances",
+    "Les 2 puces sont supprimees : S32 le plan dupliquait le widget Prepa juste dessous, et le conseil merite mieux qu une pastille de 65 px. Il redevient une PHRASE sous la carte du jour, cliquable pour le detail -- modele des suggestions Siri",
+    "CARTE DU JOUR : la chaussure occupait une pastille entiere pour trois mots alors qu elle n appelle aucune action. Elle rejoint la ligne d infos (EF, 9 km, Novablast 5 V)",
+    "DEUX ALERTES METEO REDONDANTES fusionnees : 32 degres demain pars avant 8h30, puis 32 degres allure +30s/km. Meme temperature affichee deux fois. La meteo n appelle qu une decision -- quand partir et a quelle allure -- donc une seule ligne : 32 degres, avant 8h30, +30s/km",
+    "Le mot demain est retire quand la seance est aujourd hui : incoherence de temporalite corrigee",
+    "Principe retenu : une information merite son propre conteneur seulement si elle appelle une action distincte"
+  ]},
   {"build":160,"date":"6 aout 2026","sha":"","tag":"Widget Ton capital : la zone de fierte qui manquait","items":[
     "Retour de Loic : les corrections precedentes etaient de la maintenance, pas la reflexion demandee sur un ecran POSITIF et FINI. Il avait raison",
     "Inventaire de la matiere emotionnelle presente dans les donnees et jamais exploitee : 127 records personnels battus (jamais celebres nulle part), 3250 m de denivele cumule soit 37 % de l Everest, 8 semaines sans interruption noyees dans une micro-stat",
