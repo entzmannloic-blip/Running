@@ -1302,6 +1302,12 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":164,"date":"6 aout 2026","sha":"","tag":"Correctif deploiement : ajout de .nojekyll","items":[
+    "Signale par Loic : le build 163 n apparaissait pas dans l app malgre un push reussi. Diagnostic : le commit etait bien sur main, mais le build GitHub Pages avait ECHOUE (Page build failed, duree 0 ms) -- l app servait donc encore le build 162",
+    "Cause structurelle : aucun fichier .nojekyll dans le depot. GitHub Pages lancait donc un traitement Jekyll sur un site qui n en est pas un (app statique en un seul fichier HTML), avec le risque d echec que cela comporte",
+    ".nojekyll ajoute a la racine et inscrit au manifeste de release.py pour qu il soit pousse a chaque livraison",
+    "PIEGE DE VERIFICATION corrige au passage : index.html depasse 1 Mo, et l API GitHub Contents renvoie alors un contenu VIDE sans lever d erreur. Mes verifications post-push passaient par ce chemin et ne voyaient plus rien. Il faut utiliser l en-tete Accept: application/vnd.github.raw"
+  ]},
   {"build":163,"date":"6 aout 2026","sha":"","tag":"Records cliquables avec celebration, conseil coach sans acronyme","items":[
     "Signale par Loic : le chiffre 128 records etait affiche sans etre cliquable -- impressionnant mais abstrait, et frustrant puisqu on veut savoir CE QUE c est",
     "NOUVELLE FEUILLE RECORDS : le total en grand avec degrade teal-or, les 3 references chronometrees (5 km 22:52, 10 km 46:14, semi 1h52:39) en tuiles, puis les 6 seances les plus prolifiques avec date, distance et allure",

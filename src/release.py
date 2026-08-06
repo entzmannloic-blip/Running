@@ -164,7 +164,13 @@ def main():
     if m:
         build = m.group(1)
 
+    # .nojekyll : le site est une app statique en un seul fichier, pas un
+    # site Jekyll. Sans ce marqueur, GitHub Pages lance un traitement Jekyll
+    # inutile qui peut echouer (build 163 : "Page build failed", duree 0 ms,
+    # commit correct mais jamais publie -- Loic voyait encore le build 162).
     fichiers = {'index.html': f'{OUT}/index.html'}
+    if os.path.exists(f'{WORK}/.nojekyll'):
+        fichiers['.nojekyll'] = f'{WORK}/.nojekyll'
     for src, dst in [('gen.py', 'src/gen.py'), ('app.js', 'src/app.js'),
                      ('css.txt', 'src/css.txt'),
                      ('css_extra.txt', 'src/css_extra.txt'),
