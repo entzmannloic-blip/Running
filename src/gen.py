@@ -894,9 +894,20 @@ for n,ss in WEEKS.items():
 
         # Jeudi : EF + lignes droites (decale du mercredi)
         arr[2]["date"]="2026-08-06"
+        arr[2]["realise"]={"statut":"fait","km":10.09,"temps":"1h00","allure":"5:56/km","fc_moy":140,"fc_max":170,"re":56,"cadence":175,"elevation_gain":36,"temp":26,"rpe_ressenti":4,
+        "decouplage":{"pct":-0.61,"bpm":-1.2,"fen_min":43,"temp":26,"attendu":8,"p1":"6:06/km","fc1":138,"p2":"6:08/km","fc2":137,"qualite":"incertain","algo":"decoup-v1"},
+        "commentaire":"EF + 6\u00d7100 m, r\u00e9cup 30 sec active \u00b7 d\u00e9part 9h15, ~26\u00b0C \u00b7 10,09 km en 1h00. CORPS EF (9,46 km) tr\u00e8s ma\u00eetris\u00e9 : profil en 3 tiers 6:09 \u2192 6:13 \u2192 5:51/km avec FC 137 \u2192 137 \u2192 141 \u2014 mont\u00e9e en r\u00e9gime progressive et quasi gratuite en co\u00fbt cardiaque (le \"diesel\" d\u00e9crit). D\u00e9couplage -0,61 % (quasi nul, sens n\u00e9gatif) pour 8 % attendu \u2014 aucune d\u00e9rive. Sur les 6\u00d7100 m : accel\u00e9rations ressenties comme naturelles et non forc\u00e9es, progressives, dernier r\u00e9p\u00e9t\u00e9 volontairement moins vite que l'avant-dernier par prudence (3\u00e8me sortie de la semaine). Deux segments confirm\u00e9s dans les donn\u00e9es \u00e0 3:42-3:46/km, FC 162-168. RPE bas (4/10) pour une s\u00e9ance incluant des accel\u00e9rations. ZERO douleur au pied. \u26a0\ufe0f Chauss\u00e9 en HOKA Clifton 10 (paire retir\u00e9e de la rotation le 27/07 pour d\u00e9lamination).",
+        "pr":1,"ach":1,"pr_detail":[],
+        "revue":"<strong>Le sch\u00e9ma \"diesel\" que tu d\u00e9cris est exactement ce que montrent les donn\u00e9es, et c'est un tr\u00e8s bon signe.</strong> Ton corps de sortie EF se d\u00e9coupe en trois tiers tr\u00e8s parlants : <strong>6:09/km \u00e0 FC 137</strong>, puis <strong>6:13/km \u00e0 FC 137</strong> (identique, le temps de vraiment se mettre en jambes), puis <strong>5:51/km \u00e0 FC 141</strong> \u2014 tu acc\u00e9l\u00e8res de 22 secondes au kilom\u00e8tre pour seulement 4 battements de plus. C'est une acc\u00e9l\u00e9ration quasi gratuite en co\u00fbt cardiaque, le signe d'un moteur a\u00e9robie qui monte en temp\u00e9rature progressivement plut\u00f4t que d'un manque de forme.<br><br><strong>Le d\u00e9couplage confirme ind\u00e9pendamment ce que tu ressens :</strong> -0,61 %, quasi nul et m\u00eame l\u00e9g\u00e8rement n\u00e9gatif (ta FC a \u00e9t\u00e9 stable voire meilleure en fin de corps EF). Aucune d\u00e9rive, alors que 8 % \u00e9taient attendus vu la temp\u00e9rature. C'est une preuve chiffr\u00e9e que ta base a\u00e9robie encaisse tr\u00e8s bien.<br><br><strong>Sur les 6\u00d7100 m :</strong> ta lecture de la s\u00e9ance est juste. Les deux segments que je peux confirmer dans les donn\u00e9es tournent \u00e0 3:42-3:46/km, FC 162-168 \u2014 des vraies pointes de vitesse, produites sans forcer. Et ta d\u00e9cision de lever le pied sur le dernier plut\u00f4t que d'aller chercher un chrono, \u00e0 J+2 du fractionn\u00e9 interrompu de mardi, c'est exactement le genre d'\u00e9coute qui \u00e9vite les blessures. Tu as raison de noter que c'est ta 3\u00e8me sortie de la semaine : le d\u00e9marrage plus lent en est probablement la cons\u00e9quence directe, pas un signal n\u00e9gatif.<br><br><strong>Z\u00e9ro douleur au pied</strong>, sur une s\u00e9ance qui incluait des acc\u00e9l\u00e9rations \u2014 c'est le test le plus concret depuis la reprise, et il est concluant.<br><br><strong>\u26a0\ufe0f Un point \u00e0 te signaler franchement.</strong> Tu as couru en <strong>Clifton 10</strong> \u2014 la paire qu'on avait retir\u00e9e de la rotation le 27/07 pour d\u00e9lamination de semelle constat\u00e9e sur photos. L'app ne te les propose plus depuis, mais rien ne t'emp\u00eache physiquement de les enfiler. Aucune cons\u00e9quence aujourd'hui (z\u00e9ro douleur), mais je pr\u00e9f\u00e8re te le dire clairement plut\u00f4t que de laisser passer : si tu peux, sors-les d\u00e9finitivement de la maison ou range-les ailleurs pour ne plus les attraper par r\u00e9flexe."}
 
         # Vendredi : PPG (decalee du jeudi, regroupee avec la mobilite)
         arr[4]["date"]="2026-08-07"
+        arr[4]["titre"]="Repos complet"
+        arr[4]["type"]="Repos"
+        arr[4]["chaussure"]=None
+        arr[4]["sous"]="Repos total avant la boucle de Saint-Étienne de dimanche (27 km, 650 m D+)."
+        arr[4]["objectif"]="Deux jours de repos avant un effort vallonné et technique nettement plus exigeant que la sortie longue initialement prévue."
+        arr[4]["vigilance"]="Aucune sollicitation, même légère : la PPG initialement prévue est reportée."
 
         # Samedi : sortie longue (avancee du dimanche, a la demande de Loic)
         arr[3]["date"]="2026-08-08"
@@ -904,6 +915,39 @@ for n,ss in WEEKS.items():
         arr[3]["objectif"]="Réduite de 26 à 16 km et sans bloc allure marathon. Raison : le pied n'a pas encore dépassé une heure de course sans se manifester. On teste d'abord la durée en EF pure, on recombinera durée et allure marathon en S33 si tout va bien."
         arr[3]["coach"]=[{"titre":"La durée avant l'intensité","texte":"Ton pied se réveille sur l'allure soutenue prolongée, pas sur l'EF facile. On vérifie donc qu'il encaisse 1h35 en EF avant de recombiner les deux contraintes."}]
         arr[3]["vigilance"]="Canicule toujours active. Départ à l'aube non négociable (6h30 max), électrolytes dès le départ. Si la gêne apparaît, tu rentres — même à 10 km. Cette séance est un test de tolérance, pas un objectif kilométrique."
+        # arr[5] (Mobilité) devient le 2e jour de repos, samedi
+        arr[5]["date"]="2026-08-08"
+        arr[5]["titre"]="Repos complet (2)"
+        arr[5]["type"]="Repos"
+        arr[5]["chaussure"]=None
+        arr[5]["sous"]="Deuxième jour de repos avant la boucle de Saint-Étienne de demain."
+        arr[5]["objectif"]="Fraîcheur maximale avant un effort vallonné et technique : 27 km, 650 m D+, descentes techniques à Rochetaillée."
+        arr[5]["vigilance"]="Aucune sollicitation. Prépare l'itinéraire, l'hydratation et les chaussures adaptées au terrain."
+
+        # arr[3] (Sortie longue) devient la boucle de Saint-Étienne, dimanche
+        arr[3]["date"]="2026-08-09"
+        arr[3]["titre"]="Boucle de Saint-Étienne — trail vallonné"
+        arr[3]["type"]="Sortie longue"
+        arr[3]["sport"]="Trail"
+        arr[3]["accent"]=BLUE
+        arr[3]["fill"]=72
+        arr[3]["cat"]="sortie-longue"
+        arr[3]["rpe"]=6.0
+        arr[3]["chaussure"]="Brooks Cascadia 19"
+        arr[3]["sous"]="Remplace la sortie longue initialement prévue (16 km plat) — projet perso, boucle vallonnée autour de Saint-Étienne."
+        arr[3]["metriques"]={"Distance":"~27 km","Durée":"~3h-3h30","Allure":"EF trail, libre","FC":"< 155 bpm","D+":"~650 m","RPE":"5-6","Type":"Trail vallonné"}
+        arr[3]["objectif"]="Sortie plaisir et exploration, plus longue et plus technique que le plan initial. Bon test grandeur nature pour SaintExpress (45 km, novembre) : gestion de l'effort sur la durée, terrain varié, descentes techniques."
+        arr[3]["struct"]=[
+          {"nom":"Itinéraire","txt":"La Terrasse → Parc de Montaud → Crêt de Sixte-Soleils → Bellevue → Rochetaillée → Terrenoire → Geoffroy-Guichard → La Terrasse."},
+          {"nom":"Corps","txt":"Allure libre, entièrement pilotée au ressenti et à la FC. Marche autorisée et même recommandée dans les portions raides — c'est la norme en trail, pas un échec."},
+          {"nom":"Descentes techniques","txt":"Rochetaillée et le retour côté Terrenoire sont les portions les plus exigeantes pour les quadriceps et pour l'appui du pied. Ralentis si besoin, la sécurité prime sur le chrono."}]
+        arr[3]["legende"]=[{"c":BLUE,"l":"Trail vallonné"}]
+        arr[3]["benefices"]="Volume et dénivelé spécifiques trail, en vue de SaintExpress. Gestion de l'effort sur terrain varié et sur la durée."
+        arr[3]["coach"]=[
+          {"titre":"Deux vigilances, un projet qui reste le tien","texte":"650 m de D+ en descentes techniques sollicite fortement les quadriceps — ta vigilance historique. Et le pied n'a pas encore été testé sur terrain instable avec appuis de travers. Aucune des deux ne remet en cause le projet : elles demandent juste d'écouter le corps en descente."},
+          {"titre":"Le repère simple","texte":"Si le pied ou les quadriceps parlent fort dans la descente de Rochetaillée, coupe par le chemin le plus court plutôt que de boucler la totale. Une sortie écourtée reste une excellente sortie."}]
+        arr[3]["vigilance"]="Chaussures à accroche (Cascadia) recommandées pour la stabilité en descente. Hydratation et un peu de nutrition pour 3h+ d'effort. Écoute les quadriceps et le pied en descente technique."
+
 META=[
 (24,'reprise','Récupération',28,'Légère','—',"Absorber La Circaète : repos actif, footings très faciles, mobilité du dos."),
 (25,'reprise','Reprise & déblocage',52,'Modérée','≈ 85 % facile · 15 % qualité légère',"Relancer une structure : ré-ancrer le vrai easy, vivacité, premier contact allure marathon, longue + carburant."),
@@ -967,7 +1011,7 @@ PHASES=[
 ]
 COUL={p["id"]:p["c"] for p in PHASES}
 GEAR=[
-  {"marque":"HOKA","modele":"Clifton 10","km":1158},
+  {"marque":"HOKA","modele":"Clifton 10","km":1168},
   {"marque":"ASICS","modele":"Novablast 5 J","km":661},
   {"marque":"ASICS","modele":"Novablast 5 V","km":45},
   {"marque":"ASICS","modele":"Gel Pulse 16","km":225},
@@ -1258,6 +1302,17 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":162,"date":"6 aout 2026","sha":"","tag":"EF+6x100m loggee, week-end reorganise pour la boucle de Saint-Etienne","items":[
+    "EF du 06/08 : corps de sortie en 3 tiers tres parlant, 6:09 puis 6:13 puis 5:51/km pour FC 137/137/141 -- acceleration quasi gratuite en cout cardiaque, exactement le schema diesel decrit",
+    "Decouplage -0,61 % (quasi nul, sens negatif) pour 8 % attendu : aucune derive sur le corps EF",
+    "2 des 6 acclerations de 100m confirmees dans les donnees a 3:42-3:46/km, FC 162-168 -- la resolution de mesure ne permet pas de confirmer les 4 autres, mais le ressenti decrit (naturel, non force, dernier leve le pied) est coherent avec les donnees disponibles",
+    "ZERO douleur au pied sur une seance incluant des accelerations : le test le plus concret depuis la reprise",
+    "SIGNALE : la seance a ete couru en Clifton 10, paire retiree de la rotation le 27/07. L app ne les propose plus depuis le build 151, mais rien n empeche de les enfiler physiquement. Aucune consequence aujourd hui, mais rappel fait dans la fiche",
+    "WEEK-END REORGANISE a la demande de Loic : vendredi et samedi passent en repos complet, la sortie longue plate de 16 km initialement prevue est remplacee dimanche par un projet perso -- boucle de Saint-Etienne, 27 km, 650 m D+, tres vallonnee et technique (Rochetaillee, Terrenoire)",
+    "Avis de coach donne : deux jours de repos avant un effort presque double en charge est une bonne sequence. Deux reserves signalees sans remettre en cause le projet : sollicitation quadriceps en descentes techniques (vigilance historique), et pied non encore teste sur terrain instable a appuis irreguliers",
+    "Chaussure conseillee : Cascadia 19 (accroche) plutot que Novablast pour la stabilite en descente",
+    "Clifton 10 -> 1168 km"
+  ]},
   {"build":161,"date":"6 aout 2026","sha":"","tag":"Accueil : puce marge supprimee, carte du jour densifiee","items":[
     "PUCE MARGE INCOMPREHENSIBLE : le conseil complet disait Charge basse (ACWR 0,55), de la marge pour ajouter du volume. Compresse en un mot, marge perdait son sujet -- marge de quoi ? L idee du mot d etat ne marchait que pour recup ou aff\u00fbtage, pas pour les conseils nuances",
     "Les 2 puces sont supprimees : S32 le plan dupliquait le widget Prepa juste dessous, et le conseil merite mieux qu une pastille de 65 px. Il redevient une PHRASE sous la carte du jour, cliquable pour le detail -- modele des suggestions Siri",
