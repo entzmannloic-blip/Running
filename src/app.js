@@ -724,6 +724,11 @@ try{
   });
   _SEMOK_=Object.keys(_vus).length;
 }catch(e){}
+var _PR_=0,_DPLUS_=0;
+try{Object.keys(SEANCES_BY_WEEK).forEach(function(w){
+  (SEANCES_BY_WEEK[w]||[]).forEach(function(s){var r=s.realise;
+    if(r&&(r.statut==='fait'||r.statut==='partiel')){_PR_+=(r.pr||0);_DPLUS_+=(r.elevation_gain||0);}});
+});}catch(e){}
 var _BILAN_='<div class="abil"><div class="abil-i"><b>'+_NB_+'</b><span>sorties</span></div>'
   +'<div class="abil-i"><b>'+Math.round(_KM_)+'</b><span>km</span></div>'
   +'<div class="abil-i"><b>'+_SEMOK_+'</b><span>semaines</span></div></div>';
@@ -740,6 +745,7 @@ document.getElementById('hero-plan').innerHTML=
   _lt+_psCard+_wnCard+_formeDetail
     +'<div id="wdg-meteo-slot">'+_wMeteo()+'</div>'
   +_wPrepa(_COURSES_,_PCT_,_NB_,_KM_,_SEMOK_,sc.num)
+  +_wCapital(_NB_,_KM_,_SEMOK_,_PR_,_DPLUS_)
   +'<div class="achip-row achip-row-2">'+_chips.join('')+'</div>'
   +'<div id="canicule-banner" style="display:none!important"></div>'
   +'<div id="meteo-widget" class="meteo" style="display:none"><div class="meteo-loc">⏳</div></div>';
@@ -825,6 +831,52 @@ function _meteoPaint(d){
    ZONES INTERNES separees par des filets, avec un seul chiffre dominant.
    Mes puces de 65 px faisaient l'inverse : elles cachaient tout derriere un
    tap. On passe donc de 5 micro-puces a 2 widgets riches et structures. */
+/* ===== WIDGET "TON CAPITAL" =====
+   L'accueil affichait 30 sorties / 386 km / 8 semaines : trois chiffres bruts
+   sans narration. Or les donnees contiennent une matiere emotionnelle jamais
+   exploitee -- 127 records battus, 3250 m de denivele (37 % de l'Everest), et
+   surtout une distance cumulee qui depasse deja Lyon-Nice a vol d'oiseau.
+   Un chiffre devient motivant quand il devient une image. */
+/* Jalons choisis pour RACONTER LA COURSE, pas pour aligner des villes au
+   hasard : le repere central est Nice (298 km a vol d'oiseau), la destination
+   du 8 novembre. Les jalons suivants prolongent le voyage vers le sud et
+   l'Italie -- une progression coherente avec l'objectif, pas un annuaire. */
+var _JALONS=[
+  {km:94,nom:'Grenoble'},{km:112,nom:'Genève'},
+  {km:278,nom:'Marseille'},{km:298,nom:'Nice',cible:true},
+  {km:392,nom:'Nice aller-retour',ar:true},{km:532,nom:'Barcelone'}
+];
+function _wCapital(nb,km,sem,pr,dplus){
+  var atteints=_JALONS.filter(function(j){return km>=j.km;});
+  var suivant=_JALONS.filter(function(j){return km<j.km;})[0];
+  var dernier=atteints.length?atteints[atteints.length-1]:null;
+  var recit='';
+  if(dernier){
+    var corps=dernier.cible
+      ? 'Tu as d\u00e9j\u00e0 couru la distance <strong>Lyon \u2192 Nice</strong>'
+      : (dernier.ar
+         ? 'Tu as couru <strong>Lyon \u2192 Nice aller-retour</strong>'
+         : 'Tu as parcouru la distance <strong>Lyon \u2192 '+dernier.nom+'</strong>');
+    recit='<div class="cap-recit"><span class="cap-recit-i">\u{1F5FA}\uFE0F</span>'
+      +'<span>'+corps
+      +(suivant?'. Plus que <strong>'+Math.round(suivant.km-km)+' km</strong> pour l\u2019aller-retour.':'.')
+      +'</span></div>';
+  }else if(suivant){
+    recit='<div class="cap-recit"><span class="cap-recit-i">\u{1F5FA}\uFE0F</span>'
+      +'<span>Encore <strong>'+Math.round(suivant.km-km)+' km</strong> pour atteindre Lyon \u2192 '+suivant.nom+'</span></div>';
+  }
+  var everest=Math.round(dplus/8849*100);
+  return '<div class="wdg wdg-cap">'
+    +'<div class="cap-h">Ton capital</div>'
+    +'<div class="cap-grid">'
+    +'<div class="cap-c"><b>'+Math.round(km)+'</b><span>km courus</span></div>'
+    +'<div class="cap-c"><b>'+pr+'</b><span>records</span></div>'
+    +'<div class="cap-c"><b>'+sem+'<i>\u{1F525}</i></b><span>semaines</span></div>'
+    +'</div>'+recit
+    +(everest>=10?'<div class="cap-recit cap-recit-2"><span class="cap-recit-i">\u26F0\uFE0F</span>'
+      +'<span><strong>'+everest+' %</strong> de l\u2019Everest grimp\u00e9s depuis le d\u00e9but</span></div>':'')
+    +'</div>';
+}
 function _wMeteo(){
   var d=null;try{d=JSON.parse(localStorage.getItem('meteo_cache')||'null');}catch(e){}
   if(!d||d.temp===undefined){
@@ -866,11 +918,7 @@ function _wPrepa(courses,pct,nb,km,sem,semNum){
     +'<div class="wdg-top"><div><div class="wdg-lbl">Semaine '+semNum+'</div>'
     +'<div class="wdg-big">'+pct+'<span class="wdg-pct">%</span></div>'
     +'<div class="wdg-sub">du plan \u00b7 S24 \u2192 Nice</div></div>'
-    +'<div class="wdg-stats">'
-    +'<div class="wdg-st"><b>'+nb+'</b><span>sorties</span></div>'
-    +'<div class="wdg-st"><b>'+Math.round(km)+'</b><span>km</span></div>'
-    +'<div class="wdg-st"><b>'+sem+'</b><span>semaines</span></div>'
-    +'</div></div>'
+    +'<div class="wdg-st wdg-st-solo"><b>'+nb+'</b><span>sorties</span></div></div>'
     +'<div class="wdg-path">'+'<div class="wdg-path-bar"><div class="wdg-path-f" style="width:'+pct+'%"></div>'+'<div class="wdg-path-dot" style="left:'+pct+'%"></div></div>'+'<div class="wdg-path-lbl"><span>S24 \u00b7 d\u00e9but</span><span>\U0001F3C1 Nice</span></div>'+'</div>'
     +'<div class="wdg-sep"></div>'+barres
     +'</div>';

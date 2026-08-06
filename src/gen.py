@@ -1258,6 +1258,15 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":160,"date":"6 aout 2026","sha":"","tag":"Widget Ton capital : la zone de fierte qui manquait","items":[
+    "Retour de Loic : les corrections precedentes etaient de la maintenance, pas la reflexion demandee sur un ecran POSITIF et FINI. Il avait raison",
+    "Inventaire de la matiere emotionnelle presente dans les donnees et jamais exploitee : 127 records personnels battus (jamais celebres nulle part), 3250 m de denivele cumule soit 37 % de l Everest, 8 semaines sans interruption noyees dans une micro-stat",
+    "Et surtout : Lyon-Nice fait 298 km a vol d oiseau. Loic en a deja couru 386. Il a parcouru la distance de sa course avant meme de la courir -- aucun ecran ne le lui disait",
+    "NOUVEAU WIDGET : 3 chiffres de fierte (km, records, semaines avec flamme) puis deux recits. Le jalon geographique est centre sur NICE, la destination du 8 novembre, pas sur des villes au hasard -- une progression coherente avec l objectif",
+    "Registre chromatique volontairement plus chaud (ambre) que le reste de l app : le teal est la couleur de l action, l ambre celle de l accomplissement",
+    "Les stats brutes quittent le widget Prepa, qui se recentre sur la progression et les echeances",
+    "Principe retenu : un chiffre devient motivant quand il devient une image"
+  ]},
   {"build":159,"date":"6 aout 2026","sha":"","tag":"Accueil : anneau propre, doublons canicule supprimes, parcours de prepa","items":[
     "ANNEAU DE FORME : le libelle forme etait pose a y=42 dans un bouton de 58 px et chevauchait le trace -- d ou l aspect sale. Aucun anneau du marche (Apple Watch, Whoop, Garmin) ne met de texte secondaire a l interieur. Le chiffre est desormais seul, centre au pixel (dx=0, dy=0), sur un anneau de 62 px a bouts arrondis",
     "CANICULE EN DOUBLE : la banniere separee est desactivee a la source. Le widget meteo porte deja l alerte chaleur, et le comptage Xj a plus de 33 degres etait un doublon anxiogene sans valeur d action",
