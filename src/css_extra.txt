@@ -1683,3 +1683,42 @@ body,.accueil{background:#f2f2f7}
 .vdj-forme{flex:0 0 56px;width:56px;height:56px}
 .vdj-ring{width:56px;height:56px}
 .vdj-fv{font-size:21px!important}
+/* ===== FEUILLE DES RECORDS — la celebration ===== */
+.rec-wrap{position:relative;overflow:hidden}
+.rec-burst{position:absolute;top:64px;left:50%;width:0;height:0;pointer-events:none;z-index:5}
+.rec-p{position:absolute;width:7px;height:7px;border-radius:50%;opacity:0;
+  animation:recPop .95s cubic-bezier(.2,.7,.3,1) forwards}
+@keyframes recPop{
+  0%{opacity:0;transform:translate(0,0) scale(.4)}
+  18%{opacity:1}
+  100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(1)}
+}
+.rec-hero{text-align:center;padding:14px 0 20px;position:relative;z-index:2}
+.rec-hero-n{font-size:60px;font-weight:900;letter-spacing:-.05em;line-height:1;
+  background:linear-gradient(135deg,#0d9488,#fbbf24);-webkit-background-clip:text;
+  background-clip:text;color:transparent;font-variant-numeric:tabular-nums}
+.rec-hero-l{font-size:14px;font-weight:800;letter-spacing:.02em;color:var(--texte);margin-top:5px}
+.rec-hero-s{font-size:12px;color:var(--texte-trois);margin-top:2px}
+.rec-sec{font-size:10px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--texte-trois);margin:20px 0 9px}
+.rec-refs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.rec-ref{display:flex;flex-direction:column;align-items:center;gap:3px;padding:11px 4px;
+  border-radius:13px;background:linear-gradient(158deg,#f0fdfa,#fff);
+  box-shadow:inset 0 0 0 1px rgba(13,148,136,.16)}
+.rec-ref-d{font-size:9.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--texte-trois)}
+.rec-ref-t{font-size:17px;font-weight:900;letter-spacing:-.02em;color:var(--primary);font-variant-numeric:tabular-nums}
+.rec-row{display:flex;align-items:center;gap:11px;padding:9px 0}
+.rec-row+.rec-row{border-top:1px solid var(--gris-clair)}
+.rec-row-n{flex:0 0 34px;height:34px;border-radius:11px;display:grid;place-items:center;
+  background:linear-gradient(150deg,#fef3c7,#fde68a);color:#92400e;
+  font-size:15px;font-weight:900;font-variant-numeric:tabular-nums}
+.rec-row-t{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
+.rec-row-t b{font-size:13px;font-weight:700;color:var(--texte);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rec-row-t i{font-style:normal;font-size:11px;color:var(--texte-trois)}
+.rec-note{font-size:11.5px;line-height:1.55;color:var(--texte-trois);margin-top:18px;
+  padding-top:13px;border-top:1px solid var(--gris-clair)}
+/* la tuile records du widget Capital devient un bouton */
+.cap-c-btn{border:none;font:inherit;cursor:pointer;transition:transform .15s}
+.cap-c-btn:active{transform:scale(.96)}
+.cap-c-btn span{color:var(--primary)!important}
+@media (prefers-reduced-motion:reduce){.rec-p{display:none}}

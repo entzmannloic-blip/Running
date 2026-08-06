@@ -1302,6 +1302,13 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":163,"date":"6 aout 2026","sha":"","tag":"Records cliquables avec celebration, conseil coach sans acronyme","items":[
+    "Signale par Loic : le chiffre 128 records etait affiche sans etre cliquable -- impressionnant mais abstrait, et frustrant puisqu on veut savoir CE QUE c est",
+    "NOUVELLE FEUILLE RECORDS : le total en grand avec degrade teal-or, les 3 references chronometrees (5 km 22:52, 10 km 46:14, semi 1h52:39) en tuiles, puis les 6 seances les plus prolifiques avec date, distance et allure",
+    "ANIMATION DE CELEBRATION : 26 particules colorees en gerbe a l ouverture. Un record se celebre, il ne se consulte pas comme un releve bancaire. Desactivee si prefers-reduced-motion",
+    "CONSEIL COACH : affichait Charge basse (ACWR 0,55), un acronyme brut sans aucun sens sur un ecran d accueil. Il affiche desormais la partie de phrase qui dit QUOI FAIRE -- De la marge pour ajouter du volume si la forme suit -- la metrique restant dans le Cockpit ou elle a sa place",
+    "Verifie sans debordement ni troncature sur iPhone SE, 14 et Pro Max"
+  ]},
   {"build":162,"date":"6 aout 2026","sha":"","tag":"EF+6x100m loggee, week-end reorganise pour la boucle de Saint-Etienne","items":[
     "EF du 06/08 : corps de sortie en 3 tiers tres parlant, 6:09 puis 6:13 puis 5:51/km pour FC 137/137/141 -- acceleration quasi gratuite en cout cardiaque, exactement le schema diesel decrit",
     "Decouplage -0,61 % (quasi nul, sens negatif) pour 8 % attendu : aucune derive sur le corps EF",

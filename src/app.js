@@ -741,7 +741,11 @@ var _BILAN_='<div class="abil"><div class="abil-i"><b>'+_NB_+'</b><span>sorties<
 var _conseil='';
 if(_nudge){
   window._NUDGE_=_nudge;
-  var _court=_nudge.txt.split(/\s+—\s+|\s+--\s+/)[0];
+  /* L'acronyme brut (ACWR 0.55) n'a aucun sens sur un ecran d'accueil :
+     on garde la partie de phrase qui dit QUOI FAIRE, pas la metrique. */
+  var _parts=_nudge.txt.split(/\s+—\s+|\s+--\s+/);
+  var _court=(_parts[1]||_parts[0]).replace(/\s*\([^)]*\)/g,'').trim();
+  _court=_court.charAt(0).toUpperCase()+_court.slice(1);
   if(_court.length>62)_court=_court.slice(0,60)+'…';
   _conseil='<button class="ac-tip" onclick="_ouvrirNudge()">'
     +'<span class="ac-tip-i">'+_nudge.icon+'</span>'
@@ -884,7 +888,7 @@ function _wCapital(nb,km,sem,pr,dplus){
     +'<div class="cap-h">Ton capital</div>'
     +'<div class="cap-grid">'
     +'<div class="cap-c"><b>'+Math.round(km)+'</b><span>km courus</span></div>'
-    +'<div class="cap-c"><b>'+pr+'</b><span>records</span></div>'
+    +'<button class="cap-c cap-c-btn" onclick="event.stopPropagation();_ouvrirRecords()"><b>'+pr+'</b><span>records \u203a</span></button>'
     +'<div class="cap-c"><b>'+sem+'<i>\u{1F525}</i></b><span>semaines</span></div>'
     +'</div>'+recit
     +(everest>=10?'<div class="cap-recit cap-recit-2"><span class="cap-recit-i">\u26F0\uFE0F</span>'
@@ -936,6 +940,63 @@ function _wPrepa(courses,pct,nb,km,sem,semNum){
     +'<div class="wdg-path">'+'<div class="wdg-path-bar"><div class="wdg-path-f" style="width:'+pct+'%"></div>'+'<div class="wdg-path-dot" style="left:'+pct+'%"></div></div>'+'<div class="wdg-path-lbl"><span>S24 \u00b7 d\u00e9but</span><span>\U0001F3C1 Nice</span></div>'+'</div>'
     +'<div class="wdg-sep"></div>'+barres
     +'</div>';
+}
+/* ===== FEUILLE DES RECORDS =====
+   Le chiffre "127 records" etait affiche sans etre cliquable : impressionnant
+   mais abstrait, et frustrant -- on veut savoir CE QUE c'est. Cette feuille
+   les met en valeur : les trois references chronometrees, puis les seances
+   qui en ont produit le plus. L'animation de gerbe accompagne l'ouverture :
+   un record se celebre, il ne se consulte pas comme un releve bancaire. */
+function _ouvrirRecords(){
+  var refs='';
+  try{
+    refs=(RECORDS_PERF||[]).map(function(r){
+      return '<div class="rec-ref"><span class="rec-ref-d">'+r.dist+'</span>'
+        +'<span class="rec-ref-t">'+r.record+'</span></div>';}).join('');
+  }catch(e){}
+  var S=[];
+  try{
+    Object.keys(SEANCES_BY_WEEK).forEach(function(w){
+      (SEANCES_BY_WEEK[w]||[]).forEach(function(s){
+        var r=s.realise;
+        if(r&&(r.pr||0)>0)S.push({d:s.date,t:s.titre||s.type,pr:r.pr,km:r.km,al:r.allure});});
+    });
+    S.sort(function(a,b){return b.pr-a.pr||(a.d<b.d?1:-1);});
+  }catch(e){}
+  var total=S.reduce(function(a,x){return a+x.pr;},0);
+  var top=S.slice(0,6).map(function(x){
+    var dt=x.d?new Date(x.d+'T00:00:00').toLocaleDateString('fr-FR',{day:'numeric',month:'short'}):'';
+    return '<div class="rec-row"><span class="rec-row-n">'+x.pr+'</span>'
+      +'<span class="rec-row-t"><b>'+(x.t||'').slice(0,34)+'</b><i>'+dt
+      +(x.km?' \u00b7 '+x.km+' km':'')+(x.al?' \u00b7 '+x.al:'')+'</i></span></div>';}).join('');
+  topbar.innerHTML='<span></span><button class="btn-fermer" onclick="fermer()" aria-label="Fermer">\u2715</button>';
+  contenu.innerHTML='<div class="fiche-pad rec-wrap">'
+    +'<div class="rec-burst" id="rec-burst"></div>'
+    +'<div class="rec-hero"><div class="rec-hero-n">'+total+'</div>'
+    +'<div class="rec-hero-l">records personnels</div>'
+    +'<div class="rec-hero-s">battus depuis le d\u00e9but de ta pr\u00e9paration</div></div>'
+    +(refs?'<div class="rec-sec">Tes r\u00e9f\u00e9rences</div><div class="rec-refs">'+refs+'</div>':'')
+    +(top?'<div class="rec-sec">Tes s\u00e9ances les plus prolifiques</div>'+top:'')
+    +'<p class="rec-note">Un record Strava, c\u2019est ton meilleur temps sur un segment ou une distance. '
+    +'Chaque ligne ci-dessus est une s\u00e9ance o\u00f9 tu as battu tes propres marques.</p></div>';
+  ouvrir();
+  setTimeout(_recBurst,180);
+}
+function _recBurst(){
+  var z=document.getElementById('rec-burst');if(!z)return;
+  if(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  var col=['#0d9488','#34d399','#fbbf24','#f59e0b','#60a5fa'];
+  for(var i=0;i<26;i++){
+    var p=document.createElement('i');
+    var a=(Math.random()*360)*Math.PI/180, d=60+Math.random()*90;
+    p.className='rec-p';
+    p.style.background=col[i%col.length];
+    p.style.setProperty('--dx',(Math.cos(a)*d).toFixed(0)+'px');
+    p.style.setProperty('--dy',(Math.sin(a)*d).toFixed(0)+'px');
+    p.style.animationDelay=(Math.random()*0.16).toFixed(2)+'s';
+    z.appendChild(p);
+  }
+  setTimeout(function(){z.innerHTML='';},1600);
 }
 function _ouvrirNudge(){
   var n=window._NUDGE_;if(!n){openCoach();return;}
