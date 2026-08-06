@@ -1258,6 +1258,14 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":159,"date":"6 aout 2026","sha":"","tag":"Accueil : anneau propre, doublons canicule supprimes, parcours de prepa","items":[
+    "ANNEAU DE FORME : le libelle forme etait pose a y=42 dans un bouton de 58 px et chevauchait le trace -- d ou l aspect sale. Aucun anneau du marche (Apple Watch, Whoop, Garmin) ne met de texte secondaire a l interieur. Le chiffre est desormais seul, centre au pixel (dx=0, dy=0), sur un anneau de 62 px a bouts arrondis",
+    "CANICULE EN DOUBLE : la banniere separee est desactivee a la source. Le widget meteo porte deja l alerte chaleur, et le comptage Xj a plus de 33 degres etait un doublon anxiogene sans valeur d action",
+    "BARRE SEANCE NON LOGGEE supprimee : 81 px pour redire ce que la carte du jour affiche deja juste au-dessus, avec le meme bouton d action",
+    "PARCOURS DE PREPARATION : la barre de progression nue ne racontait rien. Elle porte maintenant ses deux reperes (S24 debut, drapeau Nice) et un curseur de position -- elle se lit comme un chemin parcouru, pas comme un pourcentage abstrait",
+    "Resultat : 794 -> 707 px sur iPhone 14, aucun debordement sur les 3 formats",
+    "BUG ATTRAPE PAR LA PORTE DE LIVRAISON : ma desactivation initiale de la banniere laissait des references orphelines (_canElOld) dans deux autres fonctions, cassant le harnais de test. Le push a ete bloque, corrige, puis relance"
+  ]},
   {"build":158,"date":"6 aout 2026","sha":"","tag":"Trois corrections signalees par Loic sur l accueil","items":[
     "BUG DU CERCLE VIDE : l anneau de forme apparaissait vert et vide, incomprehensible. Le score etait pourtant present (78) mais ECRIT EN BLANC sur une carte devenue blanche -- reste d une epoque ou la carte du jour avait un fond sombre. Toute la bague est reprise pour un fond clair : contraste passe de 1:1 (invisible) a 14,6:1",
     "AMBIGUITE DU POURCENTAGE : 38% de ta preparation ne disait pas s il s agissait de la semaine ou du plan complet. Libelle desormais explicite : du plan, S24 vers Nice",

@@ -1609,3 +1609,34 @@ body,.accueil{background:#f2f2f7}
 /* Le depart conseille et l'ajustement d'allure sur une seule ligne partagee */
 .vdj-adj,.vdj-depart{font-size:11.5px;padding:6px 9px;margin-top:7px;border-radius:9px}
 .vdj-shoe{font-size:11px;padding:4px 9px;margin-top:6px}
+/* ============================================================
+   ANNEAU DE FORME — le chiffre seul, centre, propre.
+   Le libelle "forme" etait pose a y=42 dans un bouton de 58 px : il
+   chevauchait le trace de l'anneau. Aucun anneau du marche (Apple Watch,
+   Whoop, Garmin) ne met de texte secondaire a l'interieur.
+   ============================================================ */
+.vdj-forme{flex:0 0 62px;width:62px;height:62px;display:grid;place-items:center}
+.vdj-ring{width:62px;height:62px;position:absolute;inset:0}
+.vr-bg{stroke-width:6!important}
+.vr-fg{stroke-width:6!important;stroke-linecap:round}
+.vdj-fv{position:relative;font-size:23px!important;font-weight:900;letter-spacing:-.04em;
+  line-height:1;margin:0!important;font-variant-numeric:tabular-nums}
+.vdj-fk{display:none}
+
+/* ============================================================
+   PARCOURS DE PREPARATION — une barre nue ne raconte rien. Avec ses deux
+   reperes (depart, arrivee) et le curseur de position, elle devient un
+   chemin parcouru : c'est ce qui porte la fierte.
+   ============================================================ */
+.wdg-path{margin-top:13px}
+.wdg-path-bar{position:relative;height:8px;border-radius:5px;background:var(--gris-clair);overflow:visible}
+.wdg-path-f{height:100%;border-radius:5px;background:linear-gradient(90deg,#0d9488,#34d399);
+  transition:width 1.1s cubic-bezier(.16,1,.3,1)}
+.wdg-path-dot{position:absolute;top:50%;width:14px;height:14px;border-radius:50%;
+  background:#fff;border:3px solid #10b981;transform:translate(-50%,-50%);
+  box-shadow:0 1px 4px rgba(16,185,129,.45);transition:left 1.1s cubic-bezier(.16,1,.3,1)}
+.wdg-path-lbl{display:flex;justify-content:space-between;margin-top:7px;
+  font-size:9.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--texte-trois)}
+
+/* la carte du jour respire un peu plus maintenant qu'elle est allegee */
+.vdj-main{align-items:center}

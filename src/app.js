@@ -655,7 +655,7 @@ function renderHeader(){
      rien ne designait de point focal, l oeil ne savait pas par ou commencer.
      La forme devient un anneau de progression a droite du titre, lisible d un
      coup d oeil, et reste cliquable pour ouvrir le detail. */
-  _psCard=`<div class="vdj vdj-hero" onclick="ouvrirSeance(${_ps.wk},${_se.id})"><div class="vdj-lbl">Prochaine séance · ${_lbl}</div><div class="vdj-main"><div class="vdj-txt"><div class="vdj-t">${_se.titre}</div><div class="vdj-s">${_se.type}${_dist} · S${_ps.wk}</div>${_shoe}</div><button class="vdj-forme" aria-label="Forme du jour : ${_FORME_.score} sur 100" onclick="event.stopPropagation();document.getElementById('forme-detail').classList.toggle('fd-open')"><svg viewBox="0 0 64 64" class="vdj-ring"><circle cx="32" cy="32" r="27" class="vr-bg"/><circle cx="32" cy="32" r="27" class="vr-fg" stroke="${_FORME_.color}" stroke-dasharray="${(2*Math.PI*27).toFixed(1)}" stroke-dashoffset="${(2*Math.PI*27*(1-_FORME_.score/100)).toFixed(1)}"/></svg><span class="vdj-fv">${_FORME_.score}</span><span class="vdj-fk">forme</span></button></div><div class="vdj-depart" id="vdj-depart" style="display:none"></div>${_fit}${_tempAdj}</div>`;
+  _psCard=`<div class="vdj vdj-hero" onclick="ouvrirSeance(${_ps.wk},${_se.id})"><div class="vdj-lbl">Prochaine séance · ${_lbl}</div><div class="vdj-main"><div class="vdj-txt"><div class="vdj-t">${_se.titre}</div><div class="vdj-s">${_se.type}${_dist} · S${_ps.wk}</div>${_shoe}</div><button class="vdj-forme" aria-label="Forme du jour : ${_FORME_.score} sur 100" onclick="event.stopPropagation();document.getElementById('forme-detail').classList.toggle('fd-open')"><svg viewBox="0 0 64 64" class="vdj-ring"><circle cx="32" cy="32" r="27" class="vr-bg"/><circle cx="32" cy="32" r="27" class="vr-fg" stroke="${_FORME_.color}" stroke-dasharray="${(2*Math.PI*27).toFixed(1)}" stroke-dashoffset="${(2*Math.PI*27*(1-_FORME_.score/100)).toFixed(1)}"/></svg><span class="vdj-fv">${_FORME_.score}</span></button></div><div class="vdj-depart" id="vdj-depart" style="display:none"></div>${_fit}${_tempAdj}</div>`;
   }
   const _forme=_FORME_;
   const _formeTile=`<button class="htile htile-forme" onclick="document.getElementById('forme-detail').classList.toggle('fd-open')"><span class="ht-k">Forme du jour <span class="ht-help" role="button" tabindex="0" onclick="event.stopPropagation();openFormeHelp()">\u24d8</span></span><span class="ht-v" style="color:${_forme.color}">${_forme.score}<span class="ht-trend">${_forme.trend}</span></span><span class="ht-s">${_forme.signal}</span></button>`;
@@ -741,7 +741,7 @@ document.getElementById('hero-plan').innerHTML=
     +'<div id="wdg-meteo-slot">'+_wMeteo()+'</div>'
   +_wPrepa(_COURSES_,_PCT_,_NB_,_KM_,_SEMOK_,sc.num)
   +'<div class="achip-row achip-row-2">'+_chips.join('')+'</div>'
-  +'<div id="canicule-banner" style="display:none"></div>'
+  +'<div id="canicule-banner" style="display:none!important"></div>'
   +'<div id="meteo-widget" class="meteo" style="display:none"><div class="meteo-loc">⏳</div></div>';
   renderMeteo();
   document.getElementById('maj-foot').innerHTML=_maj;
@@ -801,12 +801,12 @@ function _meteoPaint(d){
   // Feature 3 — bannière chaleur auto (seuils alignés sur le badge "Demain" ci-dessus : >33°C = canicule, >28°C = chaud)
   const canDays=d.canicule_days||0;
   const warmDays=d.warm_days||0;
-  const canEl=document.getElementById('canicule-banner');
-  if(canEl){
-    if(canDays>=2){canEl.innerHTML=`<span>⚠️ <strong>Canicule</strong> · ${canDays}j à plus de 33°C prévus</span>`;canEl.className='canicule-banner canicule-fort';canEl.style.display='flex';}
-    else if(warmDays>=3){canEl.innerHTML=`<span>🌡️ <strong>Chaleur</strong> · ${warmDays}j chauds prévus (25-33°C)</span>`;canEl.className='canicule-banner canicule-doux';canEl.style.display='flex';}
-    else{canEl.style.display='none';}
-  }
+  /* Banniere canicule desactivee sur l'accueil : le widget meteo porte deja
+     l'alerte chaleur, et le comptage "Xj a plus de 33 degres" faisait un
+     doublon anxiogene sans valeur d'action. L'element reste dans le DOM,
+     masque, car d'autres parties du code le ciblent. */
+  var _canEl=document.getElementById('canicule-banner');
+  if(_canEl)_canEl.style.display='none';
   const depEl=document.getElementById('vdj-depart');
   if(depEl){
     const T=Math.round(d.tomorrow_max!==undefined?d.tomorrow_max:d.temp);
@@ -871,7 +871,7 @@ function _wPrepa(courses,pct,nb,km,sem,semNum){
     +'<div class="wdg-st"><b>'+Math.round(km)+'</b><span>km</span></div>'
     +'<div class="wdg-st"><b>'+sem+'</b><span>semaines</span></div>'
     +'</div></div>'
-    +'<div class="wdg-bar"><div class="wdg-bar-f" style="width:'+pct+'%"></div></div>'
+    +'<div class="wdg-path">'+'<div class="wdg-path-bar"><div class="wdg-path-f" style="width:'+pct+'%"></div>'+'<div class="wdg-path-dot" style="left:'+pct+'%"></div></div>'+'<div class="wdg-path-lbl"><span>S24 \u00b7 d\u00e9but</span><span>\U0001F3C1 Nice</span></div>'+'</div>'
     +'<div class="wdg-sep"></div>'+barres
     +'</div>';
 }
@@ -2335,6 +2335,10 @@ function checkAutoSync(){
         const hero=document.getElementById('hero-plan');if(!hero)return;
         const bar=document.createElement('div');bar.className='as-bar';
         const when=+d===+today?"aujourd'hui":'hier';
+        /* Barre "seance non loggee" retiree de l'accueil : elle occupait
+           81 px pour redire ce que la carte du jour affiche deja juste
+           au-dessus, avec le meme bouton d'action. */
+        return;
         bar.innerHTML=`<div class="as-ico">📍</div><div class="as-txt"><strong>Séance ${when} non loggée</strong> — S${wk} ${s.titre}</div><button class="as-btn" onclick="ouvrirQuickLog(${wk},${s.id})">Logger</button><button class="as-x" onclick="localStorage.setItem('${k}','1');this.parentElement.remove()">✕</button>`;
         hero.insertAdjacentElement('afterend',bar);return;
       }
