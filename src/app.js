@@ -725,25 +725,21 @@ var _BILAN_='<div class="abil"><div class="abil-i"><b>'+_NB_+'</b><span>sorties<
   +'<div class="abil-i"><b>'+Math.round(_KM_)+'</b><span>km</span></div>'
   +'<div class="abil-i"><b>'+_SEMOK_+'</b><span>semaines</span></div></div>';
 var _chips=[];
-_COURSES_.slice(0,2).forEach(function(r){
-  _chips.push('<button class="achip achip-race"'
-    +(r.dossier?' onclick="ouvrirDossier(\''+r.dossier+'\')"':'')
-    +'><span class="achip-v">J-'+r.dn+'</span><span class="achip-k">'+(/nice/i.test(r.nom)?'Nice':(/saintex/i.test(r.nom)?'SaintEx':r.nom.split(' ')[0].slice(0,9)))+'</span></button>');
-});
-_chips.push('<button class="achip achip-plan" onclick="jumpToWeek('+sc.num+')">'+'<span class="achip-v">S'+sc.num+'</span><span class="achip-k">'+_PCT_+'% fait</span></button>');
-_chips.push('<button class="achip achip-meteo" id="achip-meteo" onclick="_ouvrirMeteo()">'+'<span class="achip-v" id="achip-meteo-v">\u2014</span><span class="achip-k">m\u00e9t\u00e9o</span></button>');
-/* La puce coach affichait uniquement une pastille de couleur : elle occupait
-   une place sans rien dire. Le message utile ("Forme a 88/100, excellent
-   moment pour une qualite") avait ete perdu au compactage du build 153.
-   Elle porte desormais un MOT D ETAT plutot que le score, pour ne pas
-   dupliquer l anneau de forme du hero. Le conseil complet s ouvre au tap. */
-if(_nudge){_chips.push('<button class="achip achip-coach cn-'+_nudge.tone+'" '
-  +'aria-label="Conseil du coach : '+_nudge.txt.replace(/"/g,'')+'" '
+_chips.push('<button class="achip achip-coach cn-'+(_nudge?_nudge.tone:'info')+'" '
+  +'aria-label="Conseil du coach'+(_nudge?' : '+_nudge.txt.replace(/"/g,''):'')+'" '
   +'onclick="_ouvrirNudge()">'
-  +'<span class="achip-v achip-mot">'+(_nudge.mot||_nudge.icon)+'</span>'
-  +'<span class="achip-k">coach</span></button>');
-  window._NUDGE_=_nudge;}
-document.getElementById('hero-plan').innerHTML=_lt+_psCard+_wnCard+_formeDetail+'<div class="achip-row">'+_chips.join('')+'</div>'+'<div id="canicule-banner" style="display:none"></div>'+'<div id="meteo-widget" class="meteo" style="display:none"><div class="meteo-loc">\u23f3</div></div>';
+  +'<span class="achip-v achip-mot">'+((_nudge&&_nudge.mot)||'coach')+'</span>'
+  +'<span class="achip-k">conseil</span></button>');
+if(_nudge)window._NUDGE_=_nudge;
+_chips.push('<button class="achip achip-plan" onclick="jumpToWeek('+sc.num+')">'
+  +'<span class="achip-v achip-mot">S'+sc.num+'</span><span class="achip-k">le plan</span></button>');
+document.getElementById('hero-plan').innerHTML=
+  _lt+_psCard+_wnCard+_formeDetail
+    +'<div id="wdg-meteo-slot">'+_wMeteo()+'</div>'
+  +_wPrepa(_COURSES_,_PCT_,_NB_,_KM_,_SEMOK_,sc.num)
+  +'<div class="achip-row achip-row-2">'+_chips.join('')+'</div>'
+  +'<div id="canicule-banner" style="display:none"></div>'
+  +'<div id="meteo-widget" class="meteo" style="display:none"><div class="meteo-loc">⏳</div></div>';
   renderMeteo();
   document.getElementById('maj-foot').innerHTML=_maj;
    try{const _aSe=Object.values(SEANCES_BY_WEEK).flat();const _aF=_aSe.filter(s=>s.realise&&(s.realise.statut==='fait'||s.realise.statut==='partiel')&&s.realise.km).length;/* on ne compte que les seances AVEC kilometrage : le bilan affichait 31 sorties quand la ligne de puces en comptait 30, les seances de PPG et de mobilite etant comptees ici mais pas la. Deux chiffres contradictoires pour la meme chose sur le meme ecran. */const _aKm=Math.round(_aSe.reduce((a,s)=>a+((s.realise&&s.realise.km)||0),0));const _aP=_aSe.length?Math.round(_aF/_aSe.length*100):0;const _ae=document.getElementById('accueil-annee');const _aStreak=_computeStreak();const _streakTile=_aStreak>=2?`<div class="acc-stat acc-streak"><div class="av">${_aStreak}<span>\u{1F525}</span></div><div class="ak">Sem. d\u2019affil\u00e9e</div></div>`:'';if(_ae)_ae.innerHTML=`<div class="acc-lab">Bilan du plan</div><div class="acc-annee ${_streakTile?'has-streak':''}"><div class="acc-stat"><div class="av">${_aF}</div><div class="ak">Sorties</div></div><div class="acc-stat"><div class="av">${_aKm}<span>km</span></div><div class="ak">R\u00e9alis\u00e9</div></div><div class="acc-stat"><div class="av">${_aP}<span>%</span></div><div class="ak">Pr\u00e9pa plan</div></div>${_streakTile}</div>`;}catch(e){}
@@ -765,6 +761,8 @@ function _meteoEmoji(c){
 }
 function _meteoPaint(d){
   const el=document.getElementById('meteo-widget');if(!el)return;
+  try{var _slot=document.getElementById('wdg-meteo-slot');
+    if(_slot&&typeof _wMeteo==='function')_slot.innerHTML=_wMeteo();}catch(e){}
   try{
     var _t=(d.temp!==undefined&&!isNaN(+d.temp))?d.temp:d.app;
     var _cv=document.getElementById('achip-meteo-v');
@@ -817,6 +815,63 @@ function _meteoPaint(d){
    (temperature) est visible en permanence, le detail complet et les creneaux
    d entrainement s ouvrent au tap. */
 /* Feuille du conseil coach : le message complet, plus un acces au coach. */
+/* ===== WIDGETS facon iOS =====
+   Reference donnee par Loic : l'ecran verrouille d'iPhone. Le widget meteo y
+   contient temperature, alerte, previsions horaires ET 4 jours -- beaucoup
+   d'information, mais il ne parait pas charge parce qu'il est organise en
+   ZONES INTERNES separees par des filets, avec un seul chiffre dominant.
+   Mes puces de 65 px faisaient l'inverse : elles cachaient tout derriere un
+   tap. On passe donc de 5 micro-puces a 2 widgets riches et structures. */
+function _wMeteo(){
+  var d=null;try{d=JSON.parse(localStorage.getItem('meteo_cache')||'null');}catch(e){}
+  if(!d||d.temp===undefined){
+    return '<div class="wdg wdg-meteo" onclick="renderMeteo()"><div class="wdg-empty">Météo indisponible · toucher pour réessayer</div></div>';
+  }
+  var t=Math.round(d.temp), app=Math.round(d.app);
+  var chaud=t>=30, tiede=t>=25&&t<30;
+  var ic=chaud?'🔥':(tiede?'☀️':(d.rain>50?'🌧️':'⛅'));
+  // creneaux : les heures les plus fraiches de la journee restante
+  var h=new Date().getHours();
+  var rest=(d.hourly_today||[]).filter(function(x){return x[0]>=h;});
+  if(rest.length<3)rest=(d.hourly_tomorrow||[]).slice(0,8);
+  var mini=rest.length?Math.min.apply(null,rest.map(function(x){return x[1];})):null;
+  var cre=rest.slice(0,6).map(function(x){
+    var best=(x[1]===mini);
+    return '<div class="wdg-h'+(best?' wdg-h-best':'')+'"><span class="wdg-hh">'+x[0]+'h</span>'
+      +'<span class="wdg-ht">'+x[1]+'°</span></div>';}).join('');
+  var alerte=chaud
+    ? '<div class="wdg-alert">⚠️ Chaleur — pars avant 8h, hydrate-toi</div>'
+    : (tiede?'<div class="wdg-alert wdg-alert-soft">Temps chaud — surveille ta FC</div>':'');
+  return '<div class="wdg wdg-meteo" onclick="_ouvrirMeteo()">'
+    +'<div class="wdg-top"><div><div class="wdg-lbl">Lyon</div>'
+    +'<div class="wdg-big">'+t+'°</div></div>'
+    +'<div class="wdg-top-r"><div class="wdg-ic">'+ic+'</div>'
+    +'<div class="wdg-sub">ressenti '+app+'°</div>'
+    +(d.tomorrow_max!==undefined?'<div class="wdg-sub">demain '+d.tomorrow_max+'°</div>':'')+'</div></div>'
+    +alerte
+    +(cre?'<div class="wdg-sep"></div><div class="wdg-hours">'+cre+'</div>':'')
+    +'</div>';
+}
+function _wPrepa(courses,pct,nb,km,sem,semNum){
+  var c0=courses[0];
+  var barres=courses.slice(0,2).map(function(r){
+    var nom=/nice/i.test(r.nom)?'Marathon de Nice':(/saintex/i.test(r.nom)?'SaintExpress':r.nom);
+    return '<button class="wdg-race"'+(r.dossier?' onclick="event.stopPropagation();ouvrirDossier(\''+r.dossier+'\')"':'')
+      +'><span class="wdg-race-j">J-'+r.dn+'</span><span class="wdg-race-n">'+nom+'</span>'
+      +'<span class="wdg-race-a">›</span></button>';}).join('');
+  return '<div class="wdg wdg-prepa">'
+    +'<div class="wdg-top"><div><div class="wdg-lbl">Semaine '+semNum+'</div>'
+    +'<div class="wdg-big">'+pct+'<span class="wdg-pct">%</span></div>'
+    +'<div class="wdg-sub">de ta préparation</div></div>'
+    +'<div class="wdg-stats">'
+    +'<div class="wdg-st"><b>'+nb+'</b><span>sorties</span></div>'
+    +'<div class="wdg-st"><b>'+Math.round(km)+'</b><span>km</span></div>'
+    +'<div class="wdg-st"><b>'+sem+'</b><span>semaines</span></div>'
+    +'</div></div>'
+    +'<div class="wdg-bar"><div class="wdg-bar-f" style="width:'+pct+'%"></div></div>'
+    +'<div class="wdg-sep"></div>'+barres
+    +'</div>';
+}
 function _ouvrirNudge(){
   var n=window._NUDGE_;if(!n){openCoach();return;}
   topbar.innerHTML='<span></span><button class="btn-fermer" onclick="fermer()" aria-label="Fermer">\u2715</button>';

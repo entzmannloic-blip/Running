@@ -1258,6 +1258,15 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":157,"date":"6 aout 2026","sha":"","tag":"Accueil : widgets riches facon iOS au lieu de micro-puces","items":[
+    "Reference donnee par Loic : l ecran verrouille d iPhone. Le widget meteo iOS contient temperature, alerte, previsions horaires ET 4 jours -- beaucoup d information, sans sensation de surcharge, parce qu il est organise en ZONES INTERNES separees par des filets avec un seul chiffre dominant",
+    "Mes puces de 65 px faisaient l inverse : elles cachaient tout derriere un tap. On passe de 5 micro-puces a 2 widgets riches",
+    "WIDGET METEO : temperature en 38 px, icone contextuelle, alerte chaleur integree, et une ligne de 6 creneaux horaires avec le plus frais mis en evidence -- l information utile pour choisir son heure de sortie",
+    "WIDGET PREPA : pourcentage de progression en grand, barre S24 vers Nice, stats cumulees (sorties, km, semaines) et les 2 echeances en lignes cliquables avec chevron",
+    "Deux redondances supprimees : la banniere canicule (35 px) repetait l alerte du widget meteo, et le bloc bilan (184 px) dupliquait les stats du widget prepa",
+    "Il reste 2 puces compactes pour ce qui n a pas besoin d un widget : conseil du coach et acces au plan",
+    "Resultat : 906 px, aucun debordement ni troncature sur iPhone SE, 14 et Pro Max"
+  ]},
   {"build":156,"date":"6 aout 2026","sha":"","tag":"Correctifs de l audit severe : les 5 defauts releves","items":[
     "1. CONTRADICTION CENTRALE : le bandeau annoncait Aujourd hui juste au-dessus d une carte disant Prochaine seance - Demain. Premiere chose vue par l utilisateur. Le mot est supprime, la date factuelle reste",
     "2. AFFORDANCE : zero chevron, zero fleche sur les 5 puces. J avais construit une logique tap-pour-le-detail sans jamais indiquer qu on pouvait taper -- les chevrons de l ancien design avaient saute au compactage. Chevron discret retabli en coin de puce",
