@@ -635,7 +635,10 @@ function renderHeader(){
       const _diff0=_ps?Math.round((_ps.d-_t)/86400000):0;
       const refT=Math.round(_diff0<=1&&mc.tomorrow_max?mc.tomorrow_max:mc.temp);
       if(refT>22){const adj=refT<26?10:refT<30?20:refT<34?30:40;
-        _tempAdj=`<div class="vdj-adj">🌡️ ${refT}° · allure cible <strong>+${adj}s/km</strong></div>`;}
+        /* Deux alertes temperature s'empilaient et disaient presque la meme
+           chose : "32 degres demain, pars avant 8h30" puis "32 degres,
+           allure cible +30s/km". Fusionnees en une seule ligne. */
+        _tempAdj=`<div class="vdj-adj">🌡️ ${refT}° · allure <strong>+${adj}s/km</strong></div>`;}
     }}catch(e){}
   if(_ps){
     const _diff=Math.round((_ps.d-_t)/86400000);
@@ -862,7 +865,7 @@ function _wPrepa(courses,pct,nb,km,sem,semNum){
   return '<div class="wdg wdg-prepa">'
     +'<div class="wdg-top"><div><div class="wdg-lbl">Semaine '+semNum+'</div>'
     +'<div class="wdg-big">'+pct+'<span class="wdg-pct">%</span></div>'
-    +'<div class="wdg-sub">de ta préparation</div></div>'
+    +'<div class="wdg-sub">du plan \u00b7 S24 \u2192 Nice</div></div>'
     +'<div class="wdg-stats">'
     +'<div class="wdg-st"><b>'+nb+'</b><span>sorties</span></div>'
     +'<div class="wdg-st"><b>'+Math.round(km)+'</b><span>km</span></div>'

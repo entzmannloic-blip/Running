@@ -1258,6 +1258,13 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":158,"date":"6 aout 2026","sha":"","tag":"Trois corrections signalees par Loic sur l accueil","items":[
+    "BUG DU CERCLE VIDE : l anneau de forme apparaissait vert et vide, incomprehensible. Le score etait pourtant present (78) mais ECRIT EN BLANC sur une carte devenue blanche -- reste d une epoque ou la carte du jour avait un fond sombre. Toute la bague est reprise pour un fond clair : contraste passe de 1:1 (invisible) a 14,6:1",
+    "AMBIGUITE DU POURCENTAGE : 38% de ta preparation ne disait pas s il s agissait de la semaine ou du plan complet. Libelle desormais explicite : du plan, S24 vers Nice",
+    "CARTE DU JOUR TROP GRANDE : 169 px pour peu d information. Densifiee a 135 px (titre 18 px, anneau 58 px, marges resserrees)",
+    "REDONDANCE trouvee au passage : deux alertes temperature s empilaient en disant presque la meme chose (32 degres demain pars avant 8h30, puis 32 degres allure cible +30s/km). Fusionnees en une seule ligne",
+    "Resultat : 906 -> 794 px sur iPhone 14, aucun debordement ni troncature sur les 3 formats"
+  ]},
   {"build":157,"date":"6 aout 2026","sha":"","tag":"Accueil : widgets riches facon iOS au lieu de micro-puces","items":[
     "Reference donnee par Loic : l ecran verrouille d iPhone. Le widget meteo iOS contient temperature, alerte, previsions horaires ET 4 jours -- beaucoup d information, sans sensation de surcharge, parce qu il est organise en ZONES INTERNES separees par des filets avec un seul chiffre dominant",
     "Mes puces de 65 px faisaient l inverse : elles cachaient tout derriere un tap. On passe de 5 micro-puces a 2 widgets riches",
