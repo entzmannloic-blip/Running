@@ -168,7 +168,7 @@ def main():
     # site Jekyll. Sans ce marqueur, GitHub Pages lance un traitement Jekyll
     # inutile qui peut echouer (build 163 : "Page build failed", duree 0 ms,
     # commit correct mais jamais publie -- Loic voyait encore le build 162).
-    fichiers = {'index.html': f'{OUT}/index.html'}
+    fichiers = {'index.html': f'{OUT}/plan-entrainement.html'}
     if os.path.exists(f'{WORK}/.nojekyll'):
         fichiers['.nojekyll'] = f'{WORK}/.nojekyll'
     for src, dst in [('gen.py', 'src/gen.py'), ('app.js', 'src/app.js'),
