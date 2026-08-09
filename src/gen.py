@@ -1207,16 +1207,16 @@ print("Semaines:",len(SEANCES_BY_WEEK)+1,"| Séances:",sum(len(v) for v in SEANC
 import json as _j
 _hist=_j.load(open('/tmp/hist.json'))
 MONTHLY=[
-  {"m":"Jan","km":234,"elev":1579,"sorties":21,"re":502},
+  {"m":"Jan","km":224,"elev":1342,"sorties":19,"re":2431},
   {"m":"Fév","km":227,"elev":1674,"sorties":21,"re":2229},
   {"m":"Mar","km":342,"elev":2962,"sorties":25,"re":2978},
   {"m":"Avr","km":283,"elev":2254,"sorties":23,"re":2265},
-  {"m":"Mai","km":241,"elev":7856,"sorties":19,"re":2139},
+  {"m":"Mai","km":202,"elev":5978,"sorties":15,"re":2171},
   {"m":"Juin","km":82,"elev":2012,"sorties":5,"re":1112},
   {"m":"Juil","km":257,"elev":2805,"sorties":18,"re":2669},
   {"m":"Août","km":79,"elev":853,"sorties":6,"re":592},
 ]
-SAISON2026={"km":1696,"elev":19880,"sorties":132,"mois":8,"note":"Run + Trail uniquement, aligné Strava · août en cours (arrêté au 09/08)"}
+SAISON2026={"km":1696,"elev":19880,"sorties":132,"mois":8,"note":"Course à pied uniquement (Run + Trail) · randonnées, raquettes et vélo exclus · aligné Strava · août arrêté au 09/08"}
 # Progression d'efficience aérobie par saison — points d'ancrage réels (cardio Strava, EF route, allure ramenée à 145 bpm).
 # Hiver/Printemps figés (données historiques). Été enrichi par les séances loggées avec température.
 SAISON_EFF={
@@ -1338,6 +1338,15 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":169,"date":"9 aout 2026","sha":"","tag":"Audit complet : MONTHLY purge du non-running","items":[
+    "AUDIT ACTIF DEMANDE PAR LOIC. Trois scripts ajoutes dans scripts/ : audit_data.py (coherence donnees + code), audit_runtime.py (ouverture exhaustive des 30 semaines, 132 seances, 5 Rewinds, toutes fenetres Cockpit), test_race.py (reproduction ciblee).",
+    "BUG D1 RESOLU A LA SOURCE. MONTHLY totalisait 1745 km / 138 sorties contre 1696 / 132 dans SAISON2026. Verification activite par activite sur Strava (janvier a mai) : MONTHLY incluait des activites NON-RUNNING.",
+    "Janvier corrige : 234 km / 21 sorties -> 224 km / 19 sorties (1 randonnee 3,3 km + 1 sortie raquettes 6,0 km retirees). Elev 1579 -> 1342 m, RE 502 -> 2431 (l'ancien RE etait par ailleurs manifestement faux).",
+    "Mai corrige : 241 km / 19 sorties -> 202 km / 15 sorties (4 randonnees retirees, 38,7 km et 1878 m). Elev 7856 -> 5978 m, RE 2139 -> 2171.",
+    "Fevrier, mars et avril verifies exacts au 0,2 km pres (velo deja correctement exclu) -- aucune correction necessaire.",
+    "Reconciliation totale : MONTHLY et SAISON2026 tombent desormais tous deux sur 1696 km / 132 sorties / 19880 m. Note de perimetre explicitee : course a pied uniquement, randonnees/raquettes/velo exclus.",
+    "BUGS IDENTIFIES ET NON ENCORE CORRIGES (en attente d'arbitrage de Loic) : race condition fermer/rouvrir sous 300 ms qui vide la vue ; test_regression T02 qui teste deux onglets inexistants ('seances' et 'courses' au lieu de 'plan' et 'palmares') ; Rewinds S25/S26/S27/S32 sans bouton d'ouverture ; ids de gradient SVG dupliques ; _ckRenderAll qui leve sur les fenetres 26 et 52 semaines."
+  ]},
   {"build":168,"date":"9 aout 2026","sha":"","tag":"LA revue de semaine S32 -- au bon endroit cette fois","items":[
     "DEUXIEME CORRECTION DE MA PROPRE ERREUR. Au build 166 j'avais modifie la description META en croyant faire la revue. Au build 167 j'ai fait le Rewind (slides). Ni l'un ni l'autre n'etait la revue de semaine. Loic a du me le signaler deux fois avec une capture d'ecran.",
     "La vraie revue de semaine est le champ _SxxREVUE attache a SEMAINES, rendu en bas de la vue semaine sous le titre 'Revue du coach -- bilan de la semaine'. Le mecanisme existait pour S25 a S31 ; seule S32 manquait, laissant le placeholder 'Revue de la semaine a venir' affiche alors que la semaine etait bouclee.",
