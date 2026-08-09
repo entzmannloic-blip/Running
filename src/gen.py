@@ -947,7 +947,7 @@ for n,ss in WEEKS.items():
         arr[3]["fill"]=72
         arr[3]["cat"]="sortie-longue"
         arr[3]["rpe"]=6.0
-        arr[3]["chaussure"]="Brooks Cascadia 19"
+        arr[3]["chaussure"]="ASICS Novablast 5 J"
         arr[3]["sous"]="Remplace la sortie longue initialement prévue (16 km plat) — projet perso, boucle vallonnée autour de Saint-Étienne."
         arr[3]["metriques"]={"Distance":"~27 km","Durée":"~3h-3h30","Allure":"EF trail, libre","FC":"< 155 bpm","D+":"~650 m","RPE":"5-6","Type":"Trail vallonné"}
         arr[3]["objectif"]="Sortie plaisir et exploration, plus longue et plus technique que le plan initial. Bon test grandeur nature pour SaintExpress (45 km, novembre) : gestion de l'effort sur la durée, terrain varié, descentes techniques."
@@ -962,6 +962,11 @@ for n,ss in WEEKS.items():
           {"titre":"Le repère simple","texte":"Si le pied ou les quadriceps parlent fort dans la descente de Rochetaillée, coupe par le chemin le plus court plutôt que de boucler la totale. Une sortie écourtée reste une excellente sortie."}]
         arr[3]["vigilance"]="Chaussures à accroche (Cascadia) recommandées pour la stabilité en descente. Hydratation et un peu de nutrition pour 3h+ d'effort. Écoute les quadriceps et le pied en descente technique."
 
+        arr[3]["realise"]={"statut":"fait","km":27.01,"temps":"3h16 (3h48 total)","allure":"7:16/km","fc_moy":145,"fc_max":176,"re":246,"cadence":164,"elevation_gain":662,"rpe_ressenti":6,
+        "commentaire":"Boucle verte de Saint-Etienne avec Didier (beau-pere, arret au 20e) et Yannis (arret au 23e) - depart 8h16. 27,01 km, 662 m D+, 3h16 de mouvement (3h48 ecoulees), allure moyenne 7:16/km, FC moyenne 145, FC max 176, effort relatif 246, 2196 kcal. Sortie plaisir / famille assumee : montees volontairement tres lentes pour rester avec le groupe. Fin difficile ressentie vers le km 24-25 (plein soleil, grosse chaleur), puis regain sur les derniers kilometres. ZERO douleur au pied, y compris a l'arrivee apres 27 km et 662 m D+. Porte en ASICS Novablast 5 J (route) et non en Cascadia 19 (trail) comme prevu au plan.",
+        "pr":0,"ach":1,"pr_detail":[],
+        "revue":"<strong>Tu me dis qu'on ne peut pas en tirer de grands enseignements. Je ne suis pas d'accord : c'est la sortie la plus instructive depuis ViaRhona, et l'enseignement est dans les six derniers kilometres.</strong><br><br><strong>Ce que disent les laps apres le depart de Yannis (km 23) :</strong> km 22 en 7:15/km (FC 139), puis 5:57 (FC 145), 5:42 (FC 151), 5:42 (FC 155), 5:28 (FC 162), et le dernier a <strong>5:07/km a FC 166, max 172</strong>. Tu as accelere de plus de deux minutes au kilometre sur la fin, avec une FC qui monte de 27 battements, en escalier, sans interruption.<br><br><strong>Tu m'as decrit ca comme \"j'ai eu un petit don et sur la fin ca s'est remonte, c'est chouette\". Les donnees decrivent autre chose : ta derive.</strong> C'est exactement le pattern qu'on cherche a corriger - 5:35 qui devient 4:55 sans decision consciente. Ici, des que le cadre social a disparu (Didier au 20e, Yannis au 23e), l'allure s'est envolee toute seule. <strong>Le contraste avec vendredi est saisissant : 132 bpm tenus sur 10 km quand tu avais une cible chiffree en tete, 166 bpm sur le dernier kilometre quand plus rien ne t'encadrait.</strong> Ce n'est pas un probleme de moteur, c'est un probleme de pilote automatique.<br><br><strong>Deuxieme lecture, et elle est tres positive :</strong> finir un 27 km avec 662 m D+ en accelerant a 5:07/km, c'est-a-dire <em>plus vite que ton allure marathon cible</em>, avec une FC de 166 - c'est un vrai marqueur de durabilite. Ton moteur va bien, tres bien meme. Ce dernier kilometre valide aussi la plage FC dont on parlait : 5:07/km sur jambes fatiguees te coute 166 bpm, ce qui confirme que ta cible de 148-160 bpm a 5:20/km est bien calibree.<br><br><strong>Note aussi que ton ressenti et le terrain divergent.</strong> Tu situes le passage dur au km 24-25 - or c'est precisement la que tu accelerais (5:42/km). La difficulte venait de la chaleur et du plein soleil, pas du rythme. Tu as encaisse la chaleur en <em>montant</em> l'allure : c'est courageux, mais c'est aussi la definition d'une allure non pilotee.<br><br><strong>Le reste de la sortie est propre.</strong> FC moyenne 145 sur 3h16, montees gerees entre 140 et 155 bpm, marche assumee dans les portions raides (cadence descendue a 60-68 sur Rochetaillee et la montee du km 21) - c'est exactement la bonne gestion en trail. Effort relatif 246, ta plus grosse charge depuis ViaRhona.<br><br><strong>Le signal medical du jour est excellent : zero douleur au pied apres 27 km et 662 m D+, sur terrain instable et en descente technique.</strong> C'etait le dernier test que le pied n'avait pas passe depuis la gene du 23/07. Il l'a passe. Le dossier peut etre considere comme clos, sous reserve de la reponse a J+1 et J+2.<br><br><strong>Un point materiel a corriger :</strong> tu as couru en Novablast 5 J (route, desormais 689 km) alors que le plan indiquait Cascadia 19. Ca s'est bien passe, mais sur 662 m D+ avec descentes techniques, une semelle route sur sentier c'est une accroche en moins pour rien - et 689 km sur une paire d'entrainement, l'amorti commence a etre entame. Pour SaintExpress et ses sorties preparatoires, reflexe Cascadia.<br><br><strong>Bilan : superbe sortie, objectif plaisir atteint, et un enseignement technique de premier ordre.</strong> Ne retiens pas seulement \"c'etait chouette de finir fort\" - retiens que tu as accelere sans le decider. A Nice, ce meme automatisme au km 25 te coutera le chrono. C'est precisement le muscle qu'on entraine avec les blocs de retenue."}
+
 META=[
 (24,'reprise','Récupération',28,'Légère','—',"Absorber La Circaète : repos actif, footings très faciles, mobilité du dos."),
 (25,'reprise','Reprise & déblocage',52,'Modérée','≈ 85 % facile · 15 % qualité légère',"Relancer une structure : ré-ancrer le vrai easy, vivacité, premier contact allure marathon, longue + carburant."),
@@ -971,8 +976,8 @@ META=[
 (29,'general','Seuil découverte',62,'Soutenue','≈ 80 % facile · 20 % qualité',"Reprise progressive après la semaine de récup : premier vrai contact avec le seuil (2 blocs courts) + longue qui reprend du volume avec finish AM."),
 (30,'general','Semaine ViaRhôna',72,'Soutenue','≈ 92 % facile · 8 % rythme léger',"Semaine organisée autour du projet ViaRhôna 40 km (jeudi). Une seule touche de rythme (lignes droites mardi), repos la veille, récup après. Seuil et côtes retirés : le 40 km EST la charge de la semaine."),
 (31,'general','Absorption marathon · canicule',45,'Légère','≈ 88 % facile · une touche de vitesse',"Semaine d'absorption du marathon ViaRhôna sous dôme de chaleur (36-38°C mercredi et jeudi). Qualité faite dès le lundi (6×30 en negative split), mardi devenu repos. Test 10 km reporté : un contre-la-montre à J+5 d'un marathon mesurerait la fatigue, pas la forme."),
-(32,'seuil','Reprise progressive · retenue à 5:20',52,'Modérée','≈ 88 % facile · travail de retenue',"Reconstruite sur les enseignements de S31 : le pied tolère ~1h et se réveille sur l'allure soutenue prolongée, et la dérive naturelle vers le haut est le vrai point faible. Seuil 2×15 remplacé par 3×2 km de RETENUE à 5:20, longue réduite de 26 à 16 km sans bloc AM."),
-(33,'seuil','Allègement',64,'Légère','≈ 85 % facile · 15 % qualité',"Récupération avant le pic pré-USA."),
+(32,'seuil','Reprise progressive · retenue à 5:20',52,'Modérée','≈ 88 % facile · travail de retenue',"Semaine bouclée à 5 sorties (dont 2 non planifiées) pour 67,3 km, 817 m D+ et un effort relatif cumulé de 487 — la plus grosse semaine depuis celle de ViaRhôna. Le pied est ressorti SILENCIEUX de tout, y compris des 27 km / 662 m D+ de dimanche : le dossier ouvert le 23/07 est clos. Deux enseignements opposés : vendredi, retenue parfaite (132 bpm tenus sur 10 km avec une cible chiffrée) ; dimanche, dérive complète sur les 6 derniers km (7:15 → 5:07/km, FC 139 → 166) dès que le cadre social a disparu. La leçon tient en une phrase : ta retenue existe quand elle est chiffrée, elle disparaît quand elle est laissée au ressenti."),
+(33,'seuil','Allègement',64,'Légère','≈ 85 % facile · 15 % qualité',"Récupération avant le pic pré-USA — et première semaine où la retenue devient une consigne chiffrée sur CHAQUE sortie, pas seulement sur les séances de qualité. Après une S32 à 5 sorties dont un gros trail (effort relatif 246), le lundi est un vrai repos, non négociable. Le seuil 2×10 reste, la longue 18 km se court plafonnée en FC — l'objectif n'est pas le chrono, c'est de finir sans avoir accéléré."),
 (34,'seuil','Pic pré-USA',82,'Élevée','≈ 78 % facile · 22 % qualité',"Plus gros bloc avant le voyage : seuil + longue 28 km dont 12 AM (gate de la reine)."),
 (35,'seuil','Transition voyage',66,'Modérée','≈ 82 % facile · 18 % qualité',"On lève le pied, on prépare le corps au déload du voyage."),
 (36,'usa','USA — maintien',42,'Légère','100 % facile',"Voyage : footings faciles + randos. Entretien, zéro structure."),
@@ -1026,11 +1031,11 @@ PHASES=[
 COUL={p["id"]:p["c"] for p in PHASES}
 GEAR=[
   {"marque":"HOKA","modele":"Clifton 10","km":1168},
-  {"marque":"ASICS","modele":"Novablast 5 J","km":661},
-  {"marque":"ASICS","modele":"Novablast 5 V","km":45},
+  {"marque":"ASICS","modele":"Novablast 5 J","km":689},
+  {"marque":"ASICS","modele":"Novablast 5 V","km":56},
   {"marque":"ASICS","modele":"Gel Pulse 16","km":225},
   {"marque":"Brooks","modele":"Cascadia 19","km":241},
-  {"marque":"ASICS","modele":"Magic Speed 4","km":66},
+  {"marque":"ASICS","modele":"Magic Speed 4","km":75},
 ]
 RACES=[{"nom":"Marathon de Nice","date":"2026-11-08","dossier":"nice"},{"nom":"SaintExpress","date":"2026-11-28","dossier":"saintexpress"}]
 
@@ -1206,8 +1211,10 @@ MONTHLY=[
   {"m":"Avr","km":283,"elev":2254,"sorties":23,"re":2265},
   {"m":"Mai","km":241,"elev":7856,"sorties":19,"re":2139},
   {"m":"Juin","km":82,"elev":2012,"sorties":5,"re":1112},
+  {"m":"Juil","km":257,"elev":2805,"sorties":18,"re":2669},
+  {"m":"Août","km":79,"elev":853,"sorties":6,"re":592},
 ]
-SAISON2026={"km":1361,"elev":16222,"sorties":108,"mois":6,"note":"Run + Trail uniquement, aligné Strava"}
+SAISON2026={"km":1696,"elev":19880,"sorties":132,"mois":8,"note":"Run + Trail uniquement, aligné Strava · août en cours (arrêté au 09/08)"}
 # Progression d'efficience aérobie par saison — points d'ancrage réels (cardio Strava, EF route, allure ramenée à 145 bpm).
 # Hiver/Printemps figés (données historiques). Été enrichi par les séances loggées avec température.
 SAISON_EFF={
@@ -1223,7 +1230,7 @@ SAISON_EFF={
   ],
   "note":"À FC égale, +7,6 % d'efficience entre l'hiver et l'été (≈ 25 s/km plus rapide). L'été n'est PAS une régression : la chaleur gonflait ton cardio et masquait la vraie progression. Échantillon de 2-3 sorties par saison — tendance fiable, valeurs à ±quelques secondes."
 }
-ACWR_DATA={"charge7j":690,"charge28j":1642,"acwr":0.69,"interpretation":"Sous-charge de récupération, parfaitement normale : après le pic de la semaine de course (ACWR 1.28 en S27 avec la Déraille), la semaine de récup S28 fait redescendre le ratio à 0.69. Tu es frais, la charge aiguë est basse — c'est exactement ce qu'on veut avant de relancer le seuil en S29."}
+ACWR_DATA={"charge7j":487,"charge28j":1912,"acwr":1.02,"interpretation":"Zone optimale. Après S28 (0.69) et un mois de reconstruction, la charge aiguë (487 sur S32) rejoint exactement la charge chronique moyenne (478/semaine sur 28 jours). Tu n'es ni en sous-charge ni en surcharge : c'est le ratio dans lequel les adaptations se construisent avec le risque de blessure le plus bas. Deux nuances à garder en tête : ce 1.02 est atteint avec 2 sorties non planifiées sur 5, et la moitié de la charge de la semaine vient d'une seule sortie (le trail de dimanche, effort relatif 246). La marge existe pour S33, mais elle n'appelle pas à en rajouter — elle autorise juste à suivre le plan sans crainte."}
 RECORDS_PERF=[
   {"dist":"5 km","record":"22:52","record_sub":"meilleur effort Strava","actuel":"4:35/km","actuel_sub":"meilleur effort 2026","temps_rec":"22:52","temps_act":"~22:52"},
   {"dist":"10 km","record":"46:14","record_sub":"meilleur effort Strava","actuel":"4:37/km","actuel_sub":"meilleur effort 2026","temps_rec":"46:14","temps_act":"~46:14"},
@@ -1316,6 +1323,15 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":166,"date":"9 aout 2026","sha":"","tag":"Boucle de Saint-Etienne loguee + KPI agreges reactualises","items":[
+    "Sortie longue du 09/08 loguee avec donnees Strava reelles (activite 19665718937) : 27,01 km, 662 m D+, 3h16 de mouvement, allure 7:16/km, FC 145/176, effort relatif 246.",
+    "Enseignement principal extrait des laps : derive non decidee sur les 6 derniers kilometres (7:15 -> 5:57 -> 5:42 -> 5:42 -> 5:28 -> 5:07/km, FC 139 -> 166) apres le depart des accompagnants. Contraste direct avec la sortie du 07/08 ou une cible chiffree avait tenu la FC a 132 sur 10 km.",
+    "Chaussure de la seance corrigee : Novablast 5 J (route) reellement portee, alors que le plan prescrivait Cascadia 19 (trail).",
+    "Parc chaussures reactualise sur donnees Strava : Novablast 5 J 689 km (+28), Novablast 5 V 56 km, Magic Speed 4 75 km.",
+    "KPI AGREGES REACTUALISES -- ils dataient de S28 et etaient donc perimes de quatre semaines. MONTHLY complete avec juillet (257 km, 2805 m, 18 sorties, RE 2669) et aout au 09 (79 km, 853 m, 6 sorties, RE 592). Total saison porte a 1696 km / 19880 m / 132 sorties.",
+    "ACWR recalcule sur donnees reelles : 1.02 (aigu 7j 487, chronique 28j 1912 soit 478/semaine) contre 0.69 affiche jusqu'ici. Passage de la zone de sous-charge a la zone optimale.",
+    "Revue de semaine S32 reecrite sur chiffres mesures (5 sorties, 67,3 km, 817 m D+, RE 487) et cadrage S33 oriente sur la retenue chiffree systematique."
+  ]},
   {"build":165,"date":"7 aout 2026","sha":"","tag":"Sortie non planifiee du vendredi S32 loguee (retenue cardiaque)","items":[
     "Vendredi 7/08 etait au plan en repos complet (2e jour avant la boucle de Saint-Etienne dimanche). Loic est neanmoins sorti courir : sortie personnelle de retenue cardiaque, cible FC moyenne <=135 bpm, hors plan.",
     "Donnees reelles recuperees via Strava (activite 19636720206) : 10,09 km en 1h00, 5:58/km, FC moyenne 132 (max 149), cadence 176, Novablast 5 V. Zero douleur au pied, 4e sortie consecutive.",
