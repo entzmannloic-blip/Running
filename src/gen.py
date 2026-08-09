@@ -1306,7 +1306,20 @@ REWINDS=[{"id":"S24","titre":"Ta semaine 24","sous":"Récupération post-Circaè
  {"bg":"linear-gradient(160deg,#7f1d1d,#1c0a00)","kicker":"DIMANCHE · LA COURSE","big":"2:52:48","txt":"Trail Déraille · 66e/180 (top 37%) · 11e/18 M0. <strong>FC 168 tenue sur 2h52 sans effondrement.</strong>"},
  {"bg":"linear-gradient(160deg,#581c87,#1e1b4b)","kicker":"LA DESCENTE","big":"4:46/km","txt":"Km 18 en pleine descente technique. <strong>Ta vraie arme — elle est intacte.</strong>"},
  {"bg":"linear-gradient(160deg,#b45309,#451a03)","kicker":"VERDICT DU COACH","big":"A","txt":"Course de gestion réussie sur 4h de sommeil et zéro prépa trail. La tête a fait la différence. <strong>Objectifs atteints, zéro séquelle.</strong>"},
- {"bg":"linear-gradient(160deg,#0d9488,#0f766e)","kicker":"LA SUITE","big":"Nice","txt":"Cap sur le Marathon — 8 novembre.<br><strong>Le vrai objectif commence maintenant.</strong>"}]}]
+ {"bg":"linear-gradient(160deg,#0d9488,#0f766e)","kicker":"LA SUITE","big":"Nice","txt":"Cap sur le Marathon — 8 novembre.<br><strong>Le vrai objectif commence maintenant.</strong>"}]},
+{"id":"S32","titre":"Ta semaine 32","sous":"Reprise progressive · 3-9 août · canicule","slides":[
+ {"bg":"linear-gradient(160deg,#0f172a,#1e3a5f)","kicker":"REWIND · SEMAINE 32","big":"🎬","txt":"5 sorties, un pied qui se tait enfin, et une leçon qui vaut pour Nice.<br>Tape pour avancer."},
+ {"bg":"linear-gradient(160deg,#065f46,#022c22)","kicker":"LE VOLUME","big":"67,3 km","txt":"en 5 sorties — ta plus grosse semaine depuis ViaRhôna. Soit à peu près Lyon → Saint-Étienne… où tu as justement fini dimanche."},
+ {"bg":"linear-gradient(160deg,#7c2d12,#1c0a00)","kicker":"TEMPS EN MOUVEMENT","big":"7h07","txt":"de course, 5 194 kcal brûlées, et ≈ 61 000 battements de cœur. Le moteur a tourné long."},
+ {"bg":"linear-gradient(160deg,#1e3a8a,#0c1c3d)","kicker":"LE DÉNIVELÉ","big":"817 m","txt":"dont 662 sur la seule journée de dimanche. Le reste de la semaine était plat comme une table."},
+ {"bg":"linear-gradient(160deg,#134e4a,#042f2e)","kicker":"LA SORTIE QUI COMPTE","big":"132 bpm","txt":"Vendredi, cible ≤135 annoncée à l'avance. Résultat : FC entre 124 et 136 sur 10 km, sans un seul emballement. <strong>Retenue parfaite.</strong>"},
+ {"bg":"linear-gradient(160deg,#9a3412,#431407)","kicker":"ET SON MIROIR","big":"5:07/km","txt":"Dimanche, km 27, seul, sans cible. 7:15 → 5:07/km et FC 139 → 166 en six kilomètres. <strong>Tu n'as jamais décidé d'accélérer.</strong>"},
+ {"bg":"linear-gradient(160deg,#581c87,#1e1b4b)","kicker":"LA LEÇON DE LA SEMAINE","big":"🎯","txt":"<strong>Ta retenue existe quand elle est chiffrée. Elle disparaît quand elle est laissée au ressenti.</strong><br>Vendredi et dimanche l'ont prouvé à 48 h d'écart."},
+ {"bg":"linear-gradient(160deg,#14532d,#052e16)","kicker":"LE DOSSIER CLOS","big":"0 douleur","txt":"au pied, sur 5 sorties, dont 27 km de trail avec descentes techniques. <strong>La gêne du 23/07 est derrière toi.</strong>"},
+ {"bg":"linear-gradient(160deg,#0c4a6e,#082f49)","kicker":"LA CHARGE","big":"ACWR 1,02","txt":"Charge aiguë 487, chronique 478/semaine. Pile la zone optimale — ni sous-charge, ni surcharge."},
+ {"bg":"linear-gradient(160deg,#7f1d1d,#1c0a00)","kicker":"LES DEUX ÉCARTS","big":"👟","txt":"Mercredi : Clifton 10 retirées (délamination) enfilées par réflexe. Dimanche : Novablast route sur 662 m de sentier. <strong>Aucune conséquence — cette fois.</strong>"},
+ {"bg":"linear-gradient(160deg,#134e4a,#042f2e)","kicker":"VERDICT DU COACH","big":"B+","txt":"Physiquement excellent : volume, santé, charge maîtrisée. <strong>Mais 2 sorties sur 5 hors plan, une dérive non décidée et deux erreurs de chaussures.</strong> Le corps suit mieux que la discipline."},
+ {"bg":"linear-gradient(160deg,#b45309,#451a03)","kicker":"LA SUITE","big":"S33","txt":"Allègement — seuil 2×10 et longue 18 km plafonnée en FC.<br><strong>L'objectif : finir sans avoir accéléré. 🎯</strong>"}]}]
 JOURNAL=[{"sem":"S24","theme":"Récupération post-Circaète","texte":S24_REALISE["revue"]},
 {"sem":"S25","theme":"Reprise & déblocage","texte":"<p>La semaine de reprise que tu devais faire. Pas celle que tu espérais peut-être, mais celle qu'il fallait — et tu l'as exécutée proprement.</p><p><strong>Ce qui ressort avant tout : la gestion de la chaleur.</strong> Quatre séances sur cinq démarrées entre 7h25 et 8h30. L'écart entre la s3 (FC 165/181, subi à midi) et les quatre autres (FC 140-151, maîtrisé) dit tout. Ce n'est pas une variable de confort, c'est une variable de performance.</p><p><strong>La progression dans la semaine est nette.</strong> S1/S2 très faciles (FC 140-143). S3 qualité en milieu de semaine, 6 km à 5:14/km tenus. S4 sortie longue avec fast finish à <strong>4:58/km sur le dernier kilomètre</strong> — sub-5 min au 4e jour consécutif en canicule. S5 bonus parfait, FC 144 en plein cœur de la Z2, rien dépensé.</p><p><strong>Ce que cette semaine confirme pour la Déraille (J-16) :</strong> tu n'es pas en reprise, tu es en forme. La Z2 pace à 5:56/km avec FC 140-144, c'est ton moteur aérobie qui tourne. Le fast finish montre que la résistance à la fatigue est là. S26 allégée par conception — laisse-la être légère.</p>"}]
 # À partir de S26, JOURNAL se construit automatiquement depuis SEMAINES[n]["revue"] — plus jamais à mettre à jour ici.
@@ -1323,6 +1336,13 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":167,"date":"9 aout 2026","sha":"","tag":"Revue de semaine S32 (Rewind) -- manquante depuis S27","items":[
+    "MANQUE SIGNALE PAR LOIC, ET IL AVAIT RAISON : au build 166 j'avais mis a jour la description META de S32 en croyant faire la revue de semaine. La vraie revue de semaine est le Rewind (parcours de slides), et il n'en existait plus depuis S27 (5 juillet).",
+    "Rewind S32 cree : 12 slides sur donnees mesurees -- 67,3 km, 817 m D+, 7h07 de mouvement, 5194 kcal, ~61 000 battements, ACWR 1,02.",
+    "Slides construites autour de l'opposition centrale de la semaine : vendredi 132 bpm avec cible chiffree annoncee, dimanche 7:15 -> 5:07/km sans cible. Verdict coach B+ (physique excellent, discipline de plan perfectible : 2 sorties sur 5 hors plan, 2 erreurs de chaussures).",
+    "CORRECTIF D'ORDONNANCEMENT : rwAuto() ouvre REWINDS[length-1], donc le dernier element du tableau. Le Rewind S32 a ete place en FIN de tableau -- insere ailleurs, l'ouverture automatique du lundi matin aurait ressorti S27.",
+    "TROU RESTANT ASSUME : les Rewinds S28, S29, S30 et S31 n'existent toujours pas. Non comble ici pour ne pas fabriquer des revues retrospectives sans le ressenti de Loic sur ces semaines."
+  ]},
   {"build":166,"date":"9 aout 2026","sha":"","tag":"Boucle de Saint-Etienne loguee + KPI agreges reactualises","items":[
     "Sortie longue du 09/08 loguee avec donnees Strava reelles (activite 19665718937) : 27,01 km, 662 m D+, 3h16 de mouvement, allure 7:16/km, FC 145/176, effort relatif 246.",
     "Enseignement principal extrait des laps : derive non decidee sur les 6 derniers kilometres (7:15 -> 5:57 -> 5:42 -> 5:42 -> 5:28 -> 5:07/km, FC 139 -> 166) apres le depart des accompagnants. Contraste direct avec la sortie du 07/08 ou une cible chiffree avait tenu la FC a 132 sur 10 km.",
@@ -2198,7 +2218,7 @@ CHANGELOG=[
   {"build":36,"date":"19 juin 2026","sha":"18dabd58","tag":"Session J1 · Séances","items":[
     "S25 bouclée 5/5 · 56.6 km · Clifton 10 → 1103 km",
     "Banner météo créneaux · Accents séances corrigés"
-  ]}
+  ]},
 ]
 
 PALMARES=[
