@@ -97,6 +97,16 @@ print(f"\n── Coherence de ACWR_DATA " + "─" * 38)
 cmp("ACWR_DATA.charge7j", aigu, ad.get("charge7j"), tol=0)
 cmp("ACWR_DATA.charge28j", chron, ad.get("charge28j"), tol=0)
 cmp("ACWR_DATA.acwr", acwr_calc, ad.get("acwr"), tol=0.02)
+# Fraicheur : la valeur calculee au build doit se referer a la derniere
+# seance loguee. Si une seance plus recente existe, le chiffre a derive.
+if ad.get("ref"):
+    if ad["ref"] != DERNIERE:
+        ECARTS.append(f"ACWR_DATA.ref = {ad['ref']} alors que la derniere seance loguee est du {DERNIERE} "
+                      f"— la valeur calculee au build a derive")
+    else:
+        OK.append(f"ACWR_DATA.ref a jour ({ad['ref']})")
+else:
+    ECARTS.append("ACWR_DATA n'expose pas de champ 'ref' : impossible de verifier sa fraicheur")
 # le ratio doit etre coherent avec ses propres composantes
 if ad.get("charge7j") and ad.get("charge28j"):
     interne = ad["charge7j"] / (ad["charge28j"] / 4)
