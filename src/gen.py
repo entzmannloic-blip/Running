@@ -1414,6 +1414,14 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":176,"date":"10 aout 2026","sha":"","tag":"Forme du jour faussee : durees de seance illisibles","items":[
+    "BUG SIGNALE PAR LOIC, ET IL AVAIT RAISON. Au lendemain d'un trail de 27 km et 662 m D+, la forme du jour affichait 91/100 avec une fraicheur qualifiee de « Frais (75 % de ta mediane) ». Invraisemblable -- et effectivement faux.",
+    "CAUSE : _sessionMin() ne savait lire que les formats h:mm et mm:ss. La charge sRPE (RPE x duree) retombait alors SILENCIEUSEMENT sur une estimation par l'effort relatif (RE x 1,8), tres inferieure. Deux seances etaient concernees : le trail du 09/08, dont le temps avait ete saisi « 3h16 (3h48 total) », compte 443 au lieu de 1176 ; et le Trail Deraille du 05/07, en « 2:52:48 », compte 1051 au lieu de 1382.",
+    "CONSEQUENCE : la fatigue residuelle etait sous-evaluee, donc la fraicheur surevaluee, donc la forme du jour gonflee. Aucun message d'erreur, aucun plantage -- le KPI mentait proprement.",
+    "CORRECTIF : _sessionMin() accepte desormais un complement entre parentheses ainsi que le format h:mm:ss, en plus des formats existants. Apres correction, la charge du 09/08 passe de 443 a 1176, le ratio de fatigue de 0,75 a 1,33, la fraicheur de 82 (« Frais ») a 49 (« Fatigue elevee, recup en cours »), et la forme du jour de 91 a 80.",
+    "GARDE-FOU AJOUTE dans audit_kpi.py : toute duree de seance non parsable est desormais signalee comme un ecart bloquant. Contre-test realise avec un temps volontairement illisible : l'audit le detecte et sort en erreur.",
+    "LECON. Mes audits verifiaient que la forme etait bien comprise entre 0 et 100 et qu'elle exposait ses composantes -- jamais qu'elle etait PLAUSIBLE. Un KPI peut etre parfaitement forme et completement faux. C'est Loic qui l'a vu, pas les sept controles du gate."
+  ]},
   {"build":175,"date":"10 aout 2026","sha":"","tag":"Audits branches au gate · Rewinds S28-S31 · dette a zero","items":[
     "1. LES QUATRE AUDITS SONT DESORMAIS DANS LA PORTE DE RELEASE. audit_data, audit_kpi, audit_dette et audit_runtime tournent a chaque livraison en phase 3, aux cotes de preflight, test_regression et audit_cockpit. Un audit qu'il faut penser a lancer ne sert a rien : il devait etre structurel.",
     "audit_runtime a recu un mode --rapide pour le gate (echantillon de fiches, delais reduits) : 31 s au lieu de 87 s. Le mode complet, sans argument, reste la reference a lancer periodiquement.",

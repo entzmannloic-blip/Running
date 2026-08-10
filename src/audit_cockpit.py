@@ -79,13 +79,24 @@ CURWK = semaine_courante()
 
 # ---------------------------------------------------------------- utilitaires
 def mins(t):
-    """Duree d'une seance en minutes. Formats : 4h18, 1h28:33, 36:49."""
+    """Duree d'une seance en minutes. Formats : 4h18, 1h28:33, 2:52:48, 36:49,
+    avec complement entre parentheses tolere ("3h16 (3h48 total)").
+
+    Cette fonction reproduisait exactement le bug de _sessionMin() cote JS :
+    elle ignorait les deux memes formats. L'audit validait donc l'app en
+    refaisant la meme erreur qu'elle -- il ne pouvait structurellement pas
+    detecter le probleme. Les deux implementations doivent rester alignees.
+    """
     if not t:
         return None
-    m = re.match(r'^(\d+)h(\d+)?:?(\d+)?$', str(t).strip())
+    x = re.sub(r'\([^)]*\)', '', str(t)).strip()
+    m = re.match(r'^(\d+)h(\d+)?:?(\d+)?$', x)
     if m:
         return int(m.group(1)) * 60 + int(m.group(2) or 0) + int(m.group(3) or 0) / 60
-    m = re.match(r'^(\d+):(\d+)$', str(t).strip())
+    m = re.match(r'^(\d+):(\d{2}):(\d{2})$', x)
+    if m:
+        return int(m.group(1)) * 60 + int(m.group(2)) + int(m.group(3)) / 60
+    m = re.match(r'^(\d+):(\d+)$', x)
     if m:
         return int(m.group(1)) + int(m.group(2)) / 60
     return None

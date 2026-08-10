@@ -344,9 +344,20 @@ function _dynamicACWR(){
 const _TAU_FATIGUE=3.5;   // jours - constante de decroissance de la fatigue aigue
 function _sessionMin(t){
   if(!t)return null;
-  var m=/^(\d+)h(\d+)?:?(\d+)?$/.exec(String(t).trim());
+  var s=String(t).trim();
+  /* Un temps non parsable retombait silencieusement sur une estimation par
+     l'effort relatif (RE x 1.8), tres inferieure a la charge sRPE reelle.
+     Exemple constate : le trail du 09/08 (3h16, RPE 6 => 1176) etait compte
+     443, et la Deraille (2:52:48, RPE 8 => 1382) etait comptee 1051. La
+     fatigue residuelle, donc la forme du jour, s'en trouvait surevaluee.
+     On accepte desormais un complement entre parentheses et le format
+     h:mm:ss en plus de h:mm et mm:ss. */
+  s=s.replace(/\([^)]*\)/g,'').trim();
+  var m=/^(\d+)h(\d+)?:?(\d+)?$/.exec(s);
   if(m)return (+m[1])*60+(+(m[2]||0))+(+(m[3]||0))/60;
-  m=/^(\d+):(\d+)$/.exec(String(t).trim());
+  m=/^(\d+):(\d{2}):(\d{2})$/.exec(s);            /* 2:52:48 = 2 h 52 min 48 s */
+  if(m)return (+m[1])*60+(+m[2])+(+m[3])/60;
+  m=/^(\d+):(\d+)$/.exec(s);                      /* 45:30 = 45 min 30 s */
   if(m)return (+m[1])+(+m[2])/60;
   return null;
 }
