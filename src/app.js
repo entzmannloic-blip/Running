@@ -1463,10 +1463,15 @@ function renderDash(){const el=document.getElementById('dash-contenu');
    continuait de scroller et emportait le bouton fermer hors de l'ecran, meme avec
    le sticky corrige. On memorise la position pour la restituer a la fermeture. */
 let _scrollLockY=0;
+/* Handle du vidage differe declenche par fermer(). Conserve pour pouvoir
+   l'annuler si une nouvelle vue s'ouvre avant l'echeance : sans cela, le
+   setTimeout de la fermeture precedente vidait la vue suivante (ecran blanc
+   des que l'utilisateur rouvrait une fiche en moins de 300 ms). */
+let _viderTimer=null;
 const overlay=document.getElementById('overlay'),boite=document.getElementById('boite'),topbar=document.getElementById('topbar'),contenu=document.getElementById('contenu');
 let segActif=null;
-function ouvrir(){overlay.classList.add('ouverte');_scrollLockY=window.scrollY||document.documentElement.scrollTop||0;document.documentElement.style.overflow='hidden';document.body.style.overflow='hidden';document.body.style.position='fixed';document.body.style.top=(-_scrollLockY)+'px';document.body.style.left='0';document.body.style.right='0';overlay.scrollTop=0;boite.scrollTop=0;}
-function fermer(){if(typeof ttsStop==='function')ttsStop();overlay.classList.remove('ouverte');document.documentElement.style.overflow='';document.body.style.overflow='';document.body.style.position='';document.body.style.top='';document.body.style.left='';document.body.style.right='';window.scrollTo(0,_scrollLockY||0);setTimeout(()=>{contenu.innerHTML='';topbar.innerHTML='';},300);}
+function ouvrir(){if(_viderTimer){clearTimeout(_viderTimer);_viderTimer=null;}overlay.classList.add('ouverte');_scrollLockY=window.scrollY||document.documentElement.scrollTop||0;document.documentElement.style.overflow='hidden';document.body.style.overflow='hidden';document.body.style.position='fixed';document.body.style.top=(-_scrollLockY)+'px';document.body.style.left='0';document.body.style.right='0';overlay.scrollTop=0;boite.scrollTop=0;}
+function fermer(){if(typeof ttsStop==='function')ttsStop();overlay.classList.remove('ouverte');document.documentElement.style.overflow='';document.body.style.overflow='';document.body.style.position='';document.body.style.top='';document.body.style.left='';document.body.style.right='';window.scrollTo(0,_scrollLockY||0);if(_viderTimer)clearTimeout(_viderTimer);_viderTimer=setTimeout(()=>{contenu.innerHTML='';topbar.innerHTML='';_viderTimer=null;},300);}
 overlay.addEventListener('click',e=>{if(e.target===overlay)fermer()});
 (function(){const to=document.getElementById('theoOverlay');if(to)to.addEventListener('click',e=>{if(e.target===to)closeTheory();});})();
 document.addEventListener('keydown',e=>{if(e.key!=='Escape')return;

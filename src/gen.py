@@ -1338,6 +1338,13 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":170,"date":"9 aout 2026","sha":"","tag":"Correction de la race condition d'ouverture + suite de tests rendue fiable","items":[
+    "BUG-01 CORRIGE (ecran blanc). fermer() planifiait contenu.innerHTML='' dans un setTimeout de 300 ms. En rouvrant une fiche avant l'echeance, ce vidage differe s'appliquait a la NOUVELLE vue, qui s'affichait vide. Mesure avant correctif : echec systematique de 0 a 290 ms de delai.",
+    "Correctif : le timer est desormais memorise dans _viderTimer et annule par clearTimeout des qu'une nouvelle vue s'ouvre (ouvrir()) ou qu'une fermeture est relancee. Verification apres correctif : 10 delais testes de 0 a 500 ms, 10 succes, y compris le cas 0 ms qui echouait toujours.",
+    "BUG-02 CORRIGE (test complaisant). test_regression T02 testait les onglets 'seances' et 'courses', qui N'EXISTENT PAS -- les identifiants reels sont 'plan' et 'palmares'. showTab() masque alors toutes les vues sans lever d'erreur, et le test passait quand meme car il mesurait document.body, dont la seule barre de navigation (104 caracteres) franchissait le seuil de 50. Deux vues sur quatre n'etaient donc pas reellement testees depuis l'origine.",
+    "Correctif : T02 cible desormais #vue-<id>, verifie que la vue est effectivement VISIBLE (display != none) et exige plus de 200 caracteres de contenu propre. Contre-test effectue : reinjecte avec les anciens noms fautifs, le test durci echoue bien sur 'seances' et 'courses' -- il attrape donc le defaut qu'il laissait passer.",
+    "Reste en attente d'arbitrage : Rewinds S25/S26/S27/S32 sans bouton d'ouverture, ids de gradient SVG dupliques quand deux graphiques partagent une couleur, et _ckRenderAll qui leve sur les fenetres 26 et 52 semaines (inatteignables depuis l'UI actuelle)."
+  ]},
   {"build":169,"date":"9 aout 2026","sha":"","tag":"Audit complet : MONTHLY purge du non-running","items":[
     "AUDIT ACTIF DEMANDE PAR LOIC. Trois scripts ajoutes dans scripts/ : audit_data.py (coherence donnees + code), audit_runtime.py (ouverture exhaustive des 30 semaines, 132 seances, 5 Rewinds, toutes fenetres Cockpit), test_race.py (reproduction ciblee).",
     "BUG D1 RESOLU A LA SOURCE. MONTHLY totalisait 1745 km / 138 sorties contre 1696 / 132 dans SAISON2026. Verification activite par activite sur Strava (janvier a mai) : MONTHLY incluait des activites NON-RUNNING.",
