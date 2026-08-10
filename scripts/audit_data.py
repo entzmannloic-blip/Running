@@ -225,7 +225,10 @@ for sev in ("BUG", "RISQUE", "INFO"):
         print(f"  [{code}] {msg}")
 n_bug = sum(1 for a in ANO if a[0] == "BUG")
 print("\n" + "=" * 64)
-print(f"  TOTAL : {n_bug} bug(s), "
+print(f"  RESULTAT : {n_bug} bug(s), "
       f"{sum(1 for a in ANO if a[0]=='RISQUE')} risque(s), "
       f"{sum(1 for a in ANO if a[0]=='INFO')} info(s)")
 print("=" * 64)
+# Bloquant uniquement sur les BUG : les INFO sont de la veille, pas des defauts.
+import sys as _sys
+_sys.exit(1 if n_bug else 0)
