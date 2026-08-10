@@ -148,7 +148,10 @@ for wk in semaines_avec_seances_loggees:
 
 # B3 — Rewinds atteignables depuis l'UI ?
 boutons = set(re.findall(r"rwOpen\('(S\d+)'\)", js))
-orphelins = sorted(rw_ids - boutons)
+# Un bouton peut aussi etre construit dynamiquement : rwOpen('S${s.num}').
+# Dans ce cas tous les Rewinds existants sont atteignables.
+dynamique = bool(re.search(r"rwOpen\('S\$\{[^}]+\}'\)", js))
+orphelins = [] if dynamique else sorted(rw_ids - boutons)
 if orphelins:
     auto = re.search(r"rwAuto.*?REWINDS\[REWINDS\.length-1\]", js, re.S)
     bug("B3", f"Rewinds sans bouton d'ouverture dans l'UI : {', '.join(orphelins)}. "
