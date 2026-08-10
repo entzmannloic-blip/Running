@@ -105,12 +105,17 @@ def main():
     p3 = Phase(3, "TEST — les chiffres sont-ils justes ?")
     for script, libelle in [('preflight.py', "preflight (chaine de build)"),
                             ('test_regression.py', "regression (l'app ne casse pas)"),
-                            ('audit_cockpit.py', "audit Cockpit (justesse des valeurs)")]:
-        chemin = f'{WORK}/{script}'
+                            ('audit_cockpit.py', "audit Cockpit (justesse des valeurs)"),
+                            ('audit_data.py', "audit donnees (coherence metier)"),
+                            ('audit_kpi.py', "audit KPI (justesse des calculs)"),
+                            ('audit_dette.py', "audit dette (incoherences visibles)"),
+                            ('audit_runtime.py --rapide', "audit runtime (parcours echantillonne)")]:
+        fichier, _, options = script.partition(' ')
+        chemin = f'{WORK}/{fichier}'
         if not os.path.exists(chemin):
             p3.ajoute(libelle, False, "script introuvable")
             continue
-        rc, out = run(f'python3 {chemin}')
+        rc, out = run(f'python3 {chemin} {options}'.strip())
         ligne = next((l.strip() for l in out.splitlines()
                       if 'RESULTAT' in l or 'RESULTAT' in l.upper()), '')
         bloquant = ('NE PAS PUSHER' in out) or ('ECHOUE' in out) or (rc != 0)

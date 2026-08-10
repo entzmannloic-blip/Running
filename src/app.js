@@ -1,4 +1,13 @@
 /* ===== helpers ===== */
+/* Acces au stockage local TOLERANTS A L'ECHEC. Selon le navigateur et le
+   mode de navigation, localStorage peut lever au lieu de renvoyer null
+   (quota nul, stockage desactive, iframe restreinte). Un seul acces non
+   protege suffit alors a interrompre le script qui le contient. Ces trois
+   helpers absorbent l'echec : l'app perd sa persistance, jamais son
+   fonctionnement. */
+function _lsGet(k){try{return localStorage.getItem(k);}catch(e){return null;}}
+function _lsSet(k,v){try{localStorage.setItem(k,v);return true;}catch(e){return false;}}
+function _lsDel(k){try{localStorage.removeItem(k);return true;}catch(e){return false;}}
 /* Compteur global assurant l'unicite des id de degrade SVG (voir sparkline). */
 let _gradSeq=0;
 function rpeColor(r){return r<=3?'#16a34a':r<=5?'#0d9488':r<=6.9?'#f59e0b':r<=8?'#f59e0b':'#ef4444';}
@@ -596,7 +605,7 @@ function _whatsNew(){
     // l'utilisateur ait vu la carte).
     const _vAcc=document.getElementById('vue-accueil');
     if(_vAcc&&_vAcc.style.display==='none')return null;
-    localStorage.setItem('wn_seen',JSON.stringify(cur));
+    _lsSet('wn_seen',JSON.stringify(cur));
     if(!prev)return null; // première visite : rien à comparer
     let msg=null;
     if(lastDate&&lastDate>prev.lastDate){
@@ -1062,7 +1071,7 @@ async function renderMeteo(){
     let caniculeDays=0,warmDays=0;
     if(j.daily&&j.daily.temperature_2m_max){j.daily.temperature_2m_max.forEach(t=>{if(t>33)caniculeDays++;else if(t>25)warmDays++;});}
     const d={ts:Date.now(),temp:j.current.temperature_2m,app:j.current.apparent_temperature,wind:j.current.wind_speed_10m,code:j.current.weather_code,precip:j.current.precipitation||0,rain,tomorrow_max:tMax,hourly_today:hToday,hourly_tomorrow:hTomorrow,canicule_days:caniculeDays,warm_days:warmDays};
-    localStorage.setItem('meteo_cache',JSON.stringify(d));
+    _lsSet('meteo_cache',JSON.stringify(d));
     _meteoPaint(d);
   }catch(e){
     /* Un etat d'erreur brut expose a l'utilisateur est une faute UX : la
@@ -2192,7 +2201,7 @@ function _isIos(){return/iPhone|iPod|iPad/i.test(navigator.userAgent)&&!window.M
 function initInstall(){
   if(!document.body||typeof document.body.insertAdjacentHTML!=='function')return;
   if(_isPwa())return;
-  if(localStorage.getItem('install_dismissed')==='1')return;
+  if(_lsGet('install_dismissed')==='1')return;
   if(!_isIos())return;
   document.body.insertAdjacentHTML('beforeend',`
 <div id="install-banner"><span class="inst-ico">📲</span><span class="inst-txt">Installe l'app sur l'écran d'accueil</span><button class="inst-cta" onclick="openInstall()">Voir</button><button class="inst-x" onclick="dismissInstall()">✕</button></div>
@@ -2213,7 +2222,7 @@ function initInstall(){
 }
 function openInstall(){const o=document.getElementById('install-ov');if(o)o.classList.add('open');}
 function closeInstall(){const o=document.getElementById('install-ov');if(o)o.classList.remove('open');}
-function dismissInstall(){localStorage.setItem('install_dismissed','1');const b=document.getElementById('install-banner');if(b)b.remove();}
+function dismissInstall(){_lsSet('install_dismissed','1');const b=document.getElementById('install-banner');if(b)b.remove();}
 
 /* ===== Historique des versions ===== */
 function initVersionPanel(){
@@ -2478,7 +2487,7 @@ function checkAutoSync(){
          ce qui casse le plus la confiance dans l outil. */
       var _st=s.realise&&s.realise.statut;
       if((+d===+today||+d===+yest)&&!(_st==='fait'||_st==='partiel')){
-        const k='as_'+s.id;if(localStorage.getItem(k))continue;
+        const k='as_'+s.id;if(_lsGet(k))continue;
         const hero=document.getElementById('hero-plan');if(!hero)return;
         const bar=document.createElement('div');bar.className='as-bar';
         const when=+d===+today?"aujourd'hui":'hier';
@@ -2486,7 +2495,7 @@ function checkAutoSync(){
            81 px pour redire ce que la carte du jour affiche deja juste
            au-dessus, avec le meme bouton d'action. */
         return;
-        bar.innerHTML=`<div class="as-ico">📍</div><div class="as-txt"><strong>Séance ${when} non loggée</strong> — S${wk} ${s.titre}</div><button class="as-btn" onclick="ouvrirQuickLog(${wk},${s.id})">Logger</button><button class="as-x" onclick="localStorage.setItem('${k}','1');this.parentElement.remove()">✕</button>`;
+        bar.innerHTML=`<div class="as-ico">📍</div><div class="as-txt"><strong>Séance ${when} non loggée</strong> — S${wk} ${s.titre}</div><button class="as-btn" onclick="ouvrirQuickLog(${wk},${s.id})">Logger</button><button class="as-x" onclick="_lsSet('${k}','1');this.parentElement.remove()">✕</button>`;
         hero.insertAdjacentElement('afterend',bar);return;
       }
     }
@@ -3038,7 +3047,7 @@ async function _effTemps(sessions){
     try{
       const cur=JSON.parse(localStorage.getItem('eff_temp_cache')||'{}');
       cache=Object.assign(cur,cache);
-      localStorage.setItem('eff_temp_cache',JSON.stringify(cache));
+      _lsSet('eff_temp_cache',JSON.stringify(cache));
     }catch(e){}
   }
   return cache;
