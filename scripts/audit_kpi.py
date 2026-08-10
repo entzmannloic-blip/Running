@@ -119,6 +119,36 @@ cmp("total km", sum(m["km"] for m in MON), SAI.get("km"), tol=1)
 cmp("total sorties", sum(m["sorties"] for m in MON), SAI.get("sorties"), tol=0)
 cmp("total D+", sum(m["elev"] for m in MON), SAI.get("elev"), tol=1)
 
+# ── Durees de seance reellement parsables ─────────────────────
+# Un temps non parsable ne fait pas planter : il retombe sur une estimation
+# par l'effort relatif, nettement plus basse que la charge sRPE reelle.
+# La fatigue residuelle, donc la forme du jour, est alors surevaluee --
+# sans aucun signal d'erreur. C'est ainsi qu'une forme a 91/100 a pu
+# s'afficher au lendemain d'un trail de 27 km.
+def _mn(t):
+    if not t:
+        return None
+    x = re.sub(r"\([^)]*\)", "", str(t)).strip()
+    for pat, f in ((r"^(\d+)h(\d+)?:?(\d+)?$", lambda m: int(m.group(1))*60+int(m.group(2) or 0)),
+                   (r"^(\d+):(\d{2}):(\d{2})$", lambda m: int(m.group(1))*60+int(m.group(2))),
+                   (r"^(\d+):(\d+)$",           lambda m: int(m.group(1)))):
+        m = re.match(pat, x)
+        if m:
+            return f(m)
+    return None
+
+illisibles = [(s_["date"], (s_.get("realise") or {}).get("temps"))
+              for wk, arr in D["SBW"].items() for s_ in arr
+              if (s_.get("realise") or {}).get("statut") in ("fait", "partiel")
+              and (s_.get("realise") or {}).get("km")
+              and _mn((s_.get("realise") or {}).get("temps")) is None]
+if illisibles:
+    for dte, t in illisibles:
+        ECARTS.append(f"duree illisible le {dte} ({t!r}) — la charge sRPE sera sous-estimee "
+                      f"et la forme du jour surevaluee")
+else:
+    OK.append(f"{len(seances)} durees de seance toutes parsables")
+
 # ══════════════════════════════════════════════════════════════
 # 3. COHERENCE DES CHIFFRES CITES DANS LES TEXTES
 # ══════════════════════════════════════════════════════════════
