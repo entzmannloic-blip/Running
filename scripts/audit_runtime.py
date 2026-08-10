@@ -9,6 +9,7 @@ tous les Rewinds, toutes les fenetres Cockpit — et on capture la moindre
 erreur JS. Objectif : trouver les bugs qui ne se voient que sur un
 chemin precis.
 """
+import datetime as _dt
 import json
 import sys
 
@@ -171,8 +172,9 @@ def run():
         # ═══ 7. COHERENCE AFFICHEE : semaine courante ═══
         print("── 7. Coherence de la semaine courante ...")
         cw = p.evaluate("typeof _curWeek==='function'?_curWeek():null")
-        if cw != 32:
-            ano("R9", f"_curWeek() renvoie {cw} — attendu 32 pour le 9 aout 2026")
+        attendu = _dt.date.today().isocalendar()[1]
+        if cw != attendu:
+            ano("R9", f"_curWeek() renvoie {cw} — attendu {attendu} ({_dt.date.today().isoformat()})")
 
         # ═══ 8. DOUBLONS D'ID DOM ═══
         print("── 8. Identifiants DOM dupliques ...")
