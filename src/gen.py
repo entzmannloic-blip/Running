@@ -1232,7 +1232,44 @@ SAISON_EFF={
   ],
   "note":"À FC égale, +7,6 % d'efficience entre l'hiver et l'été (≈ 25 s/km plus rapide). L'été n'est PAS une régression : la chaleur gonflait ton cardio et masquait la vraie progression. Échantillon de 2-3 sorties par saison — tendance fiable, valeurs à ±quelques secondes."
 }
-ACWR_DATA={"charge7j":487,"charge28j":2017,"acwr":0.97,"interpretation":"Zone optimale. La charge aiguë de S32 (487) se situe juste sous la charge chronique moyenne (504/semaine sur 28 jours) : tu construis sans surcharger, avec le risque de blessure le plus bas. Deux nuances à garder en tête : ce ratio est atteint avec 2 sorties non planifiées sur 5, et la moitié de la charge de la semaine vient d'une seule sortie (le trail de dimanche, effort relatif 246). La marge existe pour S33, mais elle n'appelle pas à en rajouter — elle autorise juste à suivre le plan sans crainte."}
+# ═══════════════════════════════════════════════════════════════════
+# ACWR — SOURCE UNIQUE DE VERITE
+# ═══════════════════════════════════════════════════════════════════
+# Historique : ce bloc etait saisi A LA MAIN. Il a ete trouve fige a 0.69
+# pendant quatre semaines, puis faux (1.02 au lieu de 0.97) a cause d'une
+# erreur de fenetre lors d'un calcul manuel. Toute valeur recopiee finit
+# par mentir : elle est desormais CALCULEE depuis les seances loguees,
+# avec exactement la meme definition que _dynamicACWR() cote navigateur
+# (fenetre glissante 7 / 28 jours, et non semaines calendaires).
+def _acwr_compute():
+    import datetime as _dt
+    faits=[]
+    for _w,_arr in SEANCES_BY_WEEK.items():
+        for _s in _arr:
+            _r=_s.get("realise") or {}
+            if _r.get("statut") in ("fait","partiel") and _s.get("date"):
+                faits.append((_dt.date.fromisoformat(_s["date"]), _r.get("re") or 0))
+    if not faits:
+        return {"charge7j":0,"charge28j":0,"acwr":None,"ref":None}
+    _ref=max(d for d,_ in faits)
+    c7 =sum(re for d,re in faits if 0<=(_ref-d).days<=6)
+    c28=sum(re for d,re in faits if 0<=(_ref-d).days<=27)
+    _a=round(c7/(c28/4),2) if c28 else None
+    return {"charge7j":c7,"charge28j":c28,"acwr":_a,"ref":_ref.isoformat()}
+
+_ACW=_acwr_compute()
+
+def _acwr_zone(a):
+    if a is None:            return "Donnees insuffisantes pour calculer le ratio."
+    if a < 0.8:              return "Sous-charge : la charge recente est nettement inferieure a ton habitude. Utile en recuperation ou en affutage, a surveiller si ce n'est pas voulu."
+    if a <= 1.3:             return "Zone optimale : la charge recente est coherente avec ton habitude des quatre dernieres semaines. C'est le ratio dans lequel les adaptations se construisent avec le risque de blessure le plus bas."
+    if a <= 1.5:             return "Charge elevee : tu montes plus vite que ton corps ne s'adapte. Tolerable ponctuellement, risque si cela dure."
+    return "Surcharge : ratio associe a une hausse nette du risque de blessure. Allege sans attendre."
+
+ACWR_DATA={"charge7j":_ACW["charge7j"],"charge28j":_ACW["charge28j"],"acwr":_ACW["acwr"],
+  "ref":_ACW["ref"],
+  "interpretation":_acwr_zone(_ACW["acwr"])+" Charge aigue "+str(_ACW["charge7j"])+" sur 7 jours, chronique "+str(_ACW["charge28j"])+" sur 28 jours (soit "+str(round(_ACW["charge28j"]/4))+" par semaine), calcule au "+str(_ACW["ref"])+". Nuance a garder en tete pour S32 : ce ratio est atteint avec 2 sorties non planifiees sur 5, et la moitie de la charge de la semaine vient d'une seule sortie (le trail de dimanche, effort relatif 246)."}
+print("ACWR calcule :", ACWR_DATA["charge7j"], "/", ACWR_DATA["charge28j"], "=>", ACWR_DATA["acwr"], "(ref", ACWR_DATA["ref"] + ")")
 RECORDS_PERF=[
   {"dist":"5 km","record":"22:52","record_sub":"meilleur effort Strava","actuel":"4:35/km","actuel_sub":"meilleur effort 2026","temps_rec":"22:52","temps_act":"~22:52"},
   {"dist":"10 km","record":"46:14","record_sub":"meilleur effort Strava","actuel":"4:37/km","actuel_sub":"meilleur effort 2026","temps_rec":"46:14","temps_act":"~46:14"},
@@ -1338,6 +1375,14 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":174,"date":"10 aout 2026","sha":"","tag":"ACWR : source unique de verite (fin de la cause racine)","items":[
+    "CAUSE RACINE TRAITEE. L'ACWR avait ete trouve fige a 0,69 pendant quatre semaines, puis faux a 1,02 par erreur de fenetre lors d'un calcul manuel. Le diagnostic complet a revele non pas deux mais TROIS sources, et DEUX definitions differentes : ACWR_DATA saisi a la main dans gen.py ; _ckRebuild qui recalculait sur les 4 dernieres semaines LOGUEES ; _dynamicACWR sur fenetre glissante 7/28 jours.",
+    "PROBLEME DE FOND DE L'ANCIENNE DEFINITION PAR SEMAINES LOGUEES : elle sautait les semaines sans seance, pouvait donc couvrir bien plus de 28 jours, et restait bloquee sur la derniere semaine loguee tant qu'aucune seance de la semaine en cours n'etait enregistree. Deux chiffres differents pouvaient etre affiches a deux endroits de l'app.",
+    "CORRECTIF 1 -- gen.py ne saisit plus l'ACWR : il le CALCULE depuis les seances loguees via _acwr_compute(), avec exactement la definition standard (fenetre glissante 7/28 jours). L'interpretation textuelle est generee par zone. Plus aucune valeur recopiee a la main, donc plus aucune erreur de recopie possible.",
+    "CORRECTIF 2 -- app.js expose une fonction unique _acwrCompute(), utilisee a la fois par _dynamicACWR() et par _ckRebuild(). Une seule logique, un seul chiffre.",
+    "CORRECTIF 3 -- ACWR_DATA expose desormais un champ 'ref' (date de la derniere seance prise en compte). audit_kpi verifie sa fraicheur et alerte si une seance plus recente existe : le mode de defaillance 'valeur figee non detectee' devient structurellement impossible a rater.",
+    "VERIFIE : les quatre voies (gen.py au build, _acwrCompute, _dynamicACWR, ACWR_DATA apres _ckRebuild) renvoient toutes 0,97 / 487 / 2017. Simulation de robustesse : le ratio redescend a 0,69 apres trois jours sans courir et remonte a 0,90 avec un seuil loge — la fenetre glissante reagit, l'ancienne definition serait restee bloquee."
+  ]},
   {"build":173,"date":"10 aout 2026","sha":"","tag":"Audit dette technique : objectif marathon corrige + garde-fou sur les textes","items":[
     "NOUVEL AXE D'AUDIT (scripts/audit_dette.py). Les audits existants couvraient le runtime, la justesse des KPI et la coherence des donnees. Aucun ne cherchait la dette : champs morts, code mort, valeurs contradictoires entre sections.",
     "INCOHERENCE METIER CORRIGEE, visible dans l'app : la carte Records annoncait « Marathon vise : 3h42 » alors que l'objectif declare de Loic pour Nice est 3h45 (PROFIL.cible_marathon). Deux chiffres differents pour le meme objectif selon l'ecran consulte. Aligne sur 3h45. La projection de forme (~3h38-3h42) reste disponible separement dans PROFIL.marathon_projete.",

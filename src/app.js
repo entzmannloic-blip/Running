@@ -255,12 +255,17 @@ function _ckRebuild(){
     if(_CK.CAD)_CK.CAD[N]={w:lbl,v:ws.map(function(w){return _val('CAD','v',w,agg[w]&&agg[w].cad);})};
     if(_CK.PACE){var _pp=(_CK._PACE_ORIG&&_CK._PACE_ORIG[N])||{};var _L=lbl.length;var _tail=function(a){return Array.isArray(a)?a.slice(-_L):a;};_CK.PACE[N]={w:lbl,v:ws.map(function(w){return agg[w]?agg[w].pace:null;}),ef:_tail(_pp.ef),am:_tail(_pp.am),se:_tail(_pp.se)};}
   });
-  // Mettre à jour ACWR_DATA (valeur de secours) avec la dernière valeur réelle
+  // ACWR_DATA realigne sur la SEULE definition retenue (fenetre glissante
+  // 7/28 jours via _acwrCompute). Auparavant ce bloc recalculait sur les
+  // 4 dernieres semaines LOGUEES, ce qui produisait un second chiffre,
+  // different de celui affiche ailleurs dans l'app.
   if(typeof ACWR_DATA!=='undefined'){
-    var lastW=realWeeks[realWeeks.length-1];
-    ACWR_DATA.acwr=acwrByWeek[lastW];
-    ACWR_DATA.charge7j=agg[lastW]?agg[lastW].re:ACWR_DATA.charge7j;
-    var s28=realWeeks.slice(-4);ACWR_DATA.charge28j=s28.reduce(function(a,w){return a+(agg[w]?agg[w].re:0);},0);
+    var _aw=_acwrCompute();
+    if(_aw.acwr!==null){
+      ACWR_DATA.acwr=_aw.acwr;
+      ACWR_DATA.charge7j=_aw.c7;
+      ACWR_DATA.charge28j=_aw.c28;
+    }
   }
   // Reconstruire RUNS (liste "Analyse par sortie") depuis les vraies séances loggées — jamais figé.
   if(_CK.RUNS){
@@ -290,11 +295,14 @@ function _ckRebuild(){
   }
 }
 
-function _dynamicACWR(){
-  // ACWR sur FENETRE GLISSANTE 7 / 28 jours (definition standard).
-  // Avant : comparaison par semaine calendaire -> une semaine a peine commencee
-  // etait comparee a des semaines completes, d'ou un faux verdict "sous-charge"
-  // chaque debut de semaine, qui remontait mecaniquement le dimanche.
+/* SOURCE UNIQUE DE VERITE pour l'ACWR cote navigateur.
+   Avant, deux definitions coexistaient : _dynamicACWR() sur fenetre
+   glissante 7/28 jours (definition standard) et _ckRebuild() sur les
+   4 dernieres semaines LOGUEES — cette derniere sautait les semaines
+   sans seance et pouvait donc couvrir bien plus de 28 jours. Les deux
+   chiffres, affiches a des endroits differents, divergeaient des qu'une
+   semaine etait vide ou en cours. Tout passe desormais par _acwrCompute(). */
+function _acwrCompute(){
   const today=new Date();today.setHours(0,0,0,0);
   const DAY=86400000;
   let c7=0,c28=0;
@@ -307,8 +315,12 @@ function _dynamicACWR(){
     if(j<=6)c7+=re;
     if(j<=27)c28+=re;
   });
-  if(c28<=0)return typeof ACWR_DATA!=='undefined'?(ACWR_DATA.acwr||1.0):1.0;
-  return +((c7/(c28/4)).toFixed(2));
+  return {c7:c7,c28:c28,acwr:c28>0?+((c7/(c28/4)).toFixed(2)):null};
+}
+function _dynamicACWR(){
+  const w=_acwrCompute();
+  if(w.acwr===null)return typeof ACWR_DATA!=='undefined'?(ACWR_DATA.acwr||1.0):1.0;
+  return w.acwr;
 }
 
 /* ===== Fatigue residuelle (charge sRPE de Foster) =====
