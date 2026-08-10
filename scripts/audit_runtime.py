@@ -13,6 +13,12 @@ import datetime as _dt
 import json
 import sys
 
+# Mode --rapide : destine au gate de release. Echantillonne les fiches de
+# seance (une par semaine + toutes celles de la semaine courante) au lieu
+# des 132, ce qui ramene la duree de ~90 s a ~25 s. Le mode complet reste
+# la reference et doit etre lance sans argument.
+RAPIDE = "--rapide" in sys.argv
+
 HTML = "file:///mnt/user-data/outputs/plan-entrainement.html"
 DATA = json.load(open("/tmp/data.json", encoding="utf-8"))
 
@@ -58,17 +64,23 @@ def run():
                 if ph and loggee and num < 33:
                     ano("R2", f"S{num} : seances loggees mais placeholder 'Revue a venir' affiche")
                 p.evaluate("typeof fermer==='function'&&fermer()")
-                p.wait_for_timeout(360)
+                p.wait_for_timeout(110 if RAPIDE else 360)
             except Exception as e:
                 ano("R1", f"S{num} : exception a l'ouverture — {str(e)[:90]}")
             if len(errs) > before:
                 ano("R1", f"S{num} : erreur JS — {errs[-1][:110]}")
 
         # ═══ 2. TOUTES LES SEANCES ═══
-        print("── 2. Ouverture des 132 seances ...")
+        print(f"── 2. Ouverture des fiches de seance{' (echantillon)' if RAPIDE else ' (toutes)'} ...")
         ouvertes = 0
         for wk, arr in DATA["SBW"].items():
-            for se in arr:
+            lot = arr
+            if RAPIDE:
+                # une fiche par semaine, plus toutes celles deja loguees
+                loguees = [x for x in arr if (x.get("realise") or {}).get("statut") in ("fait", "partiel")]
+                lot = ([arr[0]] if arr else []) + [x for x in loguees if x is not (arr[0] if arr else None)]
+                lot = lot[:3]
+            for se in lot:
                 before = len(errs)
                 try:
                     p.evaluate(f"ouvrirSeance({int(wk)},{se['id']})")
@@ -79,7 +91,7 @@ def run():
                     else:
                         ouvertes += 1
                     p.evaluate("typeof fermer==='function'&&fermer()")
-                    p.wait_for_timeout(360)
+                    p.wait_for_timeout(110 if RAPIDE else 360)
                 except Exception as e:
                     ano("R3", f"S{wk} seance {se['id']} : exception — {str(e)[:90]}")
                 if len(errs) > before:
