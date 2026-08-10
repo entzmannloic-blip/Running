@@ -1,4 +1,6 @@
 /* ===== helpers ===== */
+/* Compteur global assurant l'unicite des id de degrade SVG (voir sparkline). */
+let _gradSeq=0;
 function rpeColor(r){return r<=3?'#16a34a':r<=5?'#0d9488':r<=6.9?'#f59e0b':r<=8?'#f59e0b':'#ef4444';}
 function rpeScale(r){let h='';for(let i=1;i<=10;i++){const on=i<=Math.round(r);h+=`<div class="rpe-seg" style="background:${on?rpeColor(r):''}"></div>`;}return h;}
 function catBadge(c){return c==='specifique'?'<span class="cat-badge cat-specifique">Spécifique</span>':'<span class="cat-badge cat-classique">Classique</span>';}
@@ -22,7 +24,12 @@ function chartLine(vals,o){o=o||{};const color=o.color||'#0d9488',h=o.h||150,fmt
   area+=` L ${lastX.toFixed(1)} ${(h-padB).toFixed(1)} Z`;
   let bl='';if(baseline!=null){const by=Y(baseline);bl=`<line x1="${pad}" y1="${by.toFixed(1)}" x2="${W-12}" y2="${by.toFixed(1)}" stroke="#ef4444" stroke-dasharray="4 4" stroke-width="1.2"/><text x="${W-14}" y="${(by-4).toFixed(1)}" font-size="9" fill="#ef4444" text-anchor="end">seuil 1.5</text>`;}
   let td='';if(todayIdx!=null){const tx=X(todayIdx);td=`<line x1="${tx.toFixed(1)}" y1="${padT}" x2="${tx.toFixed(1)}" y2="${h-padB}" stroke="#94a3b8" stroke-dasharray="3 3"/><text x="${tx.toFixed(1)}" y="9" font-size="8.5" fill="#94a3b8" text-anchor="middle">aujourd'hui</text>`;}
-  const gid='g'+color.replace('#','');
+  /* L'id du degrade etait derive de la seule couleur : deux graphiques de
+     meme teinte produisaient deux <linearGradient> avec le MEME id, et
+     url(#id) resolvait alors toujours vers le premier — remplissage errone
+     sur le second. Un compteur global garantit l'unicite. */
+  _gradSeq=(_gradSeq||0)+1;
+  const gid='g'+color.replace('#','')+'_'+_gradSeq;
   const yl=`<text x="2" y="${(Y(max)+8).toFixed(1)}" font-size="9" fill="#94a3b8">${fmtY(max)}</text><text x="2" y="${(Y(min)+2).toFixed(1)}" font-size="9" fill="#94a3b8">${fmtY(min)}</text>`;
   let xl='';if(labels){xl=idx.filter((_,k)=>k%Math.ceil(idx.length/6)===0).map(p=>`<text x="${X(p[0]).toFixed(1)}" y="${h-6}" font-size="8" fill="#94a3b8" text-anchor="middle">${labels[p[0]]||''}</text>`).join('');}
   let ann='';if(o.annotate){const pp=[];for(let i=0;i<vals.length;i++){if(vals[i]==null)continue;const a=(i>0?vals[i-1]:null),b=(i<vals.length-1?vals[i+1]:null);let lab=false,up=true;if(a==null||b==null){lab=true;up=(b!=null?vals[i]>=b:(a!=null?vals[i]>=a:true));}else if(vals[i]>a&&vals[i]>=b){lab=true;up=true;}else if(vals[i]<a&&vals[i]<=b){lab=true;up=false;}if(lab)pp.push({i,up});}ann=pp.map(p=>`<text x="${X(p.i).toFixed(1)}" y="${(p.up?Y(vals[p.i])-6:Y(vals[p.i])+13).toFixed(1)}" font-size="9" font-weight="700" fill="#94a3b8" text-anchor="middle">${fmtY(vals[p.i])}</text>`).join('');}
@@ -1774,7 +1781,7 @@ function ouvrirSemaine(num){const s=SEMAINES.find(x=>x.num===num);const ph=PHASE
     return `<div class="seance-carte${cardClass}" id="sc-${num}-${se.id}" onclick="ouvrirSeance(${num},${se.id})"  ><div class="seance-bande" style="background:${se.accent}"></div><div class="seance-idx">Séance ${se.num}</div><div class="seance-info"><div class="seance-nom">${se.titre}</div><div class="seance-desc">${se.sous}</div>${rs}<div class="seance-tags">${tags.join('')}</div></div><div class="seance-fleche-wrap">${rightEl}</div></div>`;
   }).join('');
   const repPill=s.repartition&&s.repartition!=='—'?`<div class="sw-pill"><div class="sw-pill-l">Répartition</div><div class="sw-pill-v" style="font-size:.74rem">${s.repartition}</div></div>`:'';
-  contenu.innerHTML=`<div class="sw-hero"><span class="sw-tag" style="background:${COUL[s.phase]}22;color:${COUL[s.phase]}">${ph.nom}</span><h2 class="sw-titre">Semaine ${s.num} — ${s.theme}</h2><p class="sw-sous">Semaine type · clique une séance</p><div class="sw-meta"><div class="sw-pill"><div class="sw-pill-l">Volume cible</div><div class="sw-pill-v">${s.km} km</div></div><div class="sw-pill"><div class="sw-pill-l">Réalisé</div><div class="sw-pill-v">${fait}/${seances.length} · ${realKm} km</div></div><div class="sw-pill"><div class="sw-pill-l">Charge</div><div class="sw-pill-v" style="font-size:.84rem">${s.charge}</div></div>${repPill}</div></div><div class="sw-corps"><div class="callout callout-obj">${s.objectif}</div><div class="sw-section">Séances de la semaine</div><div class="seance-liste">${liste}</div>${s.revue?`<div class="sw-section">Revue du coach — bilan de la semaine</div><div class="rev-coach">${s.revue}</div>`:`<div class="realise-empty" style="margin-top:18px"><strong>Revue de la semaine à venir.</strong> Quand la semaine sera bouclée, tu trouveras ici mon bilan complet : volume et charge vs prévu, adhérence, signaux à surveiller, et la décision pour la semaine suivante. Elle alimentera aussi le Journal du coach.</div>`}</div>`;ouvrir();
+  contenu.innerHTML=`<div class="sw-hero"><span class="sw-tag" style="background:${COUL[s.phase]}22;color:${COUL[s.phase]}">${ph.nom}</span><h2 class="sw-titre">Semaine ${s.num} — ${s.theme}</h2><p class="sw-sous">Semaine type · clique une séance</p><div class="sw-meta"><div class="sw-pill"><div class="sw-pill-l">Volume cible</div><div class="sw-pill-v">${s.km} km</div></div><div class="sw-pill"><div class="sw-pill-l">Réalisé</div><div class="sw-pill-v">${fait}/${seances.length} · ${realKm} km</div></div><div class="sw-pill"><div class="sw-pill-l">Charge</div><div class="sw-pill-v" style="font-size:.84rem">${s.charge}</div></div>${repPill}</div></div><div class="sw-corps"><div class="callout callout-obj">${s.objectif}</div><div class="sw-section">Séances de la semaine</div><div class="seance-liste">${liste}</div>${(typeof REWINDS!=='undefined'&&REWINDS.some(x=>x.id==='S'+s.num))?`<div style="text-align:center;margin-top:18px"><button class="rw-btn" onclick="rwOpen('S${s.num}')">🎬 Lance le Rewind de ta semaine</button></div>`:''}${s.revue?`<div class="sw-section">Revue du coach — bilan de la semaine</div><div class="rev-coach">${s.revue}</div>`:`<div class="realise-empty" style="margin-top:18px"><strong>Revue de la semaine à venir.</strong> Quand la semaine sera bouclée, tu trouveras ici mon bilan complet : volume et charge vs prévu, adhérence, signaux à surveiller, et la décision pour la semaine suivante. Elle alimentera aussi le Journal du coach.</div>`}</div>`;ouvrir();
 }
 /* ===== Créneaux météo — popup horaire ===== */
 function _wxStatus(t){
@@ -2817,7 +2824,18 @@ function _ckOpenRun(i){
   }
 }
 function _ckRenderAll(win){
-  const D=_CK;const W=win;
+  const D=_CK;
+  /* Garde-fou : D.VOL/D.RE ne contiennent que les fenetres reellement
+     precalculees (2/4/8/12). Appelee avec une autre valeur, la fonction
+     levait "Cannot read properties of undefined (reading 'a')" et laissait
+     le Cockpit a moitie rendu. On retombe sur la fenetre disponible la plus
+     proche plutot que de casser l'ecran. */
+  let W=win;
+  if(!D||!D.VOL||!D.RE||!D.VOL[W]||!D.RE[W]){
+    const dispo=(D&&D.VOL?Object.keys(D.VOL):[]).map(Number).filter(n=>!isNaN(n)&&D.VOL[n]&&D.RE[n]);
+    if(!dispo.length)return;
+    W=dispo.reduce((best,n)=>Math.abs(n-win)<Math.abs(best-win)?n:best,dispo[0]);
+  }
   // KPIs dynamiques
   const totalKm=D.VOL[W].a.reduce((a,b)=>a+b,0);
   const totalRE=D.RE[W].v.reduce((a,b)=>a+b,0);

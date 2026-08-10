@@ -1338,6 +1338,13 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":171,"date":"10 aout 2026","sha":"","tag":"Les trois derniers bugs de l'audit corriges","items":[
+    "BUG-04 CORRIGE (Rewinds inaccessibles). Le bouton 'Lance le Rewind' n'existait que dans le bloc special de la S24 et etait code en dur sur rwOpen('S24') : les Rewinds S25, S26, S27 et S32 n'etaient atteignables que par l'ouverture automatique du lundi. Le bouton est desormais rendu dans la vue generique de semaine, conditionne a l'existence d'un Rewind pour cette semaine. Verifie : present sur S24/S25/S26/S27/S32, absent sur S30 et S33, et le clic ouvre bien le Rewind de la bonne semaine.",
+    "BUG-05 CORRIGE (degrades SVG). L'id du degrade valait 'g'+couleur : deux graphiques de meme teinte generaient deux <linearGradient> partageant le meme id, et url(#id) resolvait toujours vers le premier. Un compteur global (_gradSeq) rend chaque id unique. Verifie sur le Cockpit : 7 degrades, zero doublon.",
+    "RISQUE-01 CORRIGE (_ckRenderAll). La fonction lisait D.VOL[W].a sans verifier que la fenetre W existait, et levait 'Cannot read properties of undefined' sur toute valeur autre que 2/4/8/12. Une garde retombe desormais sur la fenetre disponible la plus proche. Verifie sur 2, 4, 8, 12, 26, 52 et 999 : aucun crash.",
+    "OUTILLAGE D'AUDIT FIABILISE. Deux faux positifs de mes propres scripts corriges : audit_data ne detectait pas les boutons rwOpen construits dynamiquement, et audit_runtime comparait la semaine courante a une valeur figee (32) au lieu de la calculer — il signalait donc a tort une anomalie au passage en S33.",
+    "ETAT APRES CORRECTIFS : audit runtime a 0 anomalie sur 30 semaines, 132 seances, 5 Rewinds et toutes les fenetres Cockpit ; audit statique a 1 seul point restant (une seance du 25/06 jamais loguee, sans consequence)."
+  ]},
   {"build":170,"date":"9 aout 2026","sha":"","tag":"Correction de la race condition d'ouverture + suite de tests rendue fiable","items":[
     "BUG-01 CORRIGE (ecran blanc). fermer() planifiait contenu.innerHTML='' dans un setTimeout de 300 ms. En rouvrant une fiche avant l'echeance, ce vidage differe s'appliquait a la NOUVELLE vue, qui s'affichait vide. Mesure avant correctif : echec systematique de 0 a 290 ms de delai.",
     "Correctif : le timer est desormais memorise dans _viderTimer et annule par clearTimeout des qu'une nouvelle vue s'ouvre (ouvrir()) ou qu'une fermeture est relancee. Verification apres correctif : 10 delais testes de 0 a 500 ms, 10 succes, y compris le cas 0 ms qui echouait toujours.",
