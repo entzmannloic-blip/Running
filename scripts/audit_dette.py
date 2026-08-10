@@ -89,9 +89,13 @@ if non_proteges:
                  f"leve une exception en navigation privee sur certains navigateurs")
 
 # ══ 6. VALEURS EN DUR SUSPECTES DANS gen.py ════════════════════
-for m in re.finditer(r'"(charge7j|charge28j|acwr)"\s*:\s*([\d.]+)', GEN):
-    INFO.append(f"KPI '{m.group(1)}' fige en dur dans gen.py (= {m.group(2)}) — "
-                f"doit etre recalcule a chaque log, sinon il derive silencieusement")
+# Un KPI n'est "fige" que s'il n'existe aucune fonction de calcul pour lui.
+# Depuis que gen.py calcule l'ACWR via _acwr_compute(), les litteraux
+# rencontres sont les valeurs de repli de cette fonction, pas des saisies.
+if "_acwr_compute" not in GEN:
+    for m in re.finditer(r'"(charge7j|charge28j|acwr)"\s*:\s*([\d.]+)', GEN):
+        INFO.append(f"KPI '{m.group(1)}' saisi en dur dans gen.py (= {m.group(2)}) — "
+                    f"aucune fonction de calcul detectee, il derivera silencieusement")
 
 # ══ 7. SEMAINES SANS OBJECTIF / CHARGE RENSEIGNES ══════════════
 for s in D["SEMAINES"]:
@@ -111,5 +115,9 @@ for titre, lot in (("INCOHERENCES METIER (visibles par l'utilisateur)", INCO),
     for x in lot:
         print(f"   • {x}")
 print("\n" + "=" * 66)
-print(f"  {len(INCO)} incoherence(s) · {len(DETTE)} dette(s) · {len(INFO)} vigilance(s)")
+print(f"  RESULTAT : {len(INCO)} incoherence(s) · {len(DETTE)} dette(s) · {len(INFO)} vigilance(s)")
 print("=" * 66)
+# Seules les incoherences visibles par l'utilisateur bloquent. La dette est
+# un signal a traiter, pas un motif de refus de livraison.
+import sys as _sys
+_sys.exit(1 if INCO else 0)
