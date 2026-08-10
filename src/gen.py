@@ -1246,7 +1246,7 @@ PROFIL={"prenom":"Loïc","ville":"Lyon","cible_marathon":"3h45","marathon_projet
 PROJ={"base":13200,"goal":13500,"gmin":12600,"gmax":14400,
       "base_label":"forme de départ (réf. semi 1h52:39 + 16 km progressif du 9 juin à 4:50/km)",
       "mp_goal":"5:20/km"}
-RECORDS=[{"label":"Semi 2022","val":"1h53","sub":"référence"},{"label":"Semi projeté","val":"~1h44","sub":"forme actuelle"},{"label":"Marathon visé","val":"3h42","sub":"objectif Nice"}]
+RECORDS=[{"label":"Semi 2022","val":"1h53","sub":"référence"},{"label":"Semi projeté","val":"~1h44","sub":"forme actuelle"},{"label":"Marathon visé","val":"3h45","sub":"objectif Nice"}]
 VIGILANCE=[{"t":"Dos / lombaires","d":"surveiller en montée de charge"},{"t":"Carburant & électrolytes","d":"protocole validé canicule : électrolytes zéro cal. dès le départ + ~850 ml/h + 1 gel par heure — à combiner avec glucides si sortie > 2h"}]
 S24_REALISE={"km":36.4,"runs":[
  {"iso":"2026-06-09","date":"Mar. 9","titre":"Footing 16 km — finish progressif","desc":"1h26 · 5:22/km · FC 153 (max 171) · charge 164 · Novablast 5","tag":"Endurance",
@@ -1338,6 +1338,13 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":173,"date":"10 aout 2026","sha":"","tag":"Audit dette technique : objectif marathon corrige + garde-fou sur les textes","items":[
+    "NOUVEL AXE D'AUDIT (scripts/audit_dette.py). Les audits existants couvraient le runtime, la justesse des KPI et la coherence des donnees. Aucun ne cherchait la dette : champs morts, code mort, valeurs contradictoires entre sections.",
+    "INCOHERENCE METIER CORRIGEE, visible dans l'app : la carte Records annoncait « Marathon vise : 3h42 » alors que l'objectif declare de Loic pour Nice est 3h45 (PROFIL.cible_marathon). Deux chiffres differents pour le meme objectif selon l'ecran consulte. Aligne sur 3h45. La projection de forme (~3h38-3h42) reste disponible separement dans PROFIL.marathon_projete.",
+    "GARDE-FOU AJOUTE dans audit_kpi.py : les CHIFFRES CITES DANS LES TEXTES sont desormais confrontes aux KPI. C'est exactement le trou par lequel le bug de l'ACWR etait passe -- la valeur figee avait ete corrigee mais les revues et slides continuaient d'annoncer l'ancien chiffre. Un texte qui contredit un KPI est un KPI faux.",
+    "Le controle ne s'applique qu'aux textes COURANTS : une revue passee cite legitimement l'ACWR de son epoque (S28 a 1,10, S29 a 1,00), ce n'est pas une incoherence. Contre-test realise : en reinjectant 1,02 dans la revue S32, l'audit le detecte.",
+    "DETTE ASSUMEE ET DOCUMENTEE, non corrigee ici : le champ REPLAY est exporte (2518 octets) mais jamais lu par app.js, qui utilise un _REPLAY_DATA code en dur ; 7 acces localStorage restent sans try/catch explicite (impact faible sur iOS moderne, ou le stockage fonctionne en navigation privee) ; ACWR_DATA reste fige dans gen.py tout en etant ecrase au runtime par _ckRebuild, ce qui cree deux sources de verite pour le meme chiffre."
+  ]},
   {"build":172,"date":"10 aout 2026","sha":"","tag":"ACWR FAUX corrige (1,02 -> 0,97) + champ effort manquant","items":[
     "AUDIT KPI DEDIE CREE (scripts/audit_kpi.py). Les scripts existants verifiaient que les KPI s'AFFICHENT et ne plantent pas ; aucun ne verifiait qu'ils sont JUSTES. Ce nouvel audit refait chaque calcul independamment depuis les seances loguees, puis le confronte a ce que l'app produit dans le navigateur. Il a immediatement trouve deux erreurs, toutes deux introduites par moi.",
     "ERREUR 1 -- ACWR FAUX. Au build 166 j'avais calcule la fenetre 28 jours avec une expression fautive (aout[1:]) qui EXCLUAIT la sortie du 02/08 (effort relatif 105). La charge chronique affichait donc 1912 au lieu de 2017, et l'ACWR 1,02 au lieu de 0,97. Corrige : charge28j 2017, moyenne 504/semaine, ACWR 0,97. Interpretation, revue S32 et slide du Rewind mises a jour en coherence.",
