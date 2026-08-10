@@ -12,6 +12,7 @@ c'est exactement le scenario de l'ACWR fige a 0.69 pendant quatre semaines.
 """
 import datetime as dt
 import json
+import re
 import sys
 
 HTML = "file:///mnt/user-data/outputs/plan-entrainement.html"
@@ -107,6 +108,53 @@ print(f"\n── Reconciliation MONTHLY / SAISON2026 " + "─" * 25)
 cmp("total km", sum(m["km"] for m in MON), SAI.get("km"), tol=1)
 cmp("total sorties", sum(m["sorties"] for m in MON), SAI.get("sorties"), tol=0)
 cmp("total D+", sum(m["elev"] for m in MON), SAI.get("elev"), tol=1)
+
+# ══════════════════════════════════════════════════════════════
+# 3. COHERENCE DES CHIFFRES CITES DANS LES TEXTES
+# ══════════════════════════════════════════════════════════════
+# C'est le trou par lequel le bug de l'ACWR est passe : la valeur figee
+# avait ete corrigee, mais les revues et slides continuaient d'annoncer
+# l'ancien chiffre. Un texte qui contredit un KPI est un KPI faux.
+print(f"\n── Chiffres cites dans les textes " + "─" * 30)
+ad = D.get("ACWR_DATA", {})
+acwr_ref = ad.get("acwr")
+chron_ref = round(ad.get("charge28j", 0) / 4) if ad.get("charge28j") else None
+aigu_ref = ad.get("charge7j")
+
+# Seuls les textes COURANTS sont controles : une revue passee cite
+# legitimement l'ACWR de son epoque, ce n'est pas une incoherence.
+derniere = max(par_semaine) if par_semaine else None
+textes = []
+for s_ in D["SEMAINES"]:
+    if s_.get("revue") and s_["num"] == derniere:
+        textes.append((f"revue S{s_['num']}", s_["revue"]))
+if D.get("REWINDS"):
+    rw = D["REWINDS"][-1]
+    for i, sl in enumerate(rw.get("slides", [])):
+        textes.append((f"Rewind {rw['id']} slide {i+1}",
+                       str(sl.get("big", "")) + " " + str(sl.get("txt", ""))))
+if ad.get("interpretation"):
+    textes.append(("interpretation ACWR", ad["interpretation"]))
+
+suspects = 0
+for nom, txt in textes:
+    for m in re.finditer(r"ACWR[^0-9]{0,12}([01][.,]\d{2})", txt):
+        val = float(m.group(1).replace(",", "."))
+        if acwr_ref and abs(val - acwr_ref) > 0.02:
+            ECARTS.append(f"{nom} : annonce un ACWR de {m.group(1)} alors que le KPI vaut {acwr_ref}")
+            suspects += 1
+    for m in re.finditer(r"chronique\D{0,14}(\d{3,4})\s*/\s*semaine", txt):
+        val = int(m.group(1))
+        if chron_ref and abs(val - chron_ref) > 3:
+            ECARTS.append(f"{nom} : annonce une charge chronique de {val}/semaine alors que le KPI donne {chron_ref}")
+            suspects += 1
+    for m in re.finditer(r"aigu\D{0,10}(\d{3,4})", txt):
+        val = int(m.group(1))
+        if aigu_ref and abs(val - aigu_ref) > 3:
+            ECARTS.append(f"{nom} : annonce une charge aigue de {val} alors que le KPI donne {aigu_ref}")
+            suspects += 1
+if not suspects:
+    OK.append(f"{len(textes)} textes analyses : aucun chiffre en contradiction avec les KPI")
 
 # ══════════════════════════════════════════════════════════════
 # 2. CONFRONTATION AVEC LES KPI CALCULES PAR L'APP (runtime)
