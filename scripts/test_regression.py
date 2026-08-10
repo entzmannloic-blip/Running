@@ -53,16 +53,26 @@ def run():
         check("T01 chargement sans erreur JS", len(js_errors) == 0,
               "; ".join(js_errors[:3]))
 
-        # ── T02 : les 5 vues rendent du contenu ──
-        views = ["accueil", "seances", "cockpit", "courses"]
+        # ── T02 : les 4 vues rendent du contenu ──
+        # Les identifiants sont ceux reellement utilises par showTab() :
+        # accueil / plan / cockpit / palmares. Un nom inconnu masque TOUTES
+        # les vues sans lever d'erreur, d'ou la verification ciblee sur
+        # #vue-<id> plutot que sur document.body (la barre de navigation
+        # suffisait a franchir l'ancien seuil et rendait le test complaisant).
+        views = ["accueil", "plan", "cockpit", "palmares"]
         for v in views:
             try:
                 p.evaluate(f"showTab('{v}')")
                 p.wait_for_timeout(400)
-                has = p.evaluate(
-                    "(document.querySelector('.vue-in, .vue.on, main')"
-                    "?.textContent||document.body.innerText||'').trim().length>50")
-                check(f"T02 vue {v} rend du contenu", bool(has))
+                res = p.evaluate(
+                    "(function(v){var e=document.getElementById('vue-'+v);"
+                    "if(!e)return{ok:false,n:0,vis:false};"
+                    "var vis=getComputedStyle(e).display!=='none';"
+                    "var n=(e.innerText||'').trim().length;"
+                    "return{ok:vis&&n>200,n:n,vis:vis};})('" + v + "')")
+                check(f"T02 vue {v} rend du contenu",
+                      bool(res and res.get("ok")),
+                      f"visible={res.get('vis')} texte={res.get('n')} car.")
             except Exception as e:
                 check(f"T02 vue {v}", False, str(e)[:80])
 
