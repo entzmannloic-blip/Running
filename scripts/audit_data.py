@@ -28,7 +28,7 @@ js = open(APPJS, encoding="utf-8").read()
 
 SEM = d["SEMAINES"]
 SBW = d["SBW"]
-TODAY = dt.date(2026, 8, 9)
+TODAY = dt.date.today()   # etait fige au 2026-08-09
 
 # ══ A. COHERENCE DES SEANCES ══════════════════════════════════
 toutes = []
@@ -136,8 +136,11 @@ semaines_avec_seances_loggees = sorted({
 })
 sem_revue = {s["num"] for s in SEM if s.get("revue")}
 for wk in semaines_avec_seances_loggees:
-    if wk == max(semaines_avec_seances_loggees) and wk == TODAY.isocalendar()[1]:
-        pass  # semaine en cours : tolere
+    # La semaine EN COURS n'a pas encore de revue, c'est normal : elle
+    # s'ecrit une fois la semaine bouclee. Le 'pass' precedent ne sautait
+    # pas l'iteration, la semaine courante etait donc signalee a tort.
+    if wk == TODAY.isocalendar()[1]:
+        continue
     if wk not in sem_revue:
         bug("B1", f"S{wk} a des seances loggees mais AUCUNE revue de coach")
 
