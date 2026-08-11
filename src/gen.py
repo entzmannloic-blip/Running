@@ -1038,7 +1038,37 @@ for n, arr in list(SEANCES_BY_WEEK.items()):
                 {"km":7,"allure":"6:09","fc":138},{"km":8,"allure":"6:05","fc":143},{"km":9,"allure":"6:07","fc":142},
                 {"km":10,"allure":"6:03","fc":140}],
       "revue":"<p><strong>La séance que j'attendais depuis dimanche.</strong> Objectif annoncé 140 bpm, FC moyenne réalisée 138. Tenu.</p><p><strong>Le chiffre qui compte n'est pas l'allure, c'est l'amplitude :</strong> 15 secondes au kilomètre entre ton plus lent (6:18) et ton plus rapide (6:03). Dimanche, l'écart était de 128 secondes. Tu viens de courir dix kilomètres sans jamais accélérer sans le décider — exactement l'axe de travail identifié cette semaine.</p><p><strong>Ta perception est juste, et les données la nuancent utilement.</strong> Tu décris une lourdeur sur les 6 premiers kilomètres puis un déliement : côté cardiaque, c'est l'inverse qui apparaît (136,8 bpm sur les km 1-6, 140,4 sur les km 7-10). Ce n'est pas contradictoire. Au départ, tes jambes travaillaient contre une raideur post-trail à faible coût cardiaque — le km 1 à 6:18 pour seulement 129 bpm. Ensuite la mécanique s'est libérée, l'allure a progressé, et la FC est montée par dérive normale après 40 minutes, accentuée par les 14 m de D+ des km 8 et 9. Sensation et cardio racontent la même histoire vue de deux côtés.</p><p><strong>Pied : zéro douleur sur 10 km, quatre jours après un trail de 27 km et 662 m de D+.</strong> Le dossier est clos, et je ne le rouvrirai que si tu le rouvres.</p><p><strong>Effort relatif 53</strong> — le plus bas depuis trois semaines. C'est précisément ce que doit coûter un footing de récupération. Cadence 175, stable du premier au dernier kilomètre.</p><p><strong>Ce qu'on fait maintenant :</strong> mercredi footing court avec lignes droites, puis <strong>seuil 2×10 jeudi</strong>, avec deux jours pleins de digestion du trail. C'est le bon décalage — le seuil mérite des jambes disponibles, pas des jambes qui se déplient.</p>"}
-    arr[4]["date"]="2026-08-13"
+    # Contrainte annoncee par Loic : depart pour La Rochelle mercredi 12,
+    # retour a Lyon dimanche 16 en fin de journee apres 6h30 de route.
+    # Trois creneaux disponibles : mercredi matin avant le depart, une
+    # sortie sur place, et eventuellement un deverrouillage au retour.
+    # ARBITRAGE : le seuil 2x10 est sacrifie, pas la sortie longue. Le
+    # seuil est deja une force (79/99) ; l'allure marathon est le point
+    # faible (42/99) et l'objectif est a 12 semaines. On fusionne donc
+    # longue et travail specifique dans la seance de La Rochelle.
+    arr[2]["date"]="2026-08-12"
+    arr[2]["sous"]="Avant la route — jambes déverrouillées."
+    arr[2]["objectif"]="Footing court avec lignes droites, <strong>le matin avant les 6h30 de voiture</strong>. Rouler les jambes avant une longue position assise vaut mieux que partir raide. FC plafond 145."
+    arr[3]["date"]="2026-08-14"
+    arr[3]["titre"]="Longue + bloc allure marathon"
+    arr[3]["sous"]="La Rochelle — la séance clé de la semaine."
+    arr[3]["metriques"]={"Distance":"15 km","Durée":"~90 min","Allure":"6:00-6:15 puis 5:20/km","FC":"135-150 puis 148-160","RPE":"5-6","Type":"Longue + spécifique"}
+    arr[3]["objectif"]="<strong>La séance à ne pas manquer cette semaine.</strong> Longue et travail d'allure marathon fusionnés : c'est le meilleur rendement possible sur trois créneaux. Terrain plat en bord de mer, idéal pour tenir une allure régulière. <strong>Le nombre à annoncer avant de partir : 5:20/km sur le bloc.</strong>"
+    arr[3]["struct"]=[
+      {"nom":"Échauffement","txt":"5 km très souples à 6:00-6:15/km, FC sous 145. Ne rien précipiter, surtout sur une jambe qui a voyagé la veille."},
+      {"nom":"Bloc spécifique","txt":"<strong>5 à 6 km à 5:20/km</strong>, FC cible 148-160. Régularité avant tout : chaque kilomètre doit tomber entre 5:18 et 5:24. <strong>Descendre sous 5:15, c'est rater la séance</strong>, même en se sentant bien."},
+      {"nom":"Retour au calme","txt":"4 à 5 km à allure facile, FC redescendue sous 145."},
+      {"nom":"Conditions","txt":"Partir tôt : en août sur la côte, la chaleur monte vite et l'humidité est plus forte qu'à Lyon. Boire toutes les 15-20 min, électrolytes dès le départ."}]
+    arr[4]["date"]="2026-08-16"
+    arr[4]["titre"]="Déverrouillage retour de route"
+    arr[4]["type"]="EF aérobie"
+    arr[4]["opt"]=True
+    arr[4]["sous"]="Optionnel — seulement si l'envie est là."
+    arr[4]["metriques"]={"Distance":"6-8 km","Durée":"~45 min","Allure":"6:10-6:30/km","FC":"< 140","RPE":"2-3","Type":"Déverrouillage"}
+    arr[4]["objectif"]="Après 6h30 de voiture, l'objectif est de <strong>débloquer les jambes, pas de s'entraîner</strong>. Très facile, FC sous 140. <strong>Si la fatigue du trajet domine, une marche de 20 minutes fait le même travail</strong> — ne force pas cette séance, elle ne vaut pas une semaine suivante entamée."
+    arr[4]["struct"]=[
+      {"nom":"Corps","txt":"6 à 8 km à allure très facile, FC plafonnée à 140. Aucune ligne droite, aucune accélération."},
+      {"nom":"Alternative","txt":"20 à 30 min de marche + mobilité hanches et chaîne postérieure si les jambes sont trop lourdes."}]
 for _s in SEMAINES:
     if _s["num"]==25: _s["revue"]=_S25_REVUE
     if _s["num"]==26: _s["revue"]=_S26_REVUE
@@ -1441,6 +1471,14 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":178,"date":"11 aout 2026","sha":"","tag":"S33 restructuree autour du deplacement a La Rochelle","items":[
+    "CONTRAINTE : depart pour La Rochelle mercredi 12, retour a Lyon dimanche 16 en fin de journee apres 6h30 de route. Trois creneaux exploitables : mercredi matin avant le depart, une sortie sur place, un eventuel deverrouillage au retour.",
+    "ARBITRAGE ASSUME : le seuil 2x10 est sacrifie, pas la sortie longue. Le seuil est deja une force du profil (79/99) alors que l'allure marathon en est le point faible (42/99), et Nice est a 12 semaines. Une semaine sans seuil ne coute rien ; une semaine sans travail specifique marathon, si.",
+    "MERCREDI 12 : footing court avec lignes droites le matin, AVANT la route. Rouler les jambes avant une longue position assise vaut mieux que partir raide. FC plafond 145.",
+    "VENDREDI 14, LA ROCHELLE — seance cle : 15 km dont un bloc de 5 a 6 km a 5:20/km, encadre de footing facile. Longue et travail specifique fusionnes, meilleur rendement possible sur trois creneaux. Terrain plat en bord de mer, ideal pour la regularite. Consigne chiffree : chaque kilometre du bloc entre 5:18 et 5:24, et descendre sous 5:15 revient a rater la seance meme en se sentant bien.",
+    "DIMANCHE 16 : deverrouillage optionnel de 6 a 8 km, FC sous 140, uniquement si l'envie est la. Apres 6h30 de voiture, l'objectif est de debloquer les jambes, pas de s'entrainer. Une marche de 20 a 30 minutes fait le meme travail si la fatigue du trajet domine.",
+    "Volume previsionnel de la semaine ramene autour de 45 km contre 52 prevus, avec ACWR a 0,81 : la marge existe, elle n'appelle pas a compenser."
+  ]},
   {"build":177,"date":"11 aout 2026","sha":"","tag":"S33 : repos du lundi et footing cardio-plafonne du mardi","items":[
     "LUNDI 10/08 marque en repos choisi. Le repos etait deja au programme ; Loic l'a confirme sur ses sensations, la recuperation du trail de dimanche etant encore incomplete.",
     "MARDI 11/08 logue : footing 10,07 km en 1h02 a 6:09/km, FC moyenne 138 pour un plafond annonce a 140, FC max 152, effort relatif 53, cadence 175, 29 m D+. Zero douleur au pied. Le seuil 2x10 initialement prevu ce jour glisse au jeudi 13.",
