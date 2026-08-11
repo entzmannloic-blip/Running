@@ -86,7 +86,11 @@ for wk, arr in SBW.items():
 
 # A5 — chaussure retiree encore prescrite/portee
 GEAR = {g["modele"]: g for g in d.get("GEAR", [])}
-RETIREES = ["Clifton 10"]
+# Aucune chaussure n'est reellement retiree cote Strava (retired=false
+# partout). Les Clifton 10 y figuraient a tort : elles ne sont pas
+# retirees, elles sont SUR-USEES -- et cette classification erronee
+# neutralisait le controle d'usure E1, qui exclut les paires retirees.
+RETIREES = []
 for se in toutes:
     ch = se.get("chaussure") or ""
     for r in RETIREES:
