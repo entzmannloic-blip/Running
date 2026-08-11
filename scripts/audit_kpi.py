@@ -168,8 +168,13 @@ textes = []
 for s_ in D["SEMAINES"]:
     if s_.get("revue") and s_["num"] == derniere:
         textes.append((f"revue S{s_['num']}", s_["revue"]))
-if D.get("REWINDS"):
-    rw = D["REWINDS"][-1]
+# Un Rewind est un document HISTORIQUE : celui de S32 cite legitimement
+# l'ACWR de fin S32. On ne controle donc que le Rewind de la semaine en
+# cours, s'il existe -- pas simplement le dernier de la liste.
+_cur = dt.date.today().isocalendar()[1]
+_rw = [r for r in D.get("REWINDS", []) if r.get("id") == f"S{_cur}"]
+if _rw:
+    rw = _rw[0]
     for i, sl in enumerate(rw.get("slides", [])):
         textes.append((f"Rewind {rw['id']} slide {i+1}",
                        str(sl.get("big", "")) + " " + str(sl.get("txt", ""))))
