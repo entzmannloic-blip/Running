@@ -885,7 +885,7 @@ for n,ss in WEEKS.items():
         # Mercredi : EF simple (reprend le contenu de l'ancien lundi, decale)
         arr[1]["date"]="2026-08-05"
         arr[1]["titre"]="Footing facile"
-        arr[1]["chaussure"]="Novablast 5 V"
+        arr[1]["chaussure"]="Clifton 10"
         arr[1]["sous"]="45-50 min très faciles, FC sous 145."
         arr[1]["objectif"]="Volume aérobie pur, sans intensité — le lendemain du fractionné."
         arr[1]["vigilance"]="Canicule toujours active (vigilance orange). Départ 6h30 maximum, FC seule pilote — ignore l'allure. Si la gêne au pied est présente dès les premiers pas du matin, cette séance saute."
@@ -1027,7 +1027,7 @@ for n, arr in list(SEANCES_BY_WEEK.items()):
     arr[1]["titre"]="Footing facile — cardio plafonné"
     arr[1]["type"]="EF aérobie"
     arr[1]["date"]="2026-08-11"
-    arr[1]["chaussure"]="Novablast 5 V"
+    arr[1]["chaussure"]="Clifton 10"
     arr[1]["objectif"]="Footing de reprise à FC plafonnée à 140 bpm. Le seuil 2×10 est décalé au jeudi."
     arr[1]["realise"]={"statut":"fait","km":10.07,"temps":"1h02","allure":"6:09/km","fc_moy":138,"fc_max":152,"re":53,
       "cadence":175,"elevation_gain":29,"kcal":756,"rpe_ressenti":3,
@@ -1037,7 +1037,7 @@ for n, arr in list(SEANCES_BY_WEEK.items()):
                 {"km":4,"allure":"6:08","fc":139},{"km":5,"allure":"6:15","fc":139},{"km":6,"allure":"6:13","fc":137},
                 {"km":7,"allure":"6:09","fc":138},{"km":8,"allure":"6:05","fc":143},{"km":9,"allure":"6:07","fc":142},
                 {"km":10,"allure":"6:03","fc":140}],
-      "revue":"<p><strong>La séance que j'attendais depuis dimanche.</strong> Objectif annoncé 140 bpm, FC moyenne réalisée 138. Tenu.</p><p><strong>Le chiffre qui compte n'est pas l'allure, c'est l'amplitude :</strong> 15 secondes au kilomètre entre ton plus lent (6:18) et ton plus rapide (6:03). Dimanche, l'écart était de 128 secondes. Tu viens de courir dix kilomètres sans jamais accélérer sans le décider — exactement l'axe de travail identifié cette semaine.</p><p><strong>Ta perception est juste, et les données la nuancent utilement.</strong> Tu décris une lourdeur sur les 6 premiers kilomètres puis un déliement : côté cardiaque, c'est l'inverse qui apparaît (136,8 bpm sur les km 1-6, 140,4 sur les km 7-10). Ce n'est pas contradictoire. Au départ, tes jambes travaillaient contre une raideur post-trail à faible coût cardiaque — le km 1 à 6:18 pour seulement 129 bpm. Ensuite la mécanique s'est libérée, l'allure a progressé, et la FC est montée par dérive normale après 40 minutes, accentuée par les 14 m de D+ des km 8 et 9. Sensation et cardio racontent la même histoire vue de deux côtés.</p><p><strong>Pied : zéro douleur sur 10 km, quatre jours après un trail de 27 km et 662 m de D+.</strong> Le dossier est clos, et je ne le rouvrirai que si tu le rouvres.</p><p><strong>Effort relatif 53</strong> — le plus bas depuis trois semaines. C'est précisément ce que doit coûter un footing de récupération. Cadence 175, stable du premier au dernier kilomètre.</p><p><strong>Ce qu'on fait maintenant :</strong> mercredi footing court avec lignes droites, puis <strong>seuil 2×10 jeudi</strong>, avec deux jours pleins de digestion du trail. C'est le bon décalage — le seuil mérite des jambes disponibles, pas des jambes qui se déplient.</p>"}
+      "revue":"<p><strong>La séance que j'attendais depuis dimanche.</strong> Objectif annoncé 140 bpm, FC moyenne réalisée 138. Tenu.</p><p><strong>Le chiffre qui compte n'est pas l'allure, c'est l'amplitude :</strong> 15 secondes au kilomètre entre ton plus lent (6:18) et ton plus rapide (6:03). Dimanche, l'écart était de 128 secondes. Tu viens de courir dix kilomètres sans jamais accélérer sans le décider — exactement l'axe de travail identifié cette semaine.</p><p><strong>Ta perception est juste, et les données la nuancent utilement.</strong> Tu décris une lourdeur sur les 6 premiers kilomètres puis un déliement : côté cardiaque, c'est l'inverse qui apparaît (136,8 bpm sur les km 1-6, 140,4 sur les km 7-10). Ce n'est pas contradictoire. Au départ, tes jambes travaillaient contre une raideur post-trail à faible coût cardiaque — le km 1 à 6:18 pour seulement 129 bpm. Ensuite la mécanique s'est libérée, l'allure a progressé, et la FC est montée par dérive normale après 40 minutes, accentuée par les 14 m de D+ des km 8 et 9. Sensation et cardio racontent la même histoire vue de deux côtés.</p><p><strong>Pied : zéro douleur sur 10 km, quatre jours après un trail de 27 km et 662 m de D+.</strong> Le dossier est clos, et je ne le rouvrirai que si tu le rouvres.</p><p><strong>Un point à traiter, en revanche : tu as couru avec les Clifton 10, qui affichent 1179 km.</strong> C'est très au-delà de la zone de remplacement, située entre 700 et 900 km. À ce kilométrage, la mousse d'amorti est fortement dégradée et ne restitue plus grand-chose : les contraintes remontent dans le pied, la cheville et le tibia. Tu sors précisément d'un dossier pied, et ce sont les seules chaussures à ce niveau d'usure de ton parc. Elles ne sont pas en cause aujourd'hui — aucune douleur, effort relatif 53 — mais elles n'ont plus rien à faire sur une séance de récupération, encore moins sur une longue. <strong>La Novablast 5 V (56 km) et la Novablast 5 J (699 km) sont là pour ça.</strong> Pour le déplacement à La Rochelle, emporte la V.</p><p><strong>Effort relatif 53</strong> — le plus bas depuis trois semaines. C'est précisément ce que doit coûter un footing de récupération. Cadence 175, stable du premier au dernier kilomètre.</p><p><strong>Ce qu'on fait maintenant :</strong> mercredi footing court avec lignes droites, puis <strong>seuil 2×10 jeudi</strong>, avec deux jours pleins de digestion du trail. C'est le bon décalage — le seuil mérite des jambes disponibles, pas des jambes qui se déplient.</p>"}
     # Contrainte annoncee par Loic : depart pour La Rochelle mercredi 12,
     # retour a Lyon dimanche 16 en fin de journee apres 6h30 de route.
     # Trois creneaux disponibles : mercredi matin avant le depart, une
@@ -1047,9 +1047,11 @@ for n, arr in list(SEANCES_BY_WEEK.items()):
     # faible (42/99) et l'objectif est a 12 semaines. On fusionne donc
     # longue et travail specifique dans la seance de La Rochelle.
     arr[2]["date"]="2026-08-12"
+    arr[2]["chaussure"]="Novablast 5 V"
     arr[2]["sous"]="Avant la route — jambes déverrouillées."
     arr[2]["objectif"]="Footing court avec lignes droites, <strong>le matin avant les 6h30 de voiture</strong>. Rouler les jambes avant une longue position assise vaut mieux que partir raide. FC plafond 145."
     arr[3]["date"]="2026-08-14"
+    arr[3]["chaussure"]="Novablast 5 V"
     arr[3]["titre"]="Longue + bloc allure marathon"
     arr[3]["sous"]="La Rochelle — la séance clé de la semaine."
     arr[3]["metriques"]={"Distance":"15 km","Durée":"~90 min","Allure":"6:00-6:15 puis 5:20/km","FC":"135-150 puis 148-160","RPE":"5-6","Type":"Longue + spécifique"}
@@ -1060,6 +1062,7 @@ for n, arr in list(SEANCES_BY_WEEK.items()):
       {"nom":"Retour au calme","txt":"4 à 5 km à allure facile, FC redescendue sous 145."},
       {"nom":"Conditions","txt":"Partir tôt : en août sur la côte, la chaleur monte vite et l'humidité est plus forte qu'à Lyon. Boire toutes les 15-20 min, électrolytes dès le départ."}]
     arr[4]["date"]="2026-08-16"
+    arr[4]["chaussure"]="Novablast 5 V"
     arr[4]["titre"]="Déverrouillage retour de route"
     arr[4]["type"]="EF aérobie"
     arr[4]["opt"]=True
@@ -1092,8 +1095,8 @@ PHASES=[
 ]
 COUL={p["id"]:p["c"] for p in PHASES}
 GEAR=[
-  {"marque":"HOKA","modele":"Clifton 10","km":1168},
-  {"marque":"ASICS","modele":"Novablast 5 J","km":689},
+  {"marque":"HOKA","modele":"Clifton 10","km":1179},
+  {"marque":"ASICS","modele":"Novablast 5 J","km":699},
   {"marque":"ASICS","modele":"Novablast 5 V","km":56},
   {"marque":"ASICS","modele":"Gel Pulse 16","km":225},
   {"marque":"Brooks","modele":"Cascadia 19","km":241},
@@ -1471,6 +1474,14 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":179,"date":"11 aout 2026","sha":"","tag":"Chaussure corrigee + alerte usure Clifton 10","items":[
+    "CORRECTION SIGNALEE PAR LOIC : la seance du 11/08 a ete courue avec les HOKA Clifton 10, et non les Novablast 5 V. Strava avait conserve la chaussure par defaut. Corrige.",
+    "CE QUE CETTE CORRECTION A REVELE : les Clifton 10 affichent 1179 km, tres au-dela de la zone de remplacement (700-900 km). A ce kilometrage la mousse d'amorti ne restitue plus grand-chose et les contraintes remontent dans le pied, la cheville et le tibia. Loic sort precisement d'un dossier pied. Elles ne sont pas en cause sur cette seance (zero douleur, effort relatif 53) mais n'ont plus leur place sur une recuperation, encore moins sur une longue.",
+    "Kilometrages du parc realignes sur Strava : Clifton 10 a 1179 km, Novablast 5 J a 699 km (etait 689).",
+    "Les trois seances a venir de S33 prescrivent desormais explicitement la Novablast 5 V (56 km), y compris pour le deplacement a La Rochelle.",
+    "BUG D'AUDIT CORRIGE, et il masquait le probleme : audit_data classait les Clifton 10 comme « retirees » alors que Strava indique retired=false sur toutes les paires. Or le controle d'usure E1 exclut justement les paires retirees -- cette classification erronee neutralisait donc l'alerte sur la paire la plus usee du parc. Liste RETIREES videe ; l'audit remonte maintenant correctement le risque.",
+    "Rappel de methode : c'est encore une observation de Loic qui a declenche la decouverte. Un audit ne trouve que ce qu'on lui a appris a chercher."
+  ]},
   {"build":178,"date":"11 aout 2026","sha":"","tag":"S33 restructuree autour du deplacement a La Rochelle","items":[
     "CONTRAINTE : depart pour La Rochelle mercredi 12, retour a Lyon dimanche 16 en fin de journee apres 6h30 de route. Trois creneaux exploitables : mercredi matin avant le depart, une sortie sur place, un eventuel deverrouillage au retour.",
     "ARBITRAGE ASSUME : le seuil 2x10 est sacrifie, pas la sortie longue. Le seuil est deja une force du profil (79/99) alors que l'allure marathon en est le point faible (42/99), et Nice est a 12 semaines. Une semaine sans seuil ne coute rien ; une semaine sans travail specifique marathon, si.",
