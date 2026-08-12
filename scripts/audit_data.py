@@ -133,6 +133,44 @@ for se in toutes:
     if r.get("fc_moy") and r.get("fc_max") and r["fc_moy"] > r["fc_max"]:
         bug("A7", f"S{se['_wk']} {se.get('date')} : fc_moy {r['fc_moy']} > fc_max {r['fc_max']}")
 
+# ══ A8 — GRAPHIQUE DE STRUCTURE vs SEANCE PRESCRITE ═══════════
+# La fiche de seance a DEUX descriptions de la meme chose : 'struct'
+# (le texte lu par l'utilisateur) et 'segments' (le graphique). Modifier
+# l'une sans l'autre affiche un graphique qui decrit une autre seance.
+# Constate sur la longue du 14/08 : le graphique montrait encore la
+# longue de 18 km remplacee la veille, sans le bloc allure marathon.
+# On ne controle que les seances A VENIR : sur une seance passee, les
+# segments documentent legitimement la prescription d'origine.
+for se in toutes:
+    seg = se.get("segments")
+    if not seg or not se.get("date"):
+        continue
+    if dt.date.fromisoformat(se["date"]) < TODAY:
+        continue
+    if (se.get("realise") or {}).get("statut", "a_faire") != "a_faire":
+        continue
+    total_min = seg[-1]["fin"] / 60
+    duree = str(se.get("metriques", {}).get("Durée", ""))
+    m = re.search(r"(\d+)\s*h\s*(\d*)", duree) or re.search(r"(\d+)", duree)
+    if not m:
+        continue
+    if "h" in duree:
+        annonce = int(m.group(1)) * 60 + (int(m.group(2)) if m.lastindex and m.group(2) else 0)
+    else:
+        annonce = int(m.group(1))
+    if abs(total_min - annonce) > 15:
+        bug("A8", f"S{se['_wk']} {se['date']} '{se.get('titre')}' : le graphique de structure "
+                  f"totalise {total_min:.0f} min alors que la fiche annonce {annonce} min "
+                  f"— segments et struct decrivent des seances differentes")
+    # coherence des noms : un bloc annonce dans struct doit exister en segment
+    noms_seg = " ".join(x["nom"].lower() for x in seg)
+    for st in se.get("struct", []):
+        cle = st.get("nom", "").lower()
+        if "spécifique" in cle or "allure" in cle:
+            if "allure" not in noms_seg and "spécifique" not in noms_seg and "seuil" not in noms_seg:
+                bug("A8", f"S{se['_wk']} {se['date']} : la fiche decrit un bloc '{st.get('nom')}' "
+                          f"absent du graphique de structure")
+
 # ══ B. REVUES & REWINDS ═══════════════════════════════════════
 semaines_avec_seances_loggees = sorted({
     se["_wk"] for se in toutes
