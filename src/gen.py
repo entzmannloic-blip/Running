@@ -369,7 +369,13 @@ def assign_shoes(sessions, weeknum):
     # proteger. La retraite avait ete faite seance par seance (overrides
     # manuels), jamais a la racine : cette fonction continuait de la proposer
     # dans sa rotation EASY, et elle est ressortie sur la fiche du 06/08.
-    MAGIC="ASICS Magic Speed 4";NOVA="ASICS Novablast 5";CLIF="ASICS Novablast 5 V";GEL="ASICS Gel Pulse 16";CASC="Brooks Cascadia 19"
+    # Deux Novablast 5 coexistent au parc : la J (709 km, en fin de zone) et
+    # la V (56 km). "ASICS Novablast 5" sans suffixe etait donc ambigu et
+    # prescrit tel quel sur 23 seances a venir : impossible de savoir laquelle
+    # chausser. NOVA designe desormais explicitement la V, la paire recente.
+    # (La constante CLIF portait par ailleurs un nom trompeur : elle n'a
+    # jamais contenu de Clifton.)
+    MAGIC="ASICS Magic Speed 4";NOVA="ASICS Novablast 5 V";CLIF="ASICS Novablast 5 V";GEL="ASICS Gel Pulse 16";CASC="Brooks Cascadia 19"
     n=len(sessions);cats=[]
     for s in sessions:
         t=s["type"]
@@ -1385,7 +1391,7 @@ S24_REALISE={"km":36.4,"runs":[
  {"iso":"2026-06-09","date":"Mar. 9","titre":"Footing 16 km — finish progressif","desc":"1h26 · 5:22/km · FC 153 (max 171) · charge 164 · Novablast 5","tag":"Endurance",
   "pr":2,"ach":11,"pr_detail":["Meilleur effort 2 km","Meilleur effort 1 mile"],
   "metriques":{"Distance":"16,0 km","Temps":"1h26","Allure":"5:22/km","FC moy / max":"153 / 171","D+":"54 m","Charge":"164","Cadence":"173 ppm","Calories":"1 205"},
-  "chaussure":"ASICS Novablast 5",
+  "chaussure":"ASICS Novablast 5 V",
   "splits":[[353,138],[351,142],[347,147],[324,153],[331,150],[327,151],[315,153],[326,154],[331,151],[318,154],[319,159],[332,155],[287,158],[302,160],[295,163],[290,164]],
   "lecture":"Les kilomètres racontent tout : départ à 5:53/km (FC 138, Z2 propre), puis une accélération continue jusqu'à <strong>4:50/km sur le dernier km, FC 164</strong> — la frontière Z3/Z4. Ce n'était pas un footing « un peu vif » : c'était un progressif qui finit au tempo, avec 11 records de segments au passage. La montée de FC est un choix d'allure, pas une dérive cardiaque.",
   "revue":"Belle séance… qui n'avait rien à faire là. À J+3 de la Circaète (1662 m de D+, effondrement électrolytique), finir 4 km entre 4:47 et 5:02/km, c'est de la qualité déguisée en endurance — le réflexe zone grise dans sa forme la plus pure : pas un footing trop rapide, mais un footing qui <em>devient</em> une séance. La bonne nouvelle : tenir ces allures à J+3 avec cette aisance confirme une récupération express et un moteur en forme. La consigne pour la suite : un footing a une allure de début ET une allure de fin — et c'est la même."},
@@ -1397,7 +1403,7 @@ S24_REALISE={"km":36.4,"runs":[
   "revue":"Rien à redire — c'est le modèle du genre, à encadrer. Quand tu te demanderas à quoi ressemble un footing de récup réussi pendant la prépa, reviens regarder cette sortie : allure stable, FC plate, charge 47. Exactement ce qu'on veut 4 jours après une course. Seule micro-remarque : le dernier km à 5:42 — l'envie d'accélérer en fin de sortie est ton tic, surveille-le."},
  {"iso":"2026-06-12","date":"Ven. 12","titre":"Footing de récupération 10 km — coupé volontairement","desc":"58:53 · 5:52/km · FC 137 (max 155) · charge 44 · Novablast 5","tag":"Récupération",
   "metriques":{"Distance":"10,0 km","Temps":"58:53","Allure":"5:52/km","FC moy / max":"137 / 155","D+":"37 m","Charge":"44","Cadence":"172 ppm","Calories":"755"},
-  "chaussure":"ASICS Novablast 5",
+  "chaussure":"ASICS Novablast 5 V",
   "splits":[[362,130],[351,133],[357,139],[359,135],[362,135],[349,136],[346,138],[335,140],[350,141],[343,141]],
   "lecture":"Allure régulière entre 5:35 et 6:02/km, FC qui glisse doucement de 130 à 141 — une dérive de +11 bpm sur une heure, parfaitement normale et même basse. Cadence stable à 172 ppm du début à la fin. Le 8e km à 5:35 est le seul moment où ça frémit.",
   "revue":"La séance compte moins que la décision : parti pour 13-15 km en se sentant très bien, tu as coupé à 10. <strong>S'arrêter parce que ça va bien, c'est la compétence n°1 du coureur qui dure</strong> — et celle qui te manquait mardi. Allure au bord intérieur de la cible (5:52 pour un plancher à 5:55), mais la FC à 137 valide l'effort. Trois jours, trois enseignements : mardi le piège, mercredi le modèle, vendredi la maturité."}],
@@ -1507,6 +1513,14 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":182,"date":"12 aout 2026","sha":"","tag":"Audit des 132 seances : chaussure ambigue et ordre d'affichage","items":[
+    "AUDIT COMPLET DEMANDE PAR LOIC apres le bug du graphique. Nouveau script scripts/audit_seances.py : il confronte entre elles les differentes descriptions d'une meme seance (titre, metriques, struct, segments, chaussure, realise) sur les 132 fiches, selon 8 axes.",
+    "BUG 1 -- CHAUSSURE AMBIGUE SUR 23 SEANCES A VENIR. La constante NOVA valait « ASICS Novablast 5 », sans suffixe, alors que DEUX Novablast 5 coexistent au parc : la J (709 km, en fin de zone de remplacement) et la V (56 km). Le plan prescrivait donc une paire impossible a identifier, de S34 a S53. NOVA designe desormais explicitement la V. Au passage, la constante CLIF portait un nom trompeur : elle n'a jamais contenu de Clifton.",
+    "BUG 2 -- ORDRE D'AFFICHAGE NON CHRONOLOGIQUE, sur 12 semaines. Les seances etaient affichees dans leur ordre de stockage, qui suit la construction du plan et non le calendrier. Sur S42, la sortie longue du 18/10 apparaissait AVANT le renforcement du 15/10 ; sur S32, le trail du 09/08 avant les seances des 07 et 08. Tri par date ajoute a l'affichage, sans modifier le stockage.",
+    "Le numero affiche suivait lui aussi l'index de stockage : apres tri, la semaine 42 affichait « seance 5, 6, 4 ». Il reflete desormais la position chronologique reelle. Verification : 17 fiches ouvertes une par une apres tri, toutes correctes, zero erreur JS.",
+    "VERIFIE ET SAIN : chainage des segments (aucun trou ni chevauchement sur les 132 fiches), coherence distance/duree/allure, champs essentiels presents, coherence type de seance et FC cible.",
+    "SIGNALE SANS CORRECTION : 11 seances de renforcement sans chaussure prescrite (normal, ce sont des seances a domicile) et 5 seances passees ou le realise depasse largement le prescrit -- ce sont des faits d'entrainement, pas des defauts de donnees."
+  ]},
   {"build":181,"date":"12 aout 2026","sha":"","tag":"Graphique de structure desynchronise (signale par Loic)","items":[
     "BUG SIGNALE PAR LOIC SUR CAPTURES D'ECRAN : la fiche de la longue du 14/08 decrit un bloc allure marathon, mais le graphique « Structure de la seance » n'affichait que deux blocs verts, sans bloc orange, et un total de 104 minutes pour une seance annoncee a 90.",
     "CAUSE : la fiche a DEUX descriptions de la meme seance. 'struct' est le texte lu par l'utilisateur, 'segments' alimente le graphique. En restructurant S33 au build 178, j'ai mis a jour titre, metriques, objectif et struct -- mais pas segments. Le graphique continuait donc d'afficher la longue de 18 km qu'il remplacait, test de gel compris.",

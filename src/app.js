@@ -1787,9 +1787,17 @@ function ouvrirSemaine(num){const s=SEMAINES.find(x=>x.num===num);const ph=PHASE
       <div style="text-align:center"><button class="rw-btn" onclick="rwOpen('S24')">🎬 Lance le Rewind de ta semaine</button></div><div class="sw-section">Bilan du coach</div><div class="rev-coach">${S24R.revue}</div>
       <div class="sw-section">🎯 Cap sur la S25</div><div class="callout callout-cap">${S25_CAP}</div>
       <p class="note-foot" style="margin-top:24px">La reprise structurée démarre maintenant, en S25.</p></div>`;ouvrir();return;}
-  const seances=SEANCES_BY_WEEK[num]||[];const fait=seances.filter(x=>x.realise&&(x.realise.statut==='fait'||x.realise.statut==='partiel')).length;const realKm=seances.reduce((a,x)=>a+((x.realise&&x.realise.km)||0),0);
+  /* Les seances sont stockees dans l'ordre de construction du plan, qui
+     n'est pas l'ordre chronologique : une seance deplacee (longue avancee,
+     renfo recale) restait affichee a sa position d'origine. Sur S42 par
+     exemple, la longue du 18/10 apparaissait AVANT le renfo du 15/10.
+     On trie donc a l'affichage, sans toucher au stockage. */
+  const seances=(SEANCES_BY_WEEK[num]||[]).slice().sort(function(a,b){
+    if(!a.date)return 1; if(!b.date)return -1;
+    return a.date<b.date?-1:(a.date>b.date?1:0);
+  });const fait=seances.filter(x=>x.realise&&(x.realise.statut==='fait'||x.realise.statut==='partiel')).length;const realKm=seances.reduce((a,x)=>a+((x.realise&&x.realise.km)||0),0);
   topbar.innerHTML=`<span></span>${btnFermer}`;
-  const liste=seances.map(se=>{
+  const liste=seances.map((se,_i)=>{
     const r=se.realise||{statut:'a_faire'};
     const isSkipped=r.statut==='skipped';
     const isDone=r.statut==='fait'||r.statut==='partiel';
@@ -1810,7 +1818,7 @@ function ouvrirSemaine(num){const s=SEMAINES.find(x=>x.num===num);const ph=PHASE
           ?`<div class="ql-btn" onclick="event.stopPropagation();ouvrirQuickLog(${num},${se.id})" role="button" aria-label="Enregistrer la séance" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();event.stopPropagation();ouvrirQuickLog(${num},${se.id});}"><i class="ti ti-check"></i></div>${menuBtn}`
           :menuBtn;
     const cardClass=isDone?' sc-fait':isSkipped?' sc-skipped':'';
-    return `<div class="seance-carte${cardClass}" id="sc-${num}-${se.id}" onclick="ouvrirSeance(${num},${se.id})"  ><div class="seance-bande" style="background:${se.accent}"></div><div class="seance-idx">Séance ${se.num}</div><div class="seance-info"><div class="seance-nom">${se.titre}</div><div class="seance-desc">${se.sous}</div>${rs}<div class="seance-tags">${tags.join('')}</div></div><div class="seance-fleche-wrap">${rightEl}</div></div>`;
+    return `<div class="seance-carte${cardClass}" id="sc-${num}-${se.id}" onclick="ouvrirSeance(${num},${se.id})"  ><div class="seance-bande" style="background:${se.accent}"></div><div class="seance-idx">Séance ${_i+1}</div><div class="seance-info"><div class="seance-nom">${se.titre}</div><div class="seance-desc">${se.sous}</div>${rs}<div class="seance-tags">${tags.join('')}</div></div><div class="seance-fleche-wrap">${rightEl}</div></div>`;
   }).join('');
   const repPill=s.repartition&&s.repartition!=='—'?`<div class="sw-pill"><div class="sw-pill-l">Répartition</div><div class="sw-pill-v" style="font-size:.74rem">${s.repartition}</div></div>`:'';
   contenu.innerHTML=`<div class="sw-hero"><span class="sw-tag" style="background:${COUL[s.phase]}22;color:${COUL[s.phase]}">${ph.nom}</span><h2 class="sw-titre">Semaine ${s.num} — ${s.theme}</h2><p class="sw-sous">Semaine type · clique une séance</p><div class="sw-meta"><div class="sw-pill"><div class="sw-pill-l">Volume cible</div><div class="sw-pill-v">${s.km} km</div></div><div class="sw-pill"><div class="sw-pill-l">Réalisé</div><div class="sw-pill-v">${fait}/${seances.length} · ${realKm} km</div></div><div class="sw-pill"><div class="sw-pill-l">Charge</div><div class="sw-pill-v" style="font-size:.84rem">${s.charge}</div></div>${repPill}</div></div><div class="sw-corps"><div class="callout callout-obj">${s.objectif}</div><div class="sw-section">Séances de la semaine</div><div class="seance-liste">${liste}</div>${(typeof REWINDS!=='undefined'&&REWINDS.some(x=>x.id==='S'+s.num))?`<div style="text-align:center;margin-top:18px"><button class="rw-btn" onclick="rwOpen('S${s.num}')">🎬 Lance le Rewind de ta semaine</button></div>`:''}${s.revue?`<div class="sw-section">Revue du coach — bilan de la semaine</div><div class="rev-coach">${s.revue}</div>`:`<div class="realise-empty" style="margin-top:18px"><strong>Revue de la semaine à venir.</strong> Quand la semaine sera bouclée, tu trouveras ici mon bilan complet : volume et charge vs prévu, adhérence, signaux à surveiller, et la décision pour la semaine suivante. Elle alimentera aussi le Journal du coach.</div>`}</div>`;ouvrir();
