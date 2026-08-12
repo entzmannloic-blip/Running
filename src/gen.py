@@ -1084,6 +1084,16 @@ for n, arr in list(SEANCES_BY_WEEK.items()):
       {"nom":"Bloc spécifique","txt":"<strong>5 à 6 km à 5:20/km</strong>, FC cible 148-160. Régularité avant tout : chaque kilomètre doit tomber entre 5:18 et 5:24. <strong>Descendre sous 5:15, c'est rater la séance</strong>, même en se sentant bien."},
       {"nom":"Retour au calme","txt":"4 à 5 km à allure facile, FC redescendue sous 145."},
       {"nom":"Conditions","txt":"Partir tôt : en août sur la côte, la chaleur monte vite et l'humidité est plus forte qu'à Lyon. Boire toutes les 15-20 min, électrolytes dès le départ."}]
+    # Le graphique de structure lit 'segments', PAS 'struct'. Les deux
+    # champs decrivent la meme seance et doivent etre reconstruits ensemble :
+    # laisser les anciens segments de la longue 18 km affichait un contenu
+    # qui n'avait plus rien a voir avec la seance prescrite.
+    # Decoupage : 5 km d'echauffement (~31 min a 6:10), bloc de 5,5 km a
+    # 5:20 (~29 min), 4,5 km de retour au calme (~28 min) = ~88 min.
+    arr[3]["segments"]=[
+      {"nom":"Échauffement","role":"5 km très souples à 6:00-6:15/km, FC sous 145.","duree":1860,"couleur":"vert","bloc":"—","hauteur":32,"debut":0,"fin":1860},
+      {"nom":"Bloc allure marathon","role":"5 à 6 km à 5:20/km, FC 148-160. Chaque km entre 5:18 et 5:24.","duree":1760,"couleur":"orange","bloc":"🎯","hauteur":72,"debut":1860,"fin":3620},
+      {"nom":"Retour au calme","role":"4 à 5 km à allure facile, FC redescendue sous 145.","duree":1680,"couleur":"vert","bloc":"—","hauteur":30,"debut":3620,"fin":5300}]
     arr[4]["date"]="2026-08-16"
     arr[4]["chaussure"]="Novablast 5 V"
     arr[4]["titre"]="Déverrouillage retour de route"
@@ -1497,6 +1507,14 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":181,"date":"12 aout 2026","sha":"","tag":"Graphique de structure desynchronise (signale par Loic)","items":[
+    "BUG SIGNALE PAR LOIC SUR CAPTURES D'ECRAN : la fiche de la longue du 14/08 decrit un bloc allure marathon, mais le graphique « Structure de la seance » n'affichait que deux blocs verts, sans bloc orange, et un total de 104 minutes pour une seance annoncee a 90.",
+    "CAUSE : la fiche a DEUX descriptions de la meme seance. 'struct' est le texte lu par l'utilisateur, 'segments' alimente le graphique. En restructurant S33 au build 178, j'ai mis a jour titre, metriques, objectif et struct -- mais pas segments. Le graphique continuait donc d'afficher la longue de 18 km qu'il remplacait, test de gel compris.",
+    "CORRECTIF : segments reconstruits en coherence avec la seance reelle -- echauffement 31 min (vert), bloc allure marathon 29 min (ORANGE, hauteur 72 pour le distinguer visuellement), retour au calme 28 min (vert). Total 88 min contre ~90 annonces.",
+    "GARDE-FOU A8 AJOUTE dans audit_data.py : pour toute seance A VENIR, le total du graphique est confronte a la duree annoncee (tolerance 15 min), et tout bloc specifique decrit dans struct doit exister dans segments. Les seances passees sont exclues du controle : leurs segments documentent legitimement la prescription d'origine.",
+    "Contre-test realise : en reinjectant les anciens segments, l'audit detecte bien « la fiche decrit un bloc Bloc specifique absent du graphique de structure » et bloque la livraison.",
+    "Note de methode : deux champs decrivant la meme realite sans lien structurel, c'est exactement le schema qui avait produit les deux bugs d'ACWR. Le controle automatique remplace ici la vigilance manuelle."
+  ]},
   {"build":180,"date":"12 aout 2026","sha":"","tag":"S33 mercredi : EF + 6x100 m en negative split","items":[
     "SEANCE LOGUEE : 10,2 km en 59:16 a 5:49/km, FC moyenne 140, FC max 186, effort relatif 61, cadence 175, 36 m D+. Novablast 5 J. Cinq records personnels sur segments.",
     "NEGATIVE SPLIT REUSSI sur les 6 lignes droites de 100 m : 23 s, 21 s, 22 s, 19 s, 19 s, 16 s. Soit 30 % de gain entre la premiere et la derniere, avec une seule rupture d'une seconde sur la ligne 3. Sur six repetitions menees a la sensation, c'est un controle d'allure remarquable.",
