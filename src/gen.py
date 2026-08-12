@@ -1047,7 +1047,30 @@ for n, arr in list(SEANCES_BY_WEEK.items()):
     # faible (42/99) et l'objectif est a 12 semaines. On fusionne donc
     # longue et travail specifique dans la seance de La Rochelle.
     arr[2]["date"]="2026-08-12"
-    arr[2]["chaussure"]="Novablast 5 V"
+    arr[2]["chaussure"]="Novablast 5 J"
+    arr[2]["realise"]={"statut":"fait","km":10.2,"temps":"59:16","allure":"5:49/km","fc_moy":140,"fc_max":186,"re":61,
+      "cadence":175,"elevation_gain":36,"kcal":774,"rpe_ressenti":5,
+      "commentaire":"EF puis 6x100 m avec 30 s de récup, en cherchant le negative split. Séance du matin avant le départ pour La Rochelle. Novablast 5 J.",
+      "pr":5,"ach":5,"pr_detail":[],
+      "splits":[{"km":1,"allure":"6:24","fc":131},{"km":2,"allure":"6:07","fc":133},{"km":3,"allure":"5:57","fc":142},
+                {"km":4,"allure":"5:58","fc":139},{"km":5,"allure":"6:08","fc":139},{"km":6,"allure":"5:45","fc":141},
+                {"km":7,"allure":"5:57","fc":124},{"km":8,"allure":"5:51","fc":140},{"km":9,"allure":"5:50","fc":146}],
+      "revue":"<p><strong>Le negative split est réussi, et de peu s'en faut qu'il soit parfait.</strong></p>"
+        "<table style='width:100%;border-collapse:collapse;font-size:.88rem;margin:10px 0'>"
+        "<tr style='background:#0f172a;color:#fff'><th style='padding:6px'>Ligne</th><th>Temps</th><th>Allure</th><th>FC fin</th></tr>"
+        "<tr><td style='padding:5px;text-align:center'>1</td><td style='text-align:center'>23 s</td><td style='text-align:center'>3:50/km</td><td style='text-align:center'>163</td></tr>"
+        "<tr style='background:#f1f5f9'><td style='padding:5px;text-align:center'>2</td><td style='text-align:center'>21 s</td><td style='text-align:center'>3:30/km</td><td style='text-align:center'>168</td></tr>"
+        "<tr><td style='padding:5px;text-align:center'>3</td><td style='text-align:center;color:#b45309'><strong>22 s</strong></td><td style='text-align:center'>3:40/km</td><td style='text-align:center'>173</td></tr>"
+        "<tr style='background:#f1f5f9'><td style='padding:5px;text-align:center'>4</td><td style='text-align:center'>19 s</td><td style='text-align:center'>3:10/km</td><td style='text-align:center'>176</td></tr>"
+        "<tr><td style='padding:5px;text-align:center'>5</td><td style='text-align:center'>19 s</td><td style='text-align:center'>3:10/km</td><td style='text-align:center'>181</td></tr>"
+        "<tr style='background:#ecfdf5'><td style='padding:5px;text-align:center'><strong>6</strong></td><td style='text-align:center'><strong>16 s</strong></td><td style='text-align:center'><strong>2:40/km</strong></td><td style='text-align:center'>180</td></tr></table>"
+        "<p><strong>23 s → 16 s, soit 30 % de gain entre la première et la dernière.</strong> Seule la ligne 3 casse la série, d'une seconde. Sur six répétitions menées à la sensation, sans montre au poignet pour te caler, c'est un contrôle d'allure remarquable — et c'est exactement la compétence qu'on travaille depuis dimanche.</p>"
+        "<p><strong>La pointe finale est ta plus rapide de la saison : 24,3 km/h (2:28/km).</strong> À comparer aux 3:16/km du 21 juillet et aux 2:57/km du 27 juillet. Cinq records personnels sur segments au passage.</p>"
+        "<p><strong>Ce qui me plaît le plus n'est pas la vitesse, c'est la cadence.</strong> Elle monte à 94 sur la ligne 6, contre 85-88 sur le reste de la séance. Tu accélères en augmentant la fréquence, pas en allongeant la foulée — c'est le mécanisme le plus économique et le moins traumatisant pour le pied. Rien à corriger.</p>"
+        "<p><strong>Le point de vigilance :</strong> FC max 186 sur la dernière ligne, soit 97 % de ta FCmax. C'est très haut pour une séance étiquetée footing. Ce n'est pas grave sur 16 secondes et la FC redescend immédiatement, mais ça change la nature de la séance : effort relatif 61 contre 53 hier, alors que le volume est identique. Ce n'était pas une EF, c'était une EF avec un vrai travail neuromusculaire au bout.</p>"
+        "<p><strong>Sur la partie endurance :</strong> 137 bpm de moyenne, dans la cible. L'amplitude est de 39 s/km (5:45 à 6:24) contre 15 hier — la dérive est plus marquée, avec une accélération progressive du km 6 au km 9 avant les lignes droites. Rien d'alarmant pour une séance qui préparait justement des accélérations, mais c'est le schéma à surveiller : <strong>vendredi, sur le bloc à 5:20, cette amplitude devra retomber sous 6 secondes.</strong></p>"
+        "<p><strong>Chaussures : Novablast 5 J (699 km).</strong> Mieux que les Clifton d'hier, mais cette paire arrive aussi en fin de zone. Pour La Rochelle, emporte la 5 V.</p>"
+        "<p><strong>Verdict : A.</strong> Objectif annoncé, objectif tenu, et une séance qui fait le pont entre la retenue de mardi et le travail d'allure de vendredi. Bonne route.</p>"}
     arr[2]["sous"]="Avant la route — jambes déverrouillées."
     arr[2]["objectif"]="Footing court avec lignes droites, <strong>le matin avant les 6h30 de voiture</strong>. Rouler les jambes avant une longue position assise vaut mieux que partir raide. FC plafond 145."
     arr[3]["date"]="2026-08-14"
@@ -1096,7 +1119,7 @@ PHASES=[
 COUL={p["id"]:p["c"] for p in PHASES}
 GEAR=[
   {"marque":"HOKA","modele":"Clifton 10","km":1179},
-  {"marque":"ASICS","modele":"Novablast 5 J","km":699},
+  {"marque":"ASICS","modele":"Novablast 5 J","km":709},
   {"marque":"ASICS","modele":"Novablast 5 V","km":56},
   {"marque":"ASICS","modele":"Gel Pulse 16","km":225},
   {"marque":"Brooks","modele":"Cascadia 19","km":241},
@@ -1474,6 +1497,15 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":180,"date":"12 aout 2026","sha":"","tag":"S33 mercredi : EF + 6x100 m en negative split","items":[
+    "SEANCE LOGUEE : 10,2 km en 59:16 a 5:49/km, FC moyenne 140, FC max 186, effort relatif 61, cadence 175, 36 m D+. Novablast 5 J. Cinq records personnels sur segments.",
+    "NEGATIVE SPLIT REUSSI sur les 6 lignes droites de 100 m : 23 s, 21 s, 22 s, 19 s, 19 s, 16 s. Soit 30 % de gain entre la premiere et la derniere, avec une seule rupture d'une seconde sur la ligne 3. Sur six repetitions menees a la sensation, c'est un controle d'allure remarquable.",
+    "POINTE FINALE A 24,3 KM/H (2:28/km), la plus rapide de la saison -- a comparer aux 3:16/km du 21 juillet et aux 2:57/km du 27 juillet.",
+    "POINT TECHNIQUE POSITIF : la cadence monte a 94 sur la derniere ligne contre 85-88 sur le reste de la seance. L'acceleration se fait par la frequence et non par l'amplitude de foulee -- mecanisme le plus economique et le moins traumatisant pour le pied. Rien a corriger.",
+    "VIGILANCE : FC max 186, soit 97 % de FCmax, sur une seance etiquetee footing. Sans gravite sur 16 secondes, mais l'effort relatif passe a 61 contre 53 la veille a volume identique. La seance etait une EF avec un vrai travail neuromusculaire au bout.",
+    "AMPLITUDE D'ALLURE SUR LA PARTIE EF : 39 s/km (5:45 a 6:24) contre 15 s/km mardi. Coherent avec une seance qui preparait des accelerations, mais c'est le schema a surveiller : vendredi, sur le bloc a 5:20, cette amplitude devra retomber sous 6 secondes.",
+    "ACWR recalcule automatiquement : 0,81 -> 0,87 (aigu 444, chronique 2037). Novablast 5 J portee a 709 km."
+  ]},
   {"build":179,"date":"11 aout 2026","sha":"","tag":"Chaussure corrigee + alerte usure Clifton 10","items":[
     "CORRECTION SIGNALEE PAR LOIC : la seance du 11/08 a ete courue avec les HOKA Clifton 10, et non les Novablast 5 V. Strava avait conserve la chaussure par defaut. Corrige.",
     "CE QUE CETTE CORRECTION A REVELE : les Clifton 10 affichent 1179 km, tres au-dela de la zone de remplacement (700-900 km). A ce kilometrage la mousse d'amorti ne restitue plus grand-chose et les contraintes remontent dans le pied, la cheville et le tibia. Loic sort precisement d'un dossier pied. Elles ne sont pas en cause sur cette seance (zero douleur, effort relatif 53) mais n'ont plus leur place sur une recuperation, encore moins sur une longue.",
