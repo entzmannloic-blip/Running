@@ -109,6 +109,7 @@ def main():
                             ('audit_data.py', "audit donnees (coherence metier)"),
                             ('audit_kpi.py', "audit KPI (justesse des calculs)"),
                             ('audit_dette.py', "audit dette (incoherences visibles)"),
+                            ('audit_seances.py', "audit seances (coherence des fiches)"),
                             ('audit_runtime.py --rapide', "audit runtime (parcours echantillonne)")]:
         fichier, _, options = script.partition(' ')
         chemin = f'{WORK}/{fichier}'
