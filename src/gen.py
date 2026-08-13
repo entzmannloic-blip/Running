@@ -1100,8 +1100,34 @@ for n, arr in list(SEANCES_BY_WEEK.items()):
       {"nom":"Échauffement","role":"5 km très souples à 6:00-6:15/km, FC sous 145.","duree":1860,"couleur":"vert","bloc":"—","hauteur":32,"debut":0,"fin":1860},
       {"nom":"Bloc allure marathon","role":"5 à 6 km à 5:20/km, FC 148-160. Chaque km entre 5:18 et 5:24.","duree":1760,"couleur":"orange","bloc":"🎯","hauteur":72,"debut":1860,"fin":3620},
       {"nom":"Retour au calme","role":"4 à 5 km à allure facile, FC redescendue sous 145.","duree":1680,"couleur":"vert","bloc":"—","hauteur":30,"debut":3620,"fin":5300}]
+    arr[3]["date"]="2026-08-13"
+    arr[3]["chaussure"]="ASICS Novablast 5 V"
+    arr[3]["realise"]={"statut":"fait","km":11.36,"temps":"1h01:58","allure":"5:27/km","fc_moy":155,"fc_max":171,"re":128,
+      "cadence":174,"elevation_gain":52,"kcal":887,"rpe_ressenti":6,
+      "commentaire":"La Rochelle, terrain inconnu, bord de mer. Départ tôt mais déjà chaud. ~5h30 de sommeil après 7h de route la veille. Échauffement 2,27 km, bloc 6 km à allure marathon, retour au calme 3,09 km. Aucune douleur au pied ni aux jambes, fatigue générale ressentie.",
+      "pr":0,"ach":0,"pr_detail":[],
+      "splits":[{"km":1,"allure":"5:54","fc":136},{"km":2,"allure":"5:26","fc":144},{"km":3,"allure":"5:20","fc":151},
+                {"km":4,"allure":"5:15","fc":154},{"km":5,"allure":"5:11","fc":164},{"km":6,"allure":"5:19","fc":158},
+                {"km":7,"allure":"5:22","fc":161},{"km":8,"allure":"5:13","fc":165},{"km":9,"allure":"5:42","fc":161},
+                {"km":10,"allure":"5:34","fc":158},{"km":11,"allure":"5:38","fc":159}],
+      "revue":"<p><strong>Séance réussie, et dans des conditions qui ne s'y prêtaient pas. C'est ce qui la rend intéressante.</strong></p>"
+        "<table style='width:100%;border-collapse:collapse;font-size:.88rem;margin:10px 0'>"
+        "<tr style='background:#0f172a;color:#fff'><th style='padding:6px'>km</th><th>Allure</th><th>Écart /5:20</th><th>FC</th></tr>"
+        "<tr><td style='padding:5px;text-align:center'>1</td><td style='text-align:center'>5:20,9</td><td style='text-align:center;color:#16a34a'>+0,9 s</td><td style='text-align:center'>151</td></tr>"
+        "<tr style='background:#f1f5f9'><td style='padding:5px;text-align:center'>2</td><td style='text-align:center'>5:15,3</td><td style='text-align:center;color:#b45309'>−4,7 s</td><td style='text-align:center'>154</td></tr>"
+        "<tr><td style='padding:5px;text-align:center'>3</td><td style='text-align:center'>5:11,2</td><td style='text-align:center;color:#dc2626'>−8,8 s</td><td style='text-align:center'>164</td></tr>"
+        "<tr style='background:#f1f5f9'><td style='padding:5px;text-align:center'>4</td><td style='text-align:center'>5:18,9</td><td style='text-align:center;color:#16a34a'>−1,1 s</td><td style='text-align:center'>158</td></tr>"
+        "<tr><td style='padding:5px;text-align:center'>5</td><td style='text-align:center'>5:22,2</td><td style='text-align:center;color:#16a34a'>+2,2 s</td><td style='text-align:center'>161</td></tr>"
+        "<tr style='background:#f1f5f9'><td style='padding:5px;text-align:center'>6</td><td style='text-align:center'>5:12,7</td><td style='text-align:center;color:#dc2626'>−7,3 s</td><td style='text-align:center'>165</td></tr></table>"
+        "<p><strong>Moyenne du bloc : 5:17/km pour une cible à 5:20. Amplitude 11 secondes.</strong> Pour situer : dimanche, sur la fin du trail, elle était de 128 secondes. Mardi, sur une EF plafonnée en FC, de 15. Tu viens de faire mieux sur une allure spécifique que sur un footing il y a deux jours — sur un terrain que tu ne connaissais pas.</p>"
+        "<p><strong>Le seul reproche, et il est mineur : trois kilomètres sous 5:15</strong> (le 3ᵉ à 5:11, le 6ᵉ à 5:13). L'écart moyen à la cible reste de 4,2 secondes, donc l'exercice est réussi. Mais le schéma est reconnaissable : tu accélères quand ça passe bien. Le dernier kilomètre à 5:12 est le plus révélateur — c'est le moment où tu sais que le bloc se termine.</p>"
+        "<p><strong>Ce que dit ton cardiaque, en revanche, mérite plus d'attention que l'allure.</strong> Sur les 6 km, ta FC est passée de 151 à 165 — <strong>+13,5 bpm à allure constante</strong>. Les trois derniers kilomètres sont 2 secondes plus lents que les trois premiers mais 5 pulsations plus hauts. Ta cible était 148-160 : tu as fini à 165, donc au-dessus.</p>"
+        "<p><strong>Ce n'est pas un problème de forme, c'est la somme du contexte :</strong> environ 5h30 de sommeil, 7 heures de voiture la veille, chaleur et humidité côtières, et troisième séance en trois jours. Le découplage reste à 2,5 %, ce qui est faible — ton moteur a bien répondu. Mais l'effort relatif de 128, contre 53 mardi et 61 mercredi, dit la vérité : <strong>cette séance t'a coûté deux fois et demie ce que tu as fait cette semaine.</strong></p>"
+        "<p><strong>Pied : aucune douleur, sur une séance à 5:17 de moyenne et sur terrain inconnu.</strong> C'est la meilleure confirmation possible depuis la reprise.</p>"
+        "<p><strong>Verdict : A.</strong> C'est ta première vraie séance d'allure marathon réussie de la préparation, réalisée dans des conditions défavorables. Ce que tu as prouvé aujourd'hui n'est pas que tu peux courir à 5:20 — on le savait — mais que <strong>tu peux le faire en le décidant, et t'y tenir sur 6 kilomètres.</strong> C'est exactement le point faible identifié dimanche.</p>"
+        "<p><strong>La suite :</strong> repos vendredi, tu as raison. Après un effort relatif de 128 sur un sommeil court, une quatrième séance n'apporterait rien. Le déverrouillage de dimanche soir reste optionnel — et si l'organisation familiale ne le permet pas, <strong>la semaine est déjà réussie.</strong> Trois séances, dont celle-ci, valent mieux que cinq séances tièdes.</p>"}
     arr[4]["date"]="2026-08-16"
-    arr[4]["chaussure"]="Novablast 5 V"
+    arr[4]["chaussure"]="ASICS Novablast 5 V"
     arr[4]["titre"]="Déverrouillage retour de route"
     arr[4]["type"]="EF aérobie"
     arr[4]["opt"]=True
@@ -1513,6 +1539,16 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":183,"date":"13 aout 2026","sha":"","tag":"La Rochelle : premiere seance d'allure marathon reussie","items":[
+    "SEANCE LOGUEE (jeudi 13/08, avancee d'un jour) : 11,36 km en 1h01:58 a 5:27/km de moyenne, FC 155/171, effort relatif 128, cadence 174, 52 m D+. Novablast 5 V. Structure : echauffement 2,27 km, bloc 6 km a allure marathon, retour au calme 3,09 km.",
+    "BLOC ALLURE MARATHON -- 5:20,9 / 5:15,3 / 5:11,2 / 5:18,9 / 5:22,2 / 5:12,7. Moyenne 5:17/km pour une cible a 5:20, ecart moyen absolu 4,2 secondes, AMPLITUDE 11 SECONDES. Pour situer : 128 s/km sur la fin du trail de dimanche, 15 s/km sur l'EF plafonnee de mardi. Meilleure regularite obtenue sur allure specifique que sur un footing deux jours plus tot, et sur un terrain inconnu.",
+    "RESERVE : trois kilometres sous 5:15 (le 3e a 5:11, le 6e a 5:13). L'exercice reste reussi mais le schema est reconnaissable -- acceleration quand la sensation est bonne, et dernier kilometre le plus rapide du bloc.",
+    "SIGNAL CARDIAQUE, plus parlant que l'allure : FC de 151 a 165 sur les 6 km, soit +13,5 bpm A ALLURE CONSTANTE. Les trois derniers kilometres sont 2 secondes plus lents que les trois premiers mais 5 pulsations plus hauts. Cible 148-160 depassee sur la fin.",
+    "CONTEXTE EXPLICATIF : environ 5h30 de sommeil, 7 heures de voiture la veille, chaleur et humidite cotieres, troisieme seance en trois jours. Decouplage limite a 2,5 %, donc reponse physiologique saine. Mais effort relatif 128 contre 53 mardi et 61 mercredi.",
+    "PIED : aucune douleur sur une seance a 5:17 de moyenne, terrain inconnu. Meilleure confirmation depuis la reprise.",
+    "ACWR recalcule automatiquement : 0,87 -> 1,06 (aigu 516, chronique 1943). Retour en haut de zone optimale, coherent avec le cout de la seance.",
+    "DECISION : repos vendredi valide. Le deverrouillage de dimanche reste optionnel -- si l'organisation familiale ne le permet pas, la semaine est deja reussie a trois seances."
+  ]},
   {"build":182,"date":"12 aout 2026","sha":"","tag":"Audit des 132 seances : chaussure ambigue et ordre d'affichage","items":[
     "AUDIT COMPLET DEMANDE PAR LOIC apres le bug du graphique. Nouveau script scripts/audit_seances.py : il confronte entre elles les differentes descriptions d'une meme seance (titre, metriques, struct, segments, chaussure, realise) sur les 132 fiches, selon 8 axes.",
     "BUG 1 -- CHAUSSURE AMBIGUE SUR 23 SEANCES A VENIR. La constante NOVA valait « ASICS Novablast 5 », sans suffixe, alors que DEUX Novablast 5 coexistent au parc : la J (709 km, en fin de zone de remplacement) et la V (56 km). Le plan prescrivait donc une paire impossible a identifier, de S34 a S53. NOVA designe desormais explicitement la V. Au passage, la constante CLIF portait un nom trompeur : elle n'a jamais contenu de Clifton.",
