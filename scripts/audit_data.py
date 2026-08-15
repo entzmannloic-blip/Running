@@ -86,11 +86,13 @@ for wk, arr in SBW.items():
 
 # A5 — chaussure retiree encore prescrite/portee
 GEAR = {g["modele"]: g for g in d.get("GEAR", [])}
-# Aucune chaussure n'est reellement retiree cote Strava (retired=false
-# partout). Les Clifton 10 y figuraient a tort : elles ne sont pas
-# retirees, elles sont SUR-USEES -- et cette classification erronee
-# neutralisait le controle d'usure E1, qui exclut les paires retirees.
-RETIREES = []
+# Strava indique retired=false sur toutes les paires, mais les Clifton 10
+# ont bel et bien ete RETIREES DE LA ROTATION le 27/07 sur decision coach
+# (delamination de semelle constatee sur photos, puis 1179 km au compteur).
+# La decision d'entrainement prime sur le flag Strava, jamais mis a jour.
+# Vider cette liste au build 179 etait une regression : le controle A5
+# cessait de signaler une prescription de paire retiree.
+RETIREES = ["Clifton 10"]
 for se in toutes:
     ch = se.get("chaussure") or ""
     for r in RETIREES:
@@ -253,7 +255,7 @@ for s in SEM:
 
 # ══ E. GEAR ═══════════════════════════════════════════════════
 for g in d.get("GEAR", []):
-    if g["km"] > 900 and g["modele"] not in RETIREES:
+    if g["km"] > 900:
         risque("E1", f"{g['modele']} a {g['km']} km — au-dela de la zone de remplacement (700-900 km)")
 
 # ══ RAPPORT ═══════════════════════════════════════════════════
