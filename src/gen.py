@@ -1126,6 +1126,37 @@ for n, arr in list(SEANCES_BY_WEEK.items()):
         "<p><strong>Pied : aucune douleur, sur une séance à 5:17 de moyenne et sur terrain inconnu.</strong> C'est la meilleure confirmation possible depuis la reprise.</p>"
         "<p><strong>Verdict : A.</strong> C'est ta première vraie séance d'allure marathon réussie de la préparation, réalisée dans des conditions défavorables. Ce que tu as prouvé aujourd'hui n'est pas que tu peux courir à 5:20 — on le savait — mais que <strong>tu peux le faire en le décidant, et t'y tenir sur 6 kilomètres.</strong> C'est exactement le point faible identifié dimanche.</p>"
         "<p><strong>La suite :</strong> repos vendredi, tu as raison. Après un effort relatif de 128 sur un sommeil court, une quatrième séance n'apporterait rien. Le déverrouillage de dimanche soir reste optionnel — et si l'organisation familiale ne le permet pas, <strong>la semaine est déjà réussie.</strong> Trois séances, dont celle-ci, valent mieux que cinq séances tièdes.</p>"}
+    # Samedi 15/08 : sortie non planifiee, ajoutee a la semaine. Loic a pu
+    # s'eclipser le matin, sous la pluie, et a volontairement ecourte pour
+    # ne pas hypothequer la journee. Le deverrouillage du dimanche reste
+    # au programme, optionnel.
+    import copy as _copy
+    _sam=_copy.deepcopy(arr[4])
+    _sam["id"]=6
+    _sam["date"]="2026-08-15"
+    _sam["titre"]="Sortie non planifiée — footing de liaison"
+    _sam["type"]="EF aérobie"
+    _sam["sous"]="La Rochelle, sous la pluie — écourtée volontairement."
+    _sam["opt"]=False
+    _sam["chaussure"]="ASICS Novablast 5 V"
+    _sam["metriques"]={"Distance":"8 km","Durée":"48 min","Allure":"5:59/km","FC":"< 145","RPE":"3","Type":"Liaison"}
+    _sam["objectif"]="Footing de liaison non planifié, écourté sur décision de Loïc pour préserver la journée et la récupération."
+    _sam["struct"]=[{"nom":"Corps","txt":"8 km à allure facile, FC contenue sous 145. Aucune intensité recherchée."}]
+    _sam["segments"]=[{"nom":"Footing de liaison","role":"8 km à allure facile, FC sous 145.","duree":2888,"couleur":"vert","bloc":"—","hauteur":32,"debut":0,"fin":2888}]
+    _sam["realise"]={"statut":"fait","km":8.04,"temps":"48:08","allure":"5:59/km","fc_moy":139,"fc_max":152,"re":50,
+      "cadence":175,"elevation_gain":39,"kcal":617,"rpe_ressenti":3,
+      "commentaire":"La Rochelle sous la pluie, chaleur persistante. Nuits courtes (6-7 h) depuis le début du séjour. Fatigue générale marquée, aucune douleur. Séance volontairement écourtée pour préserver la journée.",
+      "pr":2,"ach":2,"pr_detail":[],
+      "splits":[{"km":1,"allure":"6:14","fc":130},{"km":2,"allure":"5:40","fc":134},{"km":3,"allure":"5:51","fc":145},
+                {"km":4,"allure":"5:59","fc":147},{"km":5,"allure":"6:11","fc":136},{"km":6,"allure":"5:59","fc":140},
+                {"km":7,"allure":"6:00","fc":141},{"km":8,"allure":"5:58","fc":141}],
+      "revue":"<p><strong>Bonne décision d'écourter, et le corps te donne raison — mais pas pour la raison que tu crois.</strong></p>"
+        "<p><strong>Sur le plan cardiaque, cette séance est excellente.</strong> FC moyenne 139 pour 5:59/km. Compare avec mardi : 138 bpm pour 6:09/km. Tu cours aujourd'hui <strong>11 secondes au kilomètre plus vite pour une pulsation de plus</strong>. Et la dérive est nulle : 138,8 bpm sur les 4 premiers kilomètres, 139,6 sur les 4 derniers, à allure identique. Sur une sortie où tu te sens fatigué, c'est un signal de forme, pas de surcharge.</p>"
+        "<p><strong>Effort relatif 50, le plus bas de la semaine.</strong> Deux records personnels sur segments au passage, sans les chercher.</p>"
+        "<p><strong>Alors d'où vient la fatigue ?</strong> Elle est réelle, mais son origine n'est pas l'entraînement. Six à sept heures de sommeil par nuit depuis le début du séjour, 7 heures de voiture mercredi, chaleur et humidité continues, rythme familial. <strong>Ton moteur va bien ; c'est ta récupération qui est entamée.</strong> C'est une distinction importante : elle se corrige en dormant, pas en réduisant l'entraînement.</p>"
+        "<p><strong>La séance a d'ailleurs un vrai défaut, et il est mineur :</strong> l'amplitude d'allure est de 34 s/km, avec un 2ᵉ kilomètre à 5:40 nettement plus rapide que le reste. Sur un footing de liaison, ça n'a aucune conséquence. Je le note parce que c'est le même réflexe que d'habitude — le corps part quand il se sent bien, même un jour de fatigue.</p>"
+        "<p><strong>Verdict : A−.</strong> Séance juste, décision juste. Écourter pour préserver la journée et la récupération est exactement le bon arbitrage un samedi de vacances, à 12 semaines de Nice.</p>"}
+    arr.append(_sam)
     arr[4]["date"]="2026-08-16"
     arr[4]["chaussure"]="ASICS Novablast 5 V"
     arr[4]["titre"]="Déverrouillage retour de route"
@@ -1539,6 +1570,14 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":184,"date":"15 aout 2026","sha":"","tag":"Samedi : sortie de liaison ecourtee, et un signal de forme","items":[
+    "SEANCE NON PLANIFIEE AJOUTEE (samedi 15/08, La Rochelle sous la pluie) : 8,04 km en 48:08 a 5:59/km, FC 139/152, effort relatif 50, cadence 175, 39 m D+. Ecourtee volontairement par Loic pour preserver la journee et la recuperation. Deux records personnels sur segments.",
+    "LECTURE CARDIAQUE -- LE POINT IMPORTANT : FC moyenne 139 pour 5:59/km, contre 138 bpm pour 6:09/km mardi. Soit 11 secondes au kilometre plus vite pour une pulsation de plus. Derive nulle sur la sortie : 138,8 bpm sur les 4 premiers kilometres, 139,6 sur les 4 derniers a allure identique.",
+    "CONCLUSION COACH : la fatigue rapportee par Loic est reelle mais son origine n'est pas l'entrainement. Six a sept heures de sommeil par nuit depuis le debut du sejour, 7 heures de voiture mercredi, chaleur et humidite continues. Le moteur repond bien ; c'est la recuperation qui est entamee. Distinction importante : cela se corrige en dormant, pas en reduisant la charge.",
+    "RESERVE MINEURE : amplitude d'allure de 34 s/km avec un 2e kilometre a 5:40. Sans consequence sur un footing de liaison, mais c'est le meme reflexe recurrent -- le corps part quand il se sent bien, meme un jour de fatigue.",
+    "BILAN S33 A CE STADE : 4 seances, 39,7 km pour 52 cibles (-24 %), charge 292. Semaine allegee assumee, coherente avec le deplacement. ACWR 1,13.",
+    "REGRESSION CORRIGEE (introduite par moi au build 179) : j'avais vide la liste RETIREES d'audit_data en me fiant au flag Strava (retired=false partout), alors que les Clifton 10 avaient ete retirees de la rotation le 27/07 sur decision coach, pour delamination de semelle. Le controle A5 cessait donc de signaler toute prescription de paire retiree. Liste retablie, et le controle d'usure E1 s'applique desormais aussi aux paires retirees -- l'usure est un fait, independant du statut."
+  ]},
   {"build":183,"date":"13 aout 2026","sha":"","tag":"La Rochelle : premiere seance d'allure marathon reussie","items":[
     "SEANCE LOGUEE (jeudi 13/08, avancee d'un jour) : 11,36 km en 1h01:58 a 5:27/km de moyenne, FC 155/171, effort relatif 128, cadence 174, 52 m D+. Novablast 5 V. Structure : echauffement 2,27 km, bloc 6 km a allure marathon, retour au calme 3,09 km.",
     "BLOC ALLURE MARATHON -- 5:20,9 / 5:15,3 / 5:11,2 / 5:18,9 / 5:22,2 / 5:12,7. Moyenne 5:17/km pour une cible a 5:20, ecart moyen absolu 4,2 secondes, AMPLITUDE 11 SECONDES. Pour situer : 128 s/km sur la fin du trail de dimanche, 15 s/km sur l'EF plafonnee de mardi. Meilleure regularite obtenue sur allure specifique que sur un footing deux jours plus tot, et sur un terrain inconnu.",
