@@ -86,13 +86,12 @@ for wk, arr in SBW.items():
 
 # A5 — chaussure retiree encore prescrite/portee
 GEAR = {g["modele"]: g for g in d.get("GEAR", [])}
-# Strava indique retired=false sur toutes les paires, mais les Clifton 10
-# ont bel et bien ete RETIREES DE LA ROTATION le 27/07 sur decision coach
-# (delamination de semelle constatee sur photos, puis 1179 km au compteur).
-# La decision d'entrainement prime sur le flag Strava, jamais mis a jour.
-# Vider cette liste au build 179 etait une regression : le controle A5
-# cessait de signaler une prescription de paire retiree.
-RETIREES = ["Clifton 10"]
+# CORRIGE PAR LOIC : aucune paire n'est retiree de la rotation. Les
+# Clifton 10 restent utilisees, simplement moins souvent. Le flag Strava
+# (retired=false partout) etait donc juste, et ma requalification en
+# "retirees" au build 184 etait une erreur d'interpretation de ma part.
+# L'usure reelle reste surveillee par le controle E1, qui suffit.
+RETIREES = []
 for se in toutes:
     ch = se.get("chaussure") or ""
     for r in RETIREES:
