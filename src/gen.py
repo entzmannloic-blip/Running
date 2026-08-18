@@ -1159,6 +1159,48 @@ for n, arr in list(SEANCES_BY_WEEK.items()):
     arr.append(_sam)
     arr[4]["date"]="2026-08-16"
     arr[4]["chaussure"]="ASICS Novablast 5 V"
+    arr[4]["realise"]={"statut":"skipped","km":0,"temps":"—","allure":"—","fc_moy":0,"fc_max":0,"re":0,"rpe_ressenti":0,
+      "commentaire":"Non réalisée — retour de La Rochelle, 6h30 de route. Déverrouillage explicitement optionnel.",
+      "pr":0,"ach":0,"pr_detail":[],
+      "revue":"<strong>Sautée comme prévu, et sans conséquence.</strong> Cette séance était marquée optionnelle dès sa création : après 6h30 de route, elle n’apportait rien. La semaine était déjà réussie sans elle."}
+
+    # ── S34 : lundi decale, mardi requalifie ─────────────────────────────
+    # Loic n'a pas couru lundi (chaleur + mauvaise nuit) et est sorti mardi
+    # soir avec une amie. Objectif annonce : tenir 5:20. Realise : 5:09 de
+    # moyenne. La seance prevue mardi etait un seuil 3x12 ; ce qui a ete
+    # couru est un tempo continu, plus proche du seuil que de l'allure
+    # marathon. On requalifie la fiche plutot que de la faire passer pour
+    # une seance d'allure marathon reussie.
+for n, arr in list(SEANCES_BY_WEEK.items()):
+    if n != "34":
+        continue
+    arr[0]["realise"]={"statut":"skipped","km":0,"temps":"—","allure":"—","fc_moy":0,"fc_max":0,"re":0,"rpe_ressenti":0,
+      "commentaire":"Non réalisée — chaleur trop forte le matin et mauvaise nuit. Sortie reportée au mardi soir.",
+      "pr":0,"ach":0,"pr_detail":[],
+      "revue":"<strong>Report justifié.</strong> Chaleur matinale et nuit courte : décaler d'un jour plutôt que forcer est le bon arbitrage, et c'est cohérent avec ce que tu constates toi-même sur l'effet de deux jours de repos."}
+    arr[1]["titre"]="Tempo continu — sortie avec Edwige"
+    arr[1]["type"]="Tempo / seuil"
+    arr[1]["sous"]="Lyon, en soirée — objectif annoncé 5:20."
+    arr[1]["chaussure"]="ASICS Novablast 5 J"
+    arr[1]["metriques"]={"Distance":"12 km","Durée":"62 min","Allure":"5:09/km","FC":"162 moy / 182 max","RPE":"6-7","Type":"Tempo continu"}
+    arr[1]["realise"]={"statut":"fait","km":12.04,"temps":"1h02:11","allure":"5:09/km","fc_moy":162,"fc_max":182,"re":173,
+      "cadence":171,"elevation_gain":22,"kcal":917,"rpe_ressenti":6,
+      "commentaire":"Sortie du soir avec une amie, plus frais que le matin. Objectif annoncé : tenir l'allure marathon 5:20. Sensations bonnes du début à la fin, aucune douleur. Effet des deux jours de repos nettement ressenti.",
+      "pr":45,"ach":45,"pr_detail":[],
+      "splits":[{"km":1,"allure":"4:58","fc":148},{"km":2,"allure":"4:53","fc":160},{"km":3,"allure":"5:15","fc":157},
+                {"km":4,"allure":"5:21","fc":160},{"km":5,"allure":"5:29","fc":158},{"km":6,"allure":"5:24","fc":162},
+                {"km":7,"allure":"5:12","fc":165},{"km":8,"allure":"5:11","fc":167},{"km":9,"allure":"5:25","fc":167},
+                {"km":10,"allure":"5:08","fc":168},{"km":11,"allure":"5:04","fc":166},{"km":12,"allure":"4:34","fc":166}],
+      "revue":"<p><strong>Tu as très bien couru. Mais tu n'as pas couru la séance que tu crois avoir courue — et c'est le sujet le plus important de ta préparation.</strong></p>"
+        "<p><strong>Ton objectif annoncé était 5:20. Ta moyenne est de 5:09.</strong> Onze secondes au kilomètre plus vite, sur 12 kilomètres. Sept kilomètres sur douze sont passés sous 5:15. Tu as démarré à 4:58 puis 4:53 — trente secondes trop vite — et terminé à 4:34.</p>"
+        "<p><strong>L'amplitude est de 55 secondes au kilomètre</strong>, du 5:29 au 4:34. Jeudi dernier à La Rochelle, sur ton bloc d'allure marathon, elle était de <strong>11 secondes</strong>. Même intention annoncée, deux exécutions incomparables.</p>"
+        "<p><strong>Ce que dit ton cardiaque :</strong> 162 de moyenne pour une cible marathon à 148-160, avec une dérive de 148 à 168 et un pic à 182 — 95 % de ta FCmax. Tu attribues ça à la chaleur ; elle joue, mais elle n'explique pas onze secondes au kilomètre. L'effort relatif est de <strong>173</strong>, contre 128 pour le trail-tempo de jeudi et 50 samedi. <strong>C'est ta séance la plus coûteuse depuis le trail de 27 km.</strong></p>"
+        "<p><strong>Pourquoi c'est important, et pas un détail de coach tatillon :</strong> tu t'es senti bien tout du long, tu as annoncé 5:20, et tu es persuadé de l'avoir tenu. C'est exactement le mécanisme qui fait exploser un marathon. À Nice, courir les vingt premiers kilomètres onze secondes trop vite en se sentant très bien, c'est le scénario classique du mur au 32ᵉ. <strong>Le problème n'est jamais la vitesse — c'est l'écart entre ce que tu crois faire et ce que tu fais.</strong></p>"
+        "<p><strong>Deux circonstances atténuantes, réelles :</strong> tu courais accompagné, ce qui tire toujours l'allure sans qu'on le décide ; et la séance prévue ce jour-là était un seuil 3×12 min. Le tempo que tu as produit est donc cohérent avec la semaine — je l'ai requalifié en séance de seuil, pas en allure marathon ratée.</p>"
+        "<p><strong>Ce qui est excellent :</strong> aucune douleur, sensations pleines sur toute la sortie, et ta lecture de la récupération est juste — deux jours de repos ont transformé ton état de forme. 5K en 26:27 et 10K en 54:30 dans une sortie non maximale, avec une cadence stable à 171. Le moteur est là.</p>"
+        "<p><strong>Verdict : B.</strong> Bonne séance de seuil, mauvais contrôle d'allure. Note volontairement sévère au regard de l'objectif annoncé : à 11 semaines de Nice, tenir un chiffre compte plus que de bien courir.</p>"
+        "<p><strong>La consigne pour la prochaine sortie d'allure marathon</strong> — la longue de dimanche, 28 km dont 12 à allure marathon : <strong>tu regardes ta montre au kilomètre 1, et tu la regardes au kilomètre 2.</strong> Pas au 5. Les deux premiers kilomètres décident de toute la séance, et aujourd'hui ils sont partis 25 secondes trop vite avant que tu ne t'en aperçoives.</p>"}
+    break
     arr[4]["titre"]="Déverrouillage retour de route"
     arr[4]["type"]="EF aérobie"
     arr[4]["opt"]=True
@@ -1168,8 +1210,11 @@ for n, arr in list(SEANCES_BY_WEEK.items()):
     arr[4]["struct"]=[
       {"nom":"Corps","txt":"6 à 8 km à allure très facile, FC plafonnée à 140. Aucune ligne droite, aucune accélération."},
       {"nom":"Alternative","txt":"20 à 30 min de marche + mobilité hanches et chaîne postérieure si les jambes sont trop lourdes."}]
+_S33_REVUE="<p><strong>Une semaine de déplacement réussie, et surtout la validation du chantier central de ta préparation.</strong></p><p><strong>Le bilan chiffré :</strong> 4 séances, 39,7 km pour 52 prévus (−24 %), charge 292. Volume en retrait assumé, cohérent avec cinq jours à La Rochelle et une organisation familiale contrainte. Aucune blessure, aucune douleur au pied sur l’ensemble de la semaine.</p><p><strong>La séance qui compte : jeudi à La Rochelle.</strong> Six kilomètres à allure marathon, moyenne 5:17 pour une cible à 5:20, <strong>amplitude 11 secondes au kilomètre</strong>. C’est ta première vraie séance d’allure marathon réussie de la préparation, réalisée sur un terrain inconnu, après 7 heures de voiture et 5h30 de sommeil. Ce que tu as prouvé n’est pas que tu sais courir à 5:20, mais que <strong>tu sais t’y tenir en le décidant</strong>.</p><p><strong>La progression de la retenue, sur la semaine :</strong> 15 s/km d’amplitude mardi sur EF plafonnée, 39 mercredi sur une séance avec accélérations, 11 jeudi sur allure spécifique. À comparer aux 128 s/km de la fin du trail du 9 août. L’axe de travail identifié il y a dix jours a produit un résultat mesurable en une semaine.</p><p><strong>La fatigue rapportée samedi méritait d’être tranchée, et les données l’ont fait :</strong> FC 139 pour 5:59/km, contre 138 pour 6:09/km le mardi. Onze secondes plus vite pour une pulsation de plus, dérive nulle. Ton moteur allait bien ; c’était ta récupération qui était entamée — nuits de 6 à 7 heures, chaleur continue, route. Cela se corrige en dormant, pas en allégeant l’entraînement.</p><p><strong>Les décisions que tu as prises, toutes justes :</strong> repos lundi sur sensations, décalage du seuil au jeudi pour digérer le trail, écourtement volontaire samedi, abandon du déverrouillage dimanche. Quatre arbitrages, quatre bons.</p><p><strong>Décision pour S34 :</strong> reprise du volume avec le pic de la préparation en ligne de mire. La longue de dimanche — 28 km dont 12 à allure marathon — est la séance la plus importante des trois prochaines semaines. Elle demandera exactement ce que tu as réussi jeudi, mais deux fois plus longtemps. <strong>Un chiffre annoncé avant chaque départ, et la montre regardée dès le premier kilomètre.</strong></p>"
+
 for _s in SEMAINES:
     if _s["num"]==25: _s["revue"]=_S25_REVUE
+    if _s["num"]==33: _s["revue"]=_S33_REVUE
     if _s["num"]==26: _s["revue"]=_S26_REVUE
     if _s["num"]==27: _s["revue"]=_S27_REVUE
     if _s["num"]==28: _s["revue"]=_S28_REVUE
@@ -1570,6 +1615,15 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":186,"date":"18 aout 2026","sha":"","tag":"S34 : tempo continu requalifie + cloture de S33","items":[
+    "LUNDI 17/08 marque en report : chaleur matinale et mauvaise nuit, sortie decalee au mardi soir.",
+    "MARDI 18/08 LOGUE : 12,04 km en 1h02:11 a 5:09/km, FC 162/182, effort relatif 173, cadence 171. Sortie du soir accompagnee. 45 records personnels sur segments.",
+    "SEANCE REQUALIFIEE EN TEMPO CONTINU. Objectif annonce par Loic : tenir l'allure marathon a 5:20. Realise : 5:09 de moyenne, soit 11 secondes au kilometre plus vite, avec 7 kilometres sur 12 sous 5:15, un depart a 4:58 puis 4:53 et un dernier kilometre a 4:34. Amplitude 55 s/km, contre 11 s/km sur le bloc reussi du 13/08. Ce n'est pas une seance d'allure marathon ratee, c'est une bonne seance de seuil : la fiche est requalifiee en consequence, la semaine prevoyait justement un seuil 3x12 ce jour-la.",
+    "POINT COACH CENTRAL : Loic percoit la seance comme reussie a 5:20. L'ecart entre la perception et la mesure est precisement le mecanisme identifie comme axe de travail prioritaire (Allure Marathon 42/99 au profil). Consigne pour la longue de dimanche : regarder la montre aux kilometres 1 ET 2, pas au 5 -- aujourd'hui les deux premiers sont partis 25 secondes trop vite avant tout controle.",
+    "Cardiaque : 162 de moyenne pour une cible marathon a 148-160, derive de 148 a 168, pic a 182 (95 % de FCmax). La chaleur joue mais n'explique pas 11 s/km. Effort relatif 173, le plus eleve depuis le trail du 09/08.",
+    "CLOTURE DE S33 : deverrouillage du dimanche marque saute (retour de La Rochelle, seance explicitement optionnelle), et revue de semaine ecrite. Bilan S33 : 4 seances, 39,7 km pour 52 prevus, charge 292, zero douleur, et la premiere seance d'allure marathon reussie de la preparation.",
+    "ACWR recalcule : 1,13 -> 0,91."
+  ]},
   {"build":185,"date":"15 aout 2026","sha":"","tag":"Correction : les Clifton 10 n'ont jamais quitte la rotation","items":[
     "CORRECTION APPORTEE PAR LOIC : les Clifton 10 restent dans sa rotation, simplement moins utilisees. Elles n'ont jamais ete retirees. Le flag Strava (retired=false) etait donc juste ; c'est mon interpretation qui etait fausse.",
     "PORTEE DE L'ERREUR : je ne me suis pas contente d'une donnee inexacte, j'ai qualifie sur cette base des choix de Loic comme des ECARTS. La revue du 05/08 parlait d'une paire « attrapee par reflexe » et suggerait de la sortir de la maison ; la revue de S32 comptait deux « ecarts materiels » ; une slide du Rewind S32 affichait « LES DEUX ECARTS ». Un seul de ces ecarts existait reellement, celui des Novablast route sur 662 m de sentier technique.",
