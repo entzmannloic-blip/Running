@@ -1200,6 +1200,85 @@ for n, arr in list(SEANCES_BY_WEEK.items()):
         "<p><strong>Ce qui est excellent :</strong> aucune douleur, sensations pleines sur toute la sortie, et ta lecture de la récupération est juste — deux jours de repos ont transformé ton état de forme. 5K en 26:27 et 10K en 54:30 dans une sortie non maximale, avec une cadence stable à 171. Le moteur est là.</p>"
         "<p><strong>Verdict : B.</strong> Bonne séance de seuil, mauvais contrôle d'allure. Note volontairement sévère au regard de l'objectif annoncé : à 11 semaines de Nice, tenir un chiffre compte plus que de bien courir.</p>"
         "<p><strong>La consigne pour la prochaine sortie d'allure marathon</strong> — la longue de dimanche, 28 km dont 12 à allure marathon : <strong>tu regardes ta montre au kilomètre 1, et tu la regardes au kilomètre 2.</strong> Pas au 5. Les deux premiers kilomètres décident de toute la séance, et aujourd'hui ils sont partis 25 secondes trop vite avant que tu ne t'en aperçoives.</p>"}
+
+    _S={str(x["id"]):x for x in arr}
+    # Le graphique de mardi montrait encore le seuil 3x12 prescrit, alors
+    # que la seance realisee est un tempo continu de 12 km. On resynchronise
+    # segments avec ce qui a reellement ete couru.
+    _S2=[x for x in arr if x["id"]==2][0]
+    _S2["segments"]=[
+      {"nom":"Mise en route","role":"2 km, montee en allure progressive.","duree":600,"couleur":"vert","bloc":"\u2014","hauteur":30,"debut":0,"fin":600},
+      {"nom":"Tempo continu","role":"10 km \u00e0 5:09/km de moyenne, FC 162.","duree":3131,"couleur":"rouge","bloc":"\u2014","hauteur":76,"debut":600,"fin":3731}]
+    # ── Restructuration de la fin de S34 (demandee par Loic) ─────────────
+    # Contrainte : la longue passe au SAMEDI 22/08 (indisponible dimanche).
+    # Arbitrage : mardi a deja coute 173 d'effort relatif, donc la seance
+    # de vitesse de mercredi est ramenee a un format NEUROMUSCULAIRE court
+    # (8x30 s, recup complete) au lieu d'un fractionne classique, et jeudi
+    # perd ses lignes droites. Objectif : proteger la longue, qui est la
+    # seance la plus importante des trois prochaines semaines.
+    # ACWR projete au 22/08 : 1,26 (contre 1,31 avec un fractionne classique).
+
+    # MERCREDI 19/08 — vitesse courte
+    _S["3"]["date"]="2026-08-19"
+    _S["3"]["titre"]="Vitesse courte \u2014 8\u00d730 s"
+    _S["3"]["type"]="Neuromusculaire"
+    _S["3"]["sous"]="Qualite sans cout \u2014 recup complete entre les efforts."
+    _S["3"]["chaussure"]="ASICS Magic Speed 4"
+    _S["3"]["metriques"]={"Distance":"~9 km","Dur\u00e9e":"~45 min","Allure":"4:03 \u2192 3:41/km sur les efforts","FC":"< 175, retour < 130","RPE":"4-5","Type":"Vitesse courte"}
+    _S["3"]["objectif"]="Entretenir la vitesse et la fr\u00e9quence de foulée <strong>sans produire de lactate ni de casse musculaire</strong>. Des efforts de 30 secondes avec r\u00e9cup\u00e9ration compl\u00e8te d\u00e9veloppent la m\u00eame qualit\u00e9 qu\u2019un fractionn\u00e9 classique pour un co\u00fbt bien moindre. <strong>Plafond d\u2019effort relatif : 90.</strong>"
+    _S["3"]["struct"]=[
+      {"nom":"\u00c9chauffement","txt":"20 min en endurance fondamentale, FC sous 140. Ne rien pr\u00e9cipiter : le tempo de mardi (effort relatif 173) n\u2019est pas encore digéré."},
+      {"nom":"Corps \u2014 8\u00d730 s","txt":"R\u00e9p\u00e9titions 1-2 \u00e0 <strong>4:03/km</strong> (14,8 km/h) \u00b7 3 \u00e0 6 \u00e0 <strong>3:51/km</strong> (15,5 km/h) \u00b7 7-8 \u00e0 <strong>3:41/km</strong> (16,2 km/h). R\u00e9cup\u00e9ration 90 s en trot tr\u00e8s lent."},
+      {"nom":"R\u00e8gle de r\u00e9cup\u00e9ration","txt":"La FC doit redescendre <strong>sous 130</strong> avant chaque d\u00e9part. Si ce n\u2019est pas le cas, allonge \u00e0 2 minutes. C\u2019est ce qui s\u00e9pare le travail neuromusculaire du travail lactique."},
+      {"nom":"Retour au calme","txt":"10 min tr\u00e8s souple, FC redescendue sous 140."},
+      {"nom":"Ne pas sprinter","txt":"Tu as tenu 22,5 km/h sur 100 m le 12 ao\u00fbt. Ici la cible maximale est 16,2 km/h, soit environ 70 % de ce que tu sais faire. L\u2019objectif est la fr\u00e9quence de foulée, pas la performance."}]
+    _S["3"]["segments"]=[
+      {"nom":"\u00c9chauffement","role":"20 min EF, FC sous 140.","duree":1200,"couleur":"vert","bloc":"\u2014","hauteur":30,"debut":0,"fin":1200},
+      {"nom":"8\u00d730 s","role":"4:03 \u2192 3:41/km, r\u00e9cup 90 s trot.","duree":960,"couleur":"rouge","bloc":"8\u00d7","hauteur":78,"debut":1200,"fin":2160},
+      {"nom":"Retour au calme","role":"10 min tr\u00e8s souple.","duree":600,"couleur":"vert","bloc":"\u2014","hauteur":28,"debut":2160,"fin":2760}]
+    _S["3"]["vigilance"]="Si tu te r\u00e9veilles avec des jambes lourdes ou apr\u00e8s une nuit courte, <strong>remplace par une EF facile sans discuter</strong>. Samedi vaut dix fois cette s\u00e9ance."
+
+    # JEUDI 20/08 — EF simple, sans lignes droites
+    _S["6"]["date"]="2026-08-20"
+    _S["6"]["titre"]="Footing facile \u2014 sans lignes droites"
+    _S["6"]["type"]="EF a\u00e9robie"
+    _S["6"]["sous"]="Digestion \u2014 la vitesse a d\u00e9j\u00e0 \u00e9t\u00e9 faite mercredi."
+    _S["6"]["chaussure"]="ASICS Novablast 5 V"
+    _S["6"]["opt"]=False
+    _S["6"]["metriques"]={"Distance":"10 km","Dur\u00e9e":"~62 min","Allure":"6:00-6:20/km","FC":"< 145","RPE":"3","Type":"EF"}
+    _S["6"]["objectif"]="Footing de digestion, <strong>sans aucune acc\u00e9l\u00e9ration</strong>. Les lignes droites initialement pr\u00e9vues ici ont \u00e9t\u00e9 retir\u00e9es : la touche de vitesse est faite mercredi, en remettre jeudi compromettrait la longue."
+    _S["6"]["struct"]=[
+      {"nom":"Corps","txt":"10 km \u00e0 allure facile, FC plafonn\u00e9e \u00e0 145. Aucune ligne droite, aucune acc\u00e9l\u00e9ration, m\u00eame si les sensations sont bonnes."}]
+    _S["6"]["segments"]=[
+      {"nom":"Footing facile","role":"10 km, FC sous 145, sans acc\u00e9l\u00e9ration.","duree":3720,"couleur":"vert","bloc":"\u2014","hauteur":32,"debut":0,"fin":3720}]
+
+    # VENDREDI 21/08 — repos complet
+    _S["5"]["date"]="2026-08-21"
+    _S["5"]["titre"]="Repos complet"
+    _S["5"]["type"]="Repos"
+    _S["5"]["sous"]="Non n\u00e9gociable avant la longue."
+    _S["5"]["opt"]=False
+    _S["5"]["metriques"]={"Dur\u00e9e":"\u2014","RPE":"0","Focus":"R\u00e9cup\u00e9ration","Type":"Repos"}
+    _S["5"]["objectif"]="Repos complet. <strong>Tu as constat\u00e9 toi-m\u00eame que deux jours de repos transforment ton \u00e9tat de forme</strong> \u2014 celui-ci conditionne directement la qualit\u00e9 de samedi."
+    _S["5"]["struct"]=[{"nom":"Consigne","txt":"Aucune course. Mobilit\u00e9 douce et sommeil si possible : c\u2019est la r\u00e9cup\u00e9ration, pas l\u2019entra\u00eenement, qui est ton facteur limitant en ce moment."}]
+    _S["5"]["segments"]=[]
+
+    # SAMEDI 22/08 — la longue, avancee d'un jour
+    _S["4"]["date"]="2026-08-22"
+    _S["4"]["sous"]="La s\u00e9ance la plus importante des trois prochaines semaines."
+    _S["4"]["chaussure"]="ASICS Novablast 5 V"
+    _S["4"]["metriques"]={"Distance":"28 km","Dur\u00e9e":"~170 min","Allure":"6:00-6:20 puis 5:20/km","FC":"135-150 puis 148-160","RPE":"6","Type":"Longue + sp\u00e9cifique"}
+    _S["4"]["objectif"]="<strong>28 km dont 12 \u00e0 allure marathon.</strong> C\u2019est exactement ce que tu as r\u00e9ussi le 13 ao\u00fbt \u00e0 La Rochelle, mais deux fois plus longtemps. <strong>La consigne tient en une phrase : montre au kilom\u00e8tre 1, et montre au kilom\u00e8tre 2.</strong> Mardi, les deux premiers sont partis 25 secondes trop vite avant tout contr\u00f4le."
+    _S["4"]["struct"]=[
+      {"nom":"\u00c9chauffement","txt":"8 km \u00e0 6:00-6:20/km, FC sous 150. Tr\u00e8s progressif."},
+      {"nom":"Bloc allure marathon","txt":"<strong>12 km \u00e0 5:20/km</strong>, FC 148-160. Chaque kilom\u00e8tre entre 5:18 et 5:24. <strong>Si la chaleur est forte, d\u00e9coupe en 2\u00d76 km</strong> avec 1 km facile au milieu \u2014 mieux vaut deux blocs propres qu\u2019un bloc qui d\u00e9rive."},
+      {"nom":"Retour au calme","txt":"8 km \u00e0 allure facile, FC redescendue sous 150."},
+      {"nom":"Nutrition","txt":"C\u2019est ton laboratoire avant Nice : boire toutes les 15-20 min, \u00e9lectrolytes d\u00e8s le d\u00e9part, 1 gel toutes les 30-40 min au-del\u00e0 d\u2019une heure. Note ce que tu absorbes et ton ressenti."},
+      {"nom":"Conditions","txt":"<strong>Partir t\u00f4t</strong> \u2014 canicule en cours. Si la temp\u00e9rature d\u00e9passe nettement les conditions de course, l\u2019allure cible prime sur la distance : mieux vaut 24 km propres que 28 km d\u00e9grad\u00e9s."}]
+    _S["4"]["segments"]=[
+      {"nom":"\u00c9chauffement","role":"8 km \u00e0 6:00-6:20/km, FC sous 150.","duree":2940,"couleur":"vert","bloc":"\u2014","hauteur":32,"debut":0,"fin":2940},
+      {"nom":"Bloc allure marathon","role":"12 km \u00e0 5:20/km, FC 148-160.","duree":3840,"couleur":"orange","bloc":"\u1f3af","hauteur":74,"debut":2940,"fin":6780},
+      {"nom":"Retour au calme","role":"8 km facile, FC sous 150.","duree":2940,"couleur":"vert","bloc":"\u2014","hauteur":30,"debut":6780,"fin":9720}]
     break
     arr[4]["titre"]="Déverrouillage retour de route"
     arr[4]["type"]="EF aérobie"
@@ -1615,6 +1694,16 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":187,"date":"18 aout 2026","sha":"","tag":"S34 restructuree : vitesse courte, repos, longue avancee au samedi","items":[
+    "CONTRAINTE : Loic ne peut pas courir dimanche, la sortie longue passe au SAMEDI 22/08. Il souhaite par ailleurs conserver une seance de vitesse mercredi malgre le cout du tempo de mardi (effort relatif 173).",
+    "ARBITRAGE : la seance de vitesse est conservee mais ramenee a un format NEUROMUSCULAIRE court -- 8x30 s avec recuperation complete de 90 s -- au lieu d'un fractionne classique. Le travail court avec recuperation complete developpe la vitesse sans produire de lactate ni de casse musculaire. Allures calibrees sur une VMA estimee a 14,1 km/h (a partir du PB 5 km de 22:52 couru a environ 93 % de VMA) : 4:03/km sur les repetitions 1-2, 3:51/km sur les 3 a 6, 3:41/km sur les 7-8. Plafond d'effort relatif fixe a 90.",
+    "CONTREPARTIE : le footing du jeudi PERD ses lignes droites. La touche de vitesse est faite mercredi ; en remettre jeudi compromettrait la longue.",
+    "VENDREDI passe en repos complet (la seance de renforcement est remplacee). Loic a constate lui-meme que deux jours de repos transforment son etat de forme ; celui-ci conditionne directement la qualite du samedi.",
+    "SAMEDI 22/08 -- 28 km dont 12 a allure marathon, avance d'un jour. Consigne principale reprise de l'analyse de mardi : montre au kilometre 1 ET au kilometre 2, pas au 5. Option ajoutee : decouper le bloc en 2x6 km si la chaleur est forte, et privilegier l'allure sur la distance (24 km propres valent mieux que 28 km degrades).",
+    "ACWR projete au 22/08 : 1,26 avec ce format, contre 1,31 avec un fractionne classique et 1,23 sans aucune vitesse. Reste sous le seuil de 1,3.",
+    "GARDE-FOU ACTIVE : le graphique de structure du mardi affichait encore le seuil 3x12 prescrit alors que la seance realisee etait un tempo continu. Resynchronise -- c'est exactement le defaut corrige au build 181, et l'audit A8 le surveille desormais sur les seances a venir.",
+    "CORRECTION EN COURS DE ROUTE : la premiere version de la restructuration ciblait les seances par index de tableau et a ecrase la sortie longue. Reprise en ciblant par identifiant. Verifie apres correction : les six seances de S34 sont correctes et l'audit seances renvoie 0 bug."
+  ]},
   {"build":186,"date":"18 aout 2026","sha":"","tag":"S34 : tempo continu requalifie + cloture de S33","items":[
     "LUNDI 17/08 marque en report : chaleur matinale et mauvaise nuit, sortie decalee au mardi soir.",
     "MARDI 18/08 LOGUE : 12,04 km en 1h02:11 a 5:09/km, FC 162/182, effort relatif 173, cadence 171. Sortie du soir accompagnee. 45 records personnels sur segments.",
