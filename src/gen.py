@@ -1218,24 +1218,27 @@ for n, arr in list(SEANCES_BY_WEEK.items()):
     # seance la plus importante des trois prochaines semaines.
     # ACWR projete au 22/08 : 1,26 (contre 1,31 avec un fractionne classique).
 
-    # MERCREDI 19/08 — vitesse courte
+    # MERCREDI 19/08 — 100 m chronometres, 2 blocs
     _S["3"]["date"]="2026-08-19"
-    _S["3"]["titre"]="Vitesse courte \u2014 8\u00d730 s"
+    _S["3"]["titre"]="Vitesse chronométrée — 2×(4×100 m)"
     _S["3"]["type"]="Neuromusculaire"
-    _S["3"]["sous"]="Qualite sans cout \u2014 recup complete entre les efforts."
+    _S["3"]["sous"]="Un temps a tenir, pas une allure a sentir."
     _S["3"]["chaussure"]="ASICS Magic Speed 4"
-    _S["3"]["metriques"]={"Distance":"~9 km","Dur\u00e9e":"~45 min","Allure":"4:03 \u2192 3:41/km sur les efforts","FC":"< 175, retour < 130","RPE":"4-5","Type":"Vitesse courte"}
-    _S["3"]["objectif"]="Entretenir la vitesse et la fr\u00e9quence de foulée <strong>sans produire de lactate ni de casse musculaire</strong>. Des efforts de 30 secondes avec r\u00e9cup\u00e9ration compl\u00e8te d\u00e9veloppent la m\u00eame qualit\u00e9 qu\u2019un fractionn\u00e9 classique pour un co\u00fbt bien moindre. <strong>Plafond d\u2019effort relatif : 90.</strong>"
+    _S["3"]["metriques"]={"Distance":"~9 km","Dur\u00e9e":"~46 min","Allure":"22,0 s / 100 m (16,4 km/h)","FC":"< 175, retour < 130","RPE":"4-5","Type":"Vitesse chronom\u00e9tr\u00e9e"}
+    _S["3"]["objectif"]="M\u00eame principe que mercredi dernier \u2014 qualit\u00e9 sans casse musculaire \u2014 mais avec une cible <strong>chronom\u00e9tr\u00e9e sur 100 m</strong> plutot qu'une allure au ressenti. <strong>La note de la s\u00e9ance n'est pas la vitesse, c'est le nombre de r\u00e9p\u00e9titions tomb\u00e9es entre 21,5 et 22,5 s.</strong> Deux blocs de 4, s\u00e9par\u00e9s par 4 minutes de r\u00e9cup\u00e9ration compl\u00e8te : le second bloc doit \u00eatre aussi propre que le premier, pas plus rapide. <strong>Plafond d\u2019effort relatif : 90.</strong>"
     _S["3"]["struct"]=[
-      {"nom":"\u00c9chauffement","txt":"20 min en endurance fondamentale, FC sous 140. Ne rien pr\u00e9cipiter : le tempo de mardi (effort relatif 173) n\u2019est pas encore digéré."},
-      {"nom":"Corps \u2014 8\u00d730 s","txt":"R\u00e9p\u00e9titions 1-2 \u00e0 <strong>4:03/km</strong> (14,8 km/h) \u00b7 3 \u00e0 6 \u00e0 <strong>3:51/km</strong> (15,5 km/h) \u00b7 7-8 \u00e0 <strong>3:41/km</strong> (16,2 km/h). R\u00e9cup\u00e9ration 90 s en trot tr\u00e8s lent."},
-      {"nom":"R\u00e8gle de r\u00e9cup\u00e9ration","txt":"La FC doit redescendre <strong>sous 130</strong> avant chaque d\u00e9part. Si ce n\u2019est pas le cas, allonge \u00e0 2 minutes. C\u2019est ce qui s\u00e9pare le travail neuromusculaire du travail lactique."},
+      {"nom":"\u00c9chauffement","txt":"20 min en endurance fondamentale, FC sous 140. Le tempo de mardi dernier (effort relatif 173) laisse encore des traces \u2014 rien ne presse."},
+      {"nom":"Bloc 1 \u2014 4\u00d7100 m","txt":"4 r\u00e9p\u00e9titions de 100 m chronom\u00e9tr\u00e9es, <strong>cible 22,0 secondes</strong> (16,4 km/h). R\u00e9cup\u00e9ration 90 s en marche entre chaque."},
+      {"nom":"R\u00e9cup\u00e9ration inter-blocs","txt":"<strong>4 minutes compl\u00e8tes</strong>, marche ou trot tr\u00e8s lent. FC sous 120 avant de repartir. C\u2019est ce qui permet au second bloc de partir aussi frais que le premier."},
+      {"nom":"Bloc 2 \u2014 4\u00d7100 m","txt":"4 r\u00e9p\u00e9titions identiques, <strong>toujours 22,0 secondes</strong>. Le pi\u00e8ge : ce bloc semblera plus facile parce que tu es vraiment r\u00e9cup\u00e9r\u00e9 \u2014 la tentation sera d\u2019aller plus vite. R\u00e9sister \u00e0 cette tentation EST l\u2019exercice."},
       {"nom":"Retour au calme","txt":"10 min tr\u00e8s souple, FC redescendue sous 140."},
-      {"nom":"Ne pas sprinter","txt":"Tu as tenu 22,5 km/h sur 100 m le 12 ao\u00fbt. Ici la cible maximale est 16,2 km/h, soit environ 70 % de ce que tu sais faire. L\u2019objectif est la fr\u00e9quence de foulée, pas la performance."}]
+      {"nom":"Pourquoi 22 s et pas 30","txt":"Un temps sur 100 m se v\u00e9rifie au dixi\u00e8me de seconde \u00e0 chaque r\u00e9p\u00e9tition \u2014 contrairement \u00e0 une allure GPS sur 30 s, trop bruit\u00e9e pour \u00eatre fiable. Tu sauras 8 fois dans la s\u00e9ance si tu as tenu ta consigne, exactement l\u2019exercice qui te manque sur les sorties longues."}]
     _S["3"]["segments"]=[
       {"nom":"\u00c9chauffement","role":"20 min EF, FC sous 140.","duree":1200,"couleur":"vert","bloc":"\u2014","hauteur":30,"debut":0,"fin":1200},
-      {"nom":"8\u00d730 s","role":"4:03 \u2192 3:41/km, r\u00e9cup 90 s trot.","duree":960,"couleur":"rouge","bloc":"8\u00d7","hauteur":78,"debut":1200,"fin":2160},
-      {"nom":"Retour au calme","role":"10 min tr\u00e8s souple.","duree":600,"couleur":"vert","bloc":"\u2014","hauteur":28,"debut":2160,"fin":2760}]
+      {"nom":"Bloc 1 \u2014 4\u00d7100 m","role":"4\u00d7100 m \u00e0 22,0 s, r\u00e9cup 90 s marche.","duree":358,"couleur":"rouge","bloc":"4\u00d7","hauteur":80,"debut":1200,"fin":1558},
+      {"nom":"R\u00e9cup\u00e9ration inter-blocs","role":"4 min compl\u00e8tes, FC sous 120 avant de repartir.","duree":240,"couleur":"vert","bloc":"\u2014","hauteur":26,"debut":1558,"fin":1798},
+      {"nom":"Bloc 2 \u2014 4\u00d7100 m","role":"4\u00d7100 m \u00e0 22,0 s, m\u00eame cible que le bloc 1.","duree":358,"couleur":"rouge","bloc":"4\u00d7","hauteur":80,"debut":1798,"fin":2156},
+      {"nom":"Retour au calme","role":"10 min tr\u00e8s souple.","duree":600,"couleur":"vert","bloc":"\u2014","hauteur":28,"debut":2156,"fin":2756}]
     _S["3"]["vigilance"]="Si tu te r\u00e9veilles avec des jambes lourdes ou apr\u00e8s une nuit courte, <strong>remplace par une EF facile sans discuter</strong>. Samedi vaut dix fois cette s\u00e9ance."
 
     # JEUDI 20/08 — EF simple, sans lignes droites
@@ -1694,6 +1697,12 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":188,"date":"18 aout 2026","sha":"","tag":"Mercredi : vitesse chronometree en 2 blocs de 4x100 m","items":[
+    "SEANCE DE MERCREDI REMPLACEE, apres discussion approfondie avec Loic sur trois formats successifs (8x30s, 2x(5x30s), puis 2x(4x100m) chronometres). Format retenu : deux blocs de 4x100 m a 22,0 secondes (16,4 km/h), separes par 4 minutes de recuperation complete.",
+    "RAISON DU CHOIX : a duree de repetition egale, un temps chronometre sur 100 m se verifie au dixieme de seconde a chaque effort, contre une allure GPS sur 30 s bruitee de 10 a 15 s/km. La seance donne donc 8 retours d'information sur la capacite a tenir un chiffre impose, exactement la competence travaillee depuis le 09/08. Cout mesure : 176 s de course a haute vitesse sur le plat, contre 300 s pour le format 2x(5x30s) envisage un temps -- soit 41 % de moins pour un objectif pedagogique superieur.",
+    "STRUCT ET SEGMENTS RECONSTRUITS ENSEMBLE, avec des durees calculees pour etre exactement coherentes : echauffement 1200 s, bloc 1 358 s, recuperation inter-blocs 240 s, bloc 2 358 s, retour au calme 600 s. Total graphique 45 min 56 s pour une fiche annoncant ~46 min.",
+    "VERIFIE DANS LE NAVIGATEUR, pas seulement dans les donnees : audit_seances renvoie 0 bug sur cette fiche, et les 5 segments ont ete inspectes directement dans le DOM apres ouverture de la carte -- couleurs, hauteurs et titres corrects, les deux blocs de sprint affichant la meme hauteur (coherent avec la consigne \u00ab meme cible sur les deux blocs \u00bb)."
+  ]},
   {"build":187,"date":"18 aout 2026","sha":"","tag":"S34 restructuree : vitesse courte, repos, longue avancee au samedi","items":[
     "CONTRAINTE : Loic ne peut pas courir dimanche, la sortie longue passe au SAMEDI 22/08. Il souhaite par ailleurs conserver une seance de vitesse mercredi malgre le cout du tempo de mardi (effort relatif 173).",
     "ARBITRAGE : la seance de vitesse est conservee mais ramenee a un format NEUROMUSCULAIRE court -- 8x30 s avec recuperation complete de 90 s -- au lieu d'un fractionne classique. Le travail court avec recuperation complete developpe la vitesse sans produire de lactate ni de casse musculaire. Allures calibrees sur une VMA estimee a 14,1 km/h (a partir du PB 5 km de 22:52 couru a environ 93 % de VMA) : 4:03/km sur les repetitions 1-2, 3:51/km sur les 3 a 6, 3:41/km sur les 7-8. Plafond d'effort relatif fixe a 90.",
