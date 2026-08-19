@@ -1712,6 +1712,14 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":190,"date":"19 aout 2026","sha":"","tag":"Radar : 8e axe DISCIPLINE D'ALLURE et ponderation Nice revue","items":[
+    "CONSTAT A L'ORIGINE : le radar mesurait sept qualites de coureur, mais l'objectif de Loic n'est pas d'etre complet, c'est de courir 3h45 a Nice. Trois axes sur sept ne servaient pas cet objectif, et surtout il manquait la mesure de ce qui decide reellement d'un marathon.",
+    "L'axe ALLURE MARATHON mesure la CAPACITE a produire 5:20 au bon cout cardiaque. Cette capacite est acquise : prouvee le 13/08 avec un bloc de 6 km a 5:17 et 11 s/km d'amplitude. Ce n'est donc plus la contrainte. La contrainte, c'est de refuser d'aller plus vite -- et rien ne le mesurait.",
+    "NOUVEL AXE DISCIPLINE D'ALLURE : ecart absolu moyen entre l'allure cible fixee et l'allure realisee, sur les seances a cible chiffree. Bareme 0 s d'ecart = 99, 30 s = 1. Valeur actuelle 48/99, ecart moyen 16 s/km, 3 seances tenues sur 5. Les trois echecs sont documentes : tempo du 18/08 (5:09 pour 5:20) et 8x100 m du 19/08 (aucune des 8 repetitions a la cible).",
+    "PONDERATION NICE REVUE. Discipline d'allure 25 %, Allure marathon 22 %, Endurance 20 %, Durabilite 16 %, Seuil 10 %, Constance 7 %. VITESSE PASSE A 0 % (etait 5 %) : un score eleve n'aide pas sur 42 km, et le valoriser entretiendrait exactement le reflexe qu'on cherche a corriger. L'axe reste affiche, il n'entre plus dans la note Nice.",
+    "RADAR RECALCULE SUR DONNEES A JOUR : Vitesse 92, Montagne 89 (957 m D+ max), Endurance 83 (43 km max, 54 km/sem contre 59 au precedent calcul), Seuil 79, Durabilite 76, Constance 55 (etait 68, penalisee par la variabilite de volume de 24 % liee aux deplacements), Discipline d'allure 48, Allure marathon 44. General 71, note Nice ponderee 62.",
+    "Aide de la carte mise a jour : sept qualites devient huit, avec l'explication du nouvel axe."
+  ]},
   {"build":189,"date":"19 aout 2026","sha":"","tag":"Mercredi loguee : 8 repetitions sous la cible, aucune a 22,0 s","items":[
     "SEANCE LOGUEE : 7,02 km en 47:23, FC moyenne 137/182 max, effort relatif 38, cadence 86. Sortie a allure tres facile avec une amie (d'ou le faible kilometrage), incluant les 2x4x100 m prevus. Tableau complet des 8 repetitions integre dans la revue (temps, vitesse, ecart a la cible, FC, cadence, par bloc).",
     "RESULTAT PEDAGOGIQUE : aucune des 8 repetitions n'a touche la cible de 22,0 s. Toutes couru sous la cible (donc plus vite), entre 15 et 19 s selon les repetitions, soit 3 a 7 secondes plus vite que demande. La plus rapide (15 s, 24 km/h) est quasiment le maximum absolu de Loic. Meme avec un chrono explicite et verifiable au dixieme -- contrairement a une allure GPS bruitee -- l'instinct d'acceleration a domine.",

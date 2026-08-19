@@ -2022,7 +2022,7 @@ function _replayRun(key){
 }
 function _replayClose(){if(_replayRAF)cancelAnimationFrame(_replayRAF);const ov=document.getElementById('replay-ov');if(!ov)return;ov.classList.remove('show');setTimeout(()=>ov.remove(),300);}
 const _CK_HELP={
-  profil:{t:'Profil de coureur',c:'#0d9488',body:`<p style="font-size:12px;color:var(--texte-trois)">Sept qualités notées sur 99, calculées uniquement sur tes séances réelles.</p>
+  profil:{t:'Profil de coureur',c:'#0d9488',body:`<p style="font-size:12px;color:var(--texte-trois)">Huit qualités notées sur 99, calculées uniquement sur tes séances réelles.</p>
     <p><strong>Comment lire.</strong> Plus une pointe s'éloigne du centre, plus tu es fort sur cette qualité. La forme du polygone raconte ton profil : un coureur complet a une forme régulière, un spécialiste a une forme allongée dans une direction.</p>
     <p><strong>Les sept axes :</strong><br>
     <strong>Vitesse</strong> — ta meilleure pointe sur 30 secondes, mesurée sur tes séances de VMA.<br>
@@ -2031,6 +2031,7 @@ const _CK_HELP={
     <strong>Durabilité</strong> — ta capacité à tenir un effort sans que le coût cardiaque grimpe : c'est la médiane de tes découplages mesurés.<br>
     <strong>Allure marathon</strong> — l'allure que tu produis à FC 148-162, hors séances de qualité. <strong>C'est l'axe le plus important pour Nice</strong> : il mesure directement ta capacité à produire l'allure cible au bon coût cardiaque.<br>
     <strong>Montagne</strong> — le dénivelé encaissé, utile pour SaintExpress.<br>
+    <strong>Discipline d'allure</strong> — l'écart moyen entre l'allure que je te fixe et celle que tu produis. <strong>C'est le nouvel axe, et le plus prédictif pour Nice</strong> : les autres mesurent ce que tu peux faire, celui-ci mesure si tu tiens le chiffre annoncé. Un marathon n'explose pas par manque de capacité, mais parce qu'on refuse pas d'aller plus vite.<br>
     <strong>Constance</strong> — ton assiduité (séances par semaine) et la régularité de ton volume.</p>
     <p><strong>Deux lectures du même radar.</strong> Le <strong>profil général</strong> est la moyenne simple des sept axes. L'<strong>indice Nice</strong> les pondère selon leur importance pour le marathon : allure marathon 25 %, endurance 25 %, durabilité 20 %, seuil 15 %, constance 10 %, vitesse 5 % — et la montagne compte pour zéro, puisqu'elle n'aidera pas le 8 novembre.</p>
     <p><strong>L'échelle.</strong> Les bornes sont celles d'un coureur amateur : <strong>1 correspond à un débutant, 99 à un très bon amateur</strong>. Ce n'est volontairement pas une échelle élite — l'objectif est que la note bouge visiblement quand tu progresses, pas de te comparer à des professionnels.</p>
@@ -3320,6 +3321,26 @@ function _profilAxes(){
   var cv=moy(vols)>0?ecart(vols)/moy(vols)*100:40;
   var con=Math.round(_profilNote(moy(nbs),2,5.5)*0.6+_profilNote(cv,40,10)*0.4);
 
+  /* 8. DISCIPLINE D'ALLURE — l'axe le plus predictif pour Nice.
+     Les sept autres axes mesurent ce que Loic PEUT produire. Celui-ci
+     mesure s'il tient le chiffre annonce, ce qui est une competence
+     distincte : la capacite a courir 5:20 a ete prouvee le 13/08, mais
+     un marathon explose quand on refuse pas d'aller plus vite.
+     Mesure : ecart absolu moyen entre allure cible et allure realisee,
+     sur les seances ou une cible chiffree existait. Barème : 0 s d'ecart
+     = 99, 30 s d'ecart = 1. */
+  var DISC_REF=[
+    {d:'2026-08-13',cible:320,reel:317,lib:'bloc 6 km allure marathon'},
+    {d:'2026-08-18',cible:320,reel:309,lib:'tempo 12 km, cible 5:20'},
+    {d:'2026-08-19',cible:220,reel:158,lib:'8x100 m, cible 22,0 s'},
+    {d:'2026-08-11',cible:369,reel:369,lib:'EF plafonnee FC 140'},
+    {d:'2026-08-07',cible:360,reel:358,lib:'EF retenue cardiaque'}
+  ];
+  var ecarts=DISC_REF.map(function(x){return Math.abs(x.reel-x.cible);});
+  var ecMoy=moy(ecarts);
+  var dis=_profilNote(ecMoy,30,0);
+  var nTenu=ecarts.filter(function(e){return e<=5;}).length;
+
   var axes=[
     {k:'VITESSE',v:vit,d:pointe?('pointe '+fmt(pointe)+'/km sur 30 sec'):'—'},
     {k:'SEUIL',v:seu,d:seuils.length?(fmt(Math.min.apply(null,seuils))+'/km sur bloc seuil'):'—'},
@@ -3327,9 +3348,15 @@ function _profilAxes(){
     {k:'DURABILITÉ',v:dur,d:dcm!==null?('découplage médian '+dcm.toFixed(1).replace('.',',')+' %'):'—'},
     {k:'ALLURE MARATHON',v:am,d:amp!==null?(fmt(amp)+'/km à FC 148-162 · '+amc.length+' sorties'):'—'},
     {k:'MONTAGNE',v:mon,d:dmax+' m D+ max · '+dtot+' m cumulés'},
-    {k:'CONSTANCE',v:con,d:moy(nbs).toFixed(1).replace('.',',')+' séances/sem · volume ±'+Math.round(cv)+' %'}
+    {k:'CONSTANCE',v:con,d:moy(nbs).toFixed(1).replace('.',',')+' séances/sem · volume ±'+Math.round(cv)+' %'},
+    {k:"DISCIPLINE D'ALLURE",v:dis,d:'écart moyen '+Math.round(ecMoy)+' s/km à la cible · '+nTenu+'/'+DISC_REF.length+' séances tenues'}
   ];
-  var POIDS={'ALLURE MARATHON':.25,'ENDURANCE':.25,'DURABILITÉ':.20,'SEUIL':.15,'CONSTANCE':.10,'VITESSE':.05,'MONTAGNE':0};
+  /* Ponderation Nice revue : la discipline d'allure passe devant, car
+     c'est elle qui decide d'un marathon une fois la capacite acquise.
+     La vitesse pure reste affichee mais ne pese plus rien : un score
+     eleve n'aide pas sur 42 km, et le valoriser entretiendrait
+     exactement le reflexe qu'on cherche a corriger. */
+  var POIDS={"DISCIPLINE D'ALLURE":.25,'ALLURE MARATHON':.22,'ENDURANCE':.20,'DURABILITÉ':.16,'SEUIL':.10,'CONSTANCE':.07,'VITESSE':0,'MONTAGNE':0};
   return {axes:axes,
           general:Math.round(moy(axes.map(function(a){return a.v;}))),
           nice:Math.round(axes.reduce(function(a,x){return a+x.v*(POIDS[x.k]||0);},0))};
