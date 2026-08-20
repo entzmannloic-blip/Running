@@ -1712,6 +1712,17 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":191,"date":"20 aout 2026","sha":"","tag":"Phase 0 UX : bugs visibles corriges + audit visuel au gate","items":[
+    "PREMIER AUDIT REALISE EN REGARDANT L'APPLICATION, captures d'ecran a l'appui, et non en lisant son code. Le rendu visuel etait le dernier axe non couvert : six defauts trouves en quatre captures, dont deux bugs de donnees qu'aucun des sept controles automatiques n'avait detectes.",
+    "BUG 1 CORRIGE -- l'accueil affichait « U0001F3C1 NICE » au lieu du drapeau a damier. La sequence etait ecrite avec un U MAJUSCULE, syntaxe Python que JavaScript ne reconnait pas et laisse telle quelle. Remplace par l'emoji litteral.",
+    "BUG 2 CORRIGE -- le compte a rebours divergeait entre les vues : J-80 sur l'accueil, J-81 sur Courses, pour la meme course. TROIS formules coexistaient, dont une comparant a `new Date()` non remis a minuit, ce qui comptait les heures ecoulees dans la journee comme un jour entier. Fonction unique _joursAvant() : 8 formules remplacees, J-80 partout.",
+    "BUG 3 CORRIGE -- l'onglet Seances ne se positionnait sur la semaine en cours qu'a la PREMIERE ouverture ; toute visite suivante repartait en haut du plan, soit en avril, avec environ 1200 px a faire defiler. Le saut est desormais systematique. Verifie : 1re et 2e visite arrivent toutes deux sur la semaine du jour.",
+    "BUG 4 CORRIGE -- le bouton flottant « En cours » masquait du contenu (constate : « Bloc specifique marathon » recouvert). Il compensait le defaut precedent ; celui-ci etant corrige, le bouton est desactive.",
+    "NOUVEL AUDIT scripts/audit_visuel.py, branche en phase 3 du gate (8e controle, 15 s). Il verifie ce qu'aucun autre ne verifiait : sequences d'echappement affichees telles quelles, coherence des compteurs entre vues, debordement horizontal, cibles tactiles sous 44 px, textes sous le plancher de lisibilite, elements fixes masquant du contenu, collisions de texte.",
+    "DEUX FAUX POSITIFS DE MON PROPRE AUDIT CORRIGES avant mise en service : le Cockpit etait signale en debordement alors que sa barre d'onglets a un defilement horizontal voulu, et le bouton flottant etait signale comme masquant sur toutes les vues alors qu'il y est en opacity 0. Les detecteurs tiennent desormais compte de overflow-x et de l'opacite.",
+    "CONTRE-TEST : en reinjectant l'emoji casse, le gate detecte et bloque. Il attrape donc exactement le defaut qui etait parti en production.",
+    "ETAT : 0 defaut visible. 9 ameliorations restantes documentees (cibles tactiles, tailles de police, chevauchement d'un badge) -- elles relevent de la refonte, pas de la correction, et sont gelees jusqu'apres Nice."
+  ]},
   {"build":190,"date":"19 aout 2026","sha":"","tag":"Radar : 8e axe DISCIPLINE D'ALLURE et ponderation Nice revue","items":[
     "CONSTAT A L'ORIGINE : le radar mesurait sept qualites de coureur, mais l'objectif de Loic n'est pas d'etre complet, c'est de courir 3h45 a Nice. Trois axes sur sept ne servaient pas cet objectif, et surtout il manquait la mesure de ce qui decide reellement d'un marathon.",
     "L'axe ALLURE MARATHON mesure la CAPACITE a produire 5:20 au bon cout cardiaque. Cette capacite est acquise : prouvee le 13/08 avec un bloc de 6 km a 5:17 et 11 s/km d'amplitude. Ce n'est donc plus la contrainte. La contrainte, c'est de refuser d'aller plus vite -- et rien ne le mesurait.",

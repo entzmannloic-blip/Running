@@ -5,6 +5,18 @@
    protege suffit alors a interrompre le script qui le contient. Ces trois
    helpers absorbent l'echec : l'app perd sa persistance, jamais son
    fonctionnement. */
+/* Compte a rebours AVANT UNE COURSE — source unique.
+   Trois formules coexistaient : Math.round sur minuit, Math.ceil sur midi, et
+   Math.ceil contre `new Date()` NON remis a minuit. Cette derniere comptait
+   les heures ecoulees dans la journee comme un jour entier : l'accueil
+   affichait J-80 pendant que la vue Courses affichait J-81 pour la meme
+   course. On normalise les deux bornes a minuit et on arrondit au plus
+   proche : un seul chiffre dans toute l'app. */
+function _joursAvant(dateStr){
+  var d=new Date(String(dateStr).slice(0,10)+'T00:00:00');
+  var t=new Date();t.setHours(0,0,0,0);
+  return Math.round((d-t)/86400000);
+}
 function _lsGet(k){try{return localStorage.getItem(k);}catch(e){return null;}}
 function _lsSet(k,v){try{localStorage.setItem(k,v);return true;}catch(e){return false;}}
 function _lsDel(k){try{localStorage.removeItem(k);return true;}catch(e){return false;}}
@@ -66,7 +78,6 @@ function delta(series,good){const v=series.filter(x=>x!=null);if(v.length<2)retu
 function toggleTheme(){const n=document.body.classList.toggle('nuit');document.getElementById('themebtn').textContent=n?'☀️':'🌙';}
 
 /* ===== onglets ===== */
-let _planAutoJumped=false;
 function showTab(t){
   if(navigator.vibrate)try{navigator.vibrate(8)}catch(e){}
   ['accueil','plan','cockpit','palmares'].forEach(id=>{
@@ -75,10 +86,17 @@ function showTab(t){
   });
   if(t==='cockpit'){renderCockpit();renderDash();setTimeout(()=>{if(typeof _vo2Reveal==='function')_vo2Reveal();if(typeof _effRender==='function')_effRender();if(typeof _heatRender==='function')_heatRender();if(typeof _saisonRender==='function')_saisonRender();if(typeof _decoupRender==='function')_decoupRender();if(typeof _profilRender==='function')_profilRender();},250);}
   if(t==='palmares')renderPalmares();
-  if(t==='plan'&&!_planAutoJumped){
-    _planAutoJumped=true;
+  /* Le saut vers la semaine en cours ne se faisait qu'a la PREMIERE ouverture
+     de l'onglet : toute visite suivante repartait en haut, c'est-a-dire en
+     avril, avec 1200 px a faire defiler pour retrouver la semaine du jour.
+     On y revient a chaque fois. Le retour en haut reste possible en faisant
+     defiler vers le haut, l'historique n'est donc pas perdu. */
+  if(t==='plan'){
     window.scrollTo(0,0);
-    setTimeout(()=>jumpToWeek(isoWeek(new Date())),60);
+    setTimeout(function(){
+      var cur=isoWeek(new Date());
+      if(document.getElementById('wk-'+cur))jumpToWeek(cur);
+    },60);
   }else{
     window.scrollTo(0,0);
   }
@@ -557,7 +575,7 @@ function _coachNudge(){
     // Semaine de course : le nudge devient un message de course, jamais un rappel d'inactivité.
     if(typeof RACES!=='undefined'&&RACES.length){
       for(const rc of RACES){
-        const jr=Math.round((new Date(rc.date+'T00:00:00')-today)/86400000);
+        const jr=_joursAvant(rc.date);
         if(jr===0)return {tone:'ok',icon:'\u{1F3C1}',mot:'jour J',txt:'Jour de course : '+rc.nom+' ! Confiance dans ta pr\u00e9pa \u2014 pars prudent, finis fort.'};
         if(jr>0&&jr<=7)return {tone:'ok',icon:'\u{1F3C1}',mot:'aff\u00fbtage',txt:rc.nom+' dans '+jr+' jour'+(jr>1?'s':'')+' \u2014 priorit\u00e9 fra\u00eecheur : sorties courtes et faciles, sommeil, glucides.'};
       }
@@ -976,7 +994,7 @@ function _wPrepa(courses,pct,nb,km,sem,semNum){
     +'<div class="wdg-big">'+pct+'<span class="wdg-pct">%</span></div>'
     +'<div class="wdg-sub">du plan \u00b7 S24 \u2192 Nice</div></div>'
     +'<div class="wdg-st wdg-st-solo"><b>'+nb+'</b><span>sorties</span></div></div>'
-    +'<div class="wdg-path">'+'<div class="wdg-path-bar"><div class="wdg-path-f" style="width:'+pct+'%"></div>'+'<div class="wdg-path-dot" style="left:'+pct+'%"></div></div>'+'<div class="wdg-path-lbl"><span>S24 \u00b7 d\u00e9but</span><span>\U0001F3C1 Nice</span></div>'+'</div>'
+    +'<div class="wdg-path">'+'<div class="wdg-path-bar"><div class="wdg-path-f" style="width:'+pct+'%"></div>'+'<div class="wdg-path-dot" style="left:'+pct+'%"></div></div>'+'<div class="wdg-path-lbl"><span>S24 \u00b7 d\u00e9but</span><span>🏁 Nice</span></div>'+'</div>'
     +'<div class="wdg-sep"></div>'+barres
     +'</div>';
 }
@@ -1265,9 +1283,13 @@ function _initJumpFabWatch(){
   const fab=document.getElementById('fab-jump-week');
   if(!fab)return;
   if(_jumpFabIO){_jumpFabIO.disconnect();_jumpFabIO=null;}
-  const cur=isoWeek(new Date());
-  if(document.getElementById('wk-'+cur))fab.classList.add('visible');
-  else fab.classList.remove('visible');
+  /* Le bouton flottant compensait le fait que l'onglet Seances s'ouvrait en
+     haut du plan. Depuis que la vue se positionne automatiquement sur la
+     semaine en cours a chaque ouverture, il ne sert plus a rien -- et il
+     masquait du contenu (constate : « Bloc specifique marathon » recouvert).
+     On le laisse en place dans le DOM mais jamais affiche, pour ne pas
+     casser les references existantes. */
+  fab.classList.remove('visible');
 }
 /* ===== Item 4 — Projection marathon « boule de cristal » ===== */
 function _pace2s(p){if(p==null)return null;const m=String(p).match(/(\d+):(\d+)/);return m?(+m[1]*60+ +m[2]):null;}
@@ -1323,7 +1345,7 @@ function renderCrystalBall(){
   </div>`;
 }
 function renderDash(){const el=document.getElementById('dash-contenu');
-  const today=new Date();const cd=RACES.map(r=>Math.max(0,Math.ceil((new Date(r.date)-today)/86400000)));
+  const today=new Date();const cd=RACES.map(r=>Math.max(0,_joursAvant(r.date)));
   const allSe=Object.values(SEANCES_BY_WEEK).flat();const total=allSe.length;
   const faites=allSe.filter(s=>s.realise&&(s.realise.statut==='fait'||s.realise.statut==='partiel')).length;
   const planKm=1947;
@@ -2132,8 +2154,8 @@ function _ckCtxBlock(key){
   try{
     var D=_CK,W=8;
     var now=new Date();
-    var _rd=(typeof RACES!=='undefined'&&RACES.length)?RACES.map(function(r){return Math.ceil((new Date(r.date+'T12:00:00')-now)/86400000);}).filter(function(n){return n>=0;}).sort(function(a,b){return a-b;}):[],jrace=_rd.length?_rd[0]:999;
-    var race0=(typeof RACES!=='undefined'&&RACES.length)?RACES.find(function(r){return Math.ceil((new Date(r.date+'T12:00:00')-now)/86400000)>=0;}):null;
+    var _rd=(typeof RACES!=='undefined'&&RACES.length)?RACES.map(function(r){return _joursAvant(r.date);}).filter(function(n){return n>=0;}).sort(function(a,b){return a-b;}):[],jrace=_rd.length?_rd[0]:999;
+    var race0=(typeof RACES!=='undefined'&&RACES.length)?RACES.find(function(r){return _joursAvant(r.date)>=0;}):null;
     var rname=race0?race0.nom:'la prochaine course';
     var acwr=D.ACWR&&D.ACWR[2]?D.ACWR[2].v[D.ACWR[2].v.length-1]:null;
     var canEl=document.getElementById('canicule-banner');
@@ -2347,7 +2369,7 @@ function _cReply(txt){
   if(/nice|saintex|sainte|course|objectif|marathon|j-\d/.test(t)){
     const R=[{n:'Marathon de Nice',d:'2026-11-08',i:'42,195 km \u00b7 Objectif A \u00b7 3h45 (5:20/km)'},
              {n:'Saint\u00e9Express',d:'2026-11-28',i:'45 km nuit \u00b7 Objectif B \u00b7 finisher'}];
-    return R.map(x=>{const j=Math.ceil((new Date(x.d)-today)/86400000);return `**${x.n}** \u2014 J-${j}\n${x.i}`;}).join('\n\n');
+    return R.map(x=>{const j=_joursAvant(x.d);return `**${x.n}** \u2014 J-${j}\n${x.i}`;}).join('\n\n');
   }
   if(/nutri|gel|[e\u00e9]lectro|hydrat|boire|manger|caf[e\u00e9]/.test(t))
     return `**Protocole carburant & \u00e9lectrolytes (r\u00e9f\u00e9rence canicule valid\u00e9e)**\n\n\u2022 Boisson d'effort \u00e9lectrolytes z\u00e9ro calorie d\u00e8s le d\u00e9part\n\u2022 ~850 ml/h en continu par forte chaleur (1,5L sur ~1h45)\n\u2022 +1 gel par heure d'effort\n\u2022 Sortie > 2h : ajouter des glucides dans la boisson (les \u00e9lectrolytes seuls ne suffisent plus)\n\n\u26a0\ufe0f La d\u00e9rive de FC en fin de sortie par chaleur = signal hydro-\u00e9lectrolytique, pas une baisse de forme.`;
@@ -2389,7 +2411,7 @@ function _cTypingShow(){
 function _cTypingHide(){const x=document.getElementById('c-dots-msg');if(x)x.remove();}
 function _cBuildSystemPrompt(){
   var now=new Date();now.setHours(0,0,0,0);
-  var rdays=(typeof RACES!=='undefined'&&RACES.length)?RACES.map(function(r){return{nom:r.nom,j:Math.ceil((new Date(r.date+'T12:00:00')-now)/86400000)};}).filter(function(x){return x.j>=0;}).sort(function(a,b){return a.j-b.j;}):[],raceLine=rdays.map(function(r){return r.nom+' J-'+r.j;}).join(' \u00b7 ');
+  var rdays=(typeof RACES!=='undefined'&&RACES.length)?RACES.map(function(r){return{nom:r.nom,j:_joursAvant(r.date)};}).filter(function(x){return x.j>=0;}).sort(function(a,b){return a.j-b.j;}):[],raceLine=rdays.map(function(r){return r.nom+' J-'+r.j;}).join(' \u00b7 ');
   var acwr=(typeof _dynamicACWR==='function')?_dynamicACWR().toFixed(2):'?';
   var forme=(typeof computeFormeScore==='function')?computeFormeScore():{score:0,signal:'',trend:''};
   var pmc=(typeof _pmcCompute==='function')?_pmcCompute(8):null;
@@ -2418,7 +2440,7 @@ function openCoach(){
     setTimeout(function(){
       var forme=(typeof computeFormeScore==='function')?computeFormeScore():{score:0,signal:'',trend:''};
       var now=new Date();now.setHours(0,0,0,0);
-      var rdays=(typeof RACES!=='undefined'&&RACES.length)?RACES.map(function(r){return{nom:r.nom,j:Math.ceil((new Date(r.date+'T12:00:00')-now)/86400000)};}).filter(function(x){return x.j>=0;}).sort(function(a,b){return a.j-b.j;}):[];
+      var rdays=(typeof RACES!=='undefined'&&RACES.length)?RACES.map(function(r){return{nom:r.nom,j:_joursAvant(r.date)};}).filter(function(x){return x.j>=0;}).sort(function(a,b){return a.j-b.j;}):[];
       var acwr=(typeof _dynamicACWR==='function')?_dynamicACWR().toFixed(2):'—';
       var pmc=(typeof _pmcCompute==='function')?_pmcCompute(8):null;
       var tsb=pmc&&pmc.length?((pmc[pmc.length-1].tsb>=0?'+':'')+pmc[pmc.length-1].tsb.toFixed(0)):'—';
@@ -2592,7 +2614,7 @@ function renderPalmares(){
   const totalDplus=P.reduce((a,p)=>a+(p.dplus||0),0);
   const _tdy=new Date();_tdy.setHours(0,0,0,0);
   const _moisC=['janv.','f\u00e9vr.','mars','avr.','mai','juin','juil.','ao\u00fbt','sept.','oct.','nov.','d\u00e9c.'];
-  const _up=((typeof RACES!=='undefined'?RACES:(typeof DATA!=='undefined'&&DATA.RACES))||[]).map(r=>{const d=new Date(r.date+'T12:00:00');return{nom:r.nom,dossier:r.dossier,d:d,dn:Math.ceil((d-_tdy)/86400000)};}).filter(r=>r.dn>=0).sort((a,b)=>a.dn-b.dn);
+  const _up=((typeof RACES!=='undefined'?RACES:(typeof DATA!=='undefined'&&DATA.RACES))||[]).map(r=>{const d=new Date(r.date+'T12:00:00');return{nom:r.nom,dossier:r.dossier,d:d,dn:_joursAvant(r.date)};}).filter(r=>r.dn>=0).sort((a,b)=>a.dn-b.dn);
   const _aVenir=_up.length?'<div class="crs-lab">\u00c0 venir</div>'+_up.map(r=>{const ds=r.d.getDate()+' '+_moisC[r.d.getMonth()]+' '+r.d.getFullYear();return `<button class="crs-up"${r.dossier?` onclick="ouvrirDossier('${r.dossier}')"`:''}><span class="crs-jx">J-${r.dn}</span><span class="crs-mid"><span class="crs-nom">${r.nom}</span><span class="crs-date">${ds}</span></span>${r.dossier?'<span class="crs-go">Dossier \u203a</span>':''}</button>`;}).join(''):''; 
   el.innerHTML=`<div style="padding:12px 12px 40px">
 <div class="lt-title" style="margin-bottom:2px">Courses</div>
