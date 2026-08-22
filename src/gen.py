@@ -1281,6 +1281,39 @@ for n, arr in list(SEANCES_BY_WEEK.items()):
     _S["5"]["struct"]=[{"nom":"Consigne","txt":"Aucune course. Mobilit\u00e9 douce et sommeil si possible : c\u2019est la r\u00e9cup\u00e9ration, pas l\u2019entra\u00eenement, qui est ton facteur limitant en ce moment."}]
     _S["5"]["segments"]=[]
 
+    # ── LOGS REELS : mercredi, jeudi, vendredi, samedi ────────────────────
+    _S["3"]["realise"]={"statut":"fait","km":7.02,"temps":"47:23","allure":"6:45/km","fc_moy":137,"fc_max":182,"re":38,
+      "cadence":86,"elevation_gain":27,"kcal":551,"rpe_ressenti":5,
+      "commentaire":"Sortie avec une amie qui ne court pas beaucoup, allure tr\u00e8s facile d'o\u00f9 seulement 7 km. Les 2x4x100 m ont n\u00e9anmoins \u00e9t\u00e9 faits. Ressenti tr\u00e8s net de fatigue et de \u00ab tirage \u00bb sur le second bloc.",
+      "pr":1,"ach":2,"pr_detail":[],
+      "revue":"<p><strong>Bonne s\u00e9ance physiquement, objectif p\u00e9dagogique non atteint \u2014 et c'est l'information la plus utile de la semaine.</strong></p><p>Aucune des 8 r\u00e9p\u00e9titions n'a touch\u00e9 la cible de 22,0 s. Toutes couru sous la cible, entre 15 et 19 s. Le bloc 2 est objectivement plus lent que le bloc 1 (17,75 s de moyenne contre 15,75 s), FC 146 \u2192 164 (+18 bpm). Tes temps de r\u00e9cup\u00e9ration, en revanche, sont quasi parfaits : 90, 89, 90 s puis 240 s pile. <strong>Verdict : B\u2212.</strong></p>"}
+
+    _S["6"]["realise"]={"statut":"skipped","km":0,"temps":"\u2014","allure":"\u2014","fc_moy":0,"fc_max":0,"re":0,"rpe_ressenti":0,
+      "commentaire":"Non r\u00e9alis\u00e9e \u2014 courbatures et fatigue nette apr\u00e8s le 2x4x100m de mercredi. D\u00e9cision de rester sage avant la longue de samedi.",
+      "pr":0,"ach":0,"pr_detail":[],
+      "revue":"<strong>Bonne d\u00e9cision, prise pour la bonne raison.</strong> Les courbatures du mercredi (FC +18 bpm sur le bloc 2, cadence en chute) annon\u00e7aient une vraie fatigue neuromusculaire. Repos plut\u00f4t que forcer un footing qui n'aurait rien apport\u00e9."}
+
+    _S["5"]["realise"]={"statut":"skipped","km":0,"temps":"\u2014","allure":"\u2014","fc_moy":0,"fc_max":0,"re":0,"rpe_ressenti":0,
+      "commentaire":"Non r\u00e9alis\u00e9e \u2014 courbatures encore pr\u00e9sentes. Deuxi\u00e8me jour de repos cons\u00e9cutif, priorit\u00e9 donn\u00e9e \u00e0 la fra\u00eecheur pour la longue de samedi.",
+      "pr":0,"ach":0,"pr_detail":[],
+      "revue":"<strong>Deux jours pleins avant la s\u00e9ance la plus importante du bloc \u2014 exactement la configuration qui avait donn\u00e9 le meilleur bloc allure marathon, le 13/08 \u00e0 La Rochelle.</strong> Bonne d\u00e9cision confirm\u00e9e avec le recul : les jambes \u00e9taient pr\u00eates samedi."}
+
+    _S4_REVUE=("<p><strong>Tu m'as demandé les bémols, les voici — mais commençons par ce que tu as déjà compris tout seul, parce que c'est l'essentiel.</strong></p><table style='width:100%;border-collapse:collapse;font-size:.85rem;margin:10px 0'><tr style='background:#0f172a;color:#fff'><th style='padding:6px'>Segment</th><th>Allure moy.</th><th>FC moy.</th><th>Cible</th></tr><tr><td style='padding:5px;text-align:center'>km 1-5</td><td style='text-align:center;color:#dc2626'>4:59/km</td><td style='text-align:center'>157</td><td style='text-align:center;font-size:.8rem'>5:40-6:00</td></tr><tr style='background:#f1f5f9'><td style='padding:5px;text-align:center'>km 6-10</td><td style='text-align:center;color:#dc2626'>4:58/km</td><td style='text-align:center'>163</td><td style='text-align:center;font-size:.8rem'>5:40-6:00</td></tr><tr><td style='padding:5px;text-align:center'>km 11-15</td><td style='text-align:center;color:#dc2626'>4:52/km</td><td style='text-align:center'>167</td><td style='text-align:center;font-size:.8rem'>5:20 (bloc)</td></tr><tr style='background:#f1f5f9'><td style='padding:5px;text-align:center'>km 16-20</td><td style='text-align:center;color:#dc2626'>4:49/km</td><td style='text-align:center'>171</td><td style='text-align:center;font-size:.8rem'>5:20 (bloc)</td></tr><tr><td style='padding:5px;text-align:center'>km 21-25</td><td style='text-align:center;color:#b45309'>5:01/km</td><td style='text-align:center'>171</td><td style='text-align:center;font-size:.8rem'>5:40-6:00</td></tr></table><p><strong>Le bémol, sans le détourner :</strong> aucune des cinq tranches n'a approché sa cible. L'échauffement devait être à 5:40-6:00, il a été couru à 4:58-4:59. Le bloc devait être à 5:20, il a été couru à 4:49-4:52 — <strong>près de 30 secondes au kilomètre plus vite</strong>, sans un seul kilomètre de répit. Même le retour au calme reste sous 5:01. C'est la dérive la plus longue et la plus coûteuse observée depuis le début du suivi : jusqu'ici, la dérive durait un ou deux kilomètres ; là, elle a duré 25 km.</p><p><strong>Le chiffre qui résume tout : 1h46:18 sur les 21,1 premiers kilomètres, soit 5:02/km — un record personnel officieux de demi-marathon, 6 minutes plus rapide que ton PB officiel (1h52:39).</strong> Effort relatif 394, ta charge la plus haute de la saison, largement devant le trail de 27 km (246). FC moyenne 166 sur 2h03 de mouvement (86 % de FCmax), avec un pic à 183.</p><p><strong>Ce que tu as toi-même diagnostiqué, et c'est exactement juste :</strong> ta zone de confort naturelle se situe autour de 5:00/km, pas 5:20. Le 5:20 marathon ne te demande pas un effort proportionnel à sa distance — il te demande de courir <strong>plus lentement que ce que ton corps veut faire spontanément</strong>, et c'est une compétence à part entière, indépendante de ta capacité physique. Tu l'as compris seul, et c'est la vraie valeur de cette sortie.</p><p><strong>Et tu as raison de dire que tu n'aurais pas pu aller jusqu'à 42 km à ce rythme.</strong> Une FC qui monte à 171 en continu dès le 16ᵉ kilomètre, sans un seul signe de redémarrage à la baisse, dit la même chose que tes jambes : ce n'est pas tenable sur le double de la distance. Le mur que tu évites aujourd'hui en t'arrêtant à 25 km, tu le rencontrerais vers le 30ᵉ-32ᵉ kilomètre d'un marathon parti sur cette base.</p><p><strong>Côté nutrition et hydratation : sans réserve, c'est réussi.</strong> Deux arrêts, tous deux exactement aux fontaines prévues (Fontaines-sur-Saône ~79 s, Neuville-sur-Saône ~98 s). Le premier géré sans accroc — boisson, gel, électrolyte. Le second plus compliqué (fontaine introuvable au point prévu), et tu as improvisé sans paniquer jusqu'à en trouver une autre. C'est exactement la compétence qu'on cherche à roder avant Nice : ton plan nutritionnel fonctionne, y compris quand le terrain ne coopère pas.</p><p><strong>Un point à noter pour la suite :</strong> tu décris avoir voulu accélérer après le 2ᵉ arrêt pour « rattraper le temps ». C'est un mécanisme différent de la dérive habituelle (qui vient du bien-être ressenti) : ici, c'est une contrainte perçue (le temps perdu) qui a déclenché l'accélération. Les deux mènent au même résultat, mais la parade est différente : après un arrêt, le réflexe doit être de repartir <em>plus doucement</em> que juste avant, jamais de compenser.</p><p><strong>Pied et jambes : aucune douleur sur 25 km après une semaine avec courbatures.</strong> Le signal est rassurant sur la robustesse actuelle.</p><p><strong>Verdict : C+.</strong> Comme séance de travail d'allure marathon, l'objectif n'est pas atteint — c'est la dérive la plus large et la plus longue de la préparation. Comme test de logistique course (nutrition, hydratation, gestion d'un imprévu), c'est une réussite complète. Et comme séance d'auto-diagnostic, elle vaut cher : tu as identifié toi-même, avec précision, l'écart entre ton rythme naturel et ton allure marathon — c'est exactement ce qui doit maintenant devenir le cœur du travail des 11 prochaines semaines.</p><p><strong>Une proposition concrète pour la suite :</strong> ta Fenix 6 Pro permet une <strong>alerte d'allure</strong> qui vibre si tu passes sous un seuil choisi. Réglée à 5:15/km sur les prochains blocs allure marathon, elle transformerait la discipline d'un effort de volonté (qui a échoué six fois sur les huit dernières tentatives chiffrées) en un signal extérieur — exactement le mécanisme qui fonctionne déjà pour toi sur les séances à FC plafonnée.</p>")
+
+    _S["4"]["realise"]={"statut":"fait","km":25.05,"temps":"2h03:35","allure":"4:56/km","fc_moy":166,"fc_max":183,"re":394,
+      "cadence":177,"elevation_gain":59,"kcal":1878,"rpe_ressenti":8,
+      "commentaire":"Lyon-Vaise -> Tr\u00e9voux par la voie bleue, 25 km (pas 29,5 \u2014 arr\u00eat \u00e0 Tr\u00e9voux, pas de prolongation \u00e0 Quincieux). Objectif annonc\u00e9 : \u00e9chauffement ~5:40, bloc 12 km \u00e0 5:20, retour au calme ~5:40. R\u00e9alis\u00e9 : jamais respect\u00e9, allure quasi constante 4:45-5:14/km du 1er au dernier km. Deux arr\u00eats ravitaillement (Fontaines-sur-Sa\u00f4ne ~79s, Neuville-sur-Sa\u00f4ne ~98s), tous deux bien g\u00e9r\u00e9s c\u00f4t\u00e9 nutrition/hydratation.",
+      "pr":15,"ach":18,
+      "pr_detail":["Record 1/2 marathon effectif : 1h46:18 (5:02/km) sur les 21,1 premiers km \u2014 6 min plus rapide que le PB officiel de 1h52:39"],
+      "splits":[
+        {"km":"1-5","allure":"4:59","fc":157},
+        {"km":"6-10","allure":"4:58","fc":163},
+        {"km":"11-15","allure":"4:52","fc":167},
+        {"km":"16-20","allure":"4:49","fc":171},
+        {"km":"21-25","allure":"5:01","fc":171}],
+      "revue": _S4_REVUE}
+    
+
     # SAMEDI 22/08 — la longue, avancee d'un jour
     _S["4"]["date"]="2026-08-22"
     _S["4"]["sous"]="La s\u00e9ance la plus importante des trois prochaines semaines."
@@ -1297,6 +1330,16 @@ for n, arr in list(SEANCES_BY_WEEK.items()):
       {"nom":"\u00c9chauffement","role":"8 km \u00e0 6:00-6:20/km, FC sous 150.","duree":2940,"couleur":"vert","bloc":"\u2014","hauteur":32,"debut":0,"fin":2940},
       {"nom":"Bloc allure marathon","role":"12 km \u00e0 5:20/km, FC 148-160.","duree":3840,"couleur":"orange","bloc":"\u1f3af","hauteur":74,"debut":2940,"fin":6780},
       {"nom":"Retour au calme","role":"8 km facile, FC sous 150.","duree":2940,"couleur":"vert","bloc":"\u2014","hauteur":30,"debut":6780,"fin":9720}]
+
+    # Graphique RESYNCHRONISE avec le REEL couru (les lignes ci-dessus
+    # restent la prescription, struct/objectif ne changent pas). Ceci doit
+    # rester la DERNIERE affectation de _S["4"]["segments"] dans ce bloc.
+    _S["4"]["segments"]=[
+      {"nom":"km 1-5 (4:59/km)","role":"Prescrit 5:40-6:00 \u2014 couru bien au-dessus.","duree":1493,"couleur":"rouge","bloc":"\u2014","hauteur":50,"debut":0,"fin":1493},
+      {"nom":"km 6-10 (4:58/km)","role":"Prescrit 5:40-6:00 \u2014 arr\u00eat Fontaines-sur-Sa\u00f4ne inclus.","duree":1489,"couleur":"rouge","bloc":"\u2014","hauteur":51,"debut":1493,"fin":2982},
+      {"nom":"km 11-15 (4:52/km)","role":"Prescrit 5:20 (bloc AM) \u2014 arr\u00eat Neuville inclus.","duree":1462,"couleur":"orange","bloc":"AM","hauteur":58,"debut":2982,"fin":4444},
+      {"nom":"km 16-20 (4:49/km)","role":"Prescrit 5:20 (bloc AM) \u2014 tranche la plus rapide de la sortie.","duree":1443,"couleur":"rouge","bloc":"AM","hauteur":62,"debut":4444,"fin":5887},
+      {"nom":"km 21-25 (5:01/km)","role":"Prescrit 5:40-6:00 \u2014 l\u00e9ger rel\u00e2chement en fin de parcours.","duree":1503,"couleur":"orange","bloc":"\u2014","hauteur":48,"debut":5887,"fin":7390}]
     break
     arr[4]["titre"]="Déverrouillage retour de route"
     arr[4]["type"]="EF aérobie"
@@ -1335,7 +1378,7 @@ COUL={p["id"]:p["c"] for p in PHASES}
 GEAR=[
   {"marque":"HOKA","modele":"Clifton 10","km":1179},
   {"marque":"ASICS","modele":"Novablast 5 J","km":709},
-  {"marque":"ASICS","modele":"Novablast 5 V","km":56},
+  {"marque":"ASICS","modele":"Novablast 5 V","km":81},
   {"marque":"ASICS","modele":"Gel Pulse 16","km":225},
   {"marque":"Brooks","modele":"Cascadia 19","km":241},
   {"marque":"ASICS","modele":"Magic Speed 4","km":75},
