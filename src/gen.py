@@ -1755,6 +1755,16 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":192,"date":"22 aout 2026","sha":"","tag":"Sortie longue Vaise-Trevoux loguee (25 km) + correctif graphique fiche vide","items":[
+    "SEANCE LOGUEE : Lyon-Vaise -> Trevoux par la voie bleue, 25,05 km en 2h03:35, allure moyenne 4:56/km, FC 166/183, effort relatif 394 -- la charge la plus haute de la saison, devant le trail de 27 km (246).",
+    "DERIVE D'ALLURE LA PLUS LONGUE DEPUIS LE DEBUT DU SUIVI : les 5 tranches de 5 km (4:59, 4:58, 4:52, 4:49, 5:01) sont toutes tres en dessous des cibles prescrites (5:40-6:00 puis 5:20). Contrairement aux derives precedentes (1 a 2 km), celle-ci a dure l'integralite des 25 km.",
+    "RECORD PERSONNEL OFFICIEUX DE DEMI-MARATHON dans la foulee : 1h46:18 (5:02/km) sur les 21,1 premiers km, 6 minutes plus rapide que le PB officiel (1h52:39).",
+    "NUTRITION ET HYDRATATION : deux arrets aux fontaines prevues (Fontaines-sur-Saone, Neuville-sur-Saone), tous deux bien geres malgre un imprevu (fontaine absente) au second. Aucune douleur sur l'ensemble du parcours.",
+    "Mercredi (2x4x100m) loguee retroactivement : 7,02 km, effort relatif 38, verdict B- (0/8 repetitions dans la cible malgre un chrono explicite). Jeudi et vendredi marques en repos (courbatures post-mercredi). Chaussure Novablast 5 V mise a jour (56 -> 81 km).",
+    "ACWR recalcule automatiquement par gen.py : 0,84 -> 1,29 (aigu 605, chronique 1871), juste sous le seuil de risque de 1,3.",
+    "BUG CORRIGE (trouve par l'audit runtime) : ouvrir une fiche de seance avec un tableau 'segments' VIDE (cas du repos du vendredi) faisait planter le graphique de structure -- initBarre() lisait segments[segments.length-1] sur un tableau vide. Garde ajoutee a l'appel et dans la fonction elle-meme.",
+    "INCIDENT DE SESSION DOCUMENTE : une reinitialisation de l'environnement de travail a cause une confusion sur la structure du plan S34, menant a un premier correctif errone (jamais livre). Diagnostic final : gen.py source etait a jour (build 191, correctement synchronise via les push precedents) ; l'erreur venait d'une mauvaise lecture des index de tableau de ma part, pas d'un fichier perime. Corrige en reappliquant les logs directement dans gen.py, verifie par les 8 controles du gate avant livraison."
+  ]},
   {"build":191,"date":"20 aout 2026","sha":"","tag":"Phase 0 UX : bugs visibles corriges + audit visuel au gate","items":[
     "PREMIER AUDIT REALISE EN REGARDANT L'APPLICATION, captures d'ecran a l'appui, et non en lisant son code. Le rendu visuel etait le dernier axe non couvert : six defauts trouves en quatre captures, dont deux bugs de donnees qu'aucun des sept controles automatiques n'avait detectes.",
     "BUG 1 CORRIGE -- l'accueil affichait « U0001F3C1 NICE » au lieu du drapeau a damier. La sequence etait ecrite avec un U MAJUSCULE, syntaxe Python que JavaScript ne reconnait pas et laisse telle quelle. Remplace par l'emoji litteral.",
