@@ -1722,3 +1722,96 @@ body,.accueil{background:#f2f2f7}
 .cap-c-btn:active{transform:scale(.96)}
 .cap-c-btn span{color:var(--primary)!important}
 @media (prefers-reduced-motion:reduce){.rec-p{display:none}}
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   COUCHE MATERIALITE — ajoutee au build 193
+   Inspiration : les micro-interactions physiques de yui540.
+   PORTEE STRICTEMENT VISUELLE : aucune structure, navigation ou
+   donnee n'est touchee. Uniquement l'etat de repos et d'appui des
+   surfaces deja pressables.
+
+   PRINCIPE : chaque surface pressable repose sur une ombre portee.
+   A l'appui elle descend, l'ombre se resorbe, l'objet touche le fond.
+   Au relachement un ressort la fait legerement depasser.
+   ═══════════════════════════════════════════════════════════════════ */
+
+:root{
+  --mat-lift:3px;                                   /* hauteur de repos */
+  --mat-spring:cubic-bezier(.34,1.56,.64,1);        /* rebond */
+  --mat-press:cubic-bezier(.2,.8,.4,1);             /* enfoncement */
+  --mat-base:rgba(15,23,42,.10);                    /* ombre d'assise */
+}
+
+/* ── Surfaces pressables principales ────────────────────────────── */
+.sem-carte.cliquable,
+.seance-carte.cliquable,
+.wdg-race,
+.crs-up,
+.vdj,
+.cap-c-btn{
+  transform:translateY(0);
+  transition:transform .42s var(--mat-spring), box-shadow .42s var(--mat-spring);
+}
+.sem-carte.cliquable:active,
+.seance-carte.cliquable:active,
+.wdg-race:active,
+.crs-up:active,
+.vdj:active{
+  transform:translateY(var(--mat-lift));
+  box-shadow:0 1px 3px var(--mat-base);
+  transition:transform .09s var(--mat-press), box-shadow .09s var(--mat-press);
+}
+
+/* La tuile Capital avait deja un scale : on le remplace par
+   l'enfoncement, plus coherent avec le reste. */
+.cap-c-btn:active{
+  transform:translateY(var(--mat-lift));
+  box-shadow:0 1px 3px var(--mat-base);
+  transition:transform .09s var(--mat-press), box-shadow .09s var(--mat-press);
+}
+
+/* ── Petits controles : bascule laterale a l'appui ──────────────── */
+.ck-tg, .dnav-chip, .cal-nav, .ck-z, .vo2-help{
+  transform:translateY(0) rotate(0deg);
+  transition:transform .42s var(--mat-spring), box-shadow .42s var(--mat-spring);
+}
+.ck-tg:active, .dnav-chip:active, .ck-z:active{
+  transform:translateY(2px) rotate(-2deg);
+  transition:transform .09s var(--mat-press);
+}
+.cal-nav:active, .vo2-help:active{
+  transform:translateY(2px) scale(.94);
+  transition:transform .09s var(--mat-press);
+}
+
+/* ── Cellules de calendrier : enfoncement discret ───────────────── */
+.cal-cell{
+  transition:transform .38s var(--mat-spring), box-shadow .38s var(--mat-spring);
+}
+.cal-cell:active{
+  transform:translateY(2px);
+  transition:transform .08s var(--mat-press);
+}
+
+/* ── Barre de navigation : l'onglet touche s'enfonce ────────────── */
+.bi{
+  transition:transform .40s var(--mat-spring);
+}
+.bi:active{
+  transform:translateY(2px) scale(.96);
+  transition:transform .08s var(--mat-press);
+}
+
+/* ── Accessibilite : mouvement reduit respecte ──────────────────── */
+@media (prefers-reduced-motion:reduce){
+  .sem-carte.cliquable,.seance-carte.cliquable,.wdg-race,.crs-up,.vdj,
+  .cap-c-btn,.ck-tg,.dnav-chip,.cal-nav,.ck-z,.vo2-help,.cal-cell,.bi{
+    transition-duration:.01ms !important;
+  }
+  .sem-carte.cliquable:active,.seance-carte.cliquable:active,.wdg-race:active,
+  .crs-up:active,.vdj:active,.cap-c-btn:active,.ck-tg:active,.dnav-chip:active,
+  .ck-z:active,.cal-cell:active,.bi:active{
+    transform:none;
+  }
+}

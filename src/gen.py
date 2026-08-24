@@ -1758,6 +1758,15 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":193,"date":"24 aout 2026","sha":"","tag":"Couche de materialite tactile (UI seule, UX inchangee)","items":[
+    "DEMANDE DE LOIC : reprendre le langage d'interactions physiques de yui540 (surfaces qui s'enfoncent, ressort au relachement) en CONSERVANT le systeme de couleurs semantiques, qui porte du sens dans cette app -- rouge sur les ecarts d'allure, teal sur les cibles tenues, ambre sur la vigilance. Pas de monochrome.",
+    "CONTRAINTE EXPLICITE RESPECTEE : UI SEULEMENT. Aucune structure, navigation, fonctionnalite ou donnee n'a ete modifiee. La couche est purement additive en CSS, ciblee sur les classes deja pressables de l'app.",
+    "PRINCIPE : chaque surface pressable repose sur une ombre portee de 3 px. A l'appui elle descend et l'ombre se resorbe -- l'objet touche le fond. Au relachement, un ressort (cubic-bezier 1.56) la fait legerement depasser avant stabilisation.",
+    "ELEMENTS TRAITES : cartes de semaine et de seance, tuiles de course, widget du jour, tuile Capital, selecteurs du Cockpit, chips de navigation, cellules de calendrier, barre d'onglets. Les petits controles basculent lateralement de 2 degres a l'appui, les grandes cartes s'enfoncent a plat.",
+    "ACCESSIBILITE : prefers-reduced-motion respecte -- toute la couche est neutralisee pour les utilisateurs qui l'ont active.",
+    "VERIFICATION DE NON-REGRESSION UX, avant/apres : nombre d'elements interactifs identique sur les 4 vues, longueur de texte identique, hauteur de page identique, ouverture de semaine et de fiche fonctionnelles, zero erreur JS. Audit visuel 0 defaut, audit runtime 0 anomalie.",
+    "NOTE : un POC d'accueil en grille bento a ete produit en parallele (fichier isole, hors app) pour evaluer une refonte plus profonde. Il reste gele jusqu'apres Nice, conformement a l'arbitrage pris -- seule la couche de materialite, sans risque structurel, est livree ici."
+  ]},
   {"build":192,"date":"22 aout 2026","sha":"","tag":"Sortie longue Vaise-Trevoux loguee (25 km) + correctif graphique fiche vide","items":[
     "SEANCE LOGUEE : Lyon-Vaise -> Trevoux par la voie bleue, 25,05 km en 2h03:35, allure moyenne 4:56/km, FC 166/183, effort relatif 394 -- la charge la plus haute de la saison, devant le trail de 27 km (246).",
     "DERIVE D'ALLURE LA PLUS LONGUE DEPUIS LE DEBUT DU SUIVI : les 5 tranches de 5 km (4:59, 4:58, 4:52, 4:49, 5:01) sont toutes tres en dessous des cibles prescrites (5:40-6:00 puis 5:20). Contrairement aux derives precedentes (1 a 2 km), celle-ci a dure l'integralite des 25 km.",
