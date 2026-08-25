@@ -4235,3 +4235,16 @@ if('serviceWorker'in navigator)navigator.serviceWorker.register('./sw.js').catch
 
 if(typeof window!=='undefined'){window.addEventListener('load',function(){setTimeout(function(){try{_revealScan()}catch(e){}},350)});}
 
+/* ── Activation des etats :active au toucher (iOS / WebKit) ──────────
+   Sur iOS, la pseudo-classe CSS :active ne se declenche PAS lors d'un
+   appui tactile tant qu'aucun ecouteur touchstart n'existe sur le
+   document. C'est un comportement WebKit historique. Sans cette ligne,
+   toute la couche de materialite ajoutee au build 193 restait invisible
+   sur telephone alors qu'elle fonctionnait au clic en navigateur.
+   L'ecouteur est volontairement vide et passif : il n'intercepte rien,
+   ne modifie aucun comportement, il ne fait qu'ouvrir le droit a :active. */
+if(typeof document!=='undefined'){
+  document.addEventListener('touchstart',function(){},{passive:true});
+}
+
+

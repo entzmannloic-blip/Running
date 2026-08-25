@@ -1354,6 +1354,101 @@ _S33_REVUE="<p><strong>Une semaine de déplacement réussie, et surtout la valid
 
 _S34_REVUE="<p><strong>Une semaine qui bascule autour d'un seul theme : la discipline d'allure, enfin nommee avec precision.</strong></p><p><strong>Bilan chiffre :</strong> 44,1 km, charge 605, 3 seances courues sur 6 prevues. Volume tres en retrait du pic annonce (82 km), mais ce n'est pas un relachement -- c'est une semaine dense en enseignements plutot qu'en kilometres.</p><p><strong>Mardi, le tempo avec Edwige</strong> a servi de premier signal : objectif 5:20 annonce, 5:09 realise. Requalifie en seance de seuil plutot qu'en echec d'allure marathon, mais le schema etait deja la.</p><p><strong>Mercredi, le test le plus severe de la semaine :</strong> 2x4x100 m chronometres a 22,0 s. Cible verifiable au dixieme, sans ambiguite GPS possible -- et 0 repetition sur 8 dans la cible. La preuve que le reflexe d'acceleration resiste meme a un chiffre impose et mesure en direct.</p><p><strong>Jeudi et vendredi, repos consecutifs</strong> sur courbatures reelles -- deux bonnes decisions, confirmees a posteriori par une fraicheur retrouvee samedi.</p><p><strong>Samedi, la sortie qui resume tout :</strong> 25 km Vaise-Trevoux, derive d'allure la plus longue de la preparation (5 tranches de 5 km toutes sous la cible), mais aussi un record personnel officieux de demi-marathon (1h46:18) et un negative split reel sur l'ensemble du parcours. Le diagnostic de Loic lui-meme a ete le plus juste de la semaine : <em>« ce n'est pas mon allure marathon, mon allure semi doit etre entre 4:50 et 4:55 »</em>. Comparee au semi de Paris 2022 (donnees Strava reelles) : -26 s/km et -11,8 bpm de moyenne pour la meme distance -- la capacite a explose en 4 ans, la discipline reste le chantier.</p><p><strong>Dimanche, sortie velo de recuperation avec des amis</strong> (60 km, D+ 178 m) : effort tres bas dans l'ensemble (FC moyenne 118, effort relatif 55), avec quelques relances ponctuelles sans que cela ne devienne le ton general de la sortie. Contrairement a mardi et samedi, le contexte social n'a pas fait deraper l'intensite -- premier signe concret que la vigilance identifiee cette semaine commence a s'appliquer. Cette sortie est hors perimetre course : elle n'entre ni dans le volume, ni dans la charge, ni dans l'ACWR, qui restent purement course a pied.</p><p><strong>Decision pour S35 :</strong> la strategie de course pour Nice est posee -- meneur d'allure 3h45 jusqu'au 35e-36e km. Le travail restant est de fiabiliser 5:20/km par soi-meme, pour que le meneur soit un filet et non une bequille. Priorite absolue sur toute prochaine seance a cible chiffree : le chiffre prime sur la sensation, sans exception.</p>"
 
+# ── S35 : restructuree sur 3 jours (contraintes familiales) ──────────
+# Loic ne peut pas courir avant jeudi. Lundi saute (fatigue post-25 km),
+# mardi et mercredi indisponibles. Restent jeudi 27, vendredi 28,
+# samedi 29. Le volume passe de 66 km cibles a ~36 km reels.
+# ARBITRAGE : sur 3 jours consecutifs apres une semaine a 605 de charge,
+# on ne cumule pas deux seances dures. Une seule qualite (le seuil), une
+# longue allegee, et un footing de liaison entre les deux.
+for n, arr in list(SEANCES_BY_WEEK.items()):
+    if n != "35":
+        continue
+    _S = {str(x["id"]): x for x in arr}
+
+    # LUNDI 24/08 - saute
+    _S["1"]["realise"]={"statut":"skipped","km":0,"temps":"\u2014","allure":"\u2014","fc_moy":0,"fc_max":0,"re":0,"rpe_ressenti":0,
+      "commentaire":"Non r\u00e9alis\u00e9e \u2014 fatigue persistante apr\u00e8s les 25 km de samedi (charge 394) et la sortie v\u00e9lo de dimanche.",
+      "pr":0,"ach":0,"pr_detail":[],
+      "revue":"<strong>Saut\u00e9e sur fatigue, et c'est coh\u00e9rent.</strong> Apr\u00e8s la charge la plus haute de la saison samedi, le corps demandait plus que 48 h. Forcer un footing avec lignes droites n'aurait rien apport\u00e9."}
+
+    # MARDI 25/08 - indisponible, devient repos
+    _S["2"]["date"]="2026-08-25"
+    _S["2"]["titre"]="Repos \u2014 indisponible"
+    _S["2"]["type"]="Repos"
+    _S["2"]["sous"]="Contraintes familiales."
+    _S["2"]["metriques"]={"Dur\u00e9e":"\u2014","RPE":"0","Focus":"R\u00e9cup\u00e9ration","Type":"Repos"}
+    _S["2"]["objectif"]="Jour sans course. La r\u00e9cup\u00e9ration se poursuit apr\u00e8s une semaine \u00e0 605 de charge."
+    _S["2"]["struct"]=[{"nom":"Consigne","txt":"Aucune course. Sommeil et mobilit\u00e9 douce si possible."}]
+    _S["2"]["segments"]=[]
+    _S["2"]["realise"]={"statut":"skipped","km":0,"temps":"\u2014","allure":"\u2014","fc_moy":0,"fc_max":0,"re":0,"rpe_ressenti":0,
+      "commentaire":"Indisponible \u2014 contraintes familiales.",
+      "pr":0,"ach":0,"pr_detail":[],
+      "revue":"<strong>Troisi\u00e8me jour sans courir depuis samedi.</strong> Sur le plan de la r\u00e9cup\u00e9ration, ce n'est pas un probl\u00e8me : la charge de S34 (605) justifiait un all\u00e9gement. Le point de vigilance est ailleurs \u2014 la reprise de jeudi se fera sur des jambes qui n'auront pas couru depuis 5 jours."}
+
+    # MERCREDI 26/08 - indisponible
+    _S["3"]["date"]="2026-08-26"
+    _S["3"]["titre"]="Repos \u2014 indisponible"
+    _S["3"]["type"]="Repos"
+    _S["3"]["sous"]="Contraintes familiales."
+    _S["3"]["metriques"]={"Dur\u00e9e":"\u2014","RPE":"0","Focus":"R\u00e9cup\u00e9ration","Type":"Repos"}
+    _S["3"]["objectif"]="Jour sans course."
+    _S["3"]["struct"]=[{"nom":"Consigne","txt":"Aucune course."}]
+    _S["3"]["segments"]=[]
+
+    # JEUDI 27/08 - reprise en douceur (etait le renfo)
+    _S["5"]["date"]="2026-08-27"
+    _S["5"]["titre"]="Footing de reprise"
+    _S["5"]["type"]="EF a\u00e9robie"
+    _S["5"]["sous"]="Premi\u00e8re sortie depuis samedi \u2014 rien \u00e0 prouver."
+    _S["5"]["opt"]=False
+    _S["5"]["chaussure"]="ASICS Novablast 5 V"
+    _S["5"]["metriques"]={"Distance":"10 km","Dur\u00e9e":"~62 min","Allure":"6:00-6:20/km","FC":"< 145","RPE":"3","Type":"EF"}
+    _S["5"]["objectif"]="Reprise apr\u00e8s 5 jours sans courir. <strong>FC plafonn\u00e9e \u00e0 145, aucune ligne droite, aucune acc\u00e9l\u00e9ration.</strong> Le seuil est demain : cette sortie sert \u00e0 r\u00e9veiller la foul\u00e9e, pas \u00e0 tester la forme."
+    _S["5"]["struct"]=[
+      {"nom":"Corps","txt":"10 km \u00e0 allure facile, FC sous 145. Apr\u00e8s 5 jours d'arr\u00eat, les jambes seront fra\u00eeches et l'envie d'acc\u00e9l\u00e9rer forte \u2014 c'est exactement le moment de tenir le plafond."}]
+    _S["5"]["segments"]=[
+      {"nom":"Footing de reprise","role":"10 km, FC sous 145, sans acc\u00e9l\u00e9ration.","duree":3720,"couleur":"vert","bloc":"\u2014","hauteur":32,"debut":0,"fin":3720}]
+
+    # VENDREDI 28/08 - le seuil, seule seance de qualite
+    _S["4"]["date"]="2026-08-28"
+    _S["4"]["titre"]="Seuil 30 \u2014 2\u00d78 min"
+    _S["4"]["type"]="Seuil (puissance a\u00e9robie)"
+    _S["4"]["sous"]="La seule s\u00e9ance de qualit\u00e9 de la semaine."
+    _S["4"]["chaussure"]="ASICS Magic Speed 4"
+    _S["4"]["metriques"]={"Distance":"~11 km","Dur\u00e9e":"~66 min","Allure":"4:40/km sur les blocs","FC":"167-177","RPE":"6-7","Type":"Seuil"}
+    _S["4"]["objectif"]="2\u00d78 min \u00e0 <strong>4:40/km</strong>, r\u00e9cup\u00e9ration 3 min en trot. <strong>Le chiffre prime sur la sensation</strong> \u2014 c'est la consigne prioritaire depuis samedi. Alerte d'allure recommand\u00e9e sur la Fenix : seuil bas \u00e0 4:35/km."
+    _S["4"]["struct"]=[
+      {"nom":"\u00c9chauffement","txt":"20 min en endurance fondamentale, FC sous 145."},
+      {"nom":"Bloc 1","txt":"<strong>8 min \u00e0 4:40/km</strong>, FC 167-177. Chaque kilom\u00e8tre entre 4:37 et 4:43."},
+      {"nom":"R\u00e9cup\u00e9ration","txt":"3 min en trot tr\u00e8s lent, FC redescendue sous 150."},
+      {"nom":"Bloc 2","txt":"<strong>8 min \u00e0 4:40/km</strong>, m\u00eame cible. Le pi\u00e8ge : ce bloc semblera plus facile apr\u00e8s la r\u00e9cup \u2014 ne pas acc\u00e9l\u00e9rer."},
+      {"nom":"Retour au calme","txt":"12 min tr\u00e8s souple."}]
+    _S["4"]["segments"]=[
+      {"nom":"\u00c9chauffement","role":"20 min EF, FC sous 145.","duree":1200,"couleur":"vert","bloc":"\u2014","hauteur":30,"debut":0,"fin":1200},
+      {"nom":"Bloc 1 \u2014 8 min","role":"8 min \u00e0 4:40/km, FC 167-177.","duree":480,"couleur":"orange","bloc":"1/2","hauteur":72,"debut":1200,"fin":1680},
+      {"nom":"R\u00e9cup\u00e9ration","role":"3 min trot, FC sous 150.","duree":180,"couleur":"vert","bloc":"\u2014","hauteur":26,"debut":1680,"fin":1860},
+      {"nom":"Bloc 2 \u2014 8 min","role":"8 min \u00e0 4:40/km, m\u00eame cible.","duree":480,"couleur":"orange","bloc":"2/2","hauteur":72,"debut":1860,"fin":2340},
+      {"nom":"Retour au calme","role":"12 min tr\u00e8s souple.","duree":720,"couleur":"vert","bloc":"\u2014","hauteur":28,"debut":2340,"fin":3060}]
+
+    # SAMEDI 29/08 - longue allegee (etait dimanche 30)
+    arr.append(dict(_S["5"]))
+    _new = arr[-1]
+    _new["id"] = 6
+    _new["date"]="2026-08-29"
+    _new["titre"]="Sortie longue \u2014 all\u00e9g\u00e9e"
+    _new["type"]="Sortie longue"
+    _new["sous"]="Volume r\u00e9duit : 3e jour cons\u00e9cutif."
+    _new["chaussure"]="ASICS Novablast 5 V"
+    _new["metriques"]={"Distance":"15 km","Dur\u00e9e":"~92 min","Allure":"6:00-6:20/km","FC":"135-150","RPE":"4-5","Type":"Longue"}
+    _new["objectif"]="Longue ramen\u00e9e de 18 \u00e0 15 km : c'est le <strong>troisi\u00e8me jour cons\u00e9cutif</strong>, apr\u00e8s un seuil la veille. Allure libre mais facile, FC sous 150. <strong>Aucun bloc \u00e0 allure marathon cette semaine</strong> \u2014 le prochain est pr\u00e9vu en S40, sur des jambes fra\u00eeches."
+    _new["struct"]=[
+      {"nom":"Corps","txt":"15 km \u00e0 allure facile r\u00e9guli\u00e8re, FC 135-150. Si les jambes sont lourdes apr\u00e8s le seuil de la veille, raccourcir \u00e0 12 km sans h\u00e9siter."},
+      {"nom":"Nutrition","txt":"Boire toutes les 15-20 min, 1 gel au-del\u00e0 d'une heure."}]
+    _new["segments"]=[
+      {"nom":"Sortie longue","role":"15 km facile, FC 135-150.","duree":5520,"couleur":"vert","bloc":"\u2014","hauteur":36,"debut":0,"fin":5520}]
+    break
+
 for _s in SEMAINES:
     if _s["num"]==25: _s["revue"]=_S25_REVUE
     if _s["num"]==34: _s["revue"]=_S34_REVUE
@@ -1598,7 +1693,11 @@ def _acwr_compute():
                 faits.append((_dt.date.fromisoformat(_s["date"]), _r.get("re") or 0))
     if not faits:
         return {"charge7j":0,"charge28j":0,"acwr":None,"ref":None}
-    _ref=max(d for d,_ in faits)
+    # La reference est AUJOURD'HUI, pas la derniere seance loguee : sinon la
+    # valeur figee au build se decale de celle recalculee en direct par
+    # l'app des qu'un jour passe sans courir (constate le 25/08 : 1,29 fige
+    # contre 1,04 reel). La fenetre glissante doit suivre le calendrier.
+    _ref=max(_dt.date.today(), max(d for d,_ in faits))
     c7 =sum(re for d,re in faits if 0<=(_ref-d).days<=6)
     c28=sum(re for d,re in faits if 0<=(_ref-d).days<=27)
     _a=round(c7/(c28/4),2) if c28 else None
@@ -1758,6 +1857,23 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":195,"date":"25 aout 2026","sha":"","tag":"S35 restructuree sur 3 jours + ACWR recale sur le calendrier","items":[
+    "LUNDI 24/08 MARQUE SAUTE sur fatigue persistante apres les 25 km de samedi (charge 394) et la sortie velo de dimanche. Verifie sur Strava : aucune activite ce jour.",
+    "MARDI ET MERCREDI passes en repos : indisponibilite pour contraintes familiales. S35 se joue donc sur JEUDI, VENDREDI, SAMEDI uniquement.",
+    "ARBITRAGE : sur 3 jours consecutifs apres une semaine a 605 de charge, on ne cumule pas deux seances dures. Jeudi = footing de reprise FC plafonnee 145 (5 jours sans courir, les jambes seront fraiches et l'envie d'accelerer forte). Vendredi = seuil 2x8 min a 4:40/km, seule qualite de la semaine. Samedi = longue RAMENEE DE 18 A 15 KM, troisieme jour consecutif apres un seuil.",
+    "AUCUN BLOC ALLURE MARATHON cette semaine : le prochain est prevu en S40, sur des jambes fraiches. Apres l'echec de discipline du 22/08, mieux vaut ne pas retenter dans une semaine tronquee.",
+    "Volume S35 : environ 36 km reels contre 66 cibles. Ecart assume, coherent avec les contraintes.",
+    "CORRECTIF ACWR : la reference etait calee sur la derniere seance loguee, pas sur le calendrier. Des qu'un jour passait sans courir, la valeur figee au build divergeait de celle recalculee en direct par l'app (constate le 25/08 : 1,29 fige contre 1,04 reel). La fenetre glissante 7/28 jours suit desormais la date du jour, dans gen.py comme dans audit_kpi.py. La bonne valeur est 1,04."
+  ]},
+  {"build":194,"date":"24 aout 2026","sha":"","tag":"Correctif : la materialite du build 193 etait invisible sur iPhone","items":[
+    "SIGNALE PAR LOIC : apres la livraison du build 193, aucune difference perceptible sur telephone. Le CSS etait pourtant bien deploye et verifie.",
+    "CAUSE REELLE : sur iOS et WebKit, la pseudo-classe CSS :active NE SE DECLENCHE PAS lors d'un appui tactile tant qu'aucun ecouteur touchstart n'existe sur le document. Comportement historique de WebKit que j'aurais du anticiper : toute la couche de materialite fonctionnait au clic en navigateur, et restait totalement inerte au doigt.",
+    "CORRECTIF : ajout d'un ecouteur touchstart vide et passif sur document. Il n'intercepte rien, ne modifie aucun comportement, ne change aucune UX -- il ouvre uniquement le droit aux etats :active sur mobile.",
+    "AMPLITUDE PORTEE DE 3 A 5 PX : a 3 px l'enfoncement etait trop discret pour etre percu au doigt sur un ecran de telephone. Ajout de will-change:transform pour fluidifier le rendu.",
+    "SPECIFICITE RENFORCEE : les cartes portent aussi la classe .rv-show (animation de reveal) qui declare transform:none, et l'app possedait deja une regle .sem-carte:active en transform:scale(.975). Les selecteurs de la couche ont ete doubles pour passer devant proprement, sans recourir a !important.",
+    "VERIFIE PAR INSPECTION DU MOTEUR DE RENDU (CDP, etat :active force) : transform calcule au repos = matrix(1,0,0,1,0,0), en appui = matrix(1,0,0,1,0,5). La regle s'applique. Mes tests precedents a la souris echouaient simplement parce que l'appui simule etait trop bref pour capturer l'etat transitoire -- le CSS n'a jamais ete en cause.",
+    "UX toujours strictement inchangee : aucune structure, navigation, fonctionnalite ou donnee touchee."
+  ]},
   {"build":193,"date":"24 aout 2026","sha":"","tag":"Couche de materialite tactile (UI seule, UX inchangee)","items":[
     "DEMANDE DE LOIC : reprendre le langage d'interactions physiques de yui540 (surfaces qui s'enfoncent, ressort au relachement) en CONSERVANT le systeme de couleurs semantiques, qui porte du sens dans cette app -- rouge sur les ecarts d'allure, teal sur les cibles tenues, ambre sur la vigilance. Pas de monochrome.",
     "CONTRAINTE EXPLICITE RESPECTEE : UI SEULEMENT. Aucune structure, navigation, fonctionnalite ou donnee n'a ete modifiee. La couche est purement additive en CSS, ciblee sur les classes deja pressables de l'app.",

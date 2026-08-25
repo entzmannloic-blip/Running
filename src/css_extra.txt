@@ -1737,7 +1737,7 @@ body,.accueil{background:#f2f2f7}
    ═══════════════════════════════════════════════════════════════════ */
 
 :root{
-  --mat-lift:3px;                                   /* hauteur de repos */
+  --mat-lift:5px;                                   /* hauteur de repos */
   --mat-spring:cubic-bezier(.34,1.56,.64,1);        /* rebond */
   --mat-press:cubic-bezier(.2,.8,.4,1);             /* enfoncement */
   --mat-base:rgba(15,23,42,.10);                    /* ombre d'assise */
@@ -1751,13 +1751,22 @@ body,.accueil{background:#f2f2f7}
 .vdj,
 .cap-c-btn{
   transform:translateY(0);
+  will-change:transform;
   transition:transform .42s var(--mat-spring), box-shadow .42s var(--mat-spring);
 }
+/* NOTE DE CASCADE : les cartes portent aussi .rv-show (animation de
+   reveal) qui declare transform:none. Sans specificite superieure, la
+   regle d'appui etait purement et simplement annulee -- c'est pourquoi
+   la couche du build 193 ne se voyait pas. On double la classe pour
+   passer devant, sans recourir a !important. */
 .sem-carte.cliquable:active,
+.sem-carte.rv-show:active,
 .seance-carte.cliquable:active,
+.seance-carte.rv-show:active,
 .wdg-race:active,
 .crs-up:active,
-.vdj:active{
+.vdj:active,
+.vdj.rv-show:active{
   transform:translateY(var(--mat-lift));
   box-shadow:0 1px 3px var(--mat-base);
   transition:transform .09s var(--mat-press), box-shadow .09s var(--mat-press);
