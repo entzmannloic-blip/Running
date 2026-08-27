@@ -1354,6 +1354,8 @@ _S33_REVUE="<p><strong>Une semaine de déplacement réussie, et surtout la valid
 
 _S34_REVUE="<p><strong>Une semaine qui bascule autour d'un seul theme : la discipline d'allure, enfin nommee avec precision.</strong></p><p><strong>Bilan chiffre :</strong> 44,1 km, charge 605, 3 seances courues sur 6 prevues. Volume tres en retrait du pic annonce (82 km), mais ce n'est pas un relachement -- c'est une semaine dense en enseignements plutot qu'en kilometres.</p><p><strong>Mardi, le tempo avec Edwige</strong> a servi de premier signal : objectif 5:20 annonce, 5:09 realise. Requalifie en seance de seuil plutot qu'en echec d'allure marathon, mais le schema etait deja la.</p><p><strong>Mercredi, le test le plus severe de la semaine :</strong> 2x4x100 m chronometres a 22,0 s. Cible verifiable au dixieme, sans ambiguite GPS possible -- et 0 repetition sur 8 dans la cible. La preuve que le reflexe d'acceleration resiste meme a un chiffre impose et mesure en direct.</p><p><strong>Jeudi et vendredi, repos consecutifs</strong> sur courbatures reelles -- deux bonnes decisions, confirmees a posteriori par une fraicheur retrouvee samedi.</p><p><strong>Samedi, la sortie qui resume tout :</strong> 25 km Vaise-Trevoux, derive d'allure la plus longue de la preparation (5 tranches de 5 km toutes sous la cible), mais aussi un record personnel officieux de demi-marathon (1h46:18) et un negative split reel sur l'ensemble du parcours. Le diagnostic de Loic lui-meme a ete le plus juste de la semaine : <em>« ce n'est pas mon allure marathon, mon allure semi doit etre entre 4:50 et 4:55 »</em>. Comparee au semi de Paris 2022 (donnees Strava reelles) : -26 s/km et -11,8 bpm de moyenne pour la meme distance -- la capacite a explose en 4 ans, la discipline reste le chantier.</p><p><strong>Dimanche, sortie velo de recuperation avec des amis</strong> (60 km, D+ 178 m) : effort tres bas dans l'ensemble (FC moyenne 118, effort relatif 55), avec quelques relances ponctuelles sans que cela ne devienne le ton general de la sortie. Contrairement a mardi et samedi, le contexte social n'a pas fait deraper l'intensite -- premier signe concret que la vigilance identifiee cette semaine commence a s'appliquer. Cette sortie est hors perimetre course : elle n'entre ni dans le volume, ni dans la charge, ni dans l'ACWR, qui restent purement course a pied.</p><p><strong>Decision pour S35 :</strong> la strategie de course pour Nice est posee -- meneur d'allure 3h45 jusqu'au 35e-36e km. Le travail restant est de fiabiliser 5:20/km par soi-meme, pour que le meneur soit un filet et non une bequille. Priorite absolue sur toute prochaine seance a cible chiffree : le chiffre prime sur la sensation, sans exception.</p>"
 
+REVUE_J27=("<p><strong>Ton autodiagnostic est juste sur le constat, mais il inverse la cause et l'effet.</strong></p><table style='width:100%;border-collapse:collapse;font-size:.87rem;margin:10px 0'><tr style='background:#0f172a;color:#fff'><th style='padding:6px'></th><th>Cible</th><th>R\\u00e9alis\\u00e9</th></tr><tr><td style='padding:5px'><b>Allure</b></td><td style='text-align:center'>6:00-6:20/km</td><td style='text-align:center;color:#dc2626'><b>5:33/km</b></td></tr><tr style='background:#f1f5f9'><td style='padding:5px'><b>FC moyenne</b></td><td style='text-align:center'>&lt; 145</td><td style='text-align:center;color:#dc2626'><b>156</b></td></tr><tr><td style='padding:5px'><b>Distance</b></td><td style='text-align:center'>10 km</td><td style='text-align:center'>12,04 km</td></tr><tr style='background:#f1f5f9'><td style='padding:5px'><b>Effort relatif</b></td><td style='text-align:center'>~60</td><td style='text-align:center;color:#dc2626'><b>151</b></td></tr></table><p><strong>Tu attribues la FC haute \\u00e0 la chaleur. Les donn\\u00e9es disent que c'est l'allure qui l'a produite.</strong> La preuve est dans ton propre kilom\\u00e8tre 1 : <strong>123 bpm</strong> au d\\u00e9marrage. Puis 155, 159, 163. Ta FC n'\\u00e9tait pas haute au d\\u00e9part \\u2014 elle est mont\\u00e9e parce que tu courais 30 \\u00e0 45 secondes au kilom\\u00e8tre plus vite que prescrit. La chaleur y contribue, elle n'explique pas l'essentiel.</p><p><strong>C'est la troisi\\u00e8me s\\u00e9ance cons\\u00e9cutive o\\u00f9 une cible chiffr\\u00e9e n'est pas tenue</strong> \\u2014 tempo du 18/08, longue du 22/08, et celle-ci. Et cette fois la cible n'\\u00e9tait pas une allure difficile \\u00e0 sentir : c'\\u00e9tait un <strong>plafond de FC</strong>, exactement le type de consigne que tu tenais parfaitement d\\u00e9but ao\\u00fbt (132 bpm le 07/08, 138 le 11/08).</p><p><strong>Ce qui est bon, en revanche :</strong> apr\\u00e8s 1150 m de d\\u00e9nivel\\u00e9 en randonn\\u00e9e mardi et mercredi, aucune douleur, aucune jambe lourde, quelques courbatures l\\u00e9g\\u00e8res seulement. Cadence stable \\u00e0 86-87 sur les 12 km. <strong>Ta capacit\\u00e9 de r\\u00e9cup\\u00e9ration n'est pas en cause</strong> \\u2014 c'est bien un probl\\u00e8me de d\\u00e9cision d'allure, pas de fra\\u00eecheur.</p><p><strong>Amplitude 31 s/km</strong> (5:17 au plus rapide, 5:48 au plus lent). Le kilom\\u00e8tre 11 \\u00e0 5:17 avec 165 bpm est le plus r\\u00e9v\\u00e9lateur : c'est l'avant-dernier, celui o\\u00f9 tu sais que \\u00e7a se termine.</p><p><strong>Verdict : C.</strong> Bonne s\\u00e9ance physiquement, r\\u00e9cup\\u00e9ration confirm\\u00e9e, mais objectif non atteint pour la troisi\\u00e8me fois d'affil\\u00e9e. Le seuil de demain est ajust\\u00e9 en cons\\u00e9quence.</p>")
+
 # ── S35 : restructuree sur 3 jours (contraintes familiales) ──────────
 # Loic ne peut pas courir avant jeudi. Lundi saute (fatigue post-25 km),
 # mardi et mercredi indisponibles. Restent jeudi 27, vendredi 28,
@@ -1395,6 +1397,10 @@ for n, arr in list(SEANCES_BY_WEEK.items()):
     _S["3"]["objectif"]="Jour sans course."
     _S["3"]["struct"]=[{"nom":"Consigne","txt":"Aucune course."}]
     _S["3"]["segments"]=[]
+    _S["3"]["realise"]={"statut":"skipped","km":0,"temps":"\u2014","allure":"\u2014","fc_moy":0,"fc_max":0,"re":0,"rpe_ressenti":0,
+      "commentaire":"Indisponible \u2014 contraintes familiales. Randonn\u00e9e de 7 km et 449 m de D+ effectu\u00e9e a la place (hors perimetre course).",
+      "pr":0,"ach":0,"pr_detail":[],
+      "revue":"<strong>Deuxi\u00e8me randonn\u00e9e cons\u00e9cutive.</strong> Cumul\u00e9es, les sorties de mardi et mercredi repr\u00e9sentent 1150 m de d\u00e9nivel\u00e9 et pr\u00e8s de 5 heures de marche. Chacune est l\u00e9g\u00e8re en co\u00fbt cardio-vasculaire (45 puis 23 d'effort relatif), mais le travail musculaire s'additionne, surtout en descente. Hors p\u00e9rim\u00e8tre course : n'entre ni dans le volume, ni dans la charge, ni dans l'ACWR."}
 
     # JEUDI 27/08 - reprise en douceur (etait le renfo)
     _S["5"]["date"]="2026-08-27"
@@ -1447,6 +1453,37 @@ for n, arr in list(SEANCES_BY_WEEK.items()):
       {"nom":"Nutrition","txt":"Boire toutes les 15-20 min, 1 gel au-del\u00e0 d'une heure."}]
     _new["segments"]=[
       {"nom":"Sortie longue","role":"15 km facile, FC 135-150.","duree":5520,"couleur":"vert","bloc":"\u2014","hauteur":36,"debut":0,"fin":5520}]
+
+    # JEUDI 27/08 - footing de reprise, cible non tenue
+    _S["5"]["chaussure"]="ASICS Novablast 5 V"
+    _S["5"]["realise"]={"statut":"fait","km":12.04,"temps":"1h06:54","allure":"5:33/km","fc_moy":156,"fc_max":171,"re":151,
+      "cadence":173,"elevation_gain":50,"kcal":953,"rpe_ressenti":5,
+      "commentaire":"Sortie du soir, chaleur. Cible : 10 km \u00e0 6:00-6:20/km, FC plafond 145. R\u00e9alis\u00e9 : 12 km \u00e0 5:33/km, FC moyenne 156. Aucune douleur, pas de jambes lourdes malgr\u00e9 1150 m de D+ en randonn\u00e9e les deux jours pr\u00e9c\u00e9dents. Quelques courbatures l\u00e9g\u00e8res.",
+      "pr":1,"ach":1,"pr_detail":[],
+      "splits":[{"km":1,"allure":"5:29","fc":123},{"km":2,"allure":"5:30","fc":155},{"km":3,"allure":"5:31","fc":159},
+                {"km":4,"allure":"5:32","fc":163},{"km":5,"allure":"5:23","fc":160},{"km":6,"allure":"5:23","fc":153},
+                {"km":7,"allure":"5:43","fc":157},{"km":8,"allure":"5:48","fc":156},{"km":9,"allure":"5:44","fc":157},
+                {"km":10,"allure":"5:37","fc":160},{"km":11,"allure":"5:17","fc":166},{"km":12,"allure":"5:39","fc":163}],
+      "revue":REVUE_J27}
+    _S["5"]["segments"]=[
+      {"nom":"Footing (cible non tenue)","role":"12 km \u00e0 5:33/km au lieu de 6:00-6:20, FC 156 au lieu de <145.","duree":4014,"couleur":"orange","bloc":"\u2014","hauteur":48,"debut":0,"fin":4014}]
+
+    # VENDREDI 28/08 - seuil ajuste apres le cout de jeudi
+    _S["4"]["metriques"]={"Distance":"~11 km","Dur\u00e9e":"~66 min","Allure":"4:45/km sur les blocs","FC":"167-177","RPE":"6-7","Type":"Seuil"}
+    _S["4"]["objectif"]="2\u00d78 min \u00e0 <strong>4:45/km</strong> (assoupli de 4:40 apr\u00e8s le co\u00fbt de jeudi : effort relatif 151 sur un footing pr\u00e9vu \u00e0 60), r\u00e9cup\u00e9ration <strong>3 min 30</strong>. <strong>ALERTE D'ALLURE OBLIGATOIRE sur la Fenix, seuil bas \u00e0 4:40/km.</strong> Sur les trois derni\u00e8res s\u00e9ances \u00e0 cible chiffr\u00e9e, la volont\u00e9 seule a \u00e9chou\u00e9 trois fois \u2014 il faut un signal ext\u00e9rieur."
+    _S["4"]["struct"]=[
+      {"nom":"\u00c9chauffement","txt":"20 min en endurance fondamentale, FC sous 145. Sans exception cette fois."},
+      {"nom":"Bloc 1","txt":"<strong>8 min \u00e0 4:45/km</strong>, FC 167-177. Chaque kilom\u00e8tre entre 4:42 et 4:48."},
+      {"nom":"R\u00e9cup\u00e9ration","txt":"<strong>3 min 30</strong> en trot tr\u00e8s lent, FC redescendue sous 150."},
+      {"nom":"Bloc 2","txt":"<strong>8 min \u00e0 4:45/km</strong>, m\u00eame cible. Ne pas acc\u00e9l\u00e9rer sous pr\u00e9texte que \u00e7a passe."},
+      {"nom":"Retour au calme","txt":"12 min tr\u00e8s souple."},
+      {"nom":"R\u00e9glage montre","txt":"Fenix 6 Pro : Profils d'activit\u00e9 \u2192 Course \u00e0 pied \u2192 Alertes \u2192 Allure \u2192 seuil bas 4:40/km. Elle vibrera si tu passes en dessous."}]
+    _S["4"]["segments"]=[
+      {"nom":"\u00c9chauffement","role":"20 min EF, FC sous 145.","duree":1200,"couleur":"vert","bloc":"\u2014","hauteur":30,"debut":0,"fin":1200},
+      {"nom":"Bloc 1 \u2014 8 min","role":"8 min \u00e0 4:45/km, FC 167-177.","duree":480,"couleur":"orange","bloc":"1/2","hauteur":72,"debut":1200,"fin":1680},
+      {"nom":"R\u00e9cup\u00e9ration","role":"3 min 30 trot, FC sous 150.","duree":210,"couleur":"vert","bloc":"\u2014","hauteur":26,"debut":1680,"fin":1890},
+      {"nom":"Bloc 2 \u2014 8 min","role":"8 min \u00e0 4:45/km, m\u00eame cible.","duree":480,"couleur":"orange","bloc":"2/2","hauteur":72,"debut":1890,"fin":2370},
+      {"nom":"Retour au calme","role":"12 min tr\u00e8s souple.","duree":720,"couleur":"vert","bloc":"\u2014","hauteur":28,"debut":2370,"fin":3090}]
     break
 
 for _s in SEMAINES:
@@ -1857,6 +1894,16 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":196,"date":"27 aout 2026","sha":"","tag":"Jeudi logue : 3e cible chiffree non tenue d'affilee + ACWR a 1,33","items":[
+    "SEANCE LOGUEE : 12,04 km en 1h06:54 a 5:33/km, FC 156/171, effort relatif 151, cadence 173. Cible prescrite : 10 km a 6:00-6:20/km, FC plafond 145, effort attendu ~60.",
+    "L'AUTODIAGNOSTIC DE LOIC EST JUSTE SUR LE CONSTAT MAIS INVERSE LA CAUSE. Il attribue la FC haute a la chaleur ; les donnees montrent que c'est l'allure qui l'a produite. Preuve dans le kilometre 1 : 123 bpm au demarrage, puis 155, 159, 163. La FC n'etait pas haute au depart -- elle est montee parce que l'allure etait 30 a 45 s/km trop rapide. La chaleur contribue, elle n'explique pas l'essentiel.",
+    "TROISIEME SEANCE CONSECUTIVE A CIBLE NON TENUE : tempo du 18/08, longue du 22/08, footing du 27/08. Aggravation notable : cette fois la cible n'etait pas une allure difficile a percevoir, mais un PLAFOND DE FC -- le type de consigne tenu parfaitement debut aout (132 bpm le 07/08, 138 le 11/08).",
+    "POINT POSITIF REEL : apres 1150 m de denivele en randonnee mardi et mercredi, aucune douleur, aucune jambe lourde, cadence stable a 86-87 sur les 12 km. La capacite de recuperation n'est pas en cause -- le probleme est bien decisionnel.",
+    "SEUIL DE VENDREDI ASSOUPLI en consequence : 4:45/km au lieu de 4:40, recuperation portee de 3 a 3 min 30. ALERTE D'ALLURE DESORMAIS PRESCRITE comme obligatoire sur la Fenix 6 Pro (seuil bas 4:40/km) : sur trois seances consecutives, la volonte seule a echoue trois fois.",
+    "MERCREDI 26/08 marque saute (indisponibilite, randonnee de 7 km et 449 m D+ effectuee a la place, hors perimetre course).",
+    "ACWR A 1,33 -- AU-DESSUS DU SEUIL DE RISQUE de 1,3, consequence directe du surcout de jeudi (151 au lieu de 60 attendu). Forme du jour redescendue a 59.",
+    "VERIFICATION COMPLETE DES GRAPHIQUES ET KPI demandee par Loic : 22 SVG rendus sur les 4 vues, aucun vide, 7 gradients sans doublon, les 4 fenetres Cockpit sans crash, ACWR coherent entre valeur figee et calcul runtime, zero erreur JS. Les 4 audits statiques passent : 0 bug, 0 incoherence, 0 dette, 0 ecart KPI."
+  ]},
   {"build":195,"date":"25 aout 2026","sha":"","tag":"S35 restructuree sur 3 jours + ACWR recale sur le calendrier","items":[
     "LUNDI 24/08 MARQUE SAUTE sur fatigue persistante apres les 25 km de samedi (charge 394) et la sortie velo de dimanche. Verifie sur Strava : aucune activite ce jour.",
     "MARDI ET MERCREDI passes en repos : indisponibilite pour contraintes familiales. S35 se joue donc sur JEUDI, VENDREDI, SAMEDI uniquement.",
