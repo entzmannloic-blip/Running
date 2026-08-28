@@ -257,6 +257,26 @@ for g in d.get("GEAR", []):
     if g["km"] > 900:
         risque("E1", f"{g['modele']} a {g['km']} km — au-dela de la zone de remplacement (700-900 km)")
 
+# ══ E2 — GEAR vs parc Strava ══════════════════════════════════
+# GEAR est recopie de Strava a la main et ne peut pas etre recalcule
+# depuis les seances (les chaussures servent aussi en randonnee et a
+# velo, hors perimetre course). Il DERIVE donc mecaniquement.
+# Derive constatee le 28/08/2026 : jusqu'a 31 km d'ecart sur une paire.
+# Referentiel Strava de la derniere resynchronisation :
+STRAVA_GEAR = {
+    "Clifton 10": 1186, "Gel Pulse 16": 225, "Cascadia 19": 259,
+    "Novablast 5 J": 711, "Magic Speed 4": 85, "Novablast 5 V": 112,
+}
+for g in d.get("GEAR", []):
+    ref = STRAVA_GEAR.get(g["modele"])
+    if ref is None:
+        info("E2", f"{g['modele']} absent du referentiel Strava — a ajouter")
+        continue
+    if abs(g["km"] - ref) > 5:
+        alerte_txt = (f"{g['modele']} : {g['km']} km dans l'app contre {ref} km sur Strava "
+                      f"({g['km']-ref:+d} km) — resynchroniser GEAR")
+        risque("E2", alerte_txt)
+
 # ══ RAPPORT ═══════════════════════════════════════════════════
 print("=" * 64)
 print("  AUDIT STATIQUE DES DONNEES ET DU CODE")
