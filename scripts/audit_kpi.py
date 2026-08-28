@@ -78,7 +78,11 @@ for wk in sorted(par_semaine):
     print(f"   S{wk} : {v['km']:6.1f} km | {v['n']} sorties | {v['dplus']:5} m D+ | RE {v['re']:4}")
 
 # ── ACWR recalcule a la date de reference des donnees ──────────
-DERNIERE = max(s["date"] for s in seances if s["date"])
+# La reference ACWR suit le CALENDRIER, pas la derniere seance : la fenetre
+# glissante 7/28 jours doit se decaler chaque jour, meme sans courir. Aligne
+# sur gen.py depuis le build 194.
+DERNIERE = max(dt.date.today().isoformat(),
+               max(s["date"] for s in seances if s["date"]))
 ref = dt.date.fromisoformat(DERNIERE)
 aigu = sum(s["re"] for s in seances
            if s["date"] and (ref - dt.date.fromisoformat(s["date"])).days < 7)
@@ -101,7 +105,7 @@ cmp("ACWR_DATA.acwr", acwr_calc, ad.get("acwr"), tol=0.02)
 # seance loguee. Si une seance plus recente existe, le chiffre a derive.
 if ad.get("ref"):
     if ad["ref"] != DERNIERE:
-        ECARTS.append(f"ACWR_DATA.ref = {ad['ref']} alors que la derniere seance loguee est du {DERNIERE} "
+        ECARTS.append(f"ACWR_DATA.ref = {ad['ref']} alors que la reference attendue est {DERNIERE} "
                       f"— la valeur calculee au build a derive")
     else:
         OK.append(f"ACWR_DATA.ref a jour ({ad['ref']})")
@@ -111,6 +115,37 @@ else:
 if ad.get("charge7j") and ad.get("charge28j"):
     interne = ad["charge7j"] / (ad["charge28j"] / 4)
     cmp("ACWR_DATA coherence interne", round(interne, 2), ad.get("acwr"), tol=0.02)
+
+# ── MONTHLY confronte aux SEANCES REELLEMENT LOGUEES ───────────
+# Ce controle manquait : MONTHLY et SAISON2026 se contentaient de
+# concorder entre eux, sans jamais etre confrontes aux seances. Le
+# mois d'aout est ainsi reste fige au 09/08 (79 km) pendant que 184 km
+# etaient courus -- 105 km d'ecart, invisible pendant trois semaines.
+_LIB = {1:"Jan",2:"Fév",3:"Mar",4:"Avr",5:"Mai",6:"Juin",
+        7:"Juil",8:"Août",9:"Sep",10:"Oct",11:"Nov",12:"Déc"}
+_reel = {}
+for _s in seances:
+    if not _s["date"]:
+        continue
+    _d = dt.date.fromisoformat(_s["date"])
+    if _d.year != 2026 or _d.month < 8:
+        continue          # jan-juil sont des constantes verifiees sur Strava
+    _k = _reel.setdefault(_LIB[_d.month], {"km":0.0,"n":0})
+    _k["km"] += _s["km"]
+    _k["n"]  += 1
+_par_mois = {m["m"]: m for m in D.get("MONTHLY", [])}
+for _mois, _v in _reel.items():
+    _aff = _par_mois.get(_mois)
+    if not _aff:
+        ECARTS.append(f"MONTHLY : le mois {_mois} est absent alors que "
+                      f"{_v['n']} seance(s) y sont loguees")
+        continue
+    if abs(_aff["km"] - _v["km"]) > 2 or _aff["sorties"] != _v["n"]:
+        ECARTS.append(f"MONTHLY {_mois} : affiche {_aff['km']} km / {_aff['sorties']} sorties "
+                      f"mais {_v['km']:.0f} km / {_v['n']} sorties sont loguees "
+                      f"(ecart {_aff['km']-_v['km']:+.0f} km)")
+    else:
+        OK.append(f"MONTHLY {_mois} conforme aux seances ({_aff['km']} km / {_aff['sorties']} sorties)")
 
 # ── MONTHLY vs SAISON2026 ──────────────────────────────────────
 MON, SAI = D.get("MONTHLY", []), D.get("SAISON2026", {})
