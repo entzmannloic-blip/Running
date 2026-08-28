@@ -1531,12 +1531,28 @@ PHASES=[
  {"id":'regen',"nom":'Régénération fin de saison',"c":'#94a3b8',"sem":'S49 – S53',"role":"Décompression, course libre, entretien de la base, cap vers 2027."},
 ]
 COUL={p["id"]:p["c"] for p in PHASES}
+# ═══════════════════════════════════════════════════════════════════
+# GEAR — kilometrage du parc chaussures
+# ═══════════════════════════════════════════════════════════════════
+# ATTENTION, LIMITE CONNUE : ces valeurs sont RECOPIEES DE STRAVA a la
+# main. Contrairement a MONTHLY ou ACWR_DATA, elles ne peuvent PAS etre
+# recalculees depuis SEANCES_BY_WEEK : les chaussures sont aussi portees
+# sur des activites hors perimetre course (randonnees, velo) qui, elles,
+# comptent bien dans le total Strava. Exemple : la Cascadia 19 a pris
+# 18 km sur les randonnees du Cantal des 25 et 26/08, invisibles ici.
+#
+# CONSEQUENCE : ce bloc DERIVE mecaniquement et doit etre resynchronise
+# depuis Strava. Derive constatee le 28/08/2026 : Novablast 5 V a -31 km,
+# Cascadia 19 a -18 km, Clifton 10 a -7 km.
+# Le controle E2 d'audit_data confronte desormais ces valeurs au parc
+# Strava et alerte des que l'ecart depasse 5 km.
+# Derniere resynchronisation : 28/08/2026.
 GEAR=[
-  {"marque":"HOKA","modele":"Clifton 10","km":1179},
-  {"marque":"ASICS","modele":"Novablast 5 J","km":709},
-  {"marque":"ASICS","modele":"Novablast 5 V","km":81},
+  {"marque":"HOKA","modele":"Clifton 10","km":1186},
+  {"marque":"ASICS","modele":"Novablast 5 J","km":711},
+  {"marque":"ASICS","modele":"Novablast 5 V","km":112},
   {"marque":"ASICS","modele":"Gel Pulse 16","km":225},
-  {"marque":"Brooks","modele":"Cascadia 19","km":241},
+  {"marque":"Brooks","modele":"Cascadia 19","km":259},
   {"marque":"ASICS","modele":"Magic Speed 4","km":85},
 ]
 RACES=[{"nom":"Marathon de Nice","date":"2026-11-08","dossier":"nice"},{"nom":"SaintExpress","date":"2026-11-28","dossier":"saintexpress"}]
@@ -1821,7 +1837,7 @@ print("ACWR calcule :", ACWR_DATA["charge7j"], "/", ACWR_DATA["charge28j"], "=>"
 RECORDS_PERF=[
   {"dist":"5 km","record":"22:52","record_sub":"meilleur effort Strava","actuel":"4:35/km","actuel_sub":"meilleur effort 2026","temps_rec":"22:52","temps_act":"~22:52"},
   {"dist":"10 km","record":"46:14","record_sub":"meilleur effort Strava","actuel":"4:37/km","actuel_sub":"meilleur effort 2026","temps_rec":"46:14","temps_act":"~46:14"},
-  {"dist":"Semi 21,1","record":"1h52:39","record_sub":"meilleur effort Strava","actuel":"5:20/km","actuel_sub":"projeté depuis forme actuelle","temps_rec":"1h52:39","temps_act":"~1h50-1h52"},
+  {"dist":"Semi 21,1","record":"1h46:18","record_sub":"effort embarqué du 22/08 (hors course)","actuel":"5:02/km","actuel_sub":"allure du record officieux","temps_rec":"1h46:18","temps_act":"1h46:18"},
 ]
 ALLURES_COURSE=[{"d":"5 km","temps":"~22:35","allure":"4:31/km"},{"d":"10 km","temps":"~47:00","allure":"4:42/km"},{"d":"Semi 21,1 km","temps":"~1h44","allure":"4:55/km"},{"d":"30 km","temps":"~2h31","allure":"5:02/km"},{"d":"Marathon objectif","temps":"3h45","allure":"5:20/km"},{"d":"Marathon projeté","temps":"~3h38-3h42","allure":"~5:12-5:15/km"}]
 ALLURES=[{"nom":"Seuil 30","val":"≈4:40/km","sub":"~30 min · proche 10 km"},{"nom":"Seuil 60","val":"≈4:55/km","sub":"~60 min · proche semi"},{"nom":"Allure marathon","val":"≈5:15/km","sub":"cible Nice 3h42"},{"nom":"Endurance facile","val":"5:50-6:25/km","sub":"le socle"},{"nom":"VMA courte","val":"≈4:15/km","sub":"plafond aérobie"}]
@@ -1959,6 +1975,15 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":199,"date":"28 aout 2026","sha":"","tag":"Suite de l'audit : GEAR derive de 31 km + record semi perime","items":[
+    "APRES LE BUG D'AOUT (build 198), j'ai cherche si D'AUTRES KPI saisis a la main avaient derive plutot que de repondre que tout etait corrige. Deux nouveaux ecarts trouves.",
+    "GEAR DERIVE, confronte au parc Strava reel : Novablast 5 V a 81 km dans l'app contre 112 sur Strava (-31 km), Cascadia 19 a 241 contre 259 (-18 km), Clifton 10 a 1179 contre 1186 (-7 km). Resynchronise.",
+    "POURQUOI GEAR NE PEUT PAS ETRE AUTO-CALCULE, contrairement a MONTHLY : les chaussures sont aussi portees en randonnee et a velo, activites hors perimetre course qui comptent pourtant dans le total Strava. La Cascadia 19 a par exemple pris 18 km sur les randonnees du Cantal des 25 et 26/08, invisibles dans SEANCES_BY_WEEK. Ce bloc doit donc rester une recopie manuelle -- mais surveillee.",
+    "CONTROLE E2 AJOUTE dans audit_data.py : chaque paire est confrontee a un referentiel Strava, alerte des que l'ecart depasse 5 km. Contre-test realise : en refigeant la Novablast 5 V a 81 km, le controle detecte les -31 km.",
+    "RECORD SEMI PERIME dans RECORDS_PERF : il affichait encore 1h52:39 alors que l'effort embarque du 22/08 vaut 1h46:18 (5:02/km sur les 21,1 premiers km). Mis a jour, avec la mention explicite qu'il s'agit d'un effort hors course.",
+    "BLOCS VERIFIES ET JUGES NON EXPOSES A LA DERIVE : RECORDS (records officiels), PROJ (cible fixe 3h45), SAISON_EFF (points d'ancrage historiques), ZONES_FC (derive de FCmax), PROFIL, PALMARES (historique fige), VIGILANCE (textuel). HEATMAP est deja calcule depuis SEANCES_BY_WEEK.",
+    "LIMITE ASSUMEE ET NON RESOLUE : les champs 'meilleur effort 2026' de RECORDS_PERF sur 5 et 10 km affichent les memes valeurs que les records officiels, ce qui est probablement un reliquat de mise en place. Verifier cela demanderait de rescanner tous les efforts embarques de l'annee -- non fait ici, signale pour ne pas le presenter comme verifie."
+  ]},
   {"build":198,"date":"28 aout 2026","sha":"","tag":"AUDIT : le mois d'aout etait fige au 09/08 -- 105 km manquants","items":[
     "AUDIT COMPLET DEMANDE PAR LOIC. Methode : plutot que relancer les controles existants (tous verts, donc sans valeur probante), les donnees de l'app ont ete CONFRONTEES A STRAVA seance par seance sur 5 semaines.",
     "RESULTAT DE LA CONFRONTATION : 18 seances sur 18 exactes, au centieme de kilometre et a l'unite d'effort relatif pres. Randonnees (Puy Mary, Plomb du Cantal) et sortie velo correctement exclues des KPI course. Total aout : 184,44 km cote app, 184,44 km cote Strava, ecart nul.",
