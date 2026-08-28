@@ -1706,7 +1706,20 @@ DOSSIERS={
 print("Semaines:",len(SEANCES_BY_WEEK)+1,"| Séances:",sum(len(v) for v in SEANCES_BY_WEEK.values()))
 import json as _j
 _hist=_j.load(open('/tmp/hist.json'))
-MONTHLY=[
+# ═══════════════════════════════════════════════════════════════════
+# MONTHLY / SAISON2026 — SOURCE UNIQUE DE VERITE
+# ═══════════════════════════════════════════════════════════════════
+# Historique : ces blocs etaient saisis A LA MAIN. Le mois d'aout est
+# reste fige au 09/08 (79 km, 6 sorties) pendant que 15 sorties et
+# 184 km avaient ete courus -- un ecart de 105 km sur les totaux de
+# saison, invisible parce qu'aucun controle ne confrontait MONTHLY
+# aux seances reellement loguees.
+# C'est le TROISIEME KPI a deriver pour la meme raison (apres l'ACWR
+# fige a 0,69, puis fausse par erreur de fenetre). Meme correctif :
+# le mois en cours est desormais CALCULE depuis SEANCES_BY_WEEK.
+# Les mois anterieurs restent des constantes verifiees activite par
+# activite sur Strava (janvier a juillet, controle en juin 2026).
+_MOIS_CLOS = [
   {"m":"Jan","km":224,"elev":1342,"sorties":19,"re":2431},
   {"m":"Fév","km":227,"elev":1674,"sorties":21,"re":2229},
   {"m":"Mar","km":342,"elev":2962,"sorties":25,"re":2978},
@@ -1714,9 +1727,40 @@ MONTHLY=[
   {"m":"Mai","km":202,"elev":5978,"sorties":15,"re":2171},
   {"m":"Juin","km":82,"elev":2012,"sorties":5,"re":1112},
   {"m":"Juil","km":257,"elev":2805,"sorties":18,"re":2669},
-  {"m":"Août","km":79,"elev":853,"sorties":6,"re":592},
 ]
-SAISON2026={"km":1696,"elev":19880,"sorties":132,"mois":8,"note":"Course à pied uniquement (Run + Trail) · randonnées, raquettes et vélo exclus · aligné Strava · août arrêté au 09/08"}
+_LIB_MOIS = {1:"Jan",2:"Fév",3:"Mar",4:"Avr",5:"Mai",6:"Juin",
+             7:"Juil",8:"Août",9:"Sep",10:"Oct",11:"Nov",12:"Déc"}
+
+def _mois_courants():
+    """Agrege les seances loguees par mois, a partir d'aout 2026."""
+    import datetime as _d
+    acc = {}
+    for _w, _a in SEANCES_BY_WEEK.items():
+        for _s in _a:
+            _r = _s.get("realise") or {}
+            if _r.get("statut") not in ("fait", "partiel") or not _s.get("date"):
+                continue
+            _dt = _d.date.fromisoformat(_s["date"])
+            if _dt.year != 2026 or _dt.month < 8:
+                continue
+            _k = acc.setdefault(_dt.month, {"km":0.0,"elev":0,"sorties":0,"re":0})
+            _k["km"]      += _r.get("km") or 0
+            _k["elev"]    += _r.get("elevation_gain") or 0
+            _k["sorties"] += 1
+            _k["re"]      += _r.get("re") or 0
+    return [{"m":_LIB_MOIS[_m], "km":round(_v["km"]), "elev":round(_v["elev"]),
+             "sorties":_v["sorties"], "re":_v["re"]}
+            for _m, _v in sorted(acc.items())]
+
+MONTHLY = _MOIS_CLOS + _mois_courants()
+
+_TOT_KM  = sum(_m["km"] for _m in MONTHLY)
+_TOT_EL  = sum(_m["elev"] for _m in MONTHLY)
+_TOT_SO  = sum(_m["sorties"] for _m in MONTHLY)
+SAISON2026 = {"km":_TOT_KM, "elev":_TOT_EL, "sorties":_TOT_SO, "mois":len(MONTHLY),
+  "note":"Course à pied uniquement (Run + Trail) · randonnées, raquettes et vélo exclus · mois en cours recalculé automatiquement à chaque build"}
+print("MONTHLY calcule :", _TOT_KM, "km |", _TOT_SO, "sorties |", _TOT_EL, "m")
+
 # Progression d'efficience aérobie par saison — points d'ancrage réels (cardio Strava, EF route, allure ramenée à 145 bpm).
 # Hiver/Printemps figés (données historiques). Été enrichi par les séances loggées avec température.
 SAISON_EFF={
@@ -1915,6 +1959,16 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":198,"date":"28 aout 2026","sha":"","tag":"AUDIT : le mois d'aout etait fige au 09/08 -- 105 km manquants","items":[
+    "AUDIT COMPLET DEMANDE PAR LOIC. Methode : plutot que relancer les controles existants (tous verts, donc sans valeur probante), les donnees de l'app ont ete CONFRONTEES A STRAVA seance par seance sur 5 semaines.",
+    "RESULTAT DE LA CONFRONTATION : 18 seances sur 18 exactes, au centieme de kilometre et a l'unite d'effort relatif pres. Randonnees (Puy Mary, Plomb du Cantal) et sortie velo correctement exclues des KPI course. Total aout : 184,44 km cote app, 184,44 km cote Strava, ecart nul.",
+    "MAIS UN BUG TROUVE, ET IL ETAIT INVISIBLE : le mois d'aout dans MONTHLY etait fige au 09/08 avec 79 km et 6 sorties, alors que 184 km et 15 sorties avaient ete courus. Ecart de 105 km et 9 sorties, propage a SAISON2026 (1696 km affiches au lieu de 1801) et a tous les totaux de saison.",
+    "POURQUOI AUCUN CONTROLE NE L'A VU : audit_kpi verifiait que MONTHLY et SAISON2026 concordent ENTRE EUX. Ils concordaient parfaitement -- sur des donnees fausses toutes les deux. Aucun controle ne confrontait MONTHLY aux seances reellement loguees.",
+    "TROISIEME KPI A DERIVER POUR LA MEME RAISON, apres l'ACWR fige a 0,69 puis fausse par erreur de fenetre. Meme correctif applique : MONTHLY n'est plus saisi a la main pour le mois en cours, il est CALCULE depuis SEANCES_BY_WEEK a chaque build. Les mois de janvier a juillet restent des constantes, verifiees activite par activite sur Strava.",
+    "VALEURS CORRIGEES : aout 79 -> 184 km, 6 -> 15 sorties, 853 -> 1206 m. Saison 1696 -> 1801 km, 132 -> 141 sorties, 19880 -> 20233 m.",
+    "GARDE-FOU AJOUTE dans audit_kpi.py : chaque mois a partir d'aout est desormais confronte aux seances loguees, avec une tolerance de 2 km. Contre-test realise : en refigeant aout a 79 km, l'audit detecte l'ecart de 105 km et bloque la livraison.",
+    "VERIFIE PAR AILLEURS : ACWR recalcule independamment (670/1765 = 1,52) identique a la valeur stockee, volumes hebdomadaires S31 a S35 coherents, aucune activite non-course dans les KPI."
+  ]},
   {"build":197,"date":"28 aout 2026","sha":"","tag":"Seuil 2x8 logue : la serie de 3 cibles manquees est cassee","items":[
     "SEANCE LOGUEE : 10,03 km en 53:37, FC 157/185, effort relatif 125, cadence 175, Magic Speed 4. Structure : echauffement 3,63 km a 5:48/km, 2x8 min avec 3 min de recuperation, retour au calme 1,98 km. 12 records personnels sur segments.",
     "OBJECTIF TENU A 4 SECONDES PRES. Cible 4:45/km : bloc 1 a 4:39, bloc 2 a 4:42. Amplitude interne aux blocs de 7 s/km seulement (4:36 a 4:43). Point le plus notable : le bloc 2 est LEGEREMENT PLUS LENT que le bloc 1 -- aucune acceleration apres la recuperation, alors que c'etait le piege explicitement annonce dans la fiche.",
