@@ -291,10 +291,14 @@ try:
         prem = min(dt.date.fromisoformat(s["date"]) for s in seances if s["date"])
         sem_dispo = max(1, (ref - prem).days // 7)
         fen = max(w for w in (2, 4, 8, 12) if w <= sem_dispo)
-        if vols.get(fen):
-            born = ref - dt.timedelta(weeks=fen)
-            attendu = sum(s["km"] for s in seances
-                          if s["date"] and dt.date.fromisoformat(s["date"]) > born)
+        # On compare LES MEMES SEMAINES ISO que le Cockpit, pas une fenetre
+        # calendaire glissante. Le Cockpit raisonne en semaines de plan
+        # (S29 a S36 pour sa fenetre 8) ; comparer a une fenetre de 8x7 jours
+        # decalait d'une semaine et produisait un faux ecart de 15 %.
+        sem_ck = p.evaluate(f"_CK.VOL[{fen}].w") if vols.get(fen) else []
+        if vols.get(fen) and sem_ck:
+            nums = {int(x[1:]) for x in sem_ck if x.startswith("S")}
+            attendu = sum(s["km"] for s in seances if s.get("wk") in nums)
             ecart = abs(attendu - vols[fen]) / max(attendu, 1) * 100
             if ecart > 12:
                 ECARTS.append(f"Cockpit {fen} sem : app {vols[fen]:.0f} km vs recalcul {attendu:.0f} km ({ecart:.0f} % d'ecart)")
