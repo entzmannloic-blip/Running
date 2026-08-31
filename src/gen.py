@@ -1841,7 +1841,7 @@ _MOIS_CLOS = [
   {"m":"Mar","km":342,"elev":2962,"sorties":25,"re":2978},
   {"m":"Avr","km":283,"elev":2254,"sorties":23,"re":2265},
   {"m":"Mai","km":202,"elev":5978,"sorties":15,"re":2171},
-  {"m":"Juin","km":82,"elev":2012,"sorties":5,"re":1112},
+  {"m":"Juin","km":190,"elev":2382,"sorties":15,"re":2100},
   {"m":"Juil","km":257,"elev":2805,"sorties":18,"re":2669},
 ]
 _LIB_MOIS = {1:"Jan",2:"Fév",3:"Mar",4:"Avr",5:"Mai",6:"Juin",
@@ -2075,6 +2075,15 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":202,"date":"31 aout 2026","sha":"","tag":"JUIN etait faux de 108 km -- trouve par Loic, angle mort de mon propre correctif","items":[
+    "SIGNALE PAR LOIC : « je ne crois pas avoir fait que 82 km en juin ». Verification faite directement sur Strava : il avait raison, et l'ecart est massif.",
+    "JUIN 2026 REEL : 190,38 km sur 15 sorties et 2382 m de denivele, dont le Trail des Gypaetes (29,8 km, 1662 m D+). MONTHLY affichait 82 km sur 5 sorties. ECART DE 108 KM ET 10 SORTIES.",
+    "POURQUOI MON CORRECTIF DE LA VEILLE NE L'A PAS VU -- et c'est le point important : au build 198 j'ai rendu MONTHLY auto-calcule POUR LE MOIS EN COURS UNIQUEMENT, en presumant que janvier a juillet etaient fiables parce qu'ils avaient ete « verifies en juin ». Je n'ai pas reverifie cette hypothese. Le controle generique du build 201 avait le meme angle mort : son referentiel ne couvrait que les seances loguees, et aucun mois clos n'etait confronte a Strava.",
+    "JUILLET VERIFIE ET CONFORME : 256,80 km / 18 sorties contre 257 / 18 affiches. Le probleme etait isole sur juin.",
+    "VALEURS CORRIGEES : juin 82 -> 190 km, 5 -> 15 sorties, 2012 -> 2382 m. Saison 1801 -> 1909 km, 141 -> 151 sorties, 20233 -> 20603 m.",
+    "CONTROLE A3 AJOUTE a audit_reconciliation.py : les totaux de CHAQUE mois clos (janvier a juillet) sont desormais confrontes a un referentiel Strava, tolerance 3 km. Le controle passe de 48 a 55 verifications. Contre-teste : en refigeant juin a 82 km, l'ecart de 108 km est detecte et bloque la livraison.",
+    "LECON, sans la minimiser : j'ai livre la veille un correctif de dette technique en concluant que l'historique etait « certifie conforme ». Il ne l'etait que sur le perimetre que j'avais choisi de verifier. Presumer qu'une donnee est fiable parce qu'elle a ete verifiee une fois par le passe est exactement l'erreur qui a produit les six derives precedentes."
+  ]},
   {"build":201,"date":"31 aout 2026","sha":"","tag":"Dette technique : reconciliation integrale Strava + controle generique","items":[
     "PHASE 1 -- RECONCILIATION INTEGRALE, jamais faite jusqu'ici. Les 42 seances loguees (15/06 au 28/08) ont ete confrontees une par une aux activites Strava correspondantes, sur km, effort relatif et denivele.",
     "RESULTAT : 41 seances conformes sur 42, au centieme de kilometre pres. UN SEUL ECART trouve -- effort relatif du 30/06 saisi a 85 au lieu de 60. Corrige. L'historique est desormais certifie conforme a Strava sur l'integralite de la periode.",
