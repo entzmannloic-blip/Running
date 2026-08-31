@@ -1512,6 +1512,8 @@ for n, arr in list(SEANCES_BY_WEEK.items()):
       {"nom":"Retour au calme","role":"1,98 km \u00e0 5:21/km.","duree":634,"couleur":"vert","bloc":"\u2014","hauteur":28,"debut":2583,"fin":3217}]
     break
 
+REVUE_L31=("<p><strong>Cible tenue, et une d\\u00e9cision qui vaut plus que la s\\u00e9ance elle-m\\u00eame.</strong></p><table style='width:100%;border-collapse:collapse;font-size:.86rem;margin:10px 0'><tr style='background:#0f172a;color:#fff'><th style='padding:6px'></th><th>Cible</th><th>R\\u00e9alis\\u00e9</th></tr><tr><td style='padding:5px'><b>FC moyenne</b></td><td style='text-align:center'>&lt; 145</td><td style='text-align:center;color:#0d9488'><b>142,4</b></td></tr><tr style='background:#f1f5f9'><td style='padding:5px'><b>Allure</b></td><td style='text-align:center'>6:00-6:20/km</td><td style='text-align:center'>5:54/km</td></tr><tr><td style='padding:5px'><b>Distance</b></td><td style='text-align:center'>10 km</td><td style='text-align:center'>10,26 km</td></tr><tr style='background:#f1f5f9'><td style='padding:5px'><b>Effort relatif</b></td><td style='text-align:center'>~60-75</td><td style='text-align:center;color:#0d9488'><b>74</b></td></tr></table><p><strong>Deux kilom\\u00e8tres seulement au-dessus de 145</strong> (146,0 et 145,5), et de tr\\u00e8s peu. Amplitude d'allure 23 s/km, cadence stable \\u00e0 86-87. C'est un footing propre.</p><p><strong>Deuxi\\u00e8me s\\u00e9ance \\u00e0 cible tenue d'affil\\u00e9e</strong>, apr\\u00e8s le seuil du 28/08. Pour rappel du contraste : le 27/08, m\\u00eame consigne de plafond \\u00e0 145, r\\u00e9alis\\u00e9 \\u00e0 156. Apr\\u00e8s trois \\u00e9checs cons\\u00e9cutifs, la trajectoire a chang\\u00e9.</p><p><strong>Mais le vrai point de cette s\\u00e9ance n'est pas dans les chiffres : tu as h\\u00e9sit\\u00e9 \\u00e0 partir sur 16 km et tu ne l'as pas fait.</strong> C'est exactement la d\\u00e9cision que tu ne prenais pas il y a trois semaines \\u2014 le 22 ao\\u00fbt, la m\\u00eame sensation de fra\\u00eecheur t'a fait courir 25 km \\u00e0 4:54 au lieu de 5:20. Tu as senti la fra\\u00eecheur, tu l'as reconnue comme une tentation, et tu as choisi de la garder pour le reste de la semaine. C'est le m\\u00e9canisme qu'on travaille depuis un mois.</p><p><strong>Sur la frustration du mois d'ao\\u00fbt : elle reposait sur un chiffre faux.</strong> L'app affichait 79 km jusqu'\\u00e0 hier \\u2014 un bug corrig\\u00e9 depuis. Le r\\u00e9el est de <strong>184 km sur 15 sorties</strong>. Et juin, que l'app donnait \\u00e0 82 km, en valait en r\\u00e9alit\\u00e9 <strong>190</strong>. Sur trois mois cons\\u00e9cutifs : juin 190, juillet 257, ao\\u00fbt 184. Il n'y a pas eu de mois faible.</p><p><strong>Verdict : A.</strong> Cible respect\\u00e9e, aucune douleur, et surtout une retenue d\\u00e9cid\\u00e9e plut\\u00f4t que subie. La fra\\u00eecheur servira mercredi sur le seuil, pas aujourd'hui.</p>")
+
 # ── S36 : semaine de depart aux USA (vendredi 04/09) ─────────────────
 # Loic court lundi a jeudi, puis prend l'avion vendredi (9 h de decalage
 # vers San Francisco). Contexte : deux semaines tres allegees derriere
@@ -1537,6 +1539,18 @@ for n, arr in list(SEANCES_BY_WEEK.items()):
       {"nom":"Corps","txt":"10 km \u00e0 allure facile, FC sous 145. Apr\u00e8s 2 jours sans courir, les jambes seront fra\u00eeches \u2014 c'est exactement le moment de tenir le plafond."}]
     _S["1"]["segments"]=[
       {"nom":"Footing de relance","role":"10 km, FC sous 145.","duree":3720,"couleur":"vert","bloc":"\u2014","hauteur":32,"debut":0,"fin":3720}]
+    _S["1"]["chaussure"]="HOKA Clifton 10"
+    _S["1"]["realise"]={"statut":"fait","km":10.26,"temps":"1h00:27","allure":"5:54/km","fc_moy":142,"fc_max":160,"re":74,
+      "cadence":173,"elevation_gain":40,"kcal":776,"rpe_ressenti":3,
+      "commentaire":"Footing de relance, cible FC plafond 145. R\u00e9alis\u00e9 : FC moyenne 142,4, deux km seulement au-dessus de 145. Grosse sensation de fra\u00eecheur, h\u00e9sitation \u00e0 partir sur 16 km, finalement tenu \u00e0 10 km pour pr\u00e9server les 4 s\u00e9ances de la semaine. Aucune douleur.",
+      "pr":0,"ach":0,"pr_detail":[],
+      "splits":[{"km":1,"allure":"5:54","fc":140},{"km":2,"allure":"5:39","fc":141},{"km":3,"allure":"5:58","fc":146},
+                {"km":4,"allure":"5:53","fc":143},{"km":5,"allure":"5:58","fc":140},{"km":6,"allure":"5:50","fc":144},
+                {"km":7,"allure":"5:59","fc":140},{"km":8,"allure":"5:56","fc":142},{"km":9,"allure":"5:51","fc":146},
+                {"km":10,"allure":"6:02","fc":142}],
+      "revue":REVUE_L31}
+    _S["1"]["segments"]=[
+      {"nom":"Footing de relance","role":"10,26 km \u00e0 5:54/km, FC 142 pour un plafond \u00e0 145.","duree":3627,"couleur":"vert","bloc":"\u2014","hauteur":32,"debut":0,"fin":3627}]
 
     # MARDI 01/09 - EF + lignes droites
     _S["2"]["titre"]="Footing + 6 lignes droites"
@@ -1648,7 +1662,7 @@ COUL={p["id"]:p["c"] for p in PHASES}
 # Strava et alerte des que l'ecart depasse 5 km.
 # Derniere resynchronisation : 28/08/2026.
 GEAR=[
-  {"marque":"HOKA","modele":"Clifton 10","km":1186},
+  {"marque":"HOKA","modele":"Clifton 10","km":1196},
   {"marque":"ASICS","modele":"Novablast 5 J","km":711},
   {"marque":"ASICS","modele":"Novablast 5 V","km":112},
   {"marque":"ASICS","modele":"Gel Pulse 16","km":225},
@@ -1822,6 +1836,38 @@ DOSSIERS={
 print("Semaines:",len(SEANCES_BY_WEEK)+1,"| Séances:",sum(len(v) for v in SEANCES_BY_WEEK.values()))
 import json as _j
 _hist=_j.load(open('/tmp/hist.json'))
+
+# ═══════════════════════════════════════════════════════════════════
+# HIST — volumes hebdomadaires (graphiques de progression du Cockpit)
+# ═══════════════════════════════════════════════════════════════════
+# hist.json est un fichier externe qui n'a plus ete mis a jour depuis
+# juillet : il s'arretait a S28 et contenait des valeurs fausses sur
+# S25 (52 au lieu de 56,6), S27 (30,1 au lieu de 53,4) et S28 (11 au
+# lieu de 61). Le Cockpit affichait donc 357 km sur 8 semaines contre
+# 418 reels -- 15 % d'ecart.
+# QUATRIEME bloc a deriver pour la meme raison. Meme correctif : les
+# semaines couvertes par SEANCES_BY_WEEK sont desormais CALCULEES,
+# hist.json ne sert plus que pour l'historique anterieur a S25.
+def _hist_recalc(base):
+    _agg = {}
+    for _w, _a in SEANCES_BY_WEEK.items():
+        for _s in _a:
+            _r = _s.get("realise") or {}
+            if _r.get("statut") not in ("fait", "partiel") or not (_r.get("km") or 0):
+                continue
+            _k = _agg.setdefault(int(_w), {"km": 0.0, "re": 0})
+            _k["km"] += _r["km"]
+            _k["re"] += _r.get("re") or 0
+    # on conserve les semaines historiques non couvertes par SBW
+    _out = [h for h in base if h["sem"] not in {f"S{w}" for w in _agg}]
+    for _w in sorted(_agg):
+        _v = _agg[_w]
+        _out.append({"sem": f"S{_w}", "km": round(_v["km"], 1),
+                     "re": _v["re"], "easy_pace": None})
+    return _out
+
+_hist["HIST"] = _hist_recalc(_hist["HIST"])
+print("HIST recalcule :", len(_hist["HIST"]), "semaines")
 # ═══════════════════════════════════════════════════════════════════
 # MONTHLY / SAISON2026 — SOURCE UNIQUE DE VERITE
 # ═══════════════════════════════════════════════════════════════════
@@ -2075,6 +2121,22 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":204,"date":"31 aout 2026","sha":"","tag":"HIST perime depuis juillet + faux positif de mon propre audit","items":[
+    "EN LOGUANT LA SEANCE, le gate a bloque sur un ecart Cockpit de 15 %. Deux problemes distincts derriere, un vrai et un faux.",
+    "VRAI PROBLEME -- HIST PERIME : le fichier externe hist.json alimente les graphiques de progression du Cockpit et n'avait plus ete mis a jour depuis juillet. Il s'arretait a S28 et contenait des valeurs fausses : S25 a 52 km au lieu de 56,6, S27 a 30,1 au lieu de 53,4, S28 a 11 au lieu de 61. QUATRIEME bloc a deriver pour la meme raison. Rendu auto-calcule depuis SEANCES_BY_WEEK ; hist.json ne sert plus que pour l'historique anterieur a S25.",
+    "FAUX POSITIF DE MON PROPRE AUDIT : l'ecart de 15 % venait de mon controle, pas de l'app. Le Cockpit raisonne en SEMAINES ISO (S29 a S36 pour sa fenetre 8), mon audit comparait a une fenetre calendaire de 8x7 jours -- decalee d'une semaine. Le Cockpit affichait 357 km et avait raison. Controle aligne sur les memes semaines ISO : 357 vs 357.",
+    "SEANCE DU 31/08 LOGUEE : 10,26 km en 1h00:27 a 5:54/km, FC 142,4 pour un plafond a 145, effort relatif 74, Clifton 10. Deux km seulement au-dessus de 145. Deuxieme seance a cible tenue d'affilee apres le seuil du 28/08.",
+    "POINT COACH : Loic a hesite a partir sur 16 km et ne l'a pas fait, pour preserver les 4 seances de la semaine. C'est exactement la decision qu'il ne prenait pas le 22 aout, ou la meme sensation de fraicheur avait produit 25 km a 4:54 au lieu de 5:20.",
+    "KPI RECALCULES : ACWR 0,67 -> 0,81. Saison 1920 km / 152 sorties. Clifton 10 : 1186 -> 1196 km. Referentiel de reconciliation etendu a la seance du jour, 56 controles conformes."
+  ]},
+  {"build":203,"date":"31 aout 2026","sha":"","tag":"Footing de relance logue + KPI recalcules","items":[
+    "SEANCE LOGUEE : 10,26 km en 1h00:27 a 5:54/km, FC moyenne 142,4 pour un plafond fixe a 145, FC max 160, effort relatif 74, cadence 173. Clifton 10.",
+    "CIBLE TENUE : deux kilometres seulement au-dessus de 145 (146,0 et 145,5), et de tres peu. Amplitude d'allure 23 s/km. DEUXIEME SEANCE A CIBLE TENUE D'AFFILEE apres le seuil du 28/08. Contraste avec le 27/08 : meme consigne de plafond a 145, realise a 156.",
+    "LE POINT LE PLUS IMPORTANT N'EST PAS DANS LES CHIFFRES : Loic a hesite a partir sur 16 km et ne l'a pas fait, pour preserver les 4 seances de la semaine. C'est exactement la decision qu'il ne prenait pas le 22 aout, ou la meme sensation de fraicheur avait produit 25 km a 4:54 au lieu de 5:20.",
+    "FRUSTRATION DU MOIS D'AOUT ADRESSEE : elle reposait sur un chiffre faux. L'app affichait 79 km (bug corrige au build 198), le reel est 184 km sur 15 sorties. Et juin, donne a 82 km, en valait 190 (bug corrige au build 202). Sur trois mois : juin 190, juillet 257, aout 184 -- aucun mois faible.",
+    "KPI RECALCULES : ACWR 0,67 -> 0,81 (aigu 350, chronique 1734). Saison 1909 -> 1920 km, 151 -> 152 sorties. Clifton 10 : 1186 -> 1196 km.",
+    "REFERENTIEL DE RECONCILIATION MIS A JOUR avec la seance du 31/08 : le controle passe a 56 verifications, toutes conformes."
+  ]},
   {"build":202,"date":"31 aout 2026","sha":"","tag":"JUIN etait faux de 108 km -- trouve par Loic, angle mort de mon propre correctif","items":[
     "SIGNALE PAR LOIC : « je ne crois pas avoir fait que 82 km en juin ». Verification faite directement sur Strava : il avait raison, et l'ecart est massif.",
     "JUIN 2026 REEL : 190,38 km sur 15 sorties et 2382 m de denivele, dont le Trail des Gypaetes (29,8 km, 1662 m D+). MONTHLY affichait 82 km sur 5 sorties. ECART DE 108 KM ET 10 SORTIES.",
