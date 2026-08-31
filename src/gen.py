@@ -1455,6 +1455,11 @@ for n, arr in list(SEANCES_BY_WEEK.items()):
       {"nom":"Nutrition","txt":"Boire toutes les 15-20 min, 1 gel au-del\u00e0 d'une heure."}]
     _new["segments"]=[
       {"nom":"Sortie longue","role":"15 km facile, FC 135-150.","duree":5520,"couleur":"vert","bloc":"\u2014","hauteur":36,"debut":0,"fin":5520}]
+    # SAMEDI 29/08 - longue non realisee
+    _new["realise"]={"statut":"skipped","km":0,"temps":"\u2014","allure":"\u2014","fc_moy":0,"fc_max":0,"re":0,"rpe_ressenti":0,
+      "commentaire":"Non r\u00e9alis\u00e9e. Aucune activit\u00e9 enregistr\u00e9e le 29 ni le 30/08.",
+      "pr":0,"ach":0,"pr_detail":[],
+      "revue":"<strong>Semaine cl\u00f4tur\u00e9e \u00e0 deux s\u00e9ances.</strong> La longue \u00e9tait la troisi\u00e8me sortie d'affil\u00e9e apr\u00e8s un seuil exigeant \u2014 ne pas la faire n'a rien co\u00fbt\u00e9 sur le plan de la charge. Le contenu de qualit\u00e9 de la semaine \u00e9tait d\u00e9j\u00e0 acquis avec le seuil du vendredi."}
 
     # JEUDI 27/08 - footing de reprise, cible non tenue
     _S["5"]["chaussure"]="ASICS Novablast 5 V"
@@ -1507,8 +1512,103 @@ for n, arr in list(SEANCES_BY_WEEK.items()):
       {"nom":"Retour au calme","role":"1,98 km \u00e0 5:21/km.","duree":634,"couleur":"vert","bloc":"\u2014","hauteur":28,"debut":2583,"fin":3217}]
     break
 
+# ── S36 : semaine de depart aux USA (vendredi 04/09) ─────────────────
+# Loic court lundi a jeudi, puis prend l'avion vendredi (9 h de decalage
+# vers San Francisco). Contexte : deux semaines tres allegees derriere
+# (39,7 puis 22,1 km, la plus petite de la preparation), mais un seuil
+# propre vendredi dernier (4:39 et 4:42 pour une cible a 4:45).
+# ACWR reel au 31/08 : 0,67 -- la longue du 22/08 est sortie de la
+# fenetre 7 jours. La marge existe, on peut relancer.
+# ARBITRAGE : le seuil passe au MERCREDI et non au jeudi, pour laisser
+# deux jours entre la seance dure et le vol. Jeudi devient un simple
+# deverrouillage avant 11 h d'avion.
+for n, arr in list(SEANCES_BY_WEEK.items()):
+    if n != "36":
+        continue
+    _S = {str(x["id"]): x for x in arr}
+
+    # LUNDI 31/08 - relance
+    _S["1"]["titre"]="Footing de relance"
+    _S["1"]["sous"]="Premi\u00e8re s\u00e9ance de la semaine \u2014 sans forcer."
+    _S["1"]["chaussure"]="ASICS Novablast 5 V"
+    _S["1"]["metriques"]={"Distance":"10 km","Dur\u00e9e":"~62 min","Allure":"6:00-6:20/km","FC":"< 145","RPE":"3","Type":"EF"}
+    _S["1"]["objectif"]="Relance apr\u00e8s deux semaines tr\u00e8s all\u00e9g\u00e9es et un seuil vendredi. <strong>FC plafonn\u00e9e \u00e0 145</strong>, aucune acc\u00e9l\u00e9ration. L'ACWR est \u00e0 0,67 : la marge existe, mais elle ne s'utilise pas d\u00e8s le premier jour."
+    _S["1"]["struct"]=[
+      {"nom":"Corps","txt":"10 km \u00e0 allure facile, FC sous 145. Apr\u00e8s 2 jours sans courir, les jambes seront fra\u00eeches \u2014 c'est exactement le moment de tenir le plafond."}]
+    _S["1"]["segments"]=[
+      {"nom":"Footing de relance","role":"10 km, FC sous 145.","duree":3720,"couleur":"vert","bloc":"\u2014","hauteur":32,"debut":0,"fin":3720}]
+
+    # MARDI 01/09 - EF + lignes droites
+    _S["2"]["titre"]="Footing + 6 lignes droites"
+    _S["2"]["sous"]="Entretien de la foul\u00e9e avant le seuil."
+    _S["2"]["chaussure"]="ASICS Novablast 5 V"
+    _S["2"]["metriques"]={"Distance":"10 km","Dur\u00e9e":"~64 min","Allure":"6:00-6:20/km","FC":"< 148","RPE":"3-4","Type":"EF + technique"}
+    _S["2"]["objectif"]="Footing facile suivi de <strong>6 lignes droites de 20 secondes</strong>, r\u00e9cup\u00e9ration compl\u00e8te en marche. Objectif : r\u00e9veiller la fr\u00e9quence de foul\u00e9e avant le seuil de demain, sans co\u00fbt."
+    _S["2"]["struct"]=[
+      {"nom":"Corps","txt":"9 km \u00e0 allure facile, FC sous 148."},
+      {"nom":"Lignes droites","txt":"6\u00d720 secondes en acc\u00e9l\u00e9ration progressive, r\u00e9cup\u00e9ration 60 s en marche. <strong>Rel\u00e2ch\u00e9, pas de sprint</strong> \u2014 la vitesse maximale n'apporte rien ici."},
+      {"nom":"Retour au calme","txt":"5 min tr\u00e8s souple."}]
+    _S["2"]["segments"]=[
+      {"nom":"Footing facile","role":"9 km, FC sous 148.","duree":3300,"couleur":"vert","bloc":"\u2014","hauteur":32,"debut":0,"fin":3300},
+      {"nom":"6\u00d720 s","role":"Lignes droites rel\u00e2ch\u00e9es, r\u00e9cup 60 s marche.","duree":480,"couleur":"orange","bloc":"6\u00d7","hauteur":58,"debut":3300,"fin":3780},
+      {"nom":"Retour au calme","role":"5 min souple.","duree":300,"couleur":"vert","bloc":"\u2014","hauteur":26,"debut":3780,"fin":4080}]
+
+    # MERCREDI 02/09 - LE SEUIL, seance cle
+    _S["3"]["titre"]="Seuil 2\u00d710 min"
+    _S["3"]["type"]="Seuil (puissance a\u00e9robie)"
+    _S["3"]["sous"]="La s\u00e9ance cl\u00e9 de la semaine."
+    _S["3"]["chaussure"]="ASICS Magic Speed 4"
+    _S["3"]["metriques"]={"Distance":"~12 km","Dur\u00e9e":"~70 min","Allure":"4:45/km sur les blocs","FC":"167-177","RPE":"6-7","Type":"Seuil"}
+    _S["3"]["objectif"]="2\u00d710 min \u00e0 <strong>4:45/km</strong>, r\u00e9cup\u00e9ration 3 min 30. Allong\u00e9 de 8 \u00e0 10 min car le seuil du 28/08 a \u00e9t\u00e9 tenu proprement (4:39 et 4:42 pour une cible \u00e0 4:45). <strong>M\u00eame cible d'allure, et ALERTE SUR LA FENIX \u00e0 4:40/km.</strong> Plac\u00e9 mercredi pour laisser deux jours avant le vol de vendredi."
+    _S["3"]["struct"]=[
+      {"nom":"\u00c9chauffement","txt":"20 min en endurance fondamentale, FC sous 145."},
+      {"nom":"Bloc 1","txt":"<strong>10 min \u00e0 4:45/km</strong>, FC 167-177. Chaque kilom\u00e8tre entre 4:42 et 4:48."},
+      {"nom":"R\u00e9cup\u00e9ration","txt":"3 min 30 en trot tr\u00e8s lent, FC redescendue sous 150."},
+      {"nom":"Bloc 2","txt":"<strong>10 min \u00e0 4:45/km</strong>, m\u00eame cible. Le bloc 2 du 28/08 \u00e9tait plus lent que le bloc 1 \u2014 refais exactement pareil."},
+      {"nom":"Retour au calme","txt":"12 min tr\u00e8s souple."},
+      {"nom":"R\u00e9glage montre","txt":"Fenix 6 Pro : Profils d'activit\u00e9 \u2192 Course \u00e0 pied \u2192 Alertes \u2192 Allure \u2192 seuil bas 4:40/km."}]
+    _S["3"]["segments"]=[
+      {"nom":"\u00c9chauffement","role":"20 min EF, FC sous 145.","duree":1200,"couleur":"vert","bloc":"\u2014","hauteur":30,"debut":0,"fin":1200},
+      {"nom":"Bloc 1 \u2014 10 min","role":"10 min \u00e0 4:45/km, FC 167-177.","duree":600,"couleur":"orange","bloc":"1/2","hauteur":74,"debut":1200,"fin":1800},
+      {"nom":"R\u00e9cup\u00e9ration","role":"3 min 30 trot, FC sous 150.","duree":210,"couleur":"vert","bloc":"\u2014","hauteur":26,"debut":1800,"fin":2010},
+      {"nom":"Bloc 2 \u2014 10 min","role":"10 min \u00e0 4:45/km, m\u00eame cible.","duree":600,"couleur":"orange","bloc":"2/2","hauteur":74,"debut":2010,"fin":2610},
+      {"nom":"Retour au calme","role":"12 min tr\u00e8s souple.","duree":720,"couleur":"vert","bloc":"\u2014","hauteur":28,"debut":2610,"fin":3330}]
+
+    # JEUDI 03/09 - deverrouillage avant le vol
+    _S["4"]["titre"]="D\u00e9verrouillage avant le vol"
+    _S["4"]["type"]="EF a\u00e9robie"
+    _S["4"]["sous"]="Court et facile \u2014 11 h d'avion demain."
+    _S["4"]["chaussure"]="ASICS Novablast 5 V"
+    _S["4"]["metriques"]={"Distance":"8 km","Dur\u00e9e":"~50 min","Allure":"6:10-6:30/km","FC":"< 140","RPE":"2-3","Type":"D\u00e9verrouillage"}
+    _S["4"]["objectif"]="<strong>Ce n'est pas une s\u00e9ance d'entra\u00eenement</strong>, c'est du d\u00e9verrouillage avant un long vol. 8 km tr\u00e8s faciles, FC sous 140, aucune acc\u00e9l\u00e9ration. Bouger la veille d'un vol long-courrier limite la raideur et aide au d\u00e9calage."
+    _S["4"]["struct"]=[
+      {"nom":"Corps","txt":"8 km \u00e0 allure tr\u00e8s facile, FC plafonn\u00e9e \u00e0 140. Si les jambes sont lourdes apr\u00e8s le seuil de la veille, r\u00e9duire \u00e0 6 km sans h\u00e9siter."},
+      {"nom":"Apr\u00e8s la s\u00e9ance","txt":"\u00c9tirements doux et hydratation. Le vol de demain d\u00e9shydrate fortement."}]
+    _S["4"]["segments"]=[
+      {"nom":"D\u00e9verrouillage","role":"8 km tr\u00e8s facile, FC sous 140.","duree":3000,"couleur":"vert","bloc":"\u2014","hauteur":28,"debut":0,"fin":3000}]
+
+    # DIMANCHE 06/09 - optionnel, San Francisco
+    import copy as _copy
+    _sf = _copy.deepcopy(_S["4"])
+    _sf["id"] = 5
+    _sf["date"] = "2026-09-06"
+    _sf["titre"] = "San Francisco \u2014 optionnel"
+    _sf["sous"] = "Seulement si le corps suit \u2014 J+2 apr\u00e8s 9 h de d\u00e9calage."
+    _sf["opt"] = True
+    _sf["metriques"]={"Distance":"5-7 km","Dur\u00e9e":"30-40 min","Allure":"libre","FC":"< 140","RPE":"2","Type":"Optionnel"}
+    _sf["objectif"]="<strong>Ne rien planifier.</strong> Tu seras \u00e0 J+2 apr\u00e8s 9 heures de d\u00e9calage, dans le sens le plus difficile pour le sommeil. Si tu te r\u00e9veilles t\u00f4t et que tu te sens bien : 30 \u00e0 40 min tr\u00e8s faciles le matin, la lumi\u00e8re du jour et l'activit\u00e9 douce aident \u00e0 recaler l'horloge. <strong>Si tu es cass\u00e9, ne cours pas</strong> \u2014 une bonne acclimatation vaut plus que cette s\u00e9ance."
+    _sf["struct"]=[
+      {"nom":"Si tu te sens bien","txt":"30 \u00e0 40 min tr\u00e8s faciles, le matin de pr\u00e9f\u00e9rence, FC sous 140. Allure totalement libre."},
+      {"nom":"Si tu es fatigu\u00e9","txt":"Marche au soleil pendant 30 min. C'est aussi efficace sur le d\u00e9calage et \u00e7a ne co\u00fbte rien."}]
+    _sf["segments"]=[]
+    arr.append(_sf)
+    break
+
+_S35_REVUE=("<p><strong>La plus petite semaine de la pr\\u00e9paration \\u2014 22,1 km, deux s\\u00e9ances. Et pourtant l'une des plus utiles.</strong></p><p><strong>Le bilan chiffr\\u00e9 :</strong> 2 s\\u00e9ances sur 6 pr\\u00e9vues, 22,1 km pour 66 cibl\\u00e9s, charge 276. Lundi saut\\u00e9 sur fatigue apr\\u00e8s les 25 km du 22/08, mardi et mercredi indisponibles (randonn\\u00e9es dans le Cantal, 1150 m de d\\u00e9nivel\\u00e9 cumul\\u00e9), samedi non r\\u00e9alis\\u00e9e.</p><p><strong>Ce qui rend la semaine utile malgr\\u00e9 tout : le seuil du vendredi.</strong> 2\\u00d78 min avec une cible \\u00e0 4:45/km, r\\u00e9alis\\u00e9 \\u00e0 4:39 puis 4:42. Sept secondes d'amplitude \\u00e0 l'int\\u00e9rieur des blocs, et surtout un bloc 2 <em>plus lent</em> que le bloc 1 \\u2014 aucune acc\\u00e9l\\u00e9ration apr\\u00e8s la r\\u00e9cup\\u00e9ration, alors que c'\\u00e9tait le pi\\u00e8ge annonc\\u00e9. <strong>Quatre secondes d'\\u00e9cart \\u00e0 la cible, contre 11, 26 puis 33 sur les trois s\\u00e9ances pr\\u00e9c\\u00e9dentes : la s\\u00e9rie d'\\u00e9checs de discipline est cass\\u00e9e.</strong></p><p><strong>Le point noir :</strong> le footing du jeudi, prescrit \\u00e0 6:00-6:20/km avec un plafond de FC \\u00e0 145, couru \\u00e0 5:33/km avec 156 de moyenne. Effort relatif 151 au lieu des 60 attendus. Le kilom\\u00e8tre 1 \\u00e0 123 bpm prouve que la FC n'\\u00e9tait pas haute au d\\u00e9part \\u2014 c'est l'allure qui l'a fait monter, pas la chaleur.</p><p><strong>Ce que la semaine confirme sur la r\\u00e9cup\\u00e9ration :</strong> apr\\u00e8s 1150 m de d\\u00e9nivel\\u00e9 en randonn\\u00e9e sur deux jours, aucune douleur, aucune jambe lourde, cadence stable. La capacit\\u00e9 de r\\u00e9cup\\u00e9ration n'est pas un facteur limitant.</p><p><strong>D\\u00e9cision pour S36 :</strong> semaine de d\\u00e9part aux \\u00c9tats-Unis, quatre s\\u00e9ances de lundi \\u00e0 jeudi avant le vol du vendredi. L'ACWR est retomb\\u00e9 \\u00e0 0,67 \\u2014 la longue du 22/08 est sortie de la fen\\u00eatre 7 jours, la marge existe. Le seuil passe \\u00e0 2\\u00d710 min et se place le mercredi, pour laisser deux jours avant l'avion. Jeudi devient un simple d\\u00e9verrouillage.</p>")
+
 for _s in SEMAINES:
     if _s["num"]==25: _s["revue"]=_S25_REVUE
+    if _s["num"]==35: _s["revue"]=_S35_REVUE
     if _s["num"]==34: _s["revue"]=_S34_REVUE
     if _s["num"]==33: _s["revue"]=_S33_REVUE
     if _s["num"]==26: _s["revue"]=_S26_REVUE
@@ -1975,6 +2075,15 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":200,"date":"31 aout 2026","sha":"","tag":"S35 cloturee + S36 structuree autour du depart aux USA","items":[
+    "S35 CLOTUREE : 2 seances sur 6, 22,1 km pour 66 cibles, charge 276. La plus petite semaine de la preparation. Longue du 29/08 marquee sautee (aucune activite Strava le 29 ni le 30). Revue de semaine ecrite.",
+    "CE QUI SAUVE LA SEMAINE : le seuil du 28/08, tenu a 4 secondes de la cible (4:39 et 4:42 pour 4:45), avec un bloc 2 plus lent que le bloc 1. La serie de trois echecs de discipline (-11, -26, -33 s/km) est cassee.",
+    "S36 STRUCTUREE SUR 4 JOURS avant le vol du vendredi 04/09 vers San Francisco. Lundi footing de relance 10 km FC<145, mardi footing + 6 lignes droites, mercredi SEUIL 2x10 min a 4:45/km, jeudi deverrouillage 8 km FC<140.",
+    "ARBITRAGE : le seuil est place MERCREDI et non jeudi, pour laisser deux jours entre la seance dure et 11 h d'avion. Il passe de 2x8 a 2x10 min car celui du 28/08 a ete tenu proprement -- meme cible d'allure, alerte Fenix maintenue a 4:40/km.",
+    "SEANCE OPTIONNELLE AJOUTEE le dimanche 06/09 a San Francisco, explicitement marquee comme non planifiee : J+2 apres 9 h de decalage. Consigne : 30-40 min tres faciles le matin si le corps suit, marche au soleil sinon. Une bonne acclimatation vaut plus que cette seance.",
+    "ACWR RETOMBE A 0,67 (contre 1,52 affiche au 28/08) : la longue de 25 km du 22/08 est sortie de la fenetre 7 jours. Projection avec les 4 seances de la semaine : 0,96 jeudi, zone optimale. Aucun risque de charge.",
+    "Volume previsionnel S36 : environ 38 km sur 4 jours, contre 42 cibles. Coherent."
+  ]},
   {"build":199,"date":"28 aout 2026","sha":"","tag":"Suite de l'audit : GEAR derive de 31 km + record semi perime","items":[
     "APRES LE BUG D'AOUT (build 198), j'ai cherche si D'AUTRES KPI saisis a la main avaient derive plutot que de repondre que tout etait corrige. Deux nouveaux ecarts trouves.",
     "GEAR DERIVE, confronte au parc Strava reel : Novablast 5 V a 81 km dans l'app contre 112 sur Strava (-31 km), Cascadia 19 a 241 contre 259 (-18 km), Clifton 10 a 1179 contre 1186 (-7 km). Resynchronise.",
