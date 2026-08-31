@@ -70,7 +70,18 @@ GEAR_STRAVA = {
     "Novablast 5 J":711, "Magic Speed 4":85, "Novablast 5 V":112,
 }
 
-TOL_KM, TOL_ELEV, TOL_GEAR = 0.06, 2, 5
+# ── Totaux mensuels Strava (mois CLOS, course a pied uniquement) ─────
+# Verifies mois par mois contre Strava le 31/08/2026. Juin etait faux :
+# 82 km / 5 sorties affiches contre 190 km / 15 sorties reels -- un trou
+# de 108 km reste invisible parce que le referentiel initial ne couvrait
+# que les seances a partir de juin ET que MONTHLY n'etait confronte a
+# rien pour les mois anterieurs.
+MOIS_STRAVA = {
+    "Jan":(224,19), "Fév":(227,21), "Mar":(342,25), "Avr":(283,23),
+    "Mai":(202,15), "Juin":(190,15), "Juil":(257,18),
+}
+
+TOL_KM, TOL_ELEV, TOL_GEAR, TOL_MOIS = 0.06, 2, 5, 3
 
 ECARTS, OK, INFOS = [], [], []
 
@@ -128,6 +139,19 @@ for g in d.get("GEAR", []):
                       f"sur Strava ({g['km']-ref:+d} km) — resynchroniser")
     else:
         OK.append(f"GEAR {g['modele']} conforme ({g['km']} km)")
+
+# ══ A3 — totaux mensuels des mois clos ══════════════════════════════
+for m in d.get("MONTHLY", []):
+    ref = MOIS_STRAVA.get(m["m"])
+    if ref is None:
+        continue          # mois en cours : deja couvert par A0/A1
+    rkm, rso = ref
+    if abs(m["km"] - rkm) > TOL_MOIS or m["sorties"] != rso:
+        ECARTS.append(f"A3 · MONTHLY {m['m']} : {m['km']} km / {m['sorties']} sorties dans "
+                      f"l'app vs {rkm} km / {rso} sorties sur Strava "
+                      f"({m['km']-rkm:+d} km)")
+    else:
+        OK.append(f"MONTHLY {m['m']} conforme ({m['km']} km / {m['sorties']} sorties)")
 
 # ══ RAPPORT ═════════════════════════════════════════════════════════
 print(f"  {len(OK)} controle(s) conforme(s)")
