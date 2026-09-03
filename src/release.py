@@ -188,7 +188,23 @@ def main():
                      ('audit_cockpit.py', 'src/audit_cockpit.py'),
                      ('kpi_registry.py', 'src/kpi_registry.py'),
                      ('release.py', 'src/release.py'),
-                     ('decouplage.py', 'src/decouplage.py')]:
+                     ('decouplage.py', 'src/decouplage.py'),
+                     # Garde-fou du 03/09 : ces fichiers vivent sous scripts/ sur
+                     # GitHub mais tournent depuis WORK en local (comme tous les
+                     # autres). Absents de ce manifeste jusqu'ici, ils etaient
+                     # verifies en local (gate vert) sans jamais etre synchronises
+                     # sur le repo -- audit_reconciliation.py et audit_data.py sont
+                     # restes perimes sur GitHub pendant 3 builds (207-209) malgre
+                     # des gates verts a chaque fois.
+                     ('audit_data.py', 'scripts/audit_data.py'),
+                     ('audit_dette.py', 'scripts/audit_dette.py'),
+                     ('audit_kpi.py', 'scripts/audit_kpi.py'),
+                     ('audit_reconciliation.py', 'scripts/audit_reconciliation.py'),
+                     ('audit_runtime.py', 'scripts/audit_runtime.py'),
+                     ('audit_seances.py', 'scripts/audit_seances.py'),
+                     ('audit_visuel.py', 'scripts/audit_visuel.py'),
+                     ('test_regression.py', 'scripts/test_regression.py'),
+                     ('test_race.py', 'scripts/test_race.py')]:
         if os.path.exists(f'{WORK}/{src}'):
             fichiers[dst] = f'{WORK}/{src}'
 

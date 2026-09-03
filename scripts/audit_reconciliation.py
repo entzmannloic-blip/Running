@@ -40,6 +40,8 @@ DATA = "/tmp/data.json"
 # ── Referentiel Strava : date -> (km, effort_relatif, D+) ────────────
 # Etabli par reconciliation integrale le 31/08/2026.
 STRAVA = {
+ "2026-09-03":(12.0773,88,25),
+ "2026-09-02":(8.5886,137,27),
  "2026-09-01":(11.0275,80,34),
  "2026-08-31":(10.2588,74,40),
  "2026-08-28":(10.0343,125,39), "2026-08-27":(12.0427,151,50),
@@ -69,7 +71,7 @@ STRAVA = {
 #    chaussures servent aussi en randonnee et a velo) ─────────────────
 GEAR_STRAVA = {
     "Clifton 10":1196, "Gel Pulse 16":225, "Cascadia 19":259,
-    "Novablast 5 J":722, "Magic Speed 4":85, "Novablast 5 V":112,
+    "Novablast 5 J":734, "Magic Speed 4":93, "Novablast 5 V":112,
 }
 
 # ── Totaux mensuels Strava (mois CLOS, course a pied uniquement) ─────
