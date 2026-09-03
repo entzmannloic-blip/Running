@@ -2030,8 +2030,8 @@ ACWR_DATA={"charge7j":_ACW["charge7j"],"charge28j":_ACW["charge28j"],"acwr":_ACW
   "interpretation":_acwr_zone(_ACW["acwr"])+" Charge aigue "+str(_ACW["charge7j"])+" sur 7 jours, chronique "+str(_ACW["charge28j"])+" sur 28 jours (soit "+str(round(_ACW["charge28j"]/4))+" par semaine), calcule au "+str(_ACW["ref"])+"."}
 print("ACWR calcule :", ACWR_DATA["charge7j"], "/", ACWR_DATA["charge28j"], "=>", ACWR_DATA["acwr"], "(ref", ACWR_DATA["ref"] + ")")
 RECORDS_PERF=[
-  {"dist":"5 km","record":"22:52","record_sub":"meilleur effort Strava","actuel":"4:35/km","actuel_sub":"meilleur effort 2026","temps_rec":"22:52","temps_act":"~22:52"},
-  {"dist":"10 km","record":"46:14","record_sub":"meilleur effort Strava","actuel":"4:37/km","actuel_sub":"meilleur effort 2026","temps_rec":"46:14","temps_act":"~46:14"},
+  {"dist":"5 km","record":"22:52","record_sub":"meilleur effort Strava","actuel":"4:47/km","actuel_sub":"meilleur effort embarqué 2026 vérifié (22/08)","temps_rec":"22:52","temps_act":"23:57"},
+  {"dist":"10 km","record":"46:14","record_sub":"meilleur effort Strava","actuel":"4:54/km","actuel_sub":"meilleur effort embarqué 2026 vérifié (22/08)","temps_rec":"46:14","temps_act":"49:00"},
   {"dist":"Semi 21,1","record":"1h46:18","record_sub":"effort embarqué du 22/08 (hors course)","actuel":"5:02/km","actuel_sub":"allure du record officieux","temps_rec":"1h46:18","temps_act":"1h46:18"},
 ]
 ALLURES_COURSE=[{"d":"5 km","temps":"~22:35","allure":"4:31/km"},{"d":"10 km","temps":"~47:00","allure":"4:42/km"},{"d":"Semi 21,1 km","temps":"~1h44","allure":"4:55/km"},{"d":"30 km","temps":"~2h31","allure":"5:02/km"},{"d":"Marathon objectif","temps":"3h45","allure":"5:20/km"},{"d":"Marathon projeté","temps":"~3h38-3h42","allure":"~5:12-5:15/km"}]
@@ -2198,6 +2198,12 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":209,"date":"3 septembre 2026","sha":"","tag":"Passe complete KPI demandee par Loic : deux ecarts reels trouves et corriges","items":[
+    "DEMANDE : verification complete de tous les KPI, graphiques et donnees. Resultat : GEAR (6 paires) 100% conforme a Strava. PALMARES a jour (aucune course depuis Deraille/Circaete, Nice et SaintExpress restent a venir). MAJ (date affichee en pied d'app) etait figee au 2 septembre malgre le build 208 du 3 -- corrigee.",
+    "RECORDS_PERF CORRIGE, PAS SEULEMENT SIGNALE COMME NON VERIFIE : les champs 'meilleur effort 2026' (5 km et 10 km) affichaient encore l'allure exacte des records officiels (4:35 et 4:37/km), un reliquat jamais recalcule, deja repere au build ~180 mais laisse en l'etat. Verification sur les streams Strava de la sortie du 22/08 (record de semi) : meilleur 5 km embarque reel = 23:57 (4:47/km), meilleur 10 km embarque reel = 49:00 (4:54/km) -- nettement plus lents que ce qui etait affiche. Valeurs remplacees par ces chiffres verifies, avec mention explicite qu'un scan exhaustif des ~150 seances n'a pas ete fait et pourrait reveler un effort plus rapide ailleurs.",
+    "DUPLICATION DE REFERENTIEL DECOUVERTE : audit_data.py maintient sa PROPRE copie codee en dur du kilometrage Strava des chaussures (STRAVA_GEAR), independante du referentiel d'audit_reconciliation.py (GEAR_STRAVA) cense faire foi. Cette copie etait perimee (Clifton 1186 au lieu de 1196, Novablast 5 J 711 au lieu de 734, Magic Speed 4 85 au lieu de 93), et generait 3 faux ecarts [E2] a chaque audit. Resynchronisee dans ce build, mais la duplication structurelle elle-meme n'est pas resolue -- meme categorie que les phases 4-5 deja differees a l'apres-Nice (reduction de la surface de saisie manuelle).",
+    "Reste ouvert et assume, sans changement : Clifton 10 a 1196 km, au-dela de la zone de remplacement 700-900 km (deja connu, decision de Loic de les garder en rotation)."
+  ]},
   {"build":208,"date":"3 septembre 2026","sha":"","tag":"Deverrouillage logue : 12 km avec une amie, aucune derive detectee","items":[
     "SEANCE LOGUEE (S36-4, jeudi) : 12,08 km en 1:08:34, allure moyenne 5:41/km, FC 143/160, effort relatif 88, cadence 88, Novablast 5 J. Ecart au plan assume : prevu 8 km a 6:10-6:30/km FC<140, realise plus long et plus rapide -- sortie sociale avec une amie plutot que deverrouillage strict.",
     "AUCUNE DERIVE INVOLONTAIRE DETECTEE sur 68 minutes : le km le plus lent (6:06/km) est au milieu du parcours, pas au debut ; la seule acceleration nette est en toute fin de course, rapportee par Loic lui-meme comme un choix (il se sentait fort). FC monte progressivement de 133 a 150 sans a-coup.",
@@ -3438,5 +3444,5 @@ PALMARES=[
 ]
 _j.dump({"PHASES":PHASES,"COUL":COUL,"SEMAINES":SEMAINES,"SBW":SEANCES_BY_WEEK,"GEAR":GEAR,"RACES":RACES,
   "PROFIL":PROFIL,"PROJ":PROJ,"RECORDS":RECORDS,"VIGILANCE":VIGILANCE,"S24R":S24_REALISE,
-  "HIST":_hist["HIST"],"POLAR":_hist["POLAR"],"ALLURES":ALLURES,"ALLURES_COURSE":ALLURES_COURSE,"ZONES_FC":ZONES_FC,"MONTHLY":MONTHLY,"SAISON2026":SAISON2026,"SAISON_EFF":SAISON_EFF,"ACWR_DATA":ACWR_DATA,"RECORDS_PERF":RECORDS_PERF,"JOURNAL":JOURNAL,"REWINDS":REWINDS,"MAJ":"2 septembre 2026","HEATMAP":HEATMAP,"DOSSIERS":DOSSIERS,"PALMARES":PALMARES,"CHANGELOG":CHANGELOG},open('/tmp/data.json','w'),ensure_ascii=False)
+  "HIST":_hist["HIST"],"POLAR":_hist["POLAR"],"ALLURES":ALLURES,"ALLURES_COURSE":ALLURES_COURSE,"ZONES_FC":ZONES_FC,"MONTHLY":MONTHLY,"SAISON2026":SAISON2026,"SAISON_EFF":SAISON_EFF,"ACWR_DATA":ACWR_DATA,"RECORDS_PERF":RECORDS_PERF,"JOURNAL":JOURNAL,"REWINDS":REWINDS,"MAJ":"3 septembre 2026","HEATMAP":HEATMAP,"DOSSIERS":DOSSIERS,"PALMARES":PALMARES,"CHANGELOG":CHANGELOG},open('/tmp/data.json','w'),ensure_ascii=False)
 print("OK")
