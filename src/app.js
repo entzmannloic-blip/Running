@@ -257,7 +257,19 @@ function _ckRebuild(){
   var _origVol=_origMap('VOL','a');
   var _allWeeks=Object.keys(_origVol).map(Number).concat(realWeeks)
       .filter(function(v,i,a){return a.indexOf(v)===i;}).sort(function(x,y){return x-y;});
-  function lastN(n){return _allWeeks.slice(-n);}
+  // CORRECTIF 03/09 puis 23/09 : lastN(n) prenait les n DERNIERES semaines
+  // *avec des donnees*, sautant silencieusement toute semaine sans seance
+  // loguee (ex. road trip USA, S37-S38 entierement non courues). Une fenetre
+  // affichee "2 semaines" pouvait alors recouvrir 4 semaines calendaires
+  // reelles sans le signaler. lastN(n) retourne desormais n semaines ISO
+  // strictement consecutives se terminant a la derniere semaine reellement
+  // loggee (ou la semaine calendaire si rien n'a jamais ete logue) -- une
+  // semaine sans course y contribue pour 0, elle n'est jamais sautee.
+  function lastN(n){
+    var curRef=realWeeks.length?Math.min(_curWeek(),Math.max.apply(null,realWeeks)):_curWeek();
+    var ws=[];for(var w=curRef-n+1;w<=curRef;w++)ws.push(w);
+    return ws;
+  }
   function _val(serie,champ,w,live){
     if(agg[w]&&live!==undefined&&live!==null)return live;
     if(agg[w])return live;
@@ -2799,8 +2811,19 @@ function _ckLine(svgId,wrapId,ttId,xlId,weeks,series,fmt,opt){
   if(!n)return;
   // garde-fou : ne garder que les series ayant un tableau .v exploitable
   series=(series||[]).filter(s=>s&&Array.isArray(s.v));
-  if(!series.length)return;
-  const allV=series.flatMap(s=>s.v.filter(x=>x!=null));if(!allV.length)return;
+  // CORRECTIF 23/09 : quand aucune valeur n'existe sur la periode (ex. Decouplage
+  // cardiaque sur une semaine sans sortie longue "fiable"), la fonction rendait
+  // un retour silencieux qui laissait le SVG dans son etat precedent (souvent
+  // vide) -- indiscernable d'un bug pour l'utilisateur comme pour l'audit. On
+  // affiche desormais explicitement l'absence de donnee.
+  const allV=series.length?series.flatMap(s=>s.v.filter(x=>x!=null)):[];
+  if(!series.length||!allV.length){
+    const svg=document.getElementById(svgId);
+    if(svg){svg.setAttribute('viewBox',`0 0 300 ${H}`);
+      svg.innerHTML=`<text x="150" y="${H/2}" text-anchor="middle" dominant-baseline="middle" font-size="11" fill="#94a3b8">Pas de donnée fiable sur cette période</text>`;}
+    _ckXL(xlId,weeks);
+    return;
+  }
   let mn=Math.min(...allV),mx=Math.max(...allV);const pad=(mx-mn)*0.15||5;mn-=pad;mx+=pad;
   const xs=weeks.map((_,i)=>10+i*((300-20)/Math.max(1,n-1)));
   const ym=v=>H-10-((v-mn)/(mx-mn)*(H-20));
