@@ -265,7 +265,7 @@ for g in d.get("GEAR", []):
 # Referentiel Strava de la derniere resynchronisation :
 STRAVA_GEAR = {
     "Clifton 10": 1196, "Gel Pulse 16": 225, "Cascadia 19": 259,
-    "Novablast 5 J": 745, "Magic Speed 4": 93, "Novablast 5 V": 151,
+    "Novablast 5 J": 757, "Magic Speed 4": 93, "Novablast 5 V": 151,
 }
 for g in d.get("GEAR", []):
     ref = STRAVA_GEAR.get(g["modele"])
