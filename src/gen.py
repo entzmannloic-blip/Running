@@ -1,6 +1,6 @@
 
 import datetime as _dt
-RACE_DATES={"Course — Objectif A":"2026-11-08","Course — Objectif B":"2026-11-28","Trail — Objectif C":"2026-07-05"}
+RACE_DATES={"Course — Objectif A":"2026-11-08","Course — Objectif B":"2026-11-28","Trail — Objectif C":"2026-07-05","Course — Objectif intermédiaire":"2026-10-04"}
 def assign_days(arr):
     # Les jours suivent l'ordre des séances : séance 1 = premier jour, etc.
     # Sortie longue -> dimanche ; courses -> vraie date ; le reste réparti lundi->samedi dans l'ordre.
@@ -296,6 +296,19 @@ def race(kind):
           legende=[{"c":GREEN,"l":"Gestion / facile"},{"c":TEAL,"l":"Course trail — effort"}],
           coach=[{"titre":"La course est un entraînement déguisé","texte":"Tu n'es pas là pour un chrono mais pour valider ton estomac sous contrainte. Si tu finis sans coup de moins-bien électrolytique, c'est une victoire qui vaut de l'or pour Nice."},
                  {"titre":"Électrolytes : la leçon retenue","texte":"La Circaète est tombée là-dessus. Aujourd'hui tu prouves que le correctif fonctionne — dès le km 5, en continu, sans attendre la sensation."}])
+    if kind=="runinlyon":
+        return dict(titre="RUN IN LYON — SEMI-MARATHON",type="Course — Objectif intermédiaire",sport="Course à pied",opt=False,accent="#2563eb",fill=100,
+          sous="21,097 km · départ 8h30 Bellecour · groupe 1h50 (5:13/km) · test grandeur nature de l'allure Nice.",
+          metriques={"Distance":"21,097 km","Cible":"1h50 (groupe)","Allure":"5:13-5:20/km","FC":"Zone marathon","RPE":"6-7","Type":"Semi-marathon officiel"},
+          objectif="Pas un objectif chrono en soi : <strong>un test grandeur nature de la discipline d'allure marathon</strong>, en dossard, en groupe, à 5 semaines de Nice. Courir calé sur deux amis visant 1h50 (5:13/km) plutôt que de gérer seul — exactement le mécanisme qui a fonctionné cette saison face à l'envie d'accélérer ou de doubler.",
+          struct=[{"nom":"Consigne n°1","txt":"Coller au groupe 1h50 tant que l'effort reste maîtrisé. Si à un moment ça commence à tirer, les laisser filer plutôt que de forcer pour rester avec eux jusqu'au bout — l'objectif est de finir propre à allure marathon, pas de suivre le groupe coûte que coûte."},
+                  {"nom":"Le vrai enjeu","txt":"Tenir 5:13-5:20/km sans dérive, dans l'ambiance d'une course officielle avec dossard et concurrents à doubler — le terrain exact où le réflexe d'accélération s'est déclenché le plus souvent cette saison (seuil du 02/09 notamment)."},
+                  {"nom":"Carburant","txt":"1h50 ne nécessite pas de plan nutritionnel lourd : hydratation aux ravitos, un gel possible vers 45-50 min si besoin. L'enjeu est la discipline d'allure, pas le carburant."}],
+          benefices="Le meilleur test possible avant Nice : l'allure marathon exacte, tenue sur 21 km, en conditions de course réelle (dossard, foule, concurrents), avec un repère humain fiable (le groupe 1h50).",
+          vigilance="5:13/km est légèrement sous le bas de la fourchette (5:15-5:20). Si ça se sent bien les 10 premiers km, tant mieux — information utile pour Nice. Si ça commence à tirer, lâcher le groupe est la bonne décision, pas un échec.",
+          legende=[{"c":BLUE,"l":"Allure marathon"},{"c":GREEN,"l":"Groupe 1h50"}],
+          coach=[{"titre":"Le dossard change la donne, pour de vrai","texte":"Toute la saison a montré qu'une alerte technique seule ne suffit pas face à l'envie de doubler. Aujourd'hui le test se fait en conditions réelles de course, pas à l'entraînement — c'est la version la plus exigeante et la plus utile de ce test."},
+                 {"titre":"Lâcher le groupe n'est pas un échec","texte":"Si l'allure de tes amis devient intenable, les laisser partir et finir à ton rythme est la décision d'un coureur qui gère sa course, pas d'un coureur qui abandonne."}])
     return dict(titre="SAINTEXPRESS 45 km",type="Course — Objectif B",sport="Trail nocturne",opt=False,accent=RED,fill=100,
       sous="45 km · 900 m D+ · nocturne, hivernal · au plaisir.",
       metriques={"Distance":"45 km","D+":"~900 m","Allure":P_TRAIL,"FC":"gérée","RPE":"7-8","Type":"Trail nuit"},
@@ -331,7 +344,7 @@ W(37,[ef(9,55,recovery=True), ef(9,55), trailsess(12,90,"randos & sentiers US","
 W(38,[ef(9,55,recovery=True), ef(9,55), ef(10,62), trailsess(10,75,"randos & sentiers US","Entretien aérobie, zéro pression.")])
 W(39,[ef(8,50,recovery=True), ef(10,62), ef(11,66,strides=True), longrun(16,100,fuel=False,desc="Retour : remise en route, on réveille la longue.")])
 # Bloc marathon (re-construction + 1 grosse qualité/sem + longues plafonnées)
-W(40,[ef(11,66), thresh(13,72,2,10,"Relance DOUCE du seuil après le voyage.",recup=3), ef(10,60,strides=True), longrun(20,120,mp_km=6,desc="Longue de re-construction, 20 km dont 6 AM."), renfo(opt=False)])
+W(40,[ef(11,66), thresh(13,72,2,10,"Relance DOUCE du seuil après le voyage.",recup=3), ef(6,35,opt=True,recovery=True,desc="Allégée sur decision de Loic : 3 jours de course d'affilee, fatigue signalee, Run In Lyon dimanche en cible allure marathon. Tres facile ou repos complet selon la sensation du matin."), race("runinlyon"), renfo(opt=False)])
 W(41,[ef(12,72), mp(16,95,3,4,"3×4 km AM — LE gros stimulus spécifique de la semaine."), ef(12,72), longrun(26,150,fuel=True,desc="Longue en ENDURANCE pure (la qualité est déjà sur la séance AM)."), renfo(opt=False)])
 W(42,[ef(12,72), ef(12,72,strides=True), ef(11,66), longrun(30,185,mp_km=14,desc="LA séance reine : 30 km dont 14 à allure marathon. Seul gros stimulus de la semaine — à valider selon S34."), renfo(opt=False), mobilite()])
 W(43,[ef(12,72), mp(16,90,2,6,"2×6 km AM — dernier gros bloc spécifique."), ef(11,66,strides=True), longrun(22,130,desc="Dernière longue, en endurance, on commence à fraîchir."), renfo(opt=False)])
@@ -1822,7 +1835,7 @@ GEAR=[
   {"marque":"Brooks","modele":"Cascadia 19","km":259},
   {"marque":"ASICS","modele":"Magic Speed 4","km":93},
 ]
-RACES=[{"nom":"Marathon de Nice","date":"2026-11-08","dossier":"nice"},{"nom":"SaintExpress","date":"2026-11-28","dossier":"saintexpress"}]
+RACES=[{"nom":"Run In Lyon — Semi","date":"2026-10-04","dossier":"runinlyon"},{"nom":"Marathon de Nice","date":"2026-11-08","dossier":"nice"},{"nom":"SaintExpress","date":"2026-11-28","dossier":"saintexpress"}]
 
 # ===== DOSSIERS DE COURSE (modale au clic sur le badge) =====
 DOSSIERS={
@@ -1984,7 +1997,52 @@ DOSSIERS={
     "Vouloir performer : c'est une course plaisir et un test, pas un objectif chrono.",
     "Courir tous les raidillons : la marche active est plus économique et te garde des jambes.",
     "Zapper un ravito : recharge l'eau systématiquement, même si tu te sens bien."],
-  "sources":"Données : trace GPX officielle du 24 km (tracedetrail.fr/trace/327465) — 24,06 km, sommet 897 m, départ/arrivée 447 m. D+ officiel 901 m (le GPS lit souvent ~1040 m, normal). Trail Tour Beaujolais, organisateur Y’A.C.A. Courir. Zones FC basées sur tes repères (FCmax ~192, bascule marche ~160) — ne remplacent pas un avis médical."}
+  "sources":"Données : trace GPX officielle du 24 km (tracedetrail.fr/trace/327465) — 24,06 km, sommet 897 m, départ/arrivée 447 m. D+ officiel 901 m (le GPS lit souvent ~1040 m, normal). Trail Tour Beaujolais, organisateur Y’A.C.A. Courir. Zones FC basées sur tes repères (FCmax ~192, bascule marche ~160) — ne remplacent pas un avis médical."},
+ "runinlyon":{
+  "nom":"Run In Lyon by Harmonie Mutuelle — Semi-Marathon",
+  "soustitre":"Place Bellecour → Terreaux, quais de Saône et du Rhône, Parc de la Tête d'Or → retour Bellecour",
+  "date":"Dimanche 4 octobre 2026",
+  "depart":"Départ 8h30 (à reconfirmer au retrait de dossard) · Place Bellecour, Lyon",
+  "format":"21,097 km · Route 100% · Label FFA Argent · ~30 000 coureurs cumulés sur les 4 courses (5 km, 10 km, semi, marathon)",
+  "accent":"#2563eb",
+  "stats":[["21,097","km"],["1h50","cible (groupe)"],["5:13-5:20/km","allure visée"],["5","semaines avant Nice"]],
+  "intro":"<strong>Course officielle utilisée comme test grandeur nature de l'allure marathon</strong>, 5 semaines avant Nice. Parcours urbain compact entre Terreaux, les quais de Saône et du Rhône et le Parc de la Tête d'Or, avec arrivée place Bellecour. Tu la cours avec deux amis visant 1h50 (5:13/km) — l'objectif n'est pas la performance mais <strong>la discipline d'allure en conditions de course réelle</strong> : dossard, concurrents à doubler, ambiance de départ de masse.",
+  "phrase":"1h50 sur 21,1 km, soit <strong>5:13/km</strong> — légèrement sous ta fourchette basse (5:15-5:20/km visés pour Nice), mais dans un mouchoir de poche. Cale-toi sur le groupe tant que l'effort reste maîtrisé ; s'il commence à tirer, laisse-le filer plutôt que de forcer.",
+  "profil":"Parcours urbain, globalement plat à légèrement vallonné (quais, ponts, quelques faux-plats). Pas de profil GPX officiel du semi vérifié pour l'édition 2026 à ce stade — se fier au ressenti d'effort plutôt qu'à un relief anticipé dans le détail.",
+  "segments":[
+    {"t":"1 · Bellecour — Terreaux","km":"km 0 → 5","faire":"Départ dense, presqu'île. Laisser le groupe 1h50 trouver son rythme sans se laisser emporter par l'excitation du départ — les premiers hectomètres sont toujours plus rapides que prévu dans la foule."},
+    {"t":"2 · Quais de Saône / Rhône","km":"km 5 → 14","faire":"Section la plus roulante, bords de fleuve. C'est là que la discipline se joue vraiment : rester calé sur le groupe, résister à l'envie de doubler les coureurs plus lents autour — exactement le déclencheur identifié cette saison."},
+    {"t":"3 · Parc de la Tête d'Or","km":"km 14 → 18","faire":"Cadre agréable, léger relâchement mental possible. Vérifier l'allure au kilomètre plutôt qu'à la sensation : c'est souvent ici qu'une dérive commence sans s'en rendre compte."},
+    {"t":"4 · Retour vers Bellecour","km":"km 18 → 21,1","faire":"Si le groupe est toujours tenable, finir avec lui. Si l'effort est devenu intenable, ralentir et finir propre plutôt que de cramer les 2 derniers kilomètres — l'info utile pour Nice, c'est la tenue de l'allure, pas le chrono final."}],
+  "plan":[
+    {"n":"1","tag":"CONTRÔLE","c":"#2563eb","titre":"Départ Bellecour — ne pas s'emballer","txt":"Dossard, foule, adrénaline : le piège classique du départ de course. Se placer près du groupe 1h50 dès le départ pour ne pas avoir à les rattraper en forçant sur les 2 premiers km.","fuel":"Rien de spécifique — bien hydraté avant le départ suffit sur 1h50."},
+    {"n":"2","tag":"TENIR","c":"#2563eb","titre":"Quais — le vrai test","txt":"Km 5 à 14 : rester calé sur le groupe, résister à l'envie de doubler. C'est la section la plus longue et la plus exposée au déclencheur identifié cette saison (l'envie de doubler en ambiance de course).","fuel":"Eau aux ravitos si besoin, pas d'enjeu nutritionnel sur ce format."},
+    {"n":"3","tag":"DÉCISION","c":"#dc2626","titre":"Tête d'Or — vérifier, pas deviner","txt":"Si l'allure du groupe commence à coûter cher (FC qui s'envole, jambes qui protestent), c'est le moment de décider consciemment de lâcher plutôt que de s'accrocher par fierté.","fuel":"—"},
+    {"n":"4","tag":"FINIR PROPRE","c":"#16a34a","titre":"Retour Bellecour","txt":"Terminer à l'allure qui reste gérable, avec le groupe ou sans. Un semi fini propre à 5:20/km vaut mieux qu'un semi fini cassé à 5:05/km en moyenne.","fuel":"—"}],
+  "zones":[
+   ["Zone marathon (cible)","152 – 163","L'allure 5:13-5:20/km doit rester dans cette plage si la forme du jour est bonne."],
+   ["Dérive à surveiller","163 – 172","Signal que l'allure du groupe coûte plus cher que prévu — vérifier consciemment plutôt que d'ignorer."],
+   ["Décroche","&gt; 172","Lâcher le groupe et finir à son propre rythme plutôt que de forcer jusqu'à l'arrivée."]],
+  "nutrition":{
+   "avant":"<strong>Veille :</strong> repas normal, pas de charge glucidique particulière pour 1h50. <strong>Matin de course</strong> (départ 8h30) : petit-déjeuner habituel 2h-2h30 avant, rien de nouveau à tester ce jour-là.",
+   "intro":"Sur 1h50, la nutrition n'est pas le facteur limitant — contrairement à un marathon ou un trail long, l'enjeu de cette course est la discipline d'allure, pas le carburant. Hydratation aux ravitos suffit largement.",
+   "items":[
+     ["Eau (ravitos course)","selon soif","Boire aux points de ravitaillement si besoin, sans excès sur un format aussi court."],
+     ["Gel (optionnel)","~25 g glucides","Un seul si besoin vers 45-50 min, uniquement si tu en ressens l'envie — pas indispensable sur 1h50."]],
+   "note":"Rien à sur-préparer ici : l'attention doit rester sur l'allure et le groupe, pas sur le protocole nutritionnel.",
+   "apres":"Hydratation normale et repas habituel — pas de protocole de récupération spécifique nécessaire pour ce format."},
+  "hydra":"Boire aux ravitos si besoin. Sur 1h50, la déshydratation n'est pas un risque réel sauf forte chaleur inhabituelle début octobre — vérifier la météo la veille.",
+  "terrain":"Route 100% goudronnée, en ville, large et sécurisée. Chaussures de route habituelles (Novablast). Pas d'enjeu météo particulier à 5 semaines de la course — vérifier la prévision la veille.",
+  "pratique":[
+   ["🏅 Dossard","Retrait au préalable (Village Run In Lyon) — vérifier le lieu et les horaires de retrait sur le site officiel avant le week-end de course."],
+   ["👥 Groupe 1h50","Objectif du groupe : 5:13/km. Se placer avec eux dans le sas de départ dès le début pour ne pas avoir à les rejoindre en courant trop vite."],
+   ["🚇 Arrivée Bellecour","Comme pour le 10 km et le marathon, arrivée place Bellecour — repérer un point de retrouvailles avant le départ."]],
+  "erreurs":[
+   "Partir plus vite que le groupe dans l'euphorie du départ, puis devoir freiner artificiellement.",
+   "S'accrocher au groupe par fierté alors que l'effort devient intenable — l'objectif est l'allure marathon tenue, pas le classement.",
+   "Piloter uniquement à la sensation dans le Parc de la Tête d'Or, là où une dérive peut commencer sans s'en rendre compte.",
+   "Traiter cette course comme un objectif chrono alors que c'est un test de discipline d'allure pour Nice."],
+  "sources":"Date, distance (21,097 km) et lieu de départ/arrivée (Place Bellecour) confirmés via lyon.fr, marathons.com et campus.coach (édition 2026, 4 octobre). Tracé général du semi (Terreaux, quais, Tête d'Or) basé sur la description éditoriale de l'édition 2025 (marathons.com) — non reconfirmé sur plan officiel 2026 précis à ce stade. Horaire de départ (8h30) rapporté par werun.world, a reconfirmer a l'approche de la course. Aucun profil GPX officiel du semi verifie pour cette fiche."}
 }
 print("Semaines:",len(SEANCES_BY_WEEK)+1,"| Séances:",sum(len(v) for v in SEANCES_BY_WEEK.values()))
 import json as _j
@@ -2302,6 +2360,13 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":217,"date":"29 septembre 2026","sha":"","tag":"Run In Lyon integre comme course officielle : nouveau dossard, nouvelle fiche, semaine allegee","items":[
+    "NOUVELLE COURSE : le 4 octobre 2026 (S40-4) passe de sortie longue planifiee a Run In Lyon, semi-marathon officiel (21,097 km), couru avec deux amis visant 1h50 (5:13/km) comme test grandeur nature de l'allure marathon avant Nice.",
+    "Fiche complete ajoutee a DOSSIERS (a l'image de Nice et SaintExpress) : parcours (Bellecour, Terreaux, quais de Saone et du Rhone, Parc de la Tete d'Or), plan d'execution par segment, zones FC specifiques, nutrition adaptee au format court. Informations verifiees en ligne (date, distance, lieu de depart), sources citees, limites signalees honnetement (trace GPX du semi et horaire exact non reconfirmes pour l'edition 2026).",
+    "NOUVEAU CAS race('runinlyon') ajoute a la fonction de generation des seances de course, sur le meme modele que marathon/deraille/saintexpress. RACE_DATES etendu pour que le moteur de planification respecte la vraie date (04/10) plutot que le cycle rotatif habituel.",
+    "SEMAINE S40 ALLEGEE en consequence : la seance du mercredi (S40-3) perd ses lignes droites, passe a 6 km optionnelle avec le contexte ecrit noir sur blanc (3 jours de course consecutifs, fatigue signalee, course cible dimanche).",
+    "BUG ATTRAPE AVANT PUSH, PAS APRES : le rendu de fiche de course (ouvrirDossier) plantait sur l'absence du bloc nutrition, jamais teste avec un dossier sans cette section jusqu'ici. Verifie dans un vrai navigateur (Playwright) avant push, conformement a la convention etablie -- corrige en completant honnetement le bloc nutrition plutot que de modifier la fonction partagee par les 3 autres dossiers sous pression de temps."
+  ]},
   {"build":216,"date":"29 septembre 2026","sha":"","tag":"Seuil non fait, sortie vallonnee a la place : 3e jour consecutif, fatigue signalee, ACWR eleve","items":[
     "SEANCE LOGUEE (S40-2, mardi) : seuil 2x10 min prevu non realise, remplace par une sortie continue et vallonnee avec Edwige, 12,03 km en 1:10:26, allure moyenne 5:51/km, FC 158/187, effort relatif 171, cadence 86, D+147m, Novablast 5 J.",
     "CONTEXTE A RETENIR : 3e jour de course consecutif (dimanche retour, lundi avec Yannis, aujourd'hui), effort reel (RE171) superieur aux deux jours precedents, sur une base encore fraichement reconstruite apres 3 semaines de coupure USA. Fatigue signalee par Loic lui-meme apres la seance -- coherent avec les chiffres. Aucune douleur.",
