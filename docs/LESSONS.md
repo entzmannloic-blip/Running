@@ -118,6 +118,20 @@ Un écart = avertissement à investiguer.
 
 ---
 
+## L09 — Compteur J- de l'accueil : date lue en UTC et course passée à J-0
+
+**Symptôme (build 222).** L'audit visuel V2 signale « Marathon de Nice » à J-32 ou J-33 selon la vue,
+et la tuile « Prochaine course » affiche « J-0 Run In Lyon » trois jours après la course.
+
+**Cause racine.** La tuile de l'accueil calculait `Math.ceil(new Date(r.date) - minuitLocal)` : `new Date('YYYY-MM-DD')`
+est lu en **UTC**, donc décalé d'un jour en France, et `Math.max(0, …)` ramenait toute course passée à J-0.
+Le bug était masqué tant que le container du gate tournait en UTC, il est apparu quand il a tourné en CEST.
+
+**Garde-fou.** Tous les compteurs passent par `_joursAvant()` et ne gardent que `dn >= 0`. L'audit visuel V2 reste le détecteur.
+Ne jamais soustraire `new Date('YYYY-MM-DD')` à une date locale. Une course dont la date est passée ne doit pas être « prochaine ».
+
+---
+
 ## Quirks Strava MCP (non mécanisables, à connaître)
 
 - Les activités **privées** n'apparaissent pas dans `list_activities`, quelle que soit

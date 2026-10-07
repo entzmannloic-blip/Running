@@ -204,7 +204,10 @@ def main():
                      ('audit_seances.py', 'scripts/audit_seances.py'),
                      ('audit_visuel.py', 'scripts/audit_visuel.py'),
                      ('test_regression.py', 'scripts/test_regression.py'),
-                     ('test_race.py', 'scripts/test_race.py')]:
+                     ('test_race.py', 'scripts/test_race.py'),
+                     # Build 222 : la doc de lecons (L09) etait editee en local sans
+                     # jamais partir sur le repo.
+                     ('LESSONS.md', 'docs/LESSONS.md')]:
         if os.path.exists(f'{WORK}/{src}'):
             fichiers[dst] = f'{WORK}/{src}'
 

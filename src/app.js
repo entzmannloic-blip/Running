@@ -734,8 +734,13 @@ function renderHeader(){
   const _formeDetail=`<div class="forme-detail" id="forme-detail">${_forme.components.map(c=>`<div class="fd-row"><div class="fd-lbl">${c.label}</div><div class="fd-track"><div class="fd-fill" style="width:${c.score}%;background:${c.score>=80?'#0d9488':c.score>=65?'#16a34a':c.score>=50?'#f59e0b':'#ef4444'}"></div></div><div class="fd-val">${c.detail}</div></div>`).join('')}</div>`;
   // Sprint 1 — courses : la plus proche en tuile, les autres repliees
   let _nearTile='',_mini='',_COURSES_=[];
-  if(RACES&&RACES.length){
-    const _rc=RACES.map(r=>Object.assign({},r,{dn:Math.max(0,Math.ceil((new Date(r.date)-_t)/86400000))})).sort((a,b)=>a.dn-b.dn);
+  /* Courses a venir uniquement, compteur via _joursAvant (meme chiffre que
+     toutes les vues). Avant : Math.ceil(new Date(date) - minuit local), qui
+     lit la date en UTC (decalage d'un jour en France) et clampait les
+     courses passees a J-0 (Run In Lyon apres le 04/10 restait « prochaine
+     course »). */
+  const _rc=(RACES||[]).map(r=>Object.assign({},r,{dn:_joursAvant(r.date)})).filter(r=>r.dn>=0).sort((a,b)=>a.dn-b.dn);
+  if(_rc.length){
     _COURSES_=_rc;
     const _n=_rc[0];
     _nearTile=`<button class="htile htile-race" ${_n.dossier?`onclick="ouvrirDossier('${_n.dossier}')"`:''}><span class="ht-k">Prochaine course</span><span class="ht-v">J-${_n.dn}</span><span class="ht-s">${_n.nom}</span>${_n.dossier?'<span class="ht-arr">\u203a</span>':''}</button>`;
