@@ -264,7 +264,7 @@ for g in d.get("GEAR", []):
 # Derive constatee le 28/08/2026 : jusqu'a 31 km d'ecart sur une paire.
 # Referentiel Strava de la derniere resynchronisation :
 STRAVA_GEAR = {
-    "Clifton 10": 1214, "Gel Pulse 16": 229, "Cascadia 19": 259,
+    "Clifton 10": 1229, "Gel Pulse 16": 229, "Cascadia 19": 259,
     "Novablast 5 J": 788, "Magic Speed 4": 93, "Novablast 5 V": 172,
 }
 for g in d.get("GEAR", []):
