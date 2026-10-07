@@ -1840,6 +1840,24 @@ for n, arr in list(SEANCES_BY_WEEK.items()):
                   {"km":7,"allure":"5:10","fc":174}],
         "revue":REVUE_ACTIVATION}
     })
+    arr.append({
+      "id":7,"date":"2026-10-04","titre":"Run/marche avec Perrine (15 x 1 min / 1 min)","type":"R\u00e9cup\u00e9ration active","sport":"Course \u00e0 pied","opt":True,
+      "accent":"#64748b","fill":10,
+      "sous":"Sortie du soir du semi, en run/marche avec Perrine : aucun enjeu d'entrainement.",
+      "metriques":{"Distance":"3,78 km","Dur\u00e9e":"36 min","Allure":"libre","FC":"111 moy / 137 max","RPE":"2","Type":"R\u00e9cup"},
+      "objectif":"Sortie sociale non planifiee, le soir du semi : 15 fois 1 min de course et 1 min de marche. Aucun objectif de performance.",
+      "struct":[{"nom":"Corps","txt":"15 x (1 min de course, 1 min de marche), puis 5 min de marche."}],
+      "benefices":"Remise en jambes douce le soir d'un effort maximal, partagee avec Perrine.",
+      "vigilance":"Aucune : charge negligeable (effort relatif 7).",
+      "legende":[{"c":"#16a34a","l":"Course"},{"c":"#94a3b8","l":"Marche"}],
+      "coach":[{"titre":"Rien a corriger","texte":"3,8 km a FC 111 en moyenne le soir d'un semi couru a FC 177 : c'est de la recuperation, pas de l'entrainement."}],
+      "segments":[{"nom":"Run/marche 15 x 1 min / 1 min","role":"3,78 km, FC 111 moy / 137 max.","duree":2150,"couleur":"vert","bloc":"\u2014","hauteur":24,"debut":0,"fin":2150}],
+      "chaussure_realise":"ASICS Gel Pulse 16",
+      "realise":{"statut":"fait","km":3.78,"temps":"35:50","allure":"9:28/km","fc_moy":111,"fc_max":137,"re":7,
+        "cadence":73,"elevation_gain":13,"kcal":267,"rpe_ressenti":2,
+        "commentaire":"Sortie du soir du semi (18h35) avec Perrine : 15 x 1 min de course / 1 min de marche, 3,78 km en 35:50, FC 111 moy / 137 max, effort relatif 7. Aucun enjeu. Ajoutee au log pour que les totaux (semaine, mois, saison) correspondent a Strava.",
+        "pr":0,"ach":0,"pr_detail":[]}
+    })
 
 for n, arr in list(SEANCES_BY_WEEK.items()):
     if n != "41":
@@ -1908,7 +1926,7 @@ for n, arr in list(SEANCES_BY_WEEK.items()):
 
 _S35_REVUE=("<p><strong>La plus petite semaine de la pr\\u00e9paration \\u2014 22,1 km, deux s\\u00e9ances. Et pourtant l'une des plus utiles.</strong></p><p><strong>Le bilan chiffr\\u00e9 :</strong> 2 s\\u00e9ances sur 6 pr\\u00e9vues, 22,1 km pour 66 cibl\\u00e9s, charge 276. Lundi saut\\u00e9 sur fatigue apr\\u00e8s les 25 km du 22/08, mardi et mercredi indisponibles (randonn\\u00e9es dans le Cantal, 1150 m de d\\u00e9nivel\\u00e9 cumul\\u00e9), samedi non r\\u00e9alis\\u00e9e.</p><p><strong>Ce qui rend la semaine utile malgr\\u00e9 tout : le seuil du vendredi.</strong> 2\\u00d78 min avec une cible \\u00e0 4:45/km, r\\u00e9alis\\u00e9 \\u00e0 4:39 puis 4:42. Sept secondes d'amplitude \\u00e0 l'int\\u00e9rieur des blocs, et surtout un bloc 2 <em>plus lent</em> que le bloc 1 \\u2014 aucune acc\\u00e9l\\u00e9ration apr\\u00e8s la r\\u00e9cup\\u00e9ration, alors que c'\\u00e9tait le pi\\u00e8ge annonc\\u00e9. <strong>Quatre secondes d'\\u00e9cart \\u00e0 la cible, contre 11, 26 puis 33 sur les trois s\\u00e9ances pr\\u00e9c\\u00e9dentes : la s\\u00e9rie d'\\u00e9checs de discipline est cass\\u00e9e.</strong></p><p><strong>Le point noir :</strong> le footing du jeudi, prescrit \\u00e0 6:00-6:20/km avec un plafond de FC \\u00e0 145, couru \\u00e0 5:33/km avec 156 de moyenne. Effort relatif 151 au lieu des 60 attendus. Le kilom\\u00e8tre 1 \\u00e0 123 bpm prouve que la FC n'\\u00e9tait pas haute au d\\u00e9part \\u2014 c'est l'allure qui l'a fait monter, pas la chaleur.</p><p><strong>Ce que la semaine confirme sur la r\\u00e9cup\\u00e9ration :</strong> apr\\u00e8s 1150 m de d\\u00e9nivel\\u00e9 en randonn\\u00e9e sur deux jours, aucune douleur, aucune jambe lourde, cadence stable. La capacit\\u00e9 de r\\u00e9cup\\u00e9ration n'est pas un facteur limitant.</p><p><strong>D\\u00e9cision pour S36 :</strong> semaine de d\\u00e9part aux \\u00c9tats-Unis, quatre s\\u00e9ances de lundi \\u00e0 jeudi avant le vol du vendredi. L'ACWR est retomb\\u00e9 \\u00e0 0,67 \\u2014 la longue du 22/08 est sortie de la fen\\u00eatre 7 jours, la marge existe. Le seuil passe \\u00e0 2\\u00d710 min et se place le mercredi, pour laisser deux jours avant l'avion. Jeudi devient un simple d\\u00e9verrouillage.</p>")
 
-S40_REVUE=("<p><strong>Semaine à fort coût : 5 sorties, 71,5 km, charge 908 — et un renversement net entre la discipline retrouvée à froid et perdue en course.</strong></p><p><strong>Le déroulé :</strong> lundi, 13 km avec Yannis : FC stable sur le cœur de séance, premier signal encourageant depuis le retour des USA. Mardi, le seuil prévu devient une sortie vallonnée avec Edwige (RE 171), 3ᵉ jour de course d'affilée et fatigue signalée. Mercredi, la séance allégée devient 18 km à 6:30/km avec une FC sous 143 : l'exécution la plus disciplinée depuis le retour, mais au mauvais moment du cycle. Jeudi, renforcement sauté, journée trop difficile. Samedi, activation avec Yannis et Manon : une légère accélération finale fait grimper la FC à 174-179, signal de dette de sommeil. Dimanche, semi du Run In Lyon couru malade.</p><p><strong>Le fil de la semaine :</strong> la discipline d'allure est démontrée à froid (mercredi) et perdue à chaud en course (dimanche) dès que le repère humain disparaît. La confirmation est nette : le facteur décisif n'est pas l'alerte technique mais la présence de quelqu'un à suivre.</p><p><strong>Le vrai sujet n'est plus l'allure, c'est la récupération.</strong> Cinq nuits de 3-4h, maladie, et une course à FC quasi maximale 5 semaines avant Nice : la semaine suivante doit être pensée autour de la guérison, pas du plan initial.</p><p><strong>Verdict : semaine chargée et instructive, à digérer plutôt qu'à enchaîner.</strong></p>")
+S40_REVUE=("<p><strong>Semaine à fort coût : 6 sorties, 75,2 km, charge 915 — et un renversement net entre la discipline retrouvée à froid et perdue en course.</strong></p><p><strong>Le déroulé :</strong> lundi, 13 km avec Yannis : FC stable sur le cœur de séance, premier signal encourageant depuis le retour des USA. Mardi, le seuil prévu devient une sortie vallonnée avec Edwige (RE 171), 3ᵉ jour de course d'affilée et fatigue signalée. Mercredi, la séance allégée devient 18 km à 6:30/km avec une FC sous 143 : l'exécution la plus disciplinée depuis le retour, mais au mauvais moment du cycle. Jeudi, renforcement sauté, journée trop difficile. Samedi, activation avec Yannis et Manon : une légère accélération finale fait grimper la FC à 174-179, signal de dette de sommeil. Dimanche, semi du Run In Lyon couru malade, puis 3,8 km en run/marche avec Perrine le soir (charge 7).</p><p><strong>Le fil de la semaine :</strong> la discipline d'allure est démontrée à froid (mercredi) et perdue à chaud en course (dimanche) dès que le repère humain disparaît. La confirmation est nette : le facteur décisif n'est pas l'alerte technique mais la présence de quelqu'un à suivre.</p><p><strong>Le vrai sujet n'est plus l'allure, c'est la récupération.</strong> Cinq nuits de 3-4h, maladie, et une course à FC quasi maximale 5 semaines avant Nice : la semaine suivante doit être pensée autour de la guérison, pas du plan initial.</p><p><strong>Verdict : semaine chargée et instructive, à digérer plutôt qu'à enchaîner.</strong></p>")
 
 S39_REVUE=("<p><strong>Semaine de fin de road trip et de retour — 2 séances courues sur 4, 21,8 km, et le début d'un diagnostic clair sur le coût du retour à la course.</strong></p><p><strong>Lundi et mardi :</strong> randonnée dans le Grand Canyon, marqués explicitement 'skipped' plutôt que laissés en 'à faire' ambigu — un choix assumé du road trip, pas un oubli.</p><p><strong>Mardi (23/09), reprise à Venice Beach / Santa Monica</strong> après 17 jours sans course : 11,63 km, FC moyenne 168, pic à 190 — à deux battements de la FCmax. Le ressenti était au plaisir, la sensation n'a pas alerté, mais le coût cardiaque était quasi maximal. Premier signal du diagnostic : l'économie de course spécifique recule après une coupure, même quand la forme générale (entretenue par la randonnée) semble intacte.</p><p><strong>Dimanche (27/09), retour à Lyon</strong> : sortie de remise en route prévue à 16 km, coupée à 10,2 km sur fatigue de voyage et jet lag assumés — bonne décision. Le signal est encore plus net ici : une dérive cardiaque progressive et continue du début à la fin (FC 144 au km1, 174 en clôture), alors que l'allure elle-même accélérait plutôt que dérivait par relâchement. Deuxième confirmation du même diagnostic.</p><p><strong>Le bilan de la période élargie (S37-S39) : environ 12 séances prévues, 2 courues.</strong> Nice est dans un peu plus de 5 semaines. Le plan de reconstruction (bloc marathon S40-S43) démarre cette semaine, avec une règle de feu vert conditionnel sur les séances à risque plutôt qu'un retour à pleine intensité sans vérification.</p><p><strong>Verdict : semaine de transition assumée, pas ratée.</strong> Les deux sorties réelles ont chacune apporté une donnée utile pour calibrer la reprise plutôt que de la deviner.</p>")
 
@@ -2210,6 +2228,55 @@ def _hist_recalc(base):
 
 _hist["HIST"] = _hist_recalc(_hist["HIST"])
 print("HIST recalcule :", len(_hist["HIST"]), "semaines")
+
+# Allure de TRAVAIL des seances de qualite (blocs seuls, hors echauffement et recups).
+# marathonEquiv() projette l'allure marathon a partir de ce champ s'il existe ; sinon
+# il retombe sur realise.allure, qui est souvent la moyenne de TOUTE la seance
+# (echauffement + recups compris) et fausse alors la projection (build 224).
+_ALLURE_TRAVAIL={("29","2"):"4:28/km",("31","5"):"5:09/km",("35","4"):"4:41/km",
+                 ("36","3"):"4:36/km",("41","2"):"5:18/km"}
+for _w,_i in _ALLURE_TRAVAIL:
+    for _s in SEANCES_BY_WEEK.get(_w,[]):
+        if str(_s["id"])==_i and _s.get("realise"):
+            _s["realise"]["allure_travail"]=_ALLURE_TRAVAIL[(_w,_i)]
+# Seuil du 29/09 remplace par une sortie vallonnee continue (pas de bloc seuil) :
+# ne doit pas nourrir la projection marathon.
+for _s in SEANCES_BY_WEEK.get("40",[]):
+    if str(_s["id"])=="2" and _s.get("realise"):
+        _s["realise"]["hors_projection"]=True
+
+# POLAR -- repartition d'intensite CALCULEE (etait un instantane fige 8/43/43/5).
+def _polar_calc():
+    QUAL=("Seuil","Sp\u00e9cifique","sp\u00e9cifique","Test","Course","VMA","Tempo","C\u00f4tes","Cotes")
+    c={"tres_facile":0.0,"ef":0.0,"gris":0.0,"qualite":0.0}; n=0; first=None
+    for _w,_a in SEANCES_BY_WEEK.items():
+        for _s in _a:
+            _r=_s.get("realise") or {}
+            if _r.get("statut") not in ("fait","partiel") or not _r.get("km") or _s.get("sport")!="Course \u00e0 pied":
+                continue
+            km=float(_r["km"]); n+=1
+            if first is None or _s["date"]<first: first=_s["date"]
+            if any(k in _s.get("type","") for k in QUAL):
+                c["qualite"]+=km; continue
+            sp=[x for x in (_r.get("splits") or []) if isinstance(x.get("km"),(int,float)) and x.get("fc")]
+            if len(sp)>=3:
+                for x in sp:
+                    f=x["fc"]; c["tres_facile" if f<134 else "ef" if f<=154 else "gris"]+=km/len(sp)
+            elif _r.get("fc_moy"):
+                f=_r["fc_moy"]; c["tres_facile" if f<134 else "ef" if f<=154 else "gris"]+=km
+    T=sum(c.values()) or 1.0
+    pc={k:int(round(v/T*100)) for k,v in c.items()}
+    # arrondis : la somme doit faire 100
+    pc["ef"]+=100-sum(pc.values())
+    mois=["janvier","f\u00e9vrier","mars","avril","mai","juin","juillet","ao\u00fbt","septembre","octobre","novembre","d\u00e9cembre"]
+    y,m,dd=first.split("-")
+    pc["periode"]=f"depuis le {int(dd)} {mois[int(m)-1]} ({n} sorties, {round(T)} km)"
+    pc["methode"]=("Calcul\u00e9 sur tes s\u00e9ances logu\u00e9es. S\u00e9ances de qualit\u00e9 (seuil, allure marathon, vitesse, course) "
+                   "compt\u00e9es enti\u00e8res ; les autres class\u00e9es kilom\u00e8tre par kilom\u00e8tre selon la FC : "
+                   "moins de 134 tr\u00e8s facile, 134 \u00e0 154 EF, au-dessus zone grise.")
+    return pc
+_hist["POLAR"]=_polar_calc()
+print("POLAR calcule :",_hist["POLAR"])
 # ═══════════════════════════════════════════════════════════════════
 # MONTHLY / SAISON2026 — SOURCE UNIQUE DE VERITE
 # ═══════════════════════════════════════════════════════════════════
@@ -2328,7 +2395,7 @@ RECORDS_PERF=[
   {"dist":"Semi 21,1","record":"1h46:18","record_sub":"effort embarqué du 22/08 (hors course)","actuel":"5:02/km","actuel_sub":"allure du record officieux","temps_rec":"1h46:18","temps_act":"1h46:18"},
 ]
 ALLURES_COURSE=[{"d":"5 km","temps":"~22:35","allure":"4:31/km"},{"d":"10 km","temps":"~47:00","allure":"4:42/km"},{"d":"Semi 21,1 km","temps":"~1h44","allure":"4:55/km"},{"d":"30 km","temps":"~2h31","allure":"5:02/km"},{"d":"Marathon objectif","temps":"3h45","allure":"5:20/km"},{"d":"Marathon projeté","temps":"~3h38-3h42","allure":"~5:12-5:15/km"}]
-ALLURES=[{"nom":"Seuil 30","val":"≈4:40/km","sub":"~30 min · proche 10 km"},{"nom":"Seuil 60","val":"≈4:55/km","sub":"~60 min · proche semi"},{"nom":"Allure marathon","val":"≈5:15/km","sub":"cible Nice 3h42"},{"nom":"Endurance facile","val":"5:50-6:25/km","sub":"le socle"},{"nom":"VMA courte","val":"≈4:15/km","sub":"plafond aérobie"}]
+ALLURES=[{"nom":"Seuil 30","val":"≈4:40/km","sub":"~30 min · proche 10 km"},{"nom":"Seuil 60","val":"≈4:55/km","sub":"~60 min · proche semi"},{"nom":"Allure marathon","val":"≈5:18/km","sub":"mesurée le 06/10 (FC 159) · cible Nice 3h45 = 5:20"},{"nom":"Endurance facile","val":"5:50-6:25/km","sub":"le socle"},{"nom":"VMA courte","val":"≈4:15/km","sub":"plafond aérobie"}]
 ZONES_FC=[{"z":"Z1","nom":"Récupération","bpm":"< 134","pct":"< 70%","col":"#86efac","allure":"≥ 6:45/km"},{"z":"Z2","nom":"Endurance fondamentale","bpm":"134-154","pct":"70-80%","col":"#16a34a","allure":"5:50-6:25/km"},{"z":"Z3","nom":"Tempo / marathon","bpm":"154-167","pct":"80-87%","col":"#f59e0b","allure":"5:05-5:30/km"},{"z":"Z4","nom":"Seuil","bpm":"167-177","pct":"87-92%","col":"#ea580c","allure":"4:40-4:55/km"},{"z":"Z5","nom":"VO2 / VMA","bpm":"177-192","pct":"92-100%","col":"#ef4444","allure":"≤ 4:20/km"}]
 REPLAY={"nom": "Petit Croisse Baulet", "date": "2026-07-12", "km": 11.04, "dplus": 530, "temps": "2h35", "alt": [1910, 1893, 1882, 1866, 1859, 1850, 1840, 1827, 1815, 1808, 1815, 1818, 1820, 1825, 1808, 1800, 1789, 1779, 1765, 1753, 1740, 1731, 1732, 1738, 1748, 1771, 1800, 1828, 1845, 1834, 1814, 1793, 1780, 1797, 1781, 1760, 1746, 1732, 1718, 1745, 1758, 1771, 1764, 1764, 1750, 1735, 1727, 1746, 1768, 1763, 1748, 1728, 1731, 1724, 1737, 1742, 1757, 1783, 1806, 1834, 1864, 1897, 1919, 1945, 1973, 2000, 1982, 1953, 1918, 1887, 1851, 1817, 1788, 1766, 1745, 1742, 1727, 1700, 1669, 1644, 1622, 1601, 1571, 1546, 1520, 1490, 1453, 1423, 1388, 1353, 1324, 1299, 1290, 1283, 1271, 1261, 1251, 1241, 1236, 1230], "dist": [0, 111, 223, 335, 446, 558, 669, 780, 892, 1003, 1115, 1226, 1338, 1449, 1561, 1673, 1784, 1895, 2008, 2118, 2230, 2342, 2454, 2564, 2676, 2788, 2899, 3011, 3123, 3234, 3345, 3457, 3569, 3680, 3792, 3903, 4015, 4126, 4238, 4349, 4460, 4572, 4683, 4795, 4906, 5018, 5130, 5241, 5352, 5464, 5575, 5687, 5799, 5910, 6022, 6134, 6245, 6357, 6468, 6580, 6691, 6802, 6914, 7025, 7136, 7248, 7361, 7471, 7583, 7694, 7806, 7917, 8030, 8140, 8252, 8362, 8475, 8586, 8698, 8810, 8920, 9031, 9144, 9255, 9368, 9478, 9590, 9702, 9813, 9924, 10036, 10148, 10259, 10371, 10482, 10596, 10706, 10816, 10930, 11040], "hr": [91, 93, 90, 93, 85, 87, 87, 84, 87, 93, 118, 93, 99, 121, 92, 87, 90, 83, 85, 82, 84, 89, 84, 99, 116, 152, 157, 160, 113, 101, 98, 106, 120, 111, 107, 101, 106, 115, 106, 158, 150, 141, 120, 122, 137, 136, 122, 164, 155, 125, 131, 140, 140, 125, 148, 136, 154, 163, 169, 168, 172, 172, 162, 162, 162, 137, 142, 148, 142, 141, 140, 142, 146, 133, 141, 158, 154, 142, 144, 146, 145, 150, 140, 141, 146, 138, 156, 149, 157, 144, 144, 140, 143, 153, 156, 162, 165, 164, 166, 166], "pace": [None, 25.25, 15.72, 11.74, 17.01, 12.44, 18.12, None, 16.67, 16.34, 14.37, 11.42, 12.25, 15.72, 13.23, 14.88, 13.23, 18.94, 15.15, 13.44, 12.44, 18.94, 17.73, 14.37, 10.16, 13.02, 17.01, 13.66, 24.51, 16.03, 18.52, 5.67, 21.37, 18.94, 17.73, 11.74, 11.57, 24.51, 9.8, 26.88, 13.89, 8.5, 11.74, 11.74, 6.72, 6.61, 9.47, 15.15, 18.12, 8.42, 8.33, 5.63, 8.59, 11.42, 14.12, 9.36, 13.23, 13.02, 11.74, 16.03, 24.51, 18.12, 25.25, None, 18.52, 9.36, 6.83, 12.44, 17.01, 10.96, 11.57, 15.43, 8.33, 10.96, 7.86, 7.25, 7.72, 8.87, 12.25, 7.65, 10.68, 6.41, 9.26, 7.65, 9.58, 10.16, 7.79, 10.96, 11.11, 19.38, 6.22, 15.72, 5.48, 3.97, 3.82, 4.39, 4.03, 3.75, 4.11, 4.48], "altMin": 1230, "altMax": 2000, "hrMax": 172}
 PROFIL={"prenom":"Loïc","ville":"Lyon","cible_marathon":"3h45","marathon_projete":"~3h38-3h42","cible_semi":"~1h44","fcmax":192,"poids":84}
@@ -2491,6 +2558,16 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":224,"date":"8 octobre 2026","sha":"","tag":"Passe complete du Cockpit : projection, ACWR, polarisation, compteurs et totaux remis d'aplomb","items":[
+    "PROJECTION MARATHON (boule de cristal) : 3h56 -> 3h41. Ce n'est pas un changement de forme, c'est la correction de ses entrees. Elle lisait realise.allure, souvent la moyenne de TOUTE la seance (echauffement et recups compris), et comptait la sortie vallonnee du 29/09 (5:51/km) comme une seance de seuil, soit un point a 4h21. Nouveau champ realise.allure_travail (allure des blocs seuls) pour 19/07 (4:28), 30/07 (5:09), 28/08 (4:41), 02/09 (4:36) et 06/10 (5:18), et realise.hors_projection pour le 29/09. A lire avec prudence : le seul 06/10 donne un equivalent marathon de 3h47, le reste est tire vers le bas par les seuils.",
+    "ACWR DU BANDEAU : le tuile du haut affichait 1,00 « maitrise » pendant que l'alerte juste a cote disait 2,35. La courbe hebdomadaire utilisait une moyenne exponentielle par semaine (et prenait la semaine en cours, incomplete, pour une semaine pleine). Elle utilise maintenant la meme definition que partout ailleurs (charge 7 jours / moyenne 28 jours), prise a la fin de chaque semaine, et a aujourd'hui pour la semaine en cours.",
+    "POLARISATION (donut + verdict) : c'etait un instantane fige 8/43/43/5 « sur les 6 derniers mois » avec le verdict « 43 % de zone grise, probleme n°1 ». Il est maintenant calcule sur les seances loguees depuis le 15 juin : voir la methode affichee sous le graphique. Les chiffres changent beaucoup (zone grise 7 % contre 43 %) en partie parce que la methode et la periode ne sont plus les memes ; l'ancien chiffre n'a pas pu etre reproduit. A valider par Loic.",
+    "SEMAINE S40 : le footing du soir du 04/10 avec Perrine (3,78 km, run/marche 15 x 1 min / 1 min, FC 111, RE 7) est logue. S40 passe a 6 sorties, 75,2 km, charge 915, comme sur Strava ; octobre et la saison s'alignent aussi. L'audit de reconciliation sait maintenant additionner deux seances d'une meme date.",
+    "COMPTEURS DE COURSES : la tuile « J avant Deraille » affichait J-0 (elle lisait en realite Run In Lyon, premiere course de la liste). Elle montre maintenant le semi Run In Lyon comme fait, et Nice et SaintExpress sont lus par nom plutot que par position.",
+    "ALLURE MARATHON (liste des allures) : 5:15 -> 5:18/km, avec sa source (3x4 km du 06/10, FC 159), et le libelle « cible Nice 3h42 » corrige en « cible Nice 3h45 = 5:20 ».",
+    "PETITS ECARTS : date « MAJ » figee au 5 octobre, maintenant lue dans le CHANGELOG ; pied du calendrier qui affichait « build 37 » ; texte « aligne sur Strava (108 activites) » devenu dynamique (166).",
+    "NON MODIFIE VOLONTAIREMENT : projections de forme saisies a la main (semi ~1h44, marathon projete ~3h38-3h42, tableau Riegel), radar de profil, VO2max (records inchanges), carte « Derniere sortie analysee » (decouplage non recalcule depuis le 02/08, il faut les flux Strava de chaque seance) et rewinds hebdomadaires S36 a S40."
+  ]},
   {"build":223,"date":"7 octobre 2026","sha":"","tag":"S41-3 : vallonne sous la pluie logue, 15 km D+ 242 m a FC 146","items":[
     "SEANCE LOGUEE S41-3 (07/10, footing prevu remplace par un vallonne) : 15,06 km, 1:30:06, 5:59/km, FC 146 moy / 180 max, RE 119, D+ 242 m, Clifton 10. Decision de Loic de faire une seance de denivele dans la semaine. Titre, sous-titre, metriques, structure et segments de la fiche mis a jour pour le format reel ; les 15 km Strava sont saisis tels quels.",
     "A RETENIR : FC dans la zone d'un footing facile malgre le relief (plat et descente a 133-142, montees a 4-6 % a 156-158), allure adaptee a la pente (6:38 en montee, 5:18 en descente). Deux raidillons d'environ 70 s a 175 bpm et un pic a 180 dans les escaliers du Signal. Descentes rapides : attente de raideur des quadriceps avant la longue de dimanche.",
@@ -3831,5 +3908,5 @@ PALMARES=[
 ]
 _j.dump({"PHASES":PHASES,"COUL":COUL,"SEMAINES":SEMAINES,"SBW":SEANCES_BY_WEEK,"GEAR":GEAR,"RACES":RACES,
   "PROFIL":PROFIL,"PROJ":PROJ,"RECORDS":RECORDS,"VIGILANCE":VIGILANCE,"S24R":S24_REALISE,
-  "HIST":_hist["HIST"],"POLAR":_hist["POLAR"],"ALLURES":ALLURES,"ALLURES_COURSE":ALLURES_COURSE,"ZONES_FC":ZONES_FC,"MONTHLY":MONTHLY,"SAISON2026":SAISON2026,"SAISON_EFF":SAISON_EFF,"ACWR_DATA":ACWR_DATA,"RECORDS_PERF":RECORDS_PERF,"JOURNAL":JOURNAL,"REWINDS":REWINDS,"MAJ":"5 octobre 2026","HEATMAP":HEATMAP,"DOSSIERS":DOSSIERS,"PALMARES":PALMARES,"CHANGELOG":CHANGELOG},open('/tmp/data.json','w'),ensure_ascii=False)
+  "HIST":_hist["HIST"],"POLAR":_hist["POLAR"],"ALLURES":ALLURES,"ALLURES_COURSE":ALLURES_COURSE,"ZONES_FC":ZONES_FC,"MONTHLY":MONTHLY,"SAISON2026":SAISON2026,"SAISON_EFF":SAISON_EFF,"ACWR_DATA":ACWR_DATA,"RECORDS_PERF":RECORDS_PERF,"JOURNAL":JOURNAL,"REWINDS":REWINDS,"MAJ":CHANGELOG[0]["date"],"HEATMAP":HEATMAP,"DOSSIERS":DOSSIERS,"PALMARES":PALMARES,"CHANGELOG":CHANGELOG},open('/tmp/data.json','w'),ensure_ascii=False)
 print("OK")

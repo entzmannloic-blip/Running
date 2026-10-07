@@ -244,14 +244,26 @@ function _ckRebuild(){
   });
   var realWeeks=Object.keys(agg).map(Number).sort(function(a,b){return a-b;});
   if(realWeeks.length<2)return; // pas assez de données, on garde _CK figé
-  // ACWR EMA (CTL 42j / ATL 7j) sur la série RE complète
-  var reSeries=realWeeks.map(function(w){return agg[w].re;});
-  var aC=1-Math.exp(-7/42),aA=1-Math.exp(-7/7);
-  var acwrByWeek={},ctl=reSeries[0],atl=reSeries[0];
-  realWeeks.forEach(function(w,i){
-    var v=agg[w].re;
-    if(i>0){ctl=(1-aC)*ctl+aC*v;atl=(1-aA)*atl+aA*v;}
-    acwrByWeek[w]=ctl>0?+((atl/ctl).toFixed(2)):1.0;
+  // ACWR hebdo : MEME definition que _acwrCompute() (charge 7 jours / moyenne 28 jours),
+  // prise a la fin de chaque semaine ISO (ou a aujourd'hui pour la semaine en cours).
+  // Avant : EMA par semaine, qui comptait la semaine en cours (incomplete) comme pleine
+  // et affichait 1,00 pendant que l'alerte voisine annoncait 2,35.
+  var _sessRE=[];
+  Object.values(SEANCES_BY_WEEK).flat().forEach(function(s){
+    var r=s.realise;if(!r||(r.statut!=='fait'&&r.statut!=='partiel')||!s.date)return;
+    _sessRE.push({t:new Date(s.date+'T00:00:00').getTime(),re:_reFromSeance(s)});
+  });
+  var _DAYMS=86400000,_td0=new Date();_td0.setHours(0,0,0,0);
+  function _weekEnd(w){
+    var j4=new Date(2026,0,4),mon1=new Date(j4.getTime()-((j4.getDay()+6)%7)*_DAYMS);
+    var sun=new Date(mon1.getTime()+((w-1)*7+6)*_DAYMS);
+    return sun>_td0?_td0:sun;
+  }
+  var acwrByWeek={};
+  realWeeks.forEach(function(w){
+    var end=_weekEnd(w).getTime(),c7=0,c28=0;
+    _sessRE.forEach(function(x){var j=Math.round((end-x.t)/_DAYMS);if(j<0)return;if(j<=6)c7+=x.re;if(j<=27)c28+=x.re;});
+    acwrByWeek[w]=c28>0?+((c7/(c28/4)).toFixed(2)):1.0;
   });
   // Reconstruire les fenêtres 2/4/8/12 de _CK
   var _origVol=_origMap('VOL','a');
@@ -1197,7 +1209,7 @@ function calHTML(){
   const _emptyCal=_mLogged?'':'<div class="empty-note"><span class="en-ic">🗓️</span><span>Aucune séance loguée sur ce mois pour l\'instant — les jours se colorent en <strong>vert</strong> dès que tu réalises une séance. Dis-moi « j\'ai fait la séance X de la semaine Y » et le mois prend vie.</span></div>';
   return '<div class="cal-head"><button class="cal-nav" onclick="calNav(-1)" aria-label="Mois précédent">‹</button><div class="cal-title">'+MN[m]+' '+y+'</div><button class="cal-nav" onclick="calNav(1)" aria-label="Mois suivant">›</button></div>'+
     '<div class="cal-grid">'+cells+'</div>'+
-    '<div class="cal-legend"><span><i class="cal-lg cal-g"></i>Réalisé</span><span><i class="cal-lg cal-o"></i>Non réalisé</span><span><i class="cal-lg cal-x"></i>À venir</span><span style="opacity:.45;margin-left:auto">build 37</span></div>'+_emptyCal;
+    '<div class="cal-legend"><span><i class="cal-lg cal-g"></i>Réalisé</span><span><i class="cal-lg cal-o"></i>Non réalisé</span><span><i class="cal-lg cal-x"></i>À venir</span><span style="opacity:.45;margin-left:auto">build '+((typeof CHANGELOG!=='undefined'&&CHANGELOG.length)?CHANGELOG[0].build:'')+'</span></div>'+_emptyCal;
 }
 function calNav(d){calMonth.setMonth(calMonth.getMonth()+d);const w=document.getElementById('cal-inner');if(w)w.innerHTML=calHTML();}
 
@@ -1317,7 +1329,8 @@ function _s2hms(s){s=Math.round(s);const h=Math.floor(s/3600),m=Math.floor((s%36
 function _riegel(km,t){return t*Math.pow(42.195/km,1.07);}
 function marathonEquiv(se){
   const r=se.realise;if(!r||(r.statut!=='fait'&&r.statut!=='partiel'))return null;
-  const t=se.type,sub=(se.metriques||{}).Type||'',pace=_pace2s(r.allure);
+  if(r.hors_projection)return null;
+  const t=se.type,sub=(se.metriques||{}).Type||'',pace=_pace2s(r.allure_travail||r.allure);
   if(t==='Test / recalibrage'){
     const km=parseFloat(String(r.km).replace(',','.'))||10;let tot=null;
     if(r.temps&&/^\d{1,3}:\d{2}$/.test(String(r.temps).trim()))tot=_pace2s(r.temps);else if(pace)tot=pace*km;
@@ -1364,7 +1377,7 @@ function renderCrystalBall(){
   </div>`;
 }
 function renderDash(){const el=document.getElementById('dash-contenu');
-  const today=new Date();const cd=RACES.map(r=>Math.max(0,_joursAvant(r.date)));
+  const today=new Date();const _raceJ=function(d){const r=RACES.find(x=>x.dossier===d);return r?Math.max(0,_joursAvant(r.date)):'—';};const cd=[null,_raceJ('nice'),_raceJ('saintexpress')];
   const allSe=Object.values(SEANCES_BY_WEEK).flat();const total=allSe.length;
   const faites=allSe.filter(s=>s.realise&&(s.realise.statut==='fait'||s.realise.statut==='partiel')).length;
   const planKm=1947;
@@ -1408,10 +1421,10 @@ function renderDash(){const el=document.getElementById('dash-contenu');
   <!-- 3. Analyse du coach : zone grise + consignes + journal -->
   <div class="kpi">
     <div class="kpi-t">🧠 L'analyse du coach</div>
-    <div class="kpi-r">Ta répartition d'intensité réelle sur les 6 derniers mois — le diagnostic central de ta préparation.</div>
+    <div class="kpi-r">Ta répartition d'intensité réelle ${POLAR.periode||'sur les 6 derniers mois'} — le diagnostic central de ta préparation.</div>
     <div class="donut-wrap">${svgDonut(pol)}<div class="donut-leg">${pol.map(p=>`<div><i style="background:${p.color}"></i>${p.label} — <strong>${p.val}%</strong></div>`).join('')}</div></div>
     <div class="rev-coach" style="margin-top:14px">
-      <strong>Le verdict :</strong> ${POLAR.gris}% de tes km en « zone grise » — ni assez lent pour récupérer, ni assez rapide pour progresser. C'est le problème n°1 à corriger.<br><br>
+      <strong>Le verdict :</strong> ${POLAR.gris>=25?`${POLAR.gris}% de tes km en « zone grise » — ni assez lent pour récupérer, ni assez rapide pour progresser. C'est le problème n°1 à corriger.`:`${POLAR.gris}% seulement de tes km en « zone grise » : tes footings sont bien faciles. Le sujet à surveiller se déplace vers la tenue de l'allure sur les séances clés et en course.`}<br>${POLAR.methode?`<span style="font-size:.74rem;color:var(--texte-trois)">${POLAR.methode}</span>`:''}<br><br>
       <strong>Tes 3 règles pour la prépa :</strong><br>
       ① <strong>Footings faciles : ≥ 6:00/km</strong>, sans négocier. Si tu accélères sans le vouloir, c'est le réflexe zone grise.<br>
       ② <strong>Qualité = 2 séances/semaine max</strong>, distinctes et délibérées (seuil, AM, côtes).<br>
@@ -1439,7 +1452,7 @@ function renderDash(){const el=document.getElementById('dash-contenu');
   <!-- 1. Saison en chiffres -->
   <div class="kpi">
     <div class="kpi-t">📅 Ta saison 2026 en chiffres</div>
-    <div class="kpi-r">Depuis le 1er janvier 2026 · <strong>Run + Trail uniquement</strong>, aligné sur Strava (108 activités). Hikes et raquettes non inclus dans le compteur Strava running.</div>
+    <div class="kpi-r">Depuis le 1er janvier 2026 · <strong>Run + Trail uniquement</strong>, aligné sur Strava (${SAISON2026.sorties} activités). Hikes et raquettes non inclus dans le compteur Strava running.</div>
     <div class="dash-stats" style="margin-bottom:18px">
       <div class="dstat" style="--accent:#0d9488"><div class="dstat-l">Sorties</div><div class="dstat-v">${SAISON2026.sorties}</div><div class="dstat-s">en ${SAISON2026.mois} mois</div></div>
       <div class="dstat" style="--accent:#16a34a"><div class="dstat-l">Kilométrage</div><div class="dstat-v">${SAISON2026.km}</div><div class="dstat-s">km parcourus</div></div>
@@ -1512,7 +1525,7 @@ function renderDash(){const el=document.getElementById('dash-contenu');
     <div class="kpi-t">🎯 Objectifs course</div>
     <div class="kpi-r">Trois objectifs, trois logiques différentes.</div>
     <div class="dash-stats">
-      <div class="dstat" style="--accent:#0d9488"><div class="dstat-l">J avant Déraille</div><div class="dstat-v">J-${cd[0]}</div><div class="dstat-s">Trail 24 km · 5 juil. · plaisir & test nutrition</div></div>
+      <div class="dstat" style="--accent:#0d9488"><div class="dstat-l">Run In Lyon</div><div class="dstat-v">Fait ✓</div><div class="dstat-s">Semi 21,1 km · 4 oct. · test de discipline d'allure</div></div>
       <div class="dstat" style="--accent:#f59e0b"><div class="dstat-l">J avant Nice</div><div class="dstat-v">J-${cd[1]}</div><div class="dstat-s">Marathon 8 nov. · objectif 3h45</div></div>
       <div class="dstat" style="--accent:#0d9488"><div class="dstat-l">J avant SaintExpress</div><div class="dstat-v">J-${cd[2]}</div><div class="dstat-s">45 km night trail 28 nov.</div></div>
     </div>

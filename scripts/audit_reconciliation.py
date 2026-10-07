@@ -43,7 +43,7 @@ STRAVA = {
  "2026-10-07":(15.061,119,242),
  "2026-10-06":(16.0548,199,31),
  "2026-10-05":(8.0353,59,34),
- "2026-10-04":(21.3034,470,71),
+ "2026-10-04":(25.0874,477,84),   # semi (21.3034, RE 470, D+ 71) + run/marche du soir avec Perrine (3.784, RE 7, D+ 13)
  "2026-10-03":(7.041,82,15),
  "2026-09-30":(18.0398,93,47),
  "2026-09-29":(12.0259,171,147),
@@ -107,7 +107,16 @@ for wk, arr in d["SBW"].items():
     for s in arr:
         r = s.get("realise") or {}
         if r.get("statut") in ("fait", "partiel") and (r.get("km") or 0) > 0:
-            seances[s["date"]] = (r, int(wk), s.get("titre", "")[:34])
+            if s["date"] in seances:
+                # plusieurs seances le meme jour : on additionne, comme la reference
+                r0, wk0, t0 = seances[s["date"]]
+                el0, el1 = r0.get("elevation_gain"), r.get("elevation_gain")
+                r = {"km": (r0.get("km") or 0) + (r.get("km") or 0),
+                     "re": (r0.get("re") or 0) + (r.get("re") or 0),
+                     "elevation_gain": (None if el0 is None or el1 is None else el0 + el1)}
+                seances[s["date"]] = (r, wk0, t0 + " +1")
+            else:
+                seances[s["date"]] = (r, int(wk), s.get("titre", "")[:34])
 
 print("=" * 74)
 print("  RECONCILIATION STRAVA — controle generique")

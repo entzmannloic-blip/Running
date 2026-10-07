@@ -168,7 +168,7 @@ def check_week_dates():
 
 
 # ─────────────────────────────────────────────────────────────
-# L06 — data.json parse + compteurs attendus (30 semaines / 132 seances)
+# L06 — data.json parse + compteurs attendus (30 semaines / 131 seances)
 # ─────────────────────────────────────────────────────────────
 def check_data_integrity():
     if not os.path.exists(DATA):
@@ -182,10 +182,10 @@ def check_data_integrity():
     n_sea = sum(len(v) for v in d.get("SBW", {}).values())
     if n_sem != 30:
         warn(f"L06 data : {n_sem} semaines (attendu 30)")
-    if n_sea != 132:
-        warn(f"L06 data : {n_sea} seances (attendu 132)")
-    if n_sem == 30 and n_sea == 132:
-        ok("L06 data : 30 semaines / 132 seances")
+    if n_sea != 131:
+        warn(f"L06 data : {n_sea} seances (attendu 131)")
+    if n_sem == 30 and n_sea == 131:
+        ok("L06 data : 30 semaines / 131 seances")
 
 
 # ─────────────────────────────────────────────────────────────
