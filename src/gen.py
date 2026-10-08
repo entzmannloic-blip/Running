@@ -2558,6 +2558,10 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":229,"date":"8 octobre 2026","sha":"","tag":"Barre de navigation a 4 onglets, accessible au clavier et aux lecteurs d ecran","items":[
+    "NAVIGATION : 4 onglets (Accueil, Seances, Cockpit, Courses) de largeur egale ; la barre est etiquetee et l onglet actif porte aria-current.",
+    "TESTS : cibles tactiles de 44 px minimum, ordre de tabulation et ouverture a la touche Entree verifies."
+  ]},
   {"build":228,"date":"8 octobre 2026","sha":"","tag":"Retrait du chat coach integre : le coaching se fait dans Claude","items":[
     "RETRAIT DU CHAT COACH : overlay, saisie, appel a l API et bouton central de la barre de navigation supprimes (environ 15 Ko de JavaScript et le CSS associe). Le coaching se fait dans Claude apres chaque seance.",
     "CONSERVE : les conseils calcules localement (puce de conseil du jour, coachAvant, coachDebrief, theorie par type de seance). La feuille de conseil n a plus de lien vers le chat."

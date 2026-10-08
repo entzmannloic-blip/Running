@@ -85,6 +85,8 @@ function showTab(t){
   ['accueil','plan','cockpit','palmares'].forEach(id=>{
     document.getElementById('vue-'+id).style.display=t===id?'block':'none';
     document.getElementById('tab-'+id).classList.toggle('actif',t===id);
+    var _tb=document.getElementById('tab-'+id);
+    if(t===id)_tb.setAttribute('aria-current','page');else _tb.removeAttribute('aria-current');
   });
   if(t==='cockpit'){renderCockpit();renderDash();setTimeout(()=>{if(typeof _vo2Reveal==='function')_vo2Reveal();if(typeof _effRender==='function')_effRender();if(typeof _heatRender==='function')_heatRender();if(typeof _saisonRender==='function')_saisonRender();if(typeof _decoupRender==='function')_decoupRender();if(typeof _profilRender==='function')_profilRender();},250);}
   if(t==='palmares')renderPalmares();

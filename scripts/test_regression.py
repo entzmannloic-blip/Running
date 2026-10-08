@@ -141,6 +141,37 @@ def run():
         except Exception as e:
             check("T08b feuille de conseil", False, str(e)[:80])
 
+        # ── T14 : barre de navigation a 4 onglets, accessible ──
+        p.evaluate("showTab('accueil')")
+        nav = p.evaluate(
+            "(function(){var bs=[].slice.call(document.querySelectorAll('#botbar .bi'));"
+            "return{n:bs.length,ids:bs.map(function(b){return b.id;}),"
+            "small:bs.filter(function(b){var r=b.getBoundingClientRect();return r.width<44||r.height<44;}).length,"
+            "label:document.getElementById('botbar').getAttribute('aria-label'),"
+            "cur:bs.filter(function(b){return b.getAttribute('aria-current')==='page';}).map(function(b){return b.id;})};})()")
+        check("T14 barre : 4 onglets dans l'ordre",
+              nav["ids"] == ["tab-accueil", "tab-plan", "tab-cockpit", "tab-palmares"], str(nav["ids"]))
+        check("T14 barre : cibles tactiles >= 44 px", nav["small"] == 0, f"{nav['small']} trop petite(s)")
+        check("T14 barre : nav etiquetee", bool(nav["label"]))
+        check("T14 barre : aria-current sur l'onglet actif seulement", nav["cur"] == ["tab-accueil"], str(nav["cur"]))
+        p.evaluate("showTab('cockpit')")
+        cur = p.evaluate("[].slice.call(document.querySelectorAll('#botbar .bi[aria-current=page]')).map(function(b){return b.id;})")
+        check("T14 barre : aria-current suit l'onglet", cur == ["tab-cockpit"], str(cur))
+        p.evaluate("showTab('accueil')")
+        p.focus("#tab-accueil")
+        order = ["tab-accueil"]
+        for _ in range(3):
+            p.keyboard.press("Tab")
+            order.append(p.evaluate("document.activeElement&&document.activeElement.id"))
+        check("T14 barre : ordre clavier (Tab)",
+              order == ["tab-accueil", "tab-plan", "tab-cockpit", "tab-palmares"], str(order))
+        p.focus("#tab-plan")
+        p.keyboard.press("Enter")
+        p.wait_for_timeout(300)
+        check("T14 barre : Entree ouvre l'onglet",
+              bool(p.evaluate("document.getElementById('vue-plan').style.display==='block'")))
+        p.evaluate("showTab('accueil')")
+
         # ── T09 : KPI Cockpit — les 4 fenetres donnent des volumes croissants ──
         try:
             p.evaluate("showTab('cockpit')")
