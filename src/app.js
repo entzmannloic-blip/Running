@@ -74,12 +74,14 @@ function svgDonut(segs){const tot=segs.reduce((a,s)=>a+s.val,0)||1;let a=-90,pat
   return `<svg viewBox="0 0 128 128" width="120" height="120">${paths}</svg>`;
 }
 
-function delta(series,good){const v=series.filter(x=>x!=null);if(v.length<2)return'';const d=v[v.length-1]-v[v.length-2];if(Math.abs(d)<0.5&&good!=='down')return '<span class="delta" style="color:#94a3b8">\u25aa stable</span>';const up=d>0;const isGood=good?((good==='up'&&up)||(good==='down'&&!up)):null;const col=isGood===null?'#64748b':(isGood?'#16a34a':'#ef4444');const a=up?'\u25b2':'\u25bc';const val=Math.abs(d)>=1?Math.round(Math.abs(d)):Math.abs(d).toFixed(1);return `<span class="delta" style="color:${col}">${a} ${val} vs S-1</span>`;}
+function delta(series,good){const v=series.filter(x=>x!=null);if(v.length<2)return'';const d=v[v.length-1]-v[v.length-2];if(Math.abs(d)<0.5&&good!=='down')return '<span class="delta" style="color:var(--texte-trois)">\u25aa stable</span>';const up=d>0;const isGood=good?((good==='up'&&up)||(good==='down'&&!up)):null;const col=isGood===null?'#64748b':(isGood?'#16a34a':'#ef4444');const a=up?'\u25b2':'\u25bc';const val=Math.abs(d)>=1?Math.round(Math.abs(d)):Math.abs(d).toFixed(1);return `<span class="delta" style="color:${col}">${a} ${val} vs S-1</span>`;}
 
 /* ===== thème ===== */
 function toggleTheme(){const n=document.body.classList.toggle('nuit');document.getElementById('themebtn').textContent=n?'☀️':'🌙';}
 
 /* ===== onglets ===== */
+/* Couleurs de TEXTE : les teintes de marque nues (graphiques) sont remplacees par leurs variantes profondes (contraste AA). */
+function _tc(c){return({'#ef4444':'var(--danger-deux)','#16a34a':'var(--ok-deux)','#0d9488':'var(--primary-deux)','#f59e0b':'var(--warn-deux)','#94a3b8':'var(--texte-trois)'})[String(c).toLowerCase()]||c;}
 function showTab(t){
   if(navigator.vibrate)try{navigator.vibrate(8)}catch(e){}
   ['accueil','plan','cockpit','palmares'].forEach(id=>{
@@ -1159,8 +1161,8 @@ function renderPlan(){const phasesEl=document.getElementById('phases');phasesEl.
     const cartes=sems.map(s=>{const ses=SEANCES_BY_WEEK[s.num]||[];const fait=ses.filter(x=>x.realise&&(x.realise.statut==='fait'||x.realise.statut==='partiel')).length;
       const cnt=s.num===24?`<div class="sem-km" style="margin-top:4px"><span>${S24R.runs.length} sorties · ${S24R.km} km réalisés</span></div>`:(ses.length?`<div class="sem-km" style="margin-top:4px"><span>${fait}/${ses.length} séances</span></div>`:'');
       const badge=s.num===_cur?`<div class="sem-statut st-courante">En cours</div>`:'';
-      return `<div class="sem-carte cliquable" id="wk-${s.num}" onclick="ouvrirSemaine(${s.num})">${badge}<div class="sem-num">Semaine ${s.num}</div><div class="sem-theme">${s.theme}</div><div class="sem-km">${s.km} <span>km · ${s.charge}</span></div>${cnt}<div class="sem-barre"><div class="sem-barre-fill" style="width:${Math.min(100,s.km/88*100)}%;background:${ph.c}"></div></div></div>`;}).join('');
-    bloc.innerHTML=`<div class="phase-entete"><div class="phase-puce" style="background:${ph.c}"></div><div class="phase-nom">${ph.nom}</div><div class="phase-sem">${ph.sem}</div></div><p class="phase-role">${ph.role}</p><div class="sem-grille">${cartes}</div>`;
+      return `<div class="sem-carte cliquable" id="wk-${s.num}" onclick="ouvrirSemaine(${s.num})">${badge}<div class="sem-num">Semaine ${s.num}</div><h3 class="sem-theme">${s.theme}</h3><div class="sem-km">${s.km} <span>km · ${s.charge}</span></div>${cnt}<div class="sem-barre"><div class="sem-barre-fill" style="width:${Math.min(100,s.km/88*100)}%;background:${ph.c}"></div></div></div>`;}).join('');
+    bloc.innerHTML=`<div class="phase-entete"><div class="phase-puce" style="background:${ph.c}"></div><h2 class="phase-nom">${ph.nom}</h2><div class="phase-sem">${ph.sem}</div></div><p class="phase-role">${ph.role}</p><div class="sem-grille">${cartes}</div>`;
     phasesEl.appendChild(bloc);});
 }
 
@@ -1356,7 +1358,7 @@ function renderCrystalBall(){
   const goalPos=clamp((goal-gmin)/(gmax-gmin)*100);
   const ahead=goal-P.sec;
   const ahMin=Math.round(Math.abs(ahead)/60);
-  const deltaTxt=ahead>=0?`<strong style="color:#16a34a">${ahMin} min d\u2019avance</strong> sur l\u2019objectif 3h45`
+  const deltaTxt=ahead>=0?`<strong style="color:var(--ok-deux)">${ahMin} min d\u2019avance</strong> sur l\u2019objectif 3h45`
     :`<strong style="color:#f59e0b">+${ahMin} min</strong> au-dessus de 3h45`;
   const deltaShort=ahead>=0?`${ahMin} min d'avance sur l'objectif 3h45`:`${ahMin} min au-dessus de 3h45 — le bloc va combler l'écart`;
   let clarte;
@@ -1425,7 +1427,7 @@ function renderDash(){const el=document.getElementById('dash-contenu');
     <div class="kpi-r">Ta répartition d'intensité réelle ${POLAR.periode||'sur les 6 derniers mois'} — le diagnostic central de ta préparation.</div>
     <div class="donut-wrap">${svgDonut(pol)}<div class="donut-leg">${pol.map(p=>`<div><i style="background:${p.color}"></i>${p.label} — <strong>${p.val}%</strong></div>`).join('')}</div></div>
     <div class="rev-coach" style="margin-top:14px">
-      <strong>Le verdict :</strong> ${POLAR.gris>=25?`${POLAR.gris}% de tes km en « zone grise » — ni assez lent pour récupérer, ni assez rapide pour progresser. C'est le problème n°1 à corriger.`:`${POLAR.gris}% seulement de tes km en « zone grise » : tes footings sont bien faciles. Le sujet à surveiller se déplace vers la tenue de l'allure sur les séances clés et en course.`}<br>${POLAR.methode?`<span style="font-size:.74rem;color:var(--texte-trois)">${POLAR.methode}</span>`:''}<br><br>
+      <strong>Le verdict :</strong> ${POLAR.gris>=25?`${POLAR.gris}% de tes km en « zone grise » — ni assez lent pour récupérer, ni assez rapide pour progresser. C'est le problème n°1 à corriger.`:`${POLAR.gris}% seulement de tes km en « zone grise » : tes footings sont bien faciles. Le sujet à surveiller se déplace vers la tenue de l'allure sur les séances clés et en course.`}<br>${POLAR.methode?`<span style="font-size:var(--t-data);color:var(--texte-trois)">${POLAR.methode}</span>`:''}<br><br>
       <strong>Tes 3 règles pour la prépa :</strong><br>
       ① <strong>Footings faciles : ≥ 6:00/km</strong>, sans négocier. Si tu accélères sans le vouloir, c'est le réflexe zone grise.<br>
       ② <strong>Qualité = 2 séances/semaine max</strong>, distinctes et délibérées (seuil, AM, côtes).<br>
@@ -1504,7 +1506,7 @@ function renderDash(){const el=document.getElementById('dash-contenu');
     <div class="kpi-t">🏆 Performances & projections</div>
     <div class="kpi-r">Meilleurs efforts réels depuis ton Strava · à comparer avec tes projections actuelles. Le semi 2022 reste ta référence officielle (course).</div>
     <table style="width:100%;border-collapse:collapse;font-size:.84rem">
-      <thead><tr style="color:var(--texte-trois);font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em">
+      <thead><tr style="color:var(--texte-trois);font-size:var(--t-data);font-weight:800;text-transform:uppercase;letter-spacing:.06em">
         <th style="text-align:left;padding:8px 6px;border-bottom:1px solid var(--gris-clair)">Distance</th>
         <th style="text-align:center;padding:8px 6px;border-bottom:1px solid var(--gris-clair)">Record / référence</th>
         <th style="text-align:center;padding:8px 6px;border-bottom:1px solid var(--gris-clair)">Meilleur effort 2026</th>
@@ -1512,8 +1514,8 @@ function renderDash(){const el=document.getElementById('dash-contenu');
       </tr></thead>
       <tbody>${RECORDS_PERF.map((r,i)=>`<tr style="border-bottom:1px solid var(--gris-clair)">
         <td style="padding:8px 6px;font-weight:800">${r.dist}</td>
-        <td style="padding:8px 6px;text-align:center"><div style="font-weight:700">${r.temps_rec||'—'}</div><div style="font-size:.7rem;color:var(--texte-trois)">${r.record_sub}</div></td>
-        <td style="padding:8px 6px;text-align:center"><div style="font-weight:700;color:#0d9488">${r.temps_act}</div><div style="font-size:.7rem;color:var(--texte-trois)">${r.actuel_sub}</div></td>
+        <td style="padding:8px 6px;text-align:center"><div style="font-weight:700">${r.temps_rec||'—'}</div><div style="font-size:var(--t-data);color:var(--texte-trois)">${r.record_sub}</div></td>
+        <td style="padding:8px 6px;text-align:center"><div style="font-weight:700;color:var(--primary-deux)">${r.temps_act}</div><div style="font-size:var(--t-data);color:var(--texte-trois)">${r.actuel_sub}</div></td>
         <td style="padding:8px 6px;text-align:right"><div style="font-weight:700">${r.actuel}</div></td>
       </tr>`).join('')}</tbody>
     </table>
@@ -1873,7 +1875,7 @@ function ouvrirSemaine(num){const s=SEMAINES.find(x=>x.num===num);const ph=PHASE
     const cardClass=isDone?' sc-fait':isSkipped?' sc-skipped':'';
     return `<div class="seance-carte${cardClass}" id="sc-${num}-${se.id}" onclick="ouvrirSeance(${num},${se.id})"  ><div class="seance-bande" style="background:${se.accent}"></div><div class="seance-idx">Séance ${_i+1}</div><div class="seance-info"><div class="seance-nom">${se.titre}</div><div class="seance-desc">${se.sous}</div>${rs}<div class="seance-tags">${tags.join('')}</div></div><div class="seance-fleche-wrap">${rightEl}</div></div>`;
   }).join('');
-  const repPill=s.repartition&&s.repartition!=='—'?`<div class="sw-pill"><div class="sw-pill-l">Répartition</div><div class="sw-pill-v" style="font-size:.74rem">${s.repartition}</div></div>`:'';
+  const repPill=s.repartition&&s.repartition!=='—'?`<div class="sw-pill"><div class="sw-pill-l">Répartition</div><div class="sw-pill-v" style="font-size:var(--t-data)">${s.repartition}</div></div>`:'';
   contenu.innerHTML=`<div class="sw-hero"><span class="sw-tag" style="background:${COUL[s.phase]}22;color:${COUL[s.phase]}">${ph.nom}</span><h2 class="sw-titre">Semaine ${s.num} — ${s.theme}</h2><p class="sw-sous">Semaine type · clique une séance</p><div class="sw-meta"><div class="sw-pill"><div class="sw-pill-l">Volume cible</div><div class="sw-pill-v">${s.km} km</div></div><div class="sw-pill"><div class="sw-pill-l">Réalisé</div><div class="sw-pill-v">${fait}/${seances.length} · ${realKm} km</div></div><div class="sw-pill"><div class="sw-pill-l">Charge</div><div class="sw-pill-v" style="font-size:.84rem">${s.charge}</div></div>${repPill}</div></div><div class="sw-corps"><div class="callout callout-obj">${s.objectif}</div><div class="sw-section">Séances de la semaine</div><div class="seance-liste">${liste}</div>${(typeof REWINDS!=='undefined'&&REWINDS.some(x=>x.id==='S'+s.num))?`<div style="text-align:center;margin-top:18px"><button class="rw-btn" onclick="rwOpen('S${s.num}')">🎬 Lance le Rewind de ta semaine</button></div>`:''}${s.revue?`<div class="sw-section">Revue du coach — bilan de la semaine</div><div class="rev-coach">${s.revue}</div>`:`<div class="realise-empty" style="margin-top:18px"><strong>Revue de la semaine à venir.</strong> Quand la semaine sera bouclée, tu trouveras ici mon bilan complet : volume et charge vs prévu, adhérence, signaux à surveiller, et la décision pour la semaine suivante. Elle alimentera aussi le Journal du coach.</div>`}</div>`;ouvrir();
 }
 /* ===== Créneaux météo — popup horaire ===== */
@@ -2019,7 +2021,7 @@ function openReplay(key){
     </div>
     <div class="rp-stats">
       <div class="rp-stat"><div class="rp-sv" id="rp-alt">\u2014</div><div class="rp-sl">altitude</div></div>
-      <div class="rp-stat"><div class="rp-sv" id="rp-hr" style="color:#ef4444">\u2014</div><div class="rp-sl">FC bpm</div></div>
+      <div class="rp-stat"><div class="rp-sv" id="rp-hr" style="color:var(--danger-deux)">\u2014</div><div class="rp-sl">FC bpm</div></div>
       <div class="rp-stat"><div class="rp-sv" id="rp-dist">\u2014</div><div class="rp-sl">km</div></div>
     </div>
     <div class="rp-phase" id="rp-phase"></div>
@@ -2067,7 +2069,7 @@ function _replayRun(key){
     else if(slope<-8)phaseEl.textContent='\u{1F3C3} Descente engag\u00e9e \u2014 on d\u00e9roule';
     else phaseEl.textContent='\u{1F33F} Terrain roulant';
     // couleur FC selon zone
-    hrEl.style.color=hr>165?'#dc2626':hr>145?'#f59e0b':'#16a34a';
+    hrEl.style.color=_tc(hr>165?'#dc2626':hr>145?'#f59e0b':'#16a34a');
     if(p<1)_replayRAF=requestAnimationFrame(frame);
     else{phaseEl.textContent='\u{1F3C1} Sortie termin\u00e9e \u2014 belle grimpette !';btn.style.opacity='1';btn.style.pointerEvents='auto';if(navigator.vibrate&&!reduce)try{navigator.vibrate([10,30,10])}catch(e){}}
   }
@@ -2093,7 +2095,7 @@ const _CK_HELP={
     <p><strong>L'id\u00e9e en une image.</strong> Imagine un long trajet en voiture : au d\u00e9but tu consommes 5 L/100 km, \u00e0 la fin il t'en faut 6 pour rouler \u00e0 la <strong>m\u00eame vitesse</strong>. Le moteur fatigue. En course, ton <strong>allure</strong> c'est la vitesse produite, ta <strong>FC</strong> c'est ce que \u00e7a te co\u00fbte. Le d\u00e9couplage mesure de combien ce co\u00fbt a augment\u00e9 entre la premi\u00e8re et la seconde moiti\u00e9. Le nom vient de l\u00e0 : au d\u00e9part allure et cardio sont <em>coupl\u00e9s</em> ; quand la fatigue arrive, ils se <em>d\u00e9couplent</em>.</p>
     <p><strong>Pourquoi pas juste les bpm ?</strong> Parce que les bpm seuls peuvent mentir : si tu ralentis beaucoup en fin de sortie, ta FC reste stable et tout semble parfait, alors que tu t'es d\u00e9grad\u00e9 \u2014 tu l'as juste masqu\u00e9 en levant le pied. Le d\u00e9couplage regarde les deux ensemble, donc impossible de tricher. Les bpm restent affich\u00e9s parce que c'est ce que tu lis sur ta montre, et quand les deux divergent, c'est justement l\u00e0 qu'est l'info.</p>
     <p><strong>L'\u00e9chelle</strong> \u2014 calibr\u00e9e sur tes propres sorties, pas sur une table g\u00e9n\u00e9rique :<br>
-    <span style="color:#16a34a;font-weight:800">&lt; 3 %</span> footing ma\u00eetris\u00e9, tu es rest\u00e9 dans ta zone de confort<br>
+    <span style="color:var(--ok-deux);font-weight:800">&lt; 3 %</span> footing ma\u00eetris\u00e9, tu es rest\u00e9 dans ta zone de confort<br>
     <span style="color:#65a30d;font-weight:800">3-6 %</span> conforme, normal sur du long ou du chaud<br>
     <span style="color:#b45309;font-weight:800">6-9 %</span> sous tension, tu as puis\u00e9 plus que pr\u00e9vu<br>
     <span style="color:#b91c1c;font-weight:800">&gt; 9 %</span> s\u00e9ance subie : parti trop vite, trop chaud, ou pas assez frais</p>
@@ -2173,8 +2175,8 @@ const _CK_HELP={
     <div class="ch-rule"><div class="ch-dot" style="background:#f59e0b"></div><div><strong>Z3 Tempo / marathon (154–167)</strong> → allure spécifique marathon.</div></div>
     <div class="ch-rule"><div class="ch-dot" style="background:#ef4444"></div><div><strong>Z4+ Seuil et au-delà (&gt; 167)</strong> → seuil, VMA. Doit rester minoritaire.</div></div>
     <div class="ch-tip">💡 Objectif d'un entraînement polarisé : 75–80 % en Z1-Z2, une petite part en Z3, 15–20 % en Z4+. Trop de Z3 = « moyen partout », progression lente.</div>
-    <p style="font-size:11.5px;color:var(--texte-trois);margin-top:10px"><strong>Précision de méthode :</strong> chaque séance est classée par sa <strong>FC moyenne</strong>, puis pondérée par sa durée. Ce n'est donc pas un vrai temps-passé-en-zone seconde par seconde : une séance de fractionné dont la moyenne tombe en Z3 masque les pointes réelles en Z4-Z5. La photo d'ensemble est fiable, la part des zones hautes est sous-estimée.</p>
-    <p style="font-size:11.5px;color:var(--texte-trois)">Les bornes sont celles de ta table de zones officielle (onglet Courses), et non plus des valeurs approximatives qui la contredisaient.</p>`},
+    <p style="font-size:var(--t-data);color:var(--texte-trois);margin-top:10px"><strong>Précision de méthode :</strong> chaque séance est classée par sa <strong>FC moyenne</strong>, puis pondérée par sa durée. Ce n'est donc pas un vrai temps-passé-en-zone seconde par seconde : une séance de fractionné dont la moyenne tombe en Z3 masque les pointes réelles en Z4-Z5. La photo d'ensemble est fiable, la part des zones hautes est sous-estimée.</p>
+    <p style="font-size:var(--t-data);color:var(--texte-trois)">Les bornes sont celles de ta table de zones officielle (onglet Courses), et non plus des valeurs approximatives qui la contredisaient.</p>`},
   cad:{t:'Cadence (pas/min)',c:'#6366f1',body:`<p>Nombre de pas par minute. La valeur affichée est en SPM (steps per minute = total des deux pieds). Ta cadence naturelle est d'environ 172–174 spm en route.</p>
     <div class="ch-rule"><div class="ch-dot" style="background:#16a34a"></div><div><strong>170–180 spm</strong> → Zone optimale. Limite l'impact au sol et réduit le risque de blessures aux genoux et hanches.</div></div>
     <div class="ch-rule"><div class="ch-dot" style="background:#f59e0b"></div><div><strong>&lt;170 spm</strong> → Foulée trop longue. Augmente les forces d'impact. Surtout visible en fatigue ou en descente trail.</div></div>
@@ -2474,51 +2476,51 @@ function renderPalmares(){
   const _tdy=new Date();_tdy.setHours(0,0,0,0);
   const _moisC=['janv.','f\u00e9vr.','mars','avr.','mai','juin','juil.','ao\u00fbt','sept.','oct.','nov.','d\u00e9c.'];
   const _up=((typeof RACES!=='undefined'?RACES:(typeof DATA!=='undefined'&&DATA.RACES))||[]).map(r=>{const d=new Date(r.date+'T12:00:00');return{nom:r.nom,dossier:r.dossier,d:d,dn:_joursAvant(r.date)};}).filter(r=>r.dn>=0).sort((a,b)=>a.dn-b.dn);
-  const _aVenir=_up.length?'<div class="crs-lab">\u00c0 venir</div>'+_up.map(r=>{const ds=r.d.getDate()+' '+_moisC[r.d.getMonth()]+' '+r.d.getFullYear();return `<button class="crs-up"${r.dossier?` onclick="ouvrirDossier('${r.dossier}')"`:''}><span class="crs-jx">J-${r.dn}</span><span class="crs-mid"><span class="crs-nom">${r.nom}</span><span class="crs-date">${ds}</span></span>${r.dossier?'<span class="crs-go">Dossier \u203a</span>':''}</button>`;}).join(''):''; 
+  const _aVenir=_up.length?'<h2 class="crs-lab">\u00c0 venir</h2>'+_up.map(r=>{const ds=r.d.getDate()+' '+_moisC[r.d.getMonth()]+' '+r.d.getFullYear();return `<button class="crs-up"${r.dossier?` onclick="ouvrirDossier('${r.dossier}')"`:''}><span class="crs-jx">J-${r.dn}</span><span class="crs-mid"><span class="crs-nom">${r.nom}</span><span class="crs-date">${ds}</span></span>${r.dossier?'<span class="crs-go">Dossier \u203a</span>':''}</button>`;}).join(''):''; 
   el.innerHTML=`<div style="padding:12px 12px 40px">
-<div class="lt-title" style="margin-bottom:2px">Courses</div>
-<div style="font-size:11px;color:var(--texte-deux);margin-bottom:14px">À venir &amp; passées · objectifs et résultats</div><button class="wr-launch" onclick="openWrapped()"><span class="wrl-ico">✨</span><span class="wrl-txt"><span class="wrl-t1">Ta saison en chiffres</span><span class="wrl-t2">${_wd.n} sorties · ${_wd.km} km · ${_wd.dplus} m D+</span></span><span class="wrl-go">▶</span></button>${_aVenir}<div class="crs-lab">Passées</div>
+<h1 class="lt-title" style="margin-bottom:2px">Courses</h1>
+<div style="font-size:var(--t-caption);color:var(--texte-deux);margin-bottom:14px">À venir &amp; passées · objectifs et résultats</div><button class="wr-launch" onclick="openWrapped()"><span class="wrl-ico">✨</span><span class="wrl-txt"><span class="wrl-t1">Ta saison en chiffres</span><span class="wrl-t2">${_wd.n} sorties · ${_wd.km} km · ${_wd.dplus} m D+</span></span><span class="wrl-go">▶</span></button>${_aVenir}<h2 class="crs-lab">Passées</h2>
 <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px">
-  <div style="background:var(--bg-card,#fff);border:.5px solid var(--bord-card,#e2e8f0);border-radius:12px;padding:10px;text-align:center"><div style="font-size:20px;font-weight:700;color:var(--texte)">${P.length}</div><div style="font-size:9px;text-transform:uppercase;letter-spacing:.05em;color:var(--texte-deux);margin-top:4px">Courses</div></div>
-  <div style="background:var(--bg-card,#fff);border:.5px solid var(--bord-card,#e2e8f0);border-radius:12px;padding:10px;text-align:center"><div style="font-size:20px;font-weight:700;color:var(--texte)">${totalKm.toFixed(0)}</div><div style="font-size:9px;text-transform:uppercase;letter-spacing:.05em;color:var(--texte-deux);margin-top:4px">km courus</div></div>
-  <div style="background:var(--bg-card,#fff);border:.5px solid var(--bord-card,#e2e8f0);border-radius:12px;padding:10px;text-align:center"><div style="font-size:20px;font-weight:700;color:var(--texte)">${(totalDplus/1000).toFixed(1)}k</div><div style="font-size:9px;text-transform:uppercase;letter-spacing:.05em;color:var(--texte-deux);margin-top:4px">D+ cumulé</div></div>
+  <div style="background:var(--bg-card,#fff);border:.5px solid var(--bord-card,#e2e8f0);border-radius:12px;padding:10px;text-align:center"><div style="font-size:20px;font-weight:700;color:var(--texte)">${P.length}</div><div style="font-size:var(--t-data);text-transform:uppercase;letter-spacing:.05em;color:var(--texte-deux);margin-top:4px">Courses</div></div>
+  <div style="background:var(--bg-card,#fff);border:.5px solid var(--bord-card,#e2e8f0);border-radius:12px;padding:10px;text-align:center"><div style="font-size:20px;font-weight:700;color:var(--texte)">${totalKm.toFixed(0)}</div><div style="font-size:var(--t-data);text-transform:uppercase;letter-spacing:.05em;color:var(--texte-deux);margin-top:4px">km courus</div></div>
+  <div style="background:var(--bg-card,#fff);border:.5px solid var(--bord-card,#e2e8f0);border-radius:12px;padding:10px;text-align:center"><div style="font-size:20px;font-weight:700;color:var(--texte)">${(totalDplus/1000).toFixed(1)}k</div><div style="font-size:var(--t-data);text-transform:uppercase;letter-spacing:.05em;color:var(--texte-deux);margin-top:4px">D+ cumulé</div></div>
 </div>
 ${P.slice().sort((a,b)=>b.date.localeCompare(a.date)).map((p,i)=>{
   const typeLabel=types[p.type]||p.type;
   const d=new Date(p.date+'T12:00:00');
   const mois=['janv.','févr.','mars','avr.','mai','juin','juil.','août','sept.','oct.','nov.','déc.'];
   const dateStr=d.getDate()+' '+mois[d.getMonth()]+' '+d.getFullYear();
-  const classGen=p.classement_gen?`<span style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:99px;background:#f0fdfa;color:#0f766e">#${p.classement_gen}${p.total_finishers?' / '+p.total_finishers:''} général</span>`:'';
-  const classCat=p.classement_cat?`<span style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:99px;background:#f0fdf4;color:#15803d">#${p.classement_cat} cat.</span>`:'';
+  const classGen=p.classement_gen?`<span style="font-size:var(--t-data);font-weight:600;padding:2px 8px;border-radius:99px;background:#f0fdfa;color:#0f766e">#${p.classement_gen}${p.total_finishers?' / '+p.total_finishers:''} général</span>`:'';
+  const classCat=p.classement_cat?`<span style="font-size:var(--t-data);font-weight:600;padding:2px 8px;border-radius:99px;background:#f0fdf4;color:#15803d">#${p.classement_cat} cat.</span>`:'';
   return`<div style="background:var(--bg-card,#fff);border:.5px solid var(--bord-card,#e2e8f0);border-radius:14px;margin-bottom:10px;overflow:hidden">
     <div style="display:flex;align-items:stretch">
       <div style="width:5px;background:${p.accent};flex:0 0 5px"></div>
       <div style="padding:12px 12px;flex:1;min-width:0">
         <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px">
           <div>
-            <div style="font-size:11px;color:var(--texte-deux);margin-bottom:2px">${typeLabel} · ${dateStr}</div>
+            <div style="font-size:var(--t-data);color:var(--texte-deux);margin-bottom:2px">${typeLabel} · ${dateStr}</div>
             <div style="font-size:15px;font-weight:700;color:var(--texte);line-height:1.2">${p.nom}</div>
-            <div style="font-size:11px;color:var(--texte-deux);margin-top:1px">${p.lieu}</div>
+            <div style="font-size:var(--t-data);color:var(--texte-deux);margin-top:1px">${p.lieu}</div>
           </div>
           <div style="text-align:right;flex:0 0 auto;margin-left:8px">
             <div style="font-size:20px;font-weight:700;color:var(--texte)">${p.temps||'—'}</div>
-            <div style="font-size:10px;color:var(--texte-deux)">${p.allure?p.allure+'/km':''}</div>
+            <div style="font-size:var(--t-data);color:var(--texte-deux)">${p.allure?p.allure+'/km':''}</div>
           </div>
         </div>
         <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px">
-          <span style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:99px;background:var(--gris-fond,#f1f5f9);color:var(--texte-deux)">${p.distance} km</span>
-          <span style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:99px;background:var(--gris-fond,#f1f5f9);color:var(--texte-deux)">D+ ${p.dplus} m</span>
-          ${p.fc_moy?`<span style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:99px;background:#fee2e2;color:#b91c1c">❤️ ${p.fc_moy}/${p.fc_max}</span>`:''}
-          ${p.meteo?`<span style="font-size:11px;padding:2px 8px;border-radius:99px;background:var(--gris-fond,#f1f5f9);color:var(--texte-deux)">🌡️ ${p.meteo}</span>`:''}
+          <span style="font-size:var(--t-data);font-weight:600;padding:2px 8px;border-radius:99px;background:var(--gris-fond,#f1f5f9);color:var(--texte-deux)">${p.distance} km</span>
+          <span style="font-size:var(--t-data);font-weight:600;padding:2px 8px;border-radius:99px;background:var(--gris-fond,#f1f5f9);color:var(--texte-deux)">D+ ${p.dplus} m</span>
+          ${p.fc_moy?`<span style="font-size:var(--t-data);font-weight:600;padding:2px 8px;border-radius:99px;background:#fee2e2;color:#b91c1c">❤️ ${p.fc_moy}/${p.fc_max}</span>`:''}
+          ${p.meteo?`<span style="font-size:var(--t-data);padding:2px 8px;border-radius:99px;background:var(--gris-fond,#f1f5f9);color:var(--texte-deux)">🌡️ ${p.meteo}</span>`:''}
           ${classGen}${classCat}
         </div>
-        ${p.chaussures?`<div style="font-size:11px;color:var(--texte-deux);margin-bottom:6px">👟 ${p.chaussures}</div>`:''}
-        <div style="font-size:12px;color:var(--texte-deux);line-height:1.55;background:var(--gris-fond,#f8fafc);border-radius:8px;padding:8px 10px">${p.bilan}</div>
+        ${p.chaussures?`<div style="font-size:var(--t-data);color:var(--texte-deux);margin-bottom:6px">👟 ${p.chaussures}</div>`:''}
+        <div style="font-size:var(--t-caption);color:var(--texte-deux);line-height:1.55;background:var(--gris-fond,#f8fafc);border-radius:8px;padding:8px 10px">${p.bilan}</div>
       </div>
     </div>
   </div>`;
 }).join('')}
-<div style="font-size:11px;color:var(--texte-deux);text-align:center;margin-top:8px;font-style:italic">Classements à compléter après chaque course · partage les résultats officiels</div>
+<div style="font-size:var(--t-caption);color:var(--texte-deux);text-align:center;margin-top:8px;font-style:italic">Classements à compléter après chaque course · partage les résultats officiels</div>
 </div>`;
 }
 
@@ -2645,7 +2647,7 @@ function _ckBar(svgId,wrapId,ttId,xlId,data,opt){
   const tt=document.getElementById(ttId),wrap=document.getElementById(wrapId);if(!tt||!wrap)return;
   svg.querySelectorAll('.ck-bar-'+svgId).forEach(b=>{b.addEventListener('click',()=>{
     const i=+b.dataset.i;const v=vals[i];
-    tt.innerHTML=`<div style="font-size:9px;color:#64748b">${data.w[i]}</div><div style="font-size:13px;font-weight:700">${v==null?'—':v}${opt.unit||''}</div>`+(opt.ref&&data.p?`<div style="font-size:9px;color:#64748b">prévu ${data.p[i]}</div>`:'');
+    tt.innerHTML=`<div style="font-size:var(--t-data);color:#64748b">${data.w[i]}</div><div style="font-size:13px;font-weight:700">${v==null?'—':v}${opt.unit||''}</div>`+(opt.ref&&data.p?`<div style="font-size:var(--t-data);color:#64748b">prévu ${data.p[i]}</div>`:'');
     const r=b.getBoundingClientRect(),wr=wrap.getBoundingClientRect();
     tt.style.left=Math.min(Math.max(r.left-wr.left,0),wr.width-80)+'px';tt.style.top='-4px';tt.classList.add('show');
     clearTimeout(tt._t);tt._t=setTimeout(()=>tt.classList.remove('show'),2200);
@@ -2690,11 +2692,11 @@ function _ckLine(svgId,wrapId,ttId,xlId,weeks,series,fmt,opt){
     const rect=svg.getBoundingClientRect();const rel=(cx-rect.left)/rect.width*300;
     let idx=Math.round((rel-10)/((300-20)/Math.max(1,n-1)));idx=Math.max(0,Math.min(n-1,idx));
     const sx=xs[idx];document.getElementById(svgId+'sc').setAttribute('x1',sx);document.getElementById(svgId+'sc').setAttribute('x2',sx);document.getElementById(svgId+'sc').setAttribute('opacity','1');
-    let html=`<div style="font-size:9px;color:#64748b">${weeks[idx]}</div>`;
+    let html=`<div style="font-size:var(--t-data);color:#64748b">${weeks[idx]}</div>`;
     series.forEach((s,si)=>{const v=s.v[idx];const dot=document.getElementById(svgId+'dt'+si);
       if(v==null){dot.setAttribute('opacity','0');return;}
       dot.setAttribute('cx',sx);dot.setAttribute('cy',ym(v));dot.setAttribute('opacity','1');
-      html+=`<div style="font-size:13px;font-weight:700;color:${s.color}">${fmt(v)}${s.lbl?' <span style="font-size:9px;color:#64748b">'+s.lbl+'</span>':''}</div>`;});
+      html+=`<div style="font-size:13px;font-weight:700;color:${s.color}">${fmt(v)}${s.lbl?' <span style="font-size:var(--t-data);color:#64748b">'+s.lbl+'</span>':''}</div>`;});
     tt.innerHTML=html;const wr=wrap.getBoundingClientRect();let tx=(sx/300*wr.width)-42;tx=Math.max(0,Math.min(tx,wr.width-84));tt.style.left=tx+'px';tt.style.top='-6px';tt.classList.add('show');
   }catch(e){}}
   function end(){try{document.getElementById(svgId+'sc').setAttribute('opacity','0');series.forEach((s,si)=>{const d=document.getElementById(svgId+'dt'+si);if(d)d.setAttribute('opacity','0');});tt.classList.remove('show');}catch(e){}}
@@ -2710,7 +2712,7 @@ function _ckOpenRun(i){
   const el=document.getElementById('ck-modal');if(!el)return;
   el.querySelector('#ck-m-title').textContent=r.title;
   el.querySelector('#ck-m-sub').textContent=r.date+' · '+r.km+' km · '+r.al+'/km';
-  el.querySelector('#ck-m-metrics').innerHTML=[['Distance',r.km+' km'],['Allure',r.al+'/km'],['Effort',r.re],['FC moy',r.fcm?r.fcm+' bpm':'—'],['FC max',r.fcx?r.fcx+' bpm':'—'],['Cadence',r.cad?r.cad+' spm':'—'],['D+',(typeof r.dp==='number')?r.dp+' m':'—'],['Calories',r.cal||'—']].map(m=>`<div style="background:var(--gris-fond);border-radius:9px;padding:8px;text-align:center"><div style="font-size:14px;font-weight:700;color:var(--texte)">${m[1]}</div><div style="font-size:8.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--texte-deux);margin-top:4px">${m[0]}</div></div>`).join('');
+  el.querySelector('#ck-m-metrics').innerHTML=[['Distance',r.km+' km'],['Allure',r.al+'/km'],['Effort',r.re],['FC moy',r.fcm?r.fcm+' bpm':'—'],['FC max',r.fcx?r.fcx+' bpm':'—'],['Cadence',r.cad?r.cad+' spm':'—'],['D+',(typeof r.dp==='number')?r.dp+' m':'—'],['Calories',r.cal||'—']].map(m=>`<div style="background:var(--gris-fond);border-radius:9px;padding:8px;text-align:center"><div style="font-size:14px;font-weight:700;color:var(--texte)">${m[1]}</div><div style="font-size:var(--t-data);text-transform:uppercase;letter-spacing:.04em;color:var(--texte-deux);margin-top:4px">${m[0]}</div></div>`).join('');
   el.style.display='flex';
   const legendEl=el.querySelector('#ck-m-legend'),captionEl=el.querySelector('#ck-m-caption');
   if(legendEl)legendEl.style.display=r.hasStreams?'flex':'none';
@@ -2741,7 +2743,7 @@ function _ckOpenRun(i){
       document.getElementById('ck-msc').setAttribute('x1',xs[idx]);document.getElementById('ck-msc').setAttribute('x2',xs[idx]);
       const dHR=document.getElementById('ck-mdHR');dHR.setAttribute('cx',xs[idx]);dHR.setAttribute('cy',yHR(st.hr[idx]));dHR.setAttribute('opacity','1');
       const dP=document.getElementById('ck-mdP');dP.setAttribute('cx',xs[idx]);dP.setAttribute('cy',yP(pace[idx]));dP.setAttribute('opacity','1');
-      tt.innerHTML=`<div style="font-size:9px;color:#64748b">km ${st.km[idx].toFixed(1)}</div><div style="font-size:12px;font-weight:700;color:#ef4444">${st.hr[idx]} bpm</div><div style="font-size:12px;font-weight:700;color:#0d9488">${_ckSmin(pace[idx])}/km</div><div style="font-size:9px;color:#64748b">alt ${st.alt[idx].toFixed(0)} m</div>`;
+      tt.innerHTML=`<div style="font-size:var(--t-data);color:#64748b">km ${st.km[idx].toFixed(1)}</div><div style="font-size:12px;font-weight:700;color:var(--danger-deux)">${st.hr[idx]} bpm</div><div style="font-size:12px;font-weight:700;color:var(--primary-deux)">${_ckSmin(pace[idx])}/km</div><div style="font-size:var(--t-data);color:#64748b">alt ${st.alt[idx].toFixed(0)} m</div>`;
       const wr=wrap.getBoundingClientRect();let tx=(xs[idx]/300*wr.width)-44;tx=Math.max(0,Math.min(tx,wr.width-90));tt.style.left=tx+'px';tt.style.top='-6px';tt.classList.add('show');
     }catch(e){}}
     function endM(){try{document.getElementById('ck-msc').setAttribute('x1','-10');document.getElementById('ck-mdHR').setAttribute('opacity','0');document.getElementById('ck-mdP').setAttribute('opacity','0');tt.classList.remove('show');}catch(e){}}
@@ -2792,7 +2794,7 @@ function _ckRenderAll(win){
       // faisait apparaitre des chutes de -57 % un mardi matin, ce qui n'a
       // aucun sens. On ne compare que des semaines terminees.
       vals=vals.slice(0,-1);
-      if(vals.length<4){el.textContent='\u2014';el.style.color='var(--texte-trois)';return;}
+      if(vals.length<4){el.textContent='\u2014';el.style.color=_tc('var(--texte-trois)');return;}
       var h=Math.floor(vals.length/2);
       var av=vals.slice(0,h),ap=vals.slice(h);
       var moy=function(x){return x.reduce(function(a,b){return a+b;},0)/x.length;};
@@ -2802,7 +2804,7 @@ function _ckRenderAll(win){
       var bon=inverse?(d<0):(d>0);
       var fl=Math.abs(d)<2?'\u2192':(d>0?'\u2191':'\u2193');
       el.textContent=fl+' '+(d>0?'+':'')+d.toFixed(0)+'%';
-      el.style.color=Math.abs(d)<2?'var(--texte-trois)':(bon?'#16a34a':'#f59e0b');
+      el.style.color=_tc(Math.abs(d)<2?'var(--texte-trois)':(bon?'#16a34a':'#f59e0b'));
     }
     pose('ck-km-trend',serie('VOL','a'),false);
     pose('ck-re-trend',serie('RE','v'),false);
@@ -2818,10 +2820,10 @@ function _ckRenderAll(win){
   var _av0=D.ACWR[W].v.filter(function(x){return x!=null;});const al=_av0.length?_av0[_av0.length-1]:1.0;
   var _av=document.getElementById('ck-acwr-val');_av.textContent=al.toFixed(2);
   var _acol=al>1.5?'#ef4444':al>1.3?'#f59e0b':al<0.8?'#0d9488':'#16a34a';
-  _av.style.color=_acol;_av.classList.remove('warn');
+  _av.style.color=_tc(_acol);_av.classList.remove('warn');
   var _alab=al>1.5?'\u{1F534} surcharge':al>1.3?'\u26a0 \u00e9lev\u00e9':al<0.8?'frais / all\u00e8gement':'ma\u00eetris\u00e9';
-  var _akd=_av.parentElement.querySelector('.ck-kd');if(_akd){_akd.textContent=_alab;_akd.style.color=_acol;_akd.classList.remove('warn');}
-  var _av2=document.getElementById('ck-acwr-val2');if(_av2){_av2.textContent=al.toFixed(2);_av2.style.color=_acol;}
+  var _akd=_av.parentElement.querySelector('.ck-kd');if(_akd){_akd.textContent=_alab;_akd.style.color=_tc(_acol);_akd.classList.remove('warn');}
+  var _av2=document.getElementById('ck-acwr-val2');if(_av2){_av2.textContent=al.toFixed(2);_av2.style.color=_tc(_acol);}
   _ckBar('ckDP','ckDPW','ckDPT','ckDPX',D.DPLUS[W],{col:'#94a3b8',unit:' m',h:75});
   _ckLine('ckZ2','ckZ2W','ckZ2T','ckZ2X',D.Z2[W].w,[{v:D.Z2[W].v,color:'#0d9488',lbl:'/km'}],_ckSmin,{h:85});
   var _z2v=D.Z2[W].v.filter(function(x){return x!=null;});
@@ -2830,12 +2832,12 @@ function _ckRenderAll(win){
   // seance facile laissent des trous, et v[0] pouvait etre null (delta = NaN).
   var _z2d=(_z2v.length>=2)?(_z2v[0]-_z2v[_z2v.length-1]):null;
   var _z2e=document.getElementById('ck-z2-delta');
-  if(_z2d===null){_z2e.textContent='pas assez de donn\u00e9es';_z2e.style.color='#94a3b8';}
-  else if(_z2d>2){_z2e.textContent='\u2193 \u2212'+_ckSmin(_z2d)+'/km \u00b7 le moteur grossit 💪';_z2e.style.color='#16a34a';}
-  else if(_z2d>=-2){_z2e.textContent='stable';_z2e.style.color='#64748b';}
-  else {_z2e.textContent='\u2191 +'+_ckSmin(-_z2d)+'/km \u00b7 \u00e0 surveiller';_z2e.style.color='#ef4444';}
+  if(_z2d===null){_z2e.textContent='pas assez de donn\u00e9es';_z2e.style.color=_tc('#94a3b8');}
+  else if(_z2d>2){_z2e.textContent='\u2193 \u2212'+_ckSmin(_z2d)+'/km \u00b7 le moteur grossit 💪';_z2e.style.color=_tc('#16a34a');}
+  else if(_z2d>=-2){_z2e.textContent='stable';_z2e.style.color=_tc('#64748b');}
+  else {_z2e.textContent='\u2191 +'+_ckSmin(-_z2d)+'/km \u00b7 \u00e0 surveiller';_z2e.style.color=_tc('#ef4444');}
   const dcLast=D.DC[W].v.filter(x=>x!=null).pop();_ckLine('ckDC','ckDCW','ckDCT','ckDCX',D.DC[W].w,[{v:D.DC[W].v,color:'#16a34a',lbl:'%'}],v=>v.toFixed(1)+'%',{h:75,zones:[[0,5,'#16a34a'],[5,8,'#f59e0b'],[8,15,'#ef4444']]});
-  document.getElementById('ck-dc-val').textContent=dcLast?dcLast.toFixed(1)+'%':'—';document.getElementById('ck-dc-val').style.color=dcLast<5?'#16a34a':dcLast<8?'#f59e0b':'#ef4444';
+  document.getElementById('ck-dc-val').textContent=dcLast?dcLast.toFixed(1)+'%':'—';document.getElementById('ck-dc-val').style.color=_tc(dcLast<5?'#16a34a':dcLast<8?'#f59e0b':'#ef4444');
   _ckLine('ckPACE','ckPACEW','ckPACET','ckPACEX',D.PACE[W].w,[{v:D.PACE[W].ef,color:'#16a34a',lbl:'EF'},{v:D.PACE[W].am,color:'#0d9488',lbl:'AM'},{v:D.PACE[W].se,color:'#f59e0b',lbl:'Seuil'}],_ckSmin,{h:95,fill:false});
   // Zones FC
   const z=D.FCZ[W],H=100,n=z.length,gap=300/n,bw=gap*0.5,mxz=Math.max(...z.map(x=>x[2]));
@@ -2846,7 +2848,7 @@ function _ckRenderAll(win){
   _ckLine('ckCAD','ckCADW','ckCADT','ckCADX',D.CAD[W].w,[{v:D.CAD[W].v,color:'#06b6d4',lbl:'spm'}],v=>v.toFixed(0)+' spm',{h:70});
   const cadLast=D.CAD[W].v.filter(x=>x!=null).pop();document.getElementById('ck-cad-val').textContent=cadLast?cadLast.toFixed(0):'—';
   // Run list
-  document.getElementById('ck-runs').innerHTML=D.RUNS.map((r,i)=>`<div onclick="_ckOpenRun(${i})" style="background:var(--gris-fond);border-radius:10px;padding:10px 12px;display:flex;align-items:center;gap:10px;cursor:pointer;margin-bottom:6px"><div style="width:7px;height:7px;border-radius:50%;background:${r.type};flex:0 0 7px"></div><div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:600;color:var(--texte)">${r.title}${r.hasStreams?' <span style="font-size:9px;color:#0d9488">⊙ live</span>':''}</div><div style="font-size:10px;color:var(--texte-deux);margin-top:1px">${r.date} · RE ${r.re} · FC ${r.fcm}/${r.fcx}</div></div><div style="text-align:right"><div style="font-size:14px;font-weight:700;color:var(--texte)">${r.km}</div><div style="font-size:9px;color:var(--texte-deux)">${r.al}/km</div></div></div>`).join('');
+  document.getElementById('ck-runs').innerHTML=D.RUNS.map((r,i)=>`<div onclick="_ckOpenRun(${i})" style="background:var(--gris-fond);border-radius:10px;padding:10px 12px;display:flex;align-items:center;gap:10px;cursor:pointer;margin-bottom:6px"><div style="width:7px;height:7px;border-radius:50%;background:${r.type};flex:0 0 7px"></div><div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:600;color:var(--texte)">${r.title}${r.hasStreams?' <span style="font-size:var(--t-data);color:var(--primary-deux)">⊙ live</span>':''}</div><div style="font-size:var(--t-data);color:var(--texte-deux);margin-top:1px">${r.date} · RE ${r.re} · FC ${r.fcm}/${r.fcx}</div></div><div style="text-align:right"><div style="font-size:14px;font-weight:700;color:var(--texte)">${r.km}</div><div style="font-size:var(--t-data);color:var(--texte-deux)">${r.al}/km</div></div></div>`).join('');
 }
 function _ckToggleSec(el){
   const open=el.getAttribute('data-open')==='1';
@@ -3088,7 +3090,7 @@ function _decoupRender(){
   var num=function(n){return n.toFixed(1).replace('.',',');};
   if(src)src.innerHTML=fdate(last.date)+' \u00b7 '+last.km+' km<br>'+d.fen_min+' min analys\u00e9es';
   var posC=Math.max(0,Math.min(100,d.pct/MAXG*100)),posA=Math.max(0,Math.min(100,d.attendu/MAXG*100));
-  var sousDessus=d.pct<d.attendu?'<strong style="color:'+v.c+'">tu es en dessous</strong>':'<strong style="color:'+v.c+'">tu es au-dessus</strong>';
+  var sousDessus=d.pct<d.attendu?'<strong style="color:'+_tc(v.c)+'">tu es en dessous</strong>':'<strong style="color:'+_tc(v.c)+'">tu es au-dessus</strong>';
   var rows=runs.slice().reverse().slice(0,8).map(function(r){
     var vv=_decoupVerdict(r.d);
     return '<div class="dc-row"><div class="dc-dot" style="background:'+vv.c+'"></div>'+
@@ -3098,8 +3100,8 @@ function _decoupRender(){
       '<div class="dc-v" style="color:'+vv.c+'">'+num(r.d.pct)+' %</div></div>';
   }).join('');
   el.innerHTML=
-    '<div class="dc-hero"><span class="dc-val" style="color:'+v.c+'">'+num(d.pct)+' %</span>'+
-      '<span class="dc-verdict" style="color:'+v.c+';background:'+v.f+'">'+v.t+'</span></div>'+
+    '<div class="dc-hero"><span class="dc-val" style="color:'+_tc(v.c)+'">'+num(d.pct)+' %</span>'+
+      '<span class="dc-verdict" style="color:'+_tc(v.c)+';background:'+v.f+'">'+v.t+'</span></div>'+
     '<div class="dc-sub">Attendu ~'+d.attendu+' % vu la dur\u00e9e ('+d.fen_min+' min) et la temp\u00e9rature ('+d.temp+' \u00b0C) \u2014 '+sousDessus+'.</div>'+
     '<div class="dc-gauge"><div class="dc-bar"></div>'+
       '<div class="dc-exp" style="left:calc('+posA+'% - 1px)"></div>'+
@@ -3397,8 +3399,8 @@ function renderCockpit(){
   const _hh=String(_now.getHours()).padStart(2,'0'),_mm=String(_now.getMinutes()).padStart(2,'0');
   el.innerHTML=`
 <div style="padding:var(--sp-3) var(--sp-3) var(--sp-10)">
-<div class="lt-title" style="margin-bottom:2px">Cockpit</div>
-<div style="font-size:11px;color:var(--texte-deux);margin-bottom:var(--sp-4)">Glisse sur les courbes · touche une barre · tap une sortie</div>
+<h1 class="lt-title" style="margin-bottom:2px">Cockpit</h1>
+<div style="font-size:var(--t-caption);color:var(--texte-deux);margin-bottom:var(--sp-4)">Glisse sur les courbes · touche une barre · tap une sortie</div>
 <div class="ck-zones" role="tablist"><button class="ck-z ck-z-on" role="tab" onclick="_ckZone(1,this)">Aujourd'hui</button><button class="ck-z" role="tab" onclick="_ckZone(2,this)">Progression</button><button class="ck-z" role="tab" onclick="_ckZone(3,this)">Analyse</button></div>
 <div class="ck-zone" data-zone="1">
 <div class="ck-hero" role="button" tabindex="0" onclick="openCkHelp('forme')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openCkHelp('forme');}">
@@ -3471,25 +3473,25 @@ ${(function(){const v=_estimVO2();if(!v)return '';return `<div class="vo2-card">
 <div class="ck-sec ck-sec-tg" data-open="1" onclick="_ckToggleSec(this)">📊 Volume &amp; charge<span class="ck-sec-chev">▾</span></div>
 <div class="ck-sec-body" data-sec="1">
 <div class="ck-sec">📈 Performance Management Chart</div>
-<div class="ck-card"><div class="ck-ch"><div><div class="ck-ct">CTL · ATL · TSB<button class="ck-help" onclick="event.stopPropagation();openCkHelp('pmc')">?</button></div><div class="ck-cs" id="ckPMC-sub">Fitness · Fatigue · Forme</div></div></div><div class="ck-cw" id="ckPMCW"><svg id="ckPMC" height="90" style="display:block;width:100%"></svg><div class="ck-tt" id="ckPMCT">glisse pour voir les valeurs</div></div><div style="display:flex;gap:14px;font-size:10px;color:var(--texte-deux);margin-top:6px;padding:0 2px"><span><span style="color:#0d9488">●</span> CTL fitness</span><span><span style="color:#f59e0b">●</span> ATL fatigue</span><span><span style="color:#16a34a">▌</span> TSB forme</span></div></div>
-${card('ckVol','Volume hebdomadaire','',null,null,90,'<div style="font-size:9px;color:#94a3b8;text-align:center;margin-top:4px">touche une barre · ■ prévu</div>','vol')}
+<div class="ck-card"><div class="ck-ch"><div><div class="ck-ct">CTL · ATL · TSB<button class="ck-help" onclick="event.stopPropagation();openCkHelp('pmc')">?</button></div><div class="ck-cs" id="ckPMC-sub">Fitness · Fatigue · Forme</div></div></div><div class="ck-cw" id="ckPMCW"><svg id="ckPMC" height="90" style="display:block;width:100%"></svg><div class="ck-tt" id="ckPMCT">glisse pour voir les valeurs</div></div><div style="display:flex;gap:14px;font-size:var(--t-data);color:var(--texte-deux);margin-top:6px;padding:0 2px"><span><span style="color:var(--primary-deux)">●</span> CTL fitness</span><span><span style="color:#f59e0b">●</span> ATL fatigue</span><span><span style="color:var(--ok-deux)">▌</span> TSB forme</span></div></div>
+${card('ckVol','Volume hebdomadaire','',null,null,90,'<div style="font-size:var(--t-data);color:var(--texte-trois);text-align:center;margin-top:4px">touche une barre · ■ prévu</div>','vol')}
 <div class="ck-cs" id="ck-vol-sub" style="margin:-4px 0 8px;padding:0 2px"></div>
-${card('ckRE','⚡ Relative Effort / sem.','charge Strava réelle',null,null,80,'<div style="font-size:9px;color:#94a3b8;text-align:center;margin-top:4px">glisse →</div>','re')}
+${card('ckRE','⚡ Relative Effort / sem.','charge Strava réelle',null,null,80,'<div style="font-size:var(--t-data);color:var(--texte-trois);text-align:center;margin-top:4px">glisse →</div>','re')}
 <div class="ck-card"><div class="ck-ch"><div><div class="ck-ct">🩹 ACWR — risque blessure<button class="ck-help" onclick="event.stopPropagation();openCkHelp('acwr')">?</button></div><div class="ck-cs">ratio charge aiguë / chronique</div></div><div style="font-size:26px;font-weight:700;line-height:1" id="ck-acwr-val2">0.69</div></div><div class="ck-cw" id="ckACWRW"><svg id="ckACWR" height="65" style="display:block;width:100%"></svg><div class="ck-tt" id="ckACWRT"></div></div><div class="ck-xl" id="ckACWRX"></div></div>
 ${card('ckDP','⛰ Dénivelé D+','',null,'m',75,'','dp')}
 </div>
 <div class="ck-sec ck-sec-tg" data-open="0" onclick="_ckToggleSec(this)">🔋 Moteur aérobie<span class="ck-sec-chev">▸</span></div>
 <div class="ck-sec-body" data-sec="0" style="display:none">
-<div class="ck-card"><div class="ck-ch"><div><div class="ck-ct">Z2 pace — allure EF à FC&lt;144<button class="ck-help" onclick="event.stopPropagation();openCkHelp('z2')">?</button></div><div class="ck-cs">indicateur n°1 du développement</div></div><div style="text-align:right"><div style="font-size:22px;font-weight:700;color:#0d9488" id="ck-z2-val">5:54</div><div class="ck-cs">/km</div></div></div><div style="font-size:10px;font-weight:600;margin:4px 0 6px" id="ck-z2-delta"></div><div class="ck-cw" id="ckZ2W"><svg id="ckZ2" height="85" style="display:block;width:100%"></svg><div class="ck-tt" id="ckZ2T"></div></div><div class="ck-xl" id="ckZ2X"></div></div>
+<div class="ck-card"><div class="ck-ch"><div><div class="ck-ct">Z2 pace — allure EF à FC&lt;144<button class="ck-help" onclick="event.stopPropagation();openCkHelp('z2')">?</button></div><div class="ck-cs">indicateur n°1 du développement</div></div><div style="text-align:right"><div style="font-size:22px;font-weight:700;color:var(--primary-deux)" id="ck-z2-val">5:54</div><div class="ck-cs">/km</div></div></div><div style="font-size:var(--t-data);font-weight:600;margin:4px 0 6px" id="ck-z2-delta"></div><div class="ck-cw" id="ckZ2W"><svg id="ckZ2" height="85" style="display:block;width:100%"></svg><div class="ck-tt" id="ckZ2T"></div></div><div class="ck-xl" id="ckZ2X"></div></div>
 <div class="ck-card"><div class="ck-ch"><div><div class="ck-ct">💓 Découplage cardiaque<button class="ck-help" onclick="event.stopPropagation();openCkHelp('dc')">?</button></div><div class="ck-cs">dérive FC sortie longue · &lt;5% idéal</div></div><div style="font-size:22px;font-weight:700" id="ck-dc-val">—</div></div><div class="ck-cw" id="ckDCW"><svg id="ckDC" height="75" style="display:block;width:100%"></svg><div class="ck-tt" id="ckDCT"></div></div><div class="ck-xl" id="ckDCX"></div></div>
 </div>
 <div class="ck-sec ck-sec-tg" data-open="0" onclick="_ckToggleSec(this)">📈 Allure &amp; vitesse<span class="ck-sec-chev">▸</span></div>
 <div class="ck-sec-body" data-sec="0" style="display:none">
-<div class="ck-card"><div class="ck-ch"><div><div class="ck-ct">Progression allure par type<button class="ck-help" onclick="event.stopPropagation();openCkHelp('pace')">?</button></div><div class="ck-cs">EF · marathon · seuil</div></div></div><div class="ck-cw" id="ckPACEW"><svg id="ckPACE" height="95" style="display:block;width:100%"></svg><div class="ck-tt" id="ckPACET"></div></div><div class="ck-xl" id="ckPACEX"></div><div style="display:flex;gap:12px;font-size:10px;color:var(--texte-deux);margin-top:8px"><span><span style="color:#16a34a">●</span> EF</span><span><span style="color:#0d9488">●</span> AM</span><span><span style="color:#f59e0b">●</span> Seuil</span></div></div>
+<div class="ck-card"><div class="ck-ch"><div><div class="ck-ct">Progression allure par type<button class="ck-help" onclick="event.stopPropagation();openCkHelp('pace')">?</button></div><div class="ck-cs">EF · marathon · seuil</div></div></div><div class="ck-cw" id="ckPACEW"><svg id="ckPACE" height="95" style="display:block;width:100%"></svg><div class="ck-tt" id="ckPACET"></div></div><div class="ck-xl" id="ckPACEX"></div><div style="display:flex;gap:12px;font-size:var(--t-data);color:var(--texte-deux);margin-top:8px"><span><span style="color:var(--ok-deux)">●</span> EF</span><span><span style="color:var(--primary-deux)">●</span> AM</span><span><span style="color:#f59e0b">●</span> Seuil</span></div></div>
 </div>
 <div class="ck-sec ck-sec-tg" data-open="0" onclick="_ckToggleSec(this)">❤️ Cardiaque &amp; cadence<span class="ck-sec-chev">▸</span></div>
 <div class="ck-sec-body" data-sec="0" style="display:none">
-<div class="ck-card"><div class="ck-ch"><div><div class="ck-ct">Zones FC<button class="ck-help" onclick="event.stopPropagation();openCkHelp('fc')">?</button></div><div class="ck-cs" id="ck-fc-sub"></div></div></div><div class="ck-cw" id="ckFCW"><svg id="ckFC" height="100" style="display:block;width:100%"></svg><div class="ck-tt" id="ckFCT"></div></div><div style="font-size:10px;color:var(--texte-deux);text-align:center;margin-top:6px;min-height:14px" id="ck-fc-info">touche une zone</div></div>
+<div class="ck-card"><div class="ck-ch"><div><div class="ck-ct">Zones FC<button class="ck-help" onclick="event.stopPropagation();openCkHelp('fc')">?</button></div><div class="ck-cs" id="ck-fc-sub"></div></div></div><div class="ck-cw" id="ckFCW"><svg id="ckFC" height="100" style="display:block;width:100%"></svg><div class="ck-tt" id="ckFCT"></div></div><div style="font-size:var(--t-data);color:var(--texte-deux);text-align:center;margin-top:6px;min-height:14px" id="ck-fc-info">touche une zone</div></div>
 <div class="ck-card"><div class="ck-ch"><div><div class="ck-ct">🦶 Cadence<button class="ck-help" onclick="event.stopPropagation();openCkHelp('cad')">?</button></div><div class="ck-cs">route ~172 spm · trail ~146 spm</div></div><div><div style="font-size:22px;font-weight:700;color:var(--texte)" id="ck-cad-val">172</div><div class="ck-cs">spm</div></div></div><div class="ck-cw" id="ckCADW"><svg id="ckCAD" height="70" style="display:block;width:100%"></svg><div class="ck-tt" id="ckCADT"></div></div><div class="ck-xl" id="ckCADX"></div></div>
 </div>
 <div class="ck-sec ck-sec-tg" data-open="0" onclick="_ckToggleSec(this)">🔍 Analyse par sortie<span class="ck-sec-chev">▸</span></div>
@@ -3503,14 +3505,14 @@ ${card('ckDP','⛰ Dénivelé D+','',null,'m',75,'','dp')}
       <div style="width:36px;height:4px;background:#cbd5e1;border-radius:99px;margin:0 auto 12px"></div>
       <button onclick="document.getElementById('ck-modal').style.display='none'" style="position:absolute;top:14px;right:14px;width:28px;height:28px;border-radius:50%;background:var(--gris-fond);border:none;color:var(--texte-deux);font-size:15px;cursor:pointer">✕</button>
       <div style="font-size:16px;font-weight:700;color:var(--texte)" id="ck-m-title"></div>
-      <div style="font-size:11px;color:var(--texte-deux);margin-top:2px" id="ck-m-sub"></div>
+      <div style="font-size:var(--t-data);color:var(--texte-deux);margin-top:2px" id="ck-m-sub"></div>
     </div>
     <div style="padding:12px 14px">
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:12px" id="ck-m-metrics"></div>
-      <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--texte-deux);margin-bottom:6px">FC · Allure · Altitude</div>
+      <div style="font-size:var(--t-data);font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--texte-deux);margin-bottom:6px">FC · Allure · Altitude</div>
       <div style="position:relative;touch-action:none" id="ck-m-wrap"><svg id="ck-m-svg" height="140" style="display:block;width:100%"></svg><div class="ck-tt" id="ck-m-tt"></div></div>
-      <div style="display:flex;gap:12px;font-size:10px;color:var(--texte-deux);margin-top:6px" id="ck-m-legend"><span><span style="color:#ef4444">●</span> FC</span><span><span style="color:#0d9488">●</span> Allure</span><span><span style="color:#94a3b8">●</span> Altitude</span></div>
-      <div style="font-size:9px;color:#94a3b8;text-align:center;margin-top:4px;font-style:italic" id="ck-m-caption">glisse sur le graphe seconde par seconde</div>
+      <div style="display:flex;gap:12px;font-size:var(--t-data);color:var(--texte-deux);margin-top:6px" id="ck-m-legend"><span><span style="color:var(--danger-deux)">●</span> FC</span><span><span style="color:var(--primary-deux)">●</span> Allure</span><span><span style="color:var(--texte-trois)">●</span> Altitude</span></div>
+      <div style="font-size:var(--t-data);color:var(--texte-trois);text-align:center;margin-top:4px;font-style:italic" id="ck-m-caption">glisse sur le graphe seconde par seconde</div>
     </div>
   </div>
 </div>
@@ -3698,7 +3700,7 @@ function soumettreQuickLog(){
     card.classList.add('sc-fait');
     const b=card.querySelector('.ql-btn');
     if(b)b.outerHTML='<div class="seance-fleche sc-check">✓</div>';
-    const nom=card.querySelector('.seance-nom');if(nom)nom.style.color='#15803d';
+    const nom=card.querySelector('.seance-nom');if(nom)nom.style.color=_tc('#15803d');
     const info=card.querySelector('.seance-info');
     if(info&&!info.querySelector('.ql-real'))
       info.querySelector('.seance-desc').insertAdjacentHTML('afterend',
@@ -3752,8 +3754,8 @@ function _decoupBloc(r){
   return '<div class="dcb">'+
     '<div class="dcb-top"><span class="dcb-t">📉 D\u00e9couplage cardiaque '+
       '<button class="vo2-help" onclick="event.stopPropagation();openCkHelp(\'decoup\')" aria-label="Comment lire le d\u00e9couplage ?">?</button></span>'+
-      '<span class="dcb-chip" style="color:'+v.c+';background:'+v.f+'">'+v.t+'</span></div>'+
-    '<div class="dcb-row"><span class="dcb-val" style="color:'+v.c+'">'+num(d.pct)+' %</span>'+
+      '<span class="dcb-chip" style="color:'+_tc(v.c)+';background:'+v.f+'">'+v.t+'</span></div>'+
+    '<div class="dcb-row"><span class="dcb-val" style="color:'+_tc(v.c)+'">'+num(d.pct)+' %</span>'+
       '<span class="dcb-att">attendu ~'+d.attendu+' % \u00b7 '+d.fen_min+' min analys\u00e9es \u00b7 '+d.temp+' \u00b0C</span></div>'+
     '<div class="dc-gauge" style="height:26px;margin:8px 0 2px"><div class="dc-bar" style="top:8px"></div>'+
       '<div class="dc-exp" style="top:3px;height:16px;left:calc('+posA+'% - 1px)"></div>'+
@@ -4101,6 +4103,35 @@ function initBarre(se){const piste=document.getElementById('piste');if(!piste)re
 hydrateLogs();hydrateOverrides();try{_ckRebuild();}catch(e){console.warn('_ckRebuild',e);}initQuickLog();initCreneaux();initSessionMenu();initInstall();initFormeHelp();initCkHelp();renderHeader();renderPlan();rwAuto();setTimeout(checkAutoSync,800);
 /* Nouvelle version : l'app installee sur iPhone reste en memoire des jours. Au retour au premier
    plan (et 4 s apres le demarrage), on compare le build en cours a data/meta.json (jamais mis en cache). */
+/* Clavier et lecteurs d'ecran : les div/span cliquables (onclick) qui ne sont pas des controles natifs
+   recoivent tabindex=0 (+ role=button quand ils ne contiennent aucun autre controle) et repondent a
+   Entree / Espace. Les fonds d'overlay (fermeture au clic sur le fond) sont ignores. */
+(function(){
+  var NATIVE=/^(A|BUTTON|INPUT|SELECT|TEXTAREA|SUMMARY)$/,INNER='a[href],button,input,select,textarea,[role=button]';
+  function fix(root){
+    if(!root||root.nodeType!==1)return;
+    var list=[].slice.call(root.querySelectorAll('[onclick]'));
+    if(root.hasAttribute('onclick'))list.unshift(root);
+    list.forEach(function(e){
+      if(NATIVE.test(e.tagName))return;
+      if((e.getAttribute('onclick')||'').indexOf('event.target===this')>=0)return;
+      if(!e.hasAttribute('tabindex'))e.setAttribute('tabindex','0');
+      if(!e.getAttribute('role')&&!e.querySelector(INNER))e.setAttribute('role','button');
+    });
+  }
+  var pending=false,queue=[];
+  new MutationObserver(function(ms){
+    ms.forEach(function(m){m.addedNodes.forEach(function(n){queue.push(n);});});
+    if(!pending){pending=true;requestAnimationFrame(function(){pending=false;var q=queue;queue=[];q.forEach(fix);});}
+  }).observe(document.body,{childList:true,subtree:true});
+  fix(document.body);
+  document.addEventListener('keydown',function(e){
+    var t=e.target;
+    if((e.key==='Enter'||e.key===' ')&&t&&t.hasAttribute&&t.hasAttribute('onclick')&&!NATIVE.test(t.tagName)&&t.hasAttribute('tabindex')){
+      e.preventDefault();t.click();
+    }
+  });
+})();
 var _RUN_BUILD=(typeof CHANGELOG!=='undefined'&&CHANGELOG[0])?CHANGELOG[0].build:0,_updLast=0;
 function _showUpdateBanner(){
   if(document.getElementById('upd-banner'))return;

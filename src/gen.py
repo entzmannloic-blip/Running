@@ -2562,6 +2562,12 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":234,"date":"8 octobre 2026","sha":"","tag":"Accessibilite : titres, reperes, clavier, cibles tactiles, texte lisible, contrastes","items":[
+    "STRUCTURE : un titre h1 par vue, repere main et lien d evitement fonctionnel, phases et semaines en vrais titres (h2/h3) ; les elements cliquables non natifs sont atteignables au clavier (tabindex, role button, Entree et Espace).",
+    "LISIBILITE : plus aucun texte sous 12 px (les 19 tailles inferieures sont ramenees au jeton --t-data), texte courant a 13 px minimum.",
+    "CONTRASTES AA : texte en variantes profondes (--texte-trois, --primary-deux, --ok-deux, --danger-deux) ; cibles tactiles de 44 px (calendrier, filtres, bascules, aide VO2max).",
+    "AUDIT : scripts/audit_a11y.py (sans dependance) rejoue 9 regles sur les 4 vues et tourne dans le job verify."
+  ]},
   {"build":233,"date":"8 octobre 2026","sha":"","tag":"Contrat d enrichissement : un seul fichier de reference Strava, documentation a jour","items":[
     "ENRICHISSEMENT : docs/ENRICHISSEMENT.md decrit le circuit complet (Strava, gen.py, build, branche, PR, fusion) pour le projet Claude ; CLAUDE.md, TECHNICAL.md et src/README.md mis a jour.",
     "REFERENTIEL STRAVA : les valeurs de reference des audits (activites, chaussures, mois) vivent dans src/strava_reference.json au lieu d etre recopiees dans deux scripts ; une seance loggee ne modifie plus le code des audits."
