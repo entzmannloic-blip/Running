@@ -125,6 +125,15 @@ Strava:get_gear(gear_types=["Shoe"])           → peut exiger une approbation c
 - ⚠️ Nouvelle donnée dans gen.py = l'ajouter à `src/datamap.py` (sinon elle n'atteint pas l'app)
 - ⚠️ Dette connue : échelle typo posée mais pas 100 % enforced sur le legacy ; graisses 700/800 dominantes ; `src/test.js` (test Node) en échec avant la refonte
 
+## Estimations d'effort (préférence de Loïc)
+Avant toute tâche de plus de quelques actions (refonte, nouvelle fonctionnalité, audit, série de corrections), donner une estimation qui aide à décider :
+- **découpée par étape** (cadrage, réalisation, vérification…) ;
+- **pour chaque étape** : une fourchette de **tokens** et la **part en %** (référence : la conversation en cours, ou la fenêtre de contexte si c'est un premier échange) ;
+- **l'état réel des limites du plan** (outil `get_usage` : fenêtre de 5 heures et hebdomadaire) et si l'étape tient dans ce qui reste ;
+- **une recommandation** : faire maintenant, attendre la remise à zéro de la fenêtre, ou découper.
+
+Format : un tableau `étape | tokens | part en %`. Ne jamais estimer en temps (heures, jours). Ce sont des ordres de grandeur : le dire. Loïc décide ensuite ; ne rien lancer avant sa réponse.
+
 ## Convention commits et branches
 ```
 feat(sprint-X): description (build N)
