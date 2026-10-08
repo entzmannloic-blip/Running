@@ -13,7 +13,7 @@
   --t-display:2rem;--t-title:1.375rem;--t-headline:1.0625rem;--t-body:1rem;--t-callout:.875rem;--t-caption:.8125rem;--t-data:.75rem;
   --fw-reg:400;--fw-med:500;--fw-semi:600;--fw-bold:700;--fw-black:800;
   /* ===== RAYONS / PROFONDEUR iOS 27 ===== */
-  /* ===== SURFACES (le mode sombre les redefinit : body.nuit) ===== */
+  /* ===== SURFACES ===== */
   --bg-page:#f2f2f7;--bg-card:#fff;--bord-card:#e2e8f0;
   --gris-pale:#f1f5f9;      /* fond de tableau / puce legere */
   --primary-fill:#0f766e;   /* fond de bouton a texte blanc (5,5:1), identique en sombre */

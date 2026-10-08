@@ -77,7 +77,6 @@ function svgDonut(segs){const tot=segs.reduce((a,s)=>a+s.val,0)||1;let a=-90,pat
 function delta(series,good){const v=series.filter(x=>x!=null);if(v.length<2)return'';const d=v[v.length-1]-v[v.length-2];if(Math.abs(d)<0.5&&good!=='down')return '<span class="delta" style="color:var(--texte-trois)">\u25aa stable</span>';const up=d>0;const isGood=good?((good==='up'&&up)||(good==='down'&&!up)):null;const col=isGood===null?'#64748b':(isGood?'#16a34a':'#ef4444');const a=up?'\u25b2':'\u25bc';const val=Math.abs(d)>=1?Math.round(Math.abs(d)):Math.abs(d).toFixed(1);return `<span class="delta" style="color:${col}">${a} ${val} vs S-1</span>`;}
 
 /* ===== thème ===== */
-function toggleTheme(){const n=document.body.classList.toggle('nuit');document.getElementById('themebtn').textContent=n?'☀️':'🌙';}
 
 /* ===== onglets ===== */
 /* Couleurs de TEXTE : les teintes de marque nues (graphiques) sont remplacees par leurs variantes profondes (contraste AA). */

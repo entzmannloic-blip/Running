@@ -431,42 +431,23 @@ def run():
         except Exception as e:
             check("T17 donnees vides", False, str(e)[:120])
 
-        # ── T18 : mode sombre qui suit le reglage du telephone (prefers-color-scheme) ──
+        # ── T18 : pas de mode sombre : l'app reste blanche meme si le telephone est en sombre ──
         try:
-            for scheme, expected in (("dark", True), ("light", False)):
-                ctxd = b.new_context(viewport={"width": 390, "height": 844}, service_workers="block", color_scheme=scheme)
-                ctxd.route("**/*open-meteo.com/**", lambda r: r.abort())
-                pd = ctxd.new_page()
-                pd.goto(HTML, wait_until="load", timeout=20000)
-                pd.wait_for_function("typeof showTab==='function'&&!document.getElementById('boot-load')", timeout=10000)
-                has = pd.evaluate("document.body.classList.contains('nuit')")
-                check(f"T18 reglage {scheme} : mode nuit {'actif' if expected else 'inactif'}", has == expected, f"nuit={has}")
-                if scheme == "dark":
-                    bg = pd.evaluate("getComputedStyle(document.body).backgroundColor")
-                    check("T18 mode sombre : fond de page sombre", bg in ("rgb(11, 18, 32)",), bg)
-                    pd.emulate_media(color_scheme="light")
-                    pd.wait_for_timeout(200)
-                    check("T18 bascule en direct (sombre -> clair) sans recharger",
-                          not pd.evaluate("document.body.classList.contains('nuit')"))
-                    pd.emulate_media(color_scheme="dark")
-                    pd.wait_for_timeout(200)
-                    check("T18 bascule en direct (clair -> sombre) sans recharger",
-                          bool(pd.evaluate("document.body.classList.contains('nuit')")))
-                ctxd.close()
-            idx_txt2 = open(os.path.join(SITE, "index.html"), encoding="utf-8").read()
-            check("T18 theme-color declare pour le mode sombre",
-                  'name="theme-color" content="#0b1220" media="(prefers-color-scheme: dark)"' in idx_txt2)
-            # pas d'eclair clair au demarrage : l'ecran de chargement lui-meme est sombre
-            ctxe = b.new_context(viewport={"width": 390, "height": 844}, service_workers="block", color_scheme="dark")
-            ctxe.route("**/data/plan.json*", lambda r: r.abort())   # reste sur l'ecran d'erreur
-            pe = ctxe.new_page()
-            pe.goto(HTML, wait_until="load", timeout=20000)
-            pe.wait_for_timeout(600)
-            bgerr = pe.evaluate("getComputedStyle(document.getElementById('boot-err')).backgroundColor")
-            check("T18 ecran d'erreur de chargement sombre en mode sombre", bgerr != "rgb(248, 250, 252)" and bgerr.startswith("rgb(1"), bgerr)
-            ctxe.close()
+            ctxd = b.new_context(viewport={"width": 390, "height": 844}, service_workers="block", color_scheme="dark")
+            ctxd.route("**/*open-meteo.com/**", lambda r: r.abort())
+            pd = ctxd.new_page()
+            pd.goto(HTML, wait_until="load", timeout=20000)
+            pd.wait_for_function("typeof showTab==='function'&&!document.getElementById('boot-load')", timeout=10000)
+            has = pd.evaluate("document.body.classList.contains('nuit')")
+            bg = pd.evaluate("getComputedStyle(document.body).backgroundColor")
+            check("T18 telephone en sombre : l'app reste blanche (pas de classe nuit)", not has, f"nuit={has}")
+            check("T18 telephone en sombre : fond de page clair", bg == "rgb(242, 242, 247)", bg)
+            ctxd.close()
+            idx_t18 = open(os.path.join(SITE, "index.html"), encoding="utf-8").read()
+            check("T18 une seule balise theme-color, sans variante sombre",
+                  idx_t18.count('name="theme-color"') == 1 and 'media="(prefers-color-scheme' not in idx_t18)
         except Exception as e:
-            check("T18 mode sombre", False, str(e)[:140])
+            check("T18 app toujours blanche", False, str(e)[:140])
 
         # ── T19 : semaines ISO et fin d'annee (S53 deborde sur janvier 2027) ──
         import re as _re2
