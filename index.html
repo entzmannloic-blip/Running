@@ -1961,6 +1961,9 @@ body,.accueil{background:#f2f2f7}
     transform:none;
   }
 }
+/* Bandeau « Nouvelle version prête » (au-dessus de la barre de navigation) */
+.upd-banner{position:fixed;left:var(--sp-4);right:var(--sp-4);bottom:calc(84px + env(safe-area-inset-bottom));z-index:95;display:flex;align-items:center;justify-content:space-between;gap:var(--sp-3);padding:var(--sp-2) var(--sp-2) var(--sp-2) var(--sp-4);background:var(--texte);color:var(--blanc);border-radius:var(--rayon);box-shadow:var(--ombre-lg);font-size:var(--t-callout);font-weight:var(--fw-semi)}
+.upd-banner button{min-height:44px;padding:0 var(--sp-4);border:none;border-radius:var(--rayon-pill);background:var(--primary);color:var(--blanc);font:inherit;font-weight:var(--fw-bold);cursor:pointer}
 #boot-load,#boot-err{position:fixed;inset:0;z-index:500;display:flex;flex-direction:column;gap:14px;align-items:center;justify-content:center;padding:24px;text-align:center;background:var(--gris-fond);color:var(--texte-trois);font-size:var(--t-callout)}
 #boot-err{color:var(--texte)}#boot-load[hidden],#boot-err[hidden]{display:none}</style></head>
 <body>
@@ -1988,7 +1991,7 @@ body,.accueil{background:#f2f2f7}
 <div id="boot-err" role="alert" hidden><p>Données indisponibles. Vérifie ta connexion puis réessaie.</p><button type="button" class="btn-nav" onclick="location.reload()">Réessayer</button></div>
 <script>
 (function(){
-var V="230",EAGER=["plan", "seances", "historique", "meta"];
+var V="231",EAGER=["plan", "seances", "historique", "meta"];
 function get(f){return fetch("data/"+f+".json?v="+V).then(function(r){if(!r.ok)throw new Error(f+" "+r.status);return r.json();});}
 function fail(){var l=document.getElementById("boot-load");if(l)l.hidden=true;var e=document.getElementById("boot-err");if(e)e.hidden=false;}
 var cl=null;

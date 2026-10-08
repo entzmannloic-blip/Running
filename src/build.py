@@ -9,6 +9,7 @@
 Avec --check, n'ecrit rien : echoue (code 1) si index.html ou data/*.json committes
 different du resultat du build.
 """
+import json
 import os
 import shutil
 import subprocess
@@ -18,7 +19,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from paths import ROOT, SRC, WORK, SITE  # noqa: E402
 
 ENV = dict(os.environ, PYTHONUTF8="1")
-STATIC = ["sw.js", "manifest.json", "icon-180.png", "icon-192.png", "icon-512.png", ".nojekyll"]
+STATIC = ["manifest.json", "icon-180.png", "icon-192.png", "icon-512.png", ".nojekyll"]
 
 
 def run(cmd):
@@ -49,11 +50,19 @@ def stage_site():
         p = os.path.join(ROOT, name)
         if os.path.exists(p):
             shutil.copyfile(p, os.path.join(SITE, name))
+    # sw.js : modele src/sw.js dont le nom de cache suit le numero de build
+    meta = json.load(open(os.path.join(SITE, "data", "meta.json"), encoding="utf-8"))
+    build = meta["CHANGELOG"][0]["build"]
+    shell = ["./", "./index.html", "./manifest.json", "./icon-180.png", "./icon-192.png", "./icon-512.png",
+             "./src/app.js"] + ["./data/" + n for n in sorted(os.listdir(os.path.join(SITE, "data")))]
+    sw = open(os.path.join(WORK, "sw.js"), encoding="utf-8").read().replace("\r\n", "\n")
+    sw = sw.replace("__BUILD__", str(build)).replace("__SHELL__", json.dumps(shell, indent=1))
+    open(os.path.join(SITE, "sw.js"), "w", encoding="utf-8", newline="\n").write(sw)
 
 
 def published_files():
     """Fichiers produits par le build et commites a la racine : index.html + data/*.json."""
-    files = ["index.html"]
+    files = ["index.html", "sw.js"]
     d = os.path.join(SITE, "data")
     files += ["data/" + n for n in sorted(os.listdir(d))]
     return files

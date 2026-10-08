@@ -2558,6 +2558,11 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":231,"date":"8 octobre 2026","sha":"","tag":"PWA iPhone : cache versionne, hors-ligne, bandeau de nouvelle version","items":[
+    "SERVICE WORKER : le cache porte le numero de build (plus de plan-v34 ecrit a la main), tous les fichiers du site sont pre-caches ; reseau d abord avec repli sur le cache apres 3 s ou hors-ligne.",
+    "NOUVELLE VERSION : au retour au premier plan, l app compare son build a data/meta.json et propose Actualiser (utile : la PWA reste en memoire plusieurs jours sur iPhone).",
+    "MANIFESTE : portee et langue ajoutees."
+  ]},
   {"build":230,"date":"8 octobre 2026","sha":"","tag":"Donnees hors de la page : data/*.json charges au demarrage, historique des versions a la demande","items":[
     "DONNEES EN JSON : plan, seances, historique et meta sont des fichiers data/*.json charges en parallele au demarrage ; l application (src/app.js) ne change pas, les constantes gardent leurs noms. La page index.html ne contient plus les donnees.",
     "HISTORIQUE DES VERSIONS : la liste complete (200 Ko) n est plus construite au demarrage mais chargee a la premiere ouverture du panneau.",

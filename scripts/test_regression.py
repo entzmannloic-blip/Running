@@ -305,6 +305,66 @@ def run():
         except Exception as e:
             check("T15 seance loggee", False, str(e)[:80])
 
+        # ── T16 : PWA iOS — manifeste, service worker versionne, hors-ligne, mise a jour ──
+        mf_path = os.path.join(SITE, "manifest.json")
+        mf = json.load(open(mf_path, encoding="utf-8")) if os.path.exists(mf_path) else {}
+        sizes = sorted(i.get("sizes") for i in mf.get("icons", []))
+        check("T16 manifeste : standalone, portee, langue, icones 192 et 512",
+              mf.get("display") == "standalone" and mf.get("scope") == "./" and mf.get("lang") == "fr"
+              and "192x192" in sizes and "512x512" in sizes, str({k: mf.get(k) for k in ("display", "scope", "lang")}))
+        meta_build = json.load(open(os.path.join(SITE, "data", "meta.json"), encoding="utf-8"))["CHANGELOG"][0]["build"]
+        sw_path = os.path.join(SITE, "sw.js")
+        sw_txt = open(sw_path, encoding="utf-8").read() if os.path.exists(sw_path) else ""
+        listed = [f for f in ["src/app.js", "data/plan.json", "data/seances.json", "data/historique.json",
+                              "data/meta.json", "data/changelog.json", "index.html"] if f in sw_txt]
+        check("T16 sw.js : cache nomme d'apres le build, tous les fichiers pre-caches",
+              f"'{meta_build}'" in sw_txt and "__BUILD__" not in sw_txt and len(listed) == 7,
+              f"build={meta_build} liste={len(listed)}/7")
+
+        try:
+            ctx3 = b.new_context(viewport={"width": 390, "height": 844}, service_workers="allow")
+            # un ancien cache (plan-v34) existe deja avant l'installation du nouveau worker
+            ctx3.add_init_script("caches.open('plan-v34').then(function(c){return c.put('/legacy',new Response('old'));});")
+            p3 = ctx3.new_page()
+            p3.goto(HTML, wait_until="load", timeout=20000)
+            p3.wait_for_function("typeof SEMAINES!=='undefined'", timeout=8000)
+            p3.evaluate("navigator.serviceWorker.ready.then(function(){return true;})")
+            p3.wait_for_function("!!navigator.serviceWorker.controller", timeout=8000)
+            keys = p3.evaluate("caches.keys()")
+            check("T16 ancien cache plan-v34 remplace par plan-<build>",
+                  "plan-v34" not in keys and f"plan-{meta_build}" in keys, str(keys))
+            ctx3.set_offline(True)
+            p3.reload(wait_until="load")
+            p3.wait_for_function("typeof SEMAINES!=='undefined'&&SEMAINES.length>0", timeout=8000)
+            off = p3.evaluate("(function(){var e=document.getElementById('boot-err');"
+                              "return{err:!!e&&!e.hidden,tab:!!document.getElementById('tab-accueil')};})()")
+            check("T16 hors-ligne : l'app s'ouvre avec ses donnees", off["tab"] and not off["err"], str(off))
+            ctx3.close()
+        except Exception as e:
+            check("T16 hors-ligne / cache", False, str(e)[:120])
+
+        try:
+            ctx4 = b.new_context(viewport={"width": 390, "height": 844}, service_workers="block")
+            p4 = ctx4.new_page()
+            p4.goto(HTML, wait_until="load", timeout=20000)
+            p4.wait_for_function("typeof _checkNewVersion==='function'", timeout=8000)
+            p4.evaluate("_checkNewVersion()")
+            p4.wait_for_timeout(300)
+            same = p4.evaluate("!!document.getElementById('upd-banner')")
+            check("T16 pas de bandeau quand la version est a jour", not same)
+            newer = {"CHANGELOG": [{"build": meta_build + 1, "date": "x", "tag": "", "sha": "", "items": []}]}
+            ctx4.route("**/data/meta.json*", lambda r: r.fulfill(
+                status=200, content_type="application/json", body=json.dumps(newer)))
+            p4.evaluate("_checkNewVersion(true)")
+            p4.wait_for_selector("#upd-banner", timeout=4000)
+            bn = p4.evaluate("(function(){var e=document.getElementById('upd-banner');"
+                             "return{txt:e.innerText,btn:!!e.querySelector('button')};})()")
+            check("T16 bandeau « Nouvelle version prête » + bouton quand un build plus recent existe",
+                  "nouvelle version" in bn["txt"].lower() and bn["btn"], str(bn))
+            ctx4.close()
+        except Exception as e:
+            check("T16 bandeau de mise a jour", False, str(e)[:120])
+
         # ── T13 : pas d'erreur JS accumulee sur tout le parcours ──
         check("T13 zero erreur JS sur tout le parcours", len(js_errors) == 0,
               "; ".join(js_errors[:3]))

@@ -1,35 +1,9 @@
-/* Service worker — genere par src/build.py (ne pas copier a la main : 231 et [
- "./",
- "./index.html",
- "./manifest.json",
- "./icon-180.png",
- "./icon-192.png",
- "./icon-512.png",
- "./src/app.js",
- "./data/changelog.json",
- "./data/historique.json",
- "./data/meta.json",
- "./data/plan.json",
- "./data/seances.json"
-]
+/* Service worker — genere par src/build.py (ne pas copier a la main : __BUILD__ et __SHELL__
    sont remplaces). Le nom du cache suit le numero de build : un nouveau build = nouveau cache,
    les anciens (dont plan-v34) sont supprimes a l'activation. */
-const BUILD='231';
+const BUILD='__BUILD__';
 const CACHE='plan-'+BUILD;
-const SHELL=[
- "./",
- "./index.html",
- "./manifest.json",
- "./icon-180.png",
- "./icon-192.png",
- "./icon-512.png",
- "./src/app.js",
- "./data/changelog.json",
- "./data/historique.json",
- "./data/meta.json",
- "./data/plan.json",
- "./data/seances.json"
-];
+const SHELL=__SHELL__;
 const TIMEOUT_MS=3000;
 
 self.addEventListener('install',e=>{
