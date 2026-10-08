@@ -2558,6 +2558,10 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":227,"date":"8 octobre 2026","sha":"","tag":"PRODUCT.md et DESIGN.md : contexte produit et systeme de design documentes","items":[
+    "PRODUCT.md : utilisateur, positionnement (plan sur mesure avec Claude, cockpit charge et forme, journal de saison), contexte d exploitation et principes.",
+    "DESIGN.md : Le carnet de l entraineur, tokens reels de css.txt, regles nommees (One Voice, Seven Levels, Quiet Shadow)."
+  ]},
   {"build":226,"date":"8 octobre 2026","sha":"","tag":"Captures de reference des 4 vues et procedure de retour arriere","items":[
     "CAPTURES DE REFERENCE : scripts/capture_reference.py produit 4 images reproductibles (date figee, meteo bloquee, animations reduites) dans tests/reference/ ; --check detecte tout changement visuel.",
     "RETOUR ARRIERE : tag Git pre-refonte (build 224) et procedure ecrite dans docs/LESSONS.md."
