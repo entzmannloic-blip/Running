@@ -2558,6 +2558,10 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":226,"date":"8 octobre 2026","sha":"","tag":"Captures de reference des 4 vues et procedure de retour arriere","items":[
+    "CAPTURES DE REFERENCE : scripts/capture_reference.py produit 4 images reproductibles (date figee, meteo bloquee, animations reduites) dans tests/reference/ ; --check detecte tout changement visuel.",
+    "RETOUR ARRIERE : tag Git pre-refonte (build 224) et procedure ecrite dans docs/LESSONS.md."
+  ]},
   {"build":225,"date":"8 octobre 2026","sha":"","tag":"Build portable : une seule commande, plus de dependance au dossier /tmp","items":[
     "BUILD PORTABLE : python src/build.py construit index.html depuis la racine du depot, sous Windows comme sous Linux. Les chemins /tmp et /mnt/user-data sont remplaces par un module commun src/paths.py (dossier de travail build/, ignore par Git).",
     "CONTROLE : python src/build.py --check echoue si index.html n est pas exactement le resultat du build. preflight.py et test_regression.py passent sous Windows (16/16)."
