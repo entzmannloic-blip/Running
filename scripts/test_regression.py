@@ -6,7 +6,7 @@ test_regression.py — Suite de tests runtime (anti-regression) pour Running PWA
 Complement de preflight.py :
   - preflight.py = checks STATIQUES (build, syntaxe, pipeline, secrets...)
   - test_regression.py = checks RUNTIME (l'app se charge, les vues rendent,
-    les KPI se calculent, le Coach ouvre, zero erreur JS console).
+    les KPI se calculent, zero erreur JS console).
 
 A lancer APRES le build, AVANT le push :
     python3 scripts/test_regression.py
@@ -107,24 +107,39 @@ def run():
         check("T06 _curWeek renvoie une semaine valide", isinstance(cw, int) and 1 <= cw <= 53,
               f"valeur={cw}")
 
-        # ── T07 : le Coach IA ouvre et affiche l'intro ──
-        try:
-            p.evaluate("openCoach()")
-            p.wait_for_timeout(700)
-            coach_open = p.evaluate(
-                "document.getElementById('coach-ov')?.classList.contains('open')")
-            intro = p.evaluate(
-                "document.getElementById('coach-msgs')?.children.length>0")
-            check("T07 Coach ouvre + intro affichee", bool(coach_open and intro))
-            p.evaluate("closeCoach&&closeCoach()")
-        except Exception as e:
-            check("T07 Coach", False, str(e)[:80])
+        # ── T07 : le chat coach est retire (decision d'octobre 2026) ──
+        gone = p.evaluate(
+            "(function(){var n=['openCoach','closeCoach','coachSend','coachChip','initCoach',"
+            "'_cBuildSystemPrompt','_cReply','_cAddMsg'];"
+            "return n.filter(function(f){return typeof window[f]!=='undefined';});})()")
+        check("T07 chat coach retire (fonctions)", gone == [], f"encore la : {gone}")
+        no_dom = p.evaluate(
+            "!document.getElementById('coach-ov')&&!document.querySelector('.botbar .bi.coach')")
+        check("T07 chat coach retire (DOM : overlay et bouton)", bool(no_dom))
+        html_txt = open(OUT_HTML, encoding="utf-8").read()
+        check("T07 plus d'appel a api.anthropic.com", "api.anthropic.com" not in html_txt)
 
-        # ── T08 : le system prompt du Coach se construit (contexte injecte) ──
-        sp = p.evaluate(
-            "typeof _cBuildSystemPrompt==='function'?_cBuildSystemPrompt().length:0")
-        check("T08 system prompt Coach construit", sp and sp > 500,
-              f"longueur={sp}")
+        # ── T08 : les conseils calcules localement restent ──
+        kept = p.evaluate(
+            "['coachAvant','coachDebrief','_coachNudge','_ouvrirNudge']"
+            ".filter(function(f){return typeof window[f]!=='function';})")
+        check("T08 conseils locaux conserves (fonctions)", kept == [], f"manquantes : {kept}")
+        check("T08 COACH_THEORY conserve",
+              bool(p.evaluate("typeof COACH_THEORY!=='undefined'&&Object.keys(COACH_THEORY).length>0")))
+
+        # ── T08b : la puce de conseil ouvre la feuille de detail, sans lien vers le coach ──
+        try:
+            p.evaluate("showTab('accueil')")
+            p.evaluate("window._NUDGE_={icon:'X',txt:'conseil de test',tone:'info'};_ouvrirNudge();")
+            p.wait_for_timeout(400)
+            sheet = p.evaluate("document.getElementById('contenu').innerHTML")
+            check("T08b feuille de conseil affichee, sans bouton coach",
+                  "conseil de test" in sheet and "Ouvrir le coach" not in sheet)
+            p.evaluate("fermer()")
+            p.evaluate("window._NUDGE_=null;_ouvrirNudge();")  # ne doit pas lever d'erreur
+            p.evaluate("fermer()")
+        except Exception as e:
+            check("T08b feuille de conseil", False, str(e)[:80])
 
         # ── T09 : KPI Cockpit — les 4 fenetres donnent des volumes croissants ──
         try:
