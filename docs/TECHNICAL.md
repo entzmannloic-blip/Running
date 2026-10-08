@@ -1,4 +1,7 @@
 # Running PWA — Documentation Technique Complète
+
+> **Note (octobre 2026, build 232)** — Ce document est en grande partie historique. Le pipeline à jour (build portable `python src/build.py`, données en `data/*.json`, `sw.js` généré, livraison par pull request avec contrôle `verify`) est décrit dans **CLAUDE.md** et **docs/ENRICHISSEMENT.md**. Les sections qui parlent de `/tmp`, de `assemble.py` qui inline les données, du chat Coach, du Git Data API ou d'un token en clair ne s'appliquent plus.
+
 > Version 2.0 · Build 40 · 21 juin 2026
 > Application personnelle de coaching running pour Loïc Entzmann
 
@@ -1270,11 +1273,7 @@ Strava:get_gear(gear_types=["Shoe"])
 # → Mettre à jour GEAR[i]["km"] dans gen.py
 ```
 
-4. **Build + Push**
-```bash
-python3 gen.py && python3 assemble.py && node --check app.js
-# → Push (voir §15)
-```
+4. **Build + livraison** : voir **docs/ENRICHISSEMENT.md** (`python src/build.py`, contrôles, branche `data/S{sem}-{n}`, PR, fusion).
 
 ### B. Ajouter un résultat de course au Palmarès
 

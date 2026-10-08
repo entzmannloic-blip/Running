@@ -37,7 +37,7 @@ import sys
 for _d in (os.path.dirname(os.path.abspath(__file__)), os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "src")):
     if os.path.exists(os.path.join(_d, "paths.py")):
         sys.path.insert(0, _d)
-from paths import WORK, OUT_HTML, html_url  # noqa: E402
+from paths import WORK, OUT_HTML, SRC, html_url  # noqa: E402
 import json
 import sys
 
@@ -45,51 +45,12 @@ DATA = os.path.join(WORK, "data.json")
 
 # ── Referentiel Strava : date -> (km, effort_relatif, D+) ────────────
 # Etabli par reconciliation integrale le 31/08/2026.
-STRAVA = {
- "2026-10-07":(15.061,119,242),
- "2026-10-06":(16.0548,199,31),
- "2026-10-05":(8.0353,59,34),
- "2026-10-04":(25.0874,477,84),   # semi (21.3034, RE 470, D+ 71) + run/marche du soir avec Perrine (3.784, RE 7, D+ 13)
- "2026-10-03":(7.041,82,15),
- "2026-09-30":(18.0398,93,47),
- "2026-09-29":(12.0259,171,147),
- "2026-09-28":(13.0357,92,22),
- "2026-09-27":(10.1998,121,38),
- "2026-09-23":(11.6286,177,26),
- "2026-09-06":(14.2797,161,220),
- "2026-09-03":(12.0773,88,25),
- "2026-09-02":(8.5886,137,27),
- "2026-09-01":(11.0275,80,34),
- "2026-08-31":(10.2588,74,40),
- "2026-08-28":(10.0343,125,39), "2026-08-27":(12.0427,151,50),
- "2026-08-22":(25.0461,394,59), "2026-08-19":(7.0194,38,27),
- "2026-08-18":(12.0445,173,22), "2026-08-15":(8.0439,50,39),
- "2026-08-13":(11.3626,128,52), "2026-08-12":(10.2017,61,36),
- "2026-08-11":(10.0699,53,29),  "2026-08-09":(27.0100,246,662),
- "2026-08-07":(10.0900,28,43),  "2026-08-06":(10.0900,56,36),
- "2026-08-05":(10.0400,34,37),  "2026-08-04":(10.0500,123,39),
- "2026-08-02":(11.3100,105,36), "2026-07-30":(14.0900,171,None),
- "2026-07-28":(10.0300,49,None),"2026-07-27":(10.0200,79,None),
- "2026-07-26":(10.1264,83,32),  "2026-07-23":(42.5167,367,137),
- "2026-07-21":(7.5030,93,35),   "2026-07-20":(14.0285,78,35),
- "2026-07-19":(10.0290,96,15),  "2026-07-17":(10.2956,93,33),
- "2026-07-16":(23.0423,222,67), "2026-07-15":(10.3539,94,31),
- "2026-07-12":(11.0397,109,530),"2026-07-11":(10.6999,118,646),
- "2026-07-09":(18.1596,171,67), "2026-07-08":(10.0272,60,22),
- "2026-07-07":(11.0253,106,39), "2026-07-05":(23.2702,584,957),
- "2026-07-02":(10.5481,96,46),  "2026-06-30":(6.5475,60,27),
- "2026-06-29":(13.0164,149,35), "2026-06-25":(10.6597,99,20),
- "2026-06-22":(11.2629,105,43), "2026-06-19":(10.0271,79,38),
- "2026-06-18":(16.0468,156,52), "2026-06-17":(10.1389,169,35),
- "2026-06-16":(10.1359,58,40),  "2026-06-15":(10.2467,69,43),
-}
+_REF = json.load(open(os.path.join(SRC, "strava_reference.json"), encoding="utf-8"))
+STRAVA = {d: tuple(v) for d, v in _REF["activites"].items()}
 
 # ── Parc chaussures Strava (ne peut pas etre derive des seances : les
 #    chaussures servent aussi en randonnee et a velo) ─────────────────
-GEAR_STRAVA = {
-    "Clifton 10":1229, "Gel Pulse 16":229, "Cascadia 19":259,
-    "Novablast 5 J":788, "Magic Speed 4":93, "Novablast 5 V":172,
-}
+GEAR_STRAVA = dict(_REF["chaussures"])
 
 # ── Totaux mensuels Strava (mois CLOS, course a pied uniquement) ─────
 # Verifies mois par mois contre Strava le 31/08/2026. Juin etait faux :
@@ -97,10 +58,7 @@ GEAR_STRAVA = {
 # de 108 km reste invisible parce que le referentiel initial ne couvrait
 # que les seances a partir de juin ET que MONTHLY n'etait confronte a
 # rien pour les mois anterieurs.
-MOIS_STRAVA = {
-    "Jan":(224,19), "Fév":(227,21), "Mar":(342,25), "Avr":(283,23),
-    "Mai":(202,15), "Juin":(190,15), "Juil":(257,18),
-}
+MOIS_STRAVA = {k: tuple(v) for k, v in _REF["mois"].items()}
 
 TOL_KM, TOL_ELEV, TOL_GEAR, TOL_MOIS = 0.06, 2, 5, 3
 

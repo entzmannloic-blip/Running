@@ -1,115 +1,115 @@
 # CLAUDE.md — Contexte Running PWA
 
-## ⚠ Learning — LIRE EN PREMIER
-Ce projet apprend de ses erreurs. **Avant tout push**, lancer après le build :
-```
-python scripts/preflight.py
-```
-Il encode mécaniquement les erreurs passées (pipeline stale, build désync, syntaxe JS, emoji surrogate-pair, mauvaise semaine ISO, token en clair, HTML tronqué). Un échec critique = **ne pas pousser**.
-
-Le détail de chaque leçon (cause racine + garde-fou) est dans **docs/LESSONS.md**. Quand une nouvelle erreur survient : la corriger, la consigner dans LESSONS.md, et si elle est mécanisable ajouter un check dans preflight.py.
-> Ce fichier est lu en premier par Claude Code avant toute action sur ce repo.
-> Documentation complète : docs/TECHNICAL.md
+## ⚠ À lire en premier
+1. **Enrichir après une séance** : suivre **docs/ENRICHISSEMENT.md** (circuit complet : Strava → `src/gen.py` → build → branche → PR → fusion). Une séance = une petite PR de données.
+2. **Apprendre des erreurs** : avant tout push, lancer après le build `python scripts/preflight.py` (et `python scripts/release.py` pour la porte complète, **sans `--push`**). Un échec critique = **ne pas pousser**. Le détail de chaque leçon est dans **docs/LESSONS.md** ; quand une nouvelle erreur survient : la corriger, la consigner, et si elle est mécanisable ajouter un check à `scripts/preflight.py` (et sa copie `src/preflight.py`).
+3. Documentation technique détaillée : docs/TECHNICAL.md (en partie historique : le pipeline à jour est décrit ici et dans ENRICHISSEMENT.md). Contexte produit : **PRODUCT.md** ; système de design : **DESIGN.md**.
 
 ## Identité
-**App** : Running PWA — coaching running personnel pour Loïc Entzmann
-**Repo** : entzmannloic-blip/Running (GitHub Pages)
-**Build actuel** : 51
-**Token GitHub** : fine-grained PAT, expire 10 septembre 2026
+**App** : Running PWA — suivi de saison de course à pied pour Loïc Entzmann (installée sur l'écran d'accueil de l'iPhone via Safari, hors App Store)
+**Repo** : entzmannloic-blip/Running (GitHub Pages) — le build publié se lit dans `data/meta.json`
+**Accès GitHub** : `gh` connecté (compte `entzmannloic-blip`). Aucun token dans le dépôt.
+**Coach IA intégré** : retiré (octobre 2026). Le coaching se fait dans Claude après chaque séance.
 
 ## Athlète
 - **Loïc Entzmann** · Lyon · M0 (30-34) · 84 kg
 - FCmax 192 · Z2 max 144 bpm · Seuil marche ~160 bpm
 - **Courses 2026** : Trail Déraille 5 juil (24km) · Marathon Nice 8 nov (objectif 3h45) · SaintExpress 28 nov (45km nuit)
 
-## Règles absolues (voir docs/TECHNICAL.md §14 pour le détail)
+## Règles absolues (voir docs/TECHNICAL.md §14 pour le détail historique)
 
 1. **POC avant prod** — Toute feature visuelle = artifact POC → validation Loïc → code prod
-2. **Checklist build** : `python src/build.py` (gen + assemble + `node --check`)
-   - Un échec de build ou de `node --check` = STOP, ne jamais push
-3. **CHANGELOG obligatoire** — Incrémenter le build ET ajouter une entrée avant chaque push
-4. **Fichiers** — Toujours pousser `src/` modifiés + `index.html` ensemble (commit atomique via Git Data API)
-5. **Chaussures** — `Strava:get_gear` après chaque log de séance → update gen.py (km arrondi) → rebuild
-6. **SHA** — Toujours GET le SHA/ref avant le commit (sinon 409 Conflict)
-7. **⚠️ Emojis dans gen.py** — Ne jamais écrire un emoji via paire de surrogates (ex. `\uD83D\uDC4D`) en Python : `open('w')` tronque puis `.write()` lève UnicodeEncodeError → gen.py vidé. Utiliser le caractère littéral ou `\U0001F44D`. Si gen.py vidé : le restaurer depuis le dernier build poussé (`raw.githubusercontent.com/.../main/src/gen.py`).
+2. **Build** : `python src/build.py` (gen + assemble + `node --check`). Un échec = STOP, ne jamais pousser
+3. **CHANGELOG obligatoire** — Incrémenter le build ET ajouter une entrée en tête de `CHANGELOG` dans `src/gen.py` avant chaque push
+4. **Fichiers générés** — `index.html`, `sw.js` et `data/*.json` sont **produits par le build** : ne jamais les éditer à la main, toujours les committer avec les sources modifiées (le job `verify` refuse un décalage)
+5. **Chaussures** — `Strava:get_gear` après chaque log de séance → `GEAR` dans gen.py (km arrondi) + `src/strava_reference.json` → rebuild
+6. **Livraison par pull request** — branche depuis `main` à jour, PR, contrôle GitHub `verify` vert, fusion `--squash`. PR de données seulement (`python scripts/pr_scope.py origin/main...HEAD` → `DATA_ONLY`) : fusion sans relecture. Toute autre PR (app.js, CSS, scripts, workflows) : l'annoncer à Loïc avant de fusionner
+7. **⚠️ Emojis dans gen.py** — Ne jamais écrire un emoji via paire de surrogates (ex. `👍`) en Python. Utiliser le caractère littéral ou `\U0001F44D`. Si gen.py est vidé : le restaurer depuis `git` (`git checkout -- src/gen.py` ou le dernier commit)
 
 ## Pipeline build (portable — Windows, Linux, CI)
-Depuis la racine du dépôt, une seule commande (plus de `/tmp` ni de `/mnt/user-data`) :
+Depuis la racine du dépôt :
 ```bash
-python src/build.py            # copie src/ dans build/, gen.py, assemble.py, node --check, écrit index.html
-python src/build.py --check    # n'écrit rien : échoue si index.html committé ≠ résultat du build
+python src/build.py            # build/ (copie de src/) → gen.py → assemble.py → node --check → écrit index.html, sw.js, data/*.json
+python src/build.py --check    # n'écrit rien : échoue si les fichiers committés ≠ résultat du build (rejoue BUILT_ON)
+python src/build.py --stage    # construit seulement build/site/ (tests)
 python scripts/preflight.py    # contrôles statiques (après le build)
+python scripts/validate_data.py     # format des data/*.json
 python scripts/test_regression.py   # tests runtime (Playwright + Chromium)
+python scripts/capture_reference.py --check   # captures de référence des 4 vues (local, après un changement d'interface)
+python scripts/release.py      # porte complète (audits Strava, Cockpit…) — ne jamais ajouter --push
 ```
-- Dossier de travail : `build/` (ignoré par Git), surchargeable par la variable `RUNNING_WORK`.
-- Chemins centralisés dans `src/paths.py`. Sous Windows, définir `PYTHONUTF8=1` pour lancer preflight et les tests à la main (`build.py` le fait seul).
-- Sortie attendue de gen.py : « Semaines: 30 | Séances: 137 » (le chiffre 131 des anciennes docs est périmé).
-- Les copies `src/preflight.py` et `src/release.py` doivent rester identiques à `scripts/` (l'ancien `release.py` les pousse) ; elles seront consolidées plus tard.
+- Dossier de travail : `build/` (ignoré par Git), surchargeable par `RUNNING_WORK`. Chemins centralisés dans `src/paths.py`. Sous Windows, définir `PYTHONUTF8=1` pour lancer preflight et les tests à la main.
+- **Reproductibilité** : `gen.py` calcule l'ACWR « à aujourd'hui » ; la date de build est enregistrée dans `data/meta.json` (`BUILT_ON`) et rejouée par `--check` (variable `RUNNING_TODAY`).
+- Sortie attendue de gen.py : « Semaines: 30 | Séances: 137 ».
+- Les copies `src/preflight.py` et `src/release.py` doivent rester identiques à `scripts/` (l'ancien `release.py` les référence) ; consolidation à prévoir.
 
-## Fichiers clés (compteurs au build 51)
-- `src/gen.py` (~932 lignes) — données : plan, séances, chaussures, dossiers, palmarès, CHANGELOG
-- `src/app.js` (~2274 lignes, 184 fonctions) — toute la logique JS
-- `src/css.txt` (~161 lignes) — :root design tokens + base
-- `src/css_extra.txt` (~972 lignes) — CSS features
-- `src/body.html` (18 lignes) — structure HTML (vues + bottom bar)
-- `src/assemble.py` (30 lignes) — pipeline + liste des exports JS
+## Fichiers clés
+- `src/gen.py` — **données** : plan, séances, chaussures, dossiers, palmarès, CHANGELOG (génère `data.json`)
+- `src/datamap.py` — quelles données vont dans quel fichier `data/*.json` (chargés au démarrage : plan, seances, historique, meta ; changelog à la demande)
+- `src/assemble.py` — produit `site/index.html` (page + CSS + script de démarrage) et `site/data/*.json`
+- `src/app.js` — toute la logique JS (servi tel quel à `src/app.js`)
+- `src/css.txt` (tokens `:root` + base), `src/css_extra.txt` (CSS features), `src/body.html` (vues + barre de navigation)
+- `src/sw.js` — **modèle** du service worker (`__BUILD__`, `__SHELL__` remplacés par le build)
+- `src/build.py`, `src/paths.py` — build et chemins ; `src/strava_reference.json` — référentiel Strava lu par les audits
+- `scripts/` — preflight, release, tests, audits ; `.github/workflows/verify.yml` — vérification automatique
+- `tests/reference/` — captures de référence des 4 vues (390 px)
 
-## ⭐ Navigation & IA actuelle (refonte builds 42→51 — IMPORTANT)
-La nav a été entièrement refondue. **Plus de tabbar en haut** : une **bottom bar fixe** `#botbar` (frostée, safe-area).
-
-**5 items de barre** (l'ordre + ids comptent pour `showTab`) :
+## ⭐ Navigation & IA actuelle
+Une **bottom bar fixe** `#botbar` (frostée, marge de sécurité iOS), **4 items** (l'ordre + ids comptent pour `showTab`), étiquetée `aria-label`, `aria-current="page"` sur l'onglet actif :
 ```
-Accueil · Séances · [Coach central] · Cockpit · Courses
+Accueil · Séances · Cockpit · Courses
 ```
-- **Accueil** (`#vue-accueil`, id tab `accueil`) — dashboard : `#hero-plan` (héros prochaine séance, forme, course, météo, **#canicule-banner**, mini-courses) + `#accueil-annee` (bilan du plan). 2 raccourcis : le héros `.vdj` → `ouvrirSeance()`, la carte `.cw-link` → `jumpToWeek()`.
-- **Séances** (`#vue-plan`, id `plan`) — le **plan seul** (`#main` + `#phases`), sans dashboard.
-- **Coach** (centre, surélevé) — `openCoach()`. Message d'accueil contextuel priorisé : **canicule > charge (ACWR>1.4) > affûtage course ≤7j > marge**.
-- **Cockpit** (`#vue-cockpit`, id `cockpit`) — analytique. `showTab('cockpit')` rend **`renderCockpit()` ET `renderDash()`** : `#cockpit-contenu` (PMC, allures, zones) + `#dash-contenu` (bilan/charge, ex-Suivi).
-- **Courses** (`#vue-palmares`, id interne **toujours `palmares`**) — `renderPalmares()` = section **À venir** (depuis `RACES`, J-X + `ouvrirDossier`) + **Passées** (depuis `PALMARES`, résultats).
+- **Accueil** (`#vue-accueil`, id `accueil`) — dashboard : héros prochaine séance, forme, alerte de charge, météo, progression, capital.
+- **Séances** (`#vue-plan`, id `plan`) — le plan par phase et par semaine.
+- **Cockpit** (`#vue-cockpit`, id `cockpit`) — analytique. `showTab('cockpit')` rend `renderCockpit()` ET `renderDash()`.
+- **Courses** (`#vue-palmares`, id interne **toujours `palmares`**) — À venir (`RACES`) + Passées (`PALMARES`).
 
-**Pièges à connaître :**
-- ⚠️ L'onglet **« Suivi » n'existe plus** : il a été dissous. `renderDash()` existe encore mais est rendu **dans Cockpit** (`#dash-contenu` vit dans `#vue-cockpit`). Ne pas chercher `#vue-dash` (supprimé).
-- ⚠️ L'onglet « Courses » garde l'**id interne `palmares`** (tab-palmares, vue-palmares, showTab('palmares')). Seuls le label et l'icône ont changé.
-- ⚠️ `showTab` liste `['accueil','plan','cockpit','palmares']`.
-- ⚠️ Vue par défaut au chargement = **Accueil** (vue-accueil visible, tab-accueil `.actif` dans body.html).
+**Pièges :**
+- ⚠️ L'onglet « Suivi » n'existe plus (dissous dans Cockpit) ; ne pas chercher `#vue-dash`.
+- ⚠️ `showTab` liste `['accueil','plan','cockpit','palmares']`. Vue par défaut au chargement = Accueil.
+- ⚠️ Le chat « Coach » a été supprimé. Restent les conseils calculés localement : `_coachNudge`, `coachAvant`, `coachDebrief`, `COACH_THEORY`.
 
-## Design system (build 42)
-`css.txt :root` = tokens sémantiques. **1 primaire** `--primary:#0d9488` (teal) ; états `--ok` `--warn` `--danger` (+ variantes `-deux/-clair/-fond`) ; neutres slate (`--texte`, `--gris-*`) ; échelle typo `--t-display…--t-data` ; `--ombre`/`--ombre-lg` ; `--ease`. Les anciens noms de couleur (`--vert`, `--bleu`, `--orange`…) sont des **alias** vers les tokens. Ne pas réintroduire de couleurs ad-hoc. Identités dégradées par course (dossiers) = préservées exprès.
+## Chargement des données et PWA
+- `index.html` charge `data/{plan,seances,historique,meta}.json` en parallèle puis `src/app.js` ; chaque fichier est un objet `{NOM: valeur}` copié sur `window` (les constantes gardent leurs noms : `SEMAINES`, `SEANCES_BY_WEEK`, `CHANGELOG`…). Échec réseau : message « Données indisponibles » + bouton Réessayer (`#boot-err`).
+- `CHANGELOG` au démarrage = la dernière entrée seulement ; `loadChangelog()` charge la liste complète à l'ouverture du panneau de versions.
+- `sw.js` (généré) : cache `plan-<build>`, pré-cache de tout le site, réseau d'abord avec repli cache après 3 s ou hors-ligne. `_checkNewVersion()` affiche le bandeau « Nouvelle version prête » au retour au premier plan.
 
-## Couche mouvement (build 47)
-Transition de vue `.vue-in` (fondu-montant), reveal au scroll (`_revealScan()` / IntersectionObserver, filet de sécurité 4s), press-scale, pop d'icône active, haptique (`navigator.vibrate`). Tout sous `prefers-reduced-motion`.
+## Design system
+Voir **DESIGN.md** (« Le carnet de l'entraîneur ») et `src/css.txt :root`. **1 primaire** `--primary:#0d9488` (teal) ; états `--ok` `--warn` `--danger` ; neutres slate ; échelle typo `--t-display…--t-data`. Ne pas réintroduire de couleurs ad hoc. Dégradés par course (dossiers) préservés exprès. Mouvement : `.vue-in`, reveal au scroll, press-scale, haptique, tout sous `prefers-reduced-motion`.
 
 ## Données clés gen.py
-- Plan : S25→S53 (30 semaines, 131 séances)
-- Courses : `RACES[3]` — Déraille, Nice, SaintExpress (nom, date, dossier)
-- Chaussures : `GEAR[6]` — voir tableau
-- Palmarès : `PALMARES[5]` — 5 courses officielles passées
-- Séances loggées : surcharge `arr[i]["realise"]={...}` dans un bloc `if n==NN:` de la boucle WEEKS (statut/km/temps/allure/fc_moy/fc_max/rpe_ressenti/commentaire/revue)
+- Plan : S25→S53 (30 semaines, 137 séances)
+- Courses : `RACES` — Déraille, Nice, SaintExpress
+- Chaussures : `GEAR` (6 paires, `gear_id` Strava ci-dessous) ; palmarès : `PALMARES`
+- Séances loggées : `arr[i]["realise"]={...}` dans un bloc `if n==NN:` de la boucle des semaines (voir docs/ENRICHISSEMENT.md)
 
-## Parc chaussures (build 51)
-| Modèle | Km | Convention | gear_id Strava |
-|--------|----|-----------|----------------|
-| HOKA Clifton 10 | 1103 | Décrassages ≤10 km | 28498174 |
-| ASICS Gel Pulse 16 | 225 | Footings faciles | 28498182 |
-| Brooks Cascadia 19 | 196 | Trail | 28498287 |
-| ASICS Novablast 5 J | 513 | Training route (jaune) | 28722452 |
-| ASICS Novablast 5 V | 0 | Courses (vert, neuf) | — |
-| ASICS Magic Speed 4 | 51 | AM/qualité | 29204843 |
+## Parc chaussures (gear_id Strava — les km actuels sont dans `GEAR`, `data/plan.json`)
+| Modèle | Convention | gear_id Strava |
+|--------|-----------|----------------|
+| HOKA Clifton 10 | Décrassages ≤10 km | 28498174 |
+| ASICS Gel Pulse 16 | Footings faciles | 28498182 |
+| Brooks Cascadia 19 | Trail | 28498287 |
+| ASICS Novablast 5 J | Training route (jaune) | 28722452 |
+| ASICS Novablast 5 V | Courses (vert, neuf) | — |
+| ASICS Magic Speed 4 | AM/qualité | 29204843 |
 
 ## Séquence de démarrage JS
 ```
-hydrateLogs() → hydrateOverrides() → init*() → renderHeader() → renderPlan() → rwAuto() → checkAutoSync()
-showTab(t) : haptique + bascule display + .actif + render lazy + .vue-in + _revealScan()
+boot (index.html) : fetch data/*.json → Object.assign(window) → charge src/app.js
+app.js : hydrateLogs() → hydrateOverrides() → init*() → renderHeader() → renderPlan() → rwAuto() → checkAutoSync()
+showTab(t) : haptique + bascule display + .actif + aria-current + render lazy + .vue-in + _revealScan()
 ```
 
 ## localStorage
 ```
-log_{wk}_{id}      → séances loggées (JSON)
+runlog_v1          → séances loggées dans l'app (JSON, clés "{semaine}-{id}")
 session_overrides  → déplace/skips (JSON)
-ck_{race}          → checklists (JSON)
-meteo_cache        → météo Lyon (TTL 30min)
+ck_{course}        → checklists de course
+meteo_cache, eff_temp_cache → caches (météo Lyon TTL 30 min, efficience)
+dash_grp_{id}, rw_mon, rw_seen, wn_seen → préférences d'affichage (groupes repliés, rewinds, nouveautés)
 install_dismissed  → bannière iOS
 ```
+Sur iPhone, Safari et l'app de l'écran d'accueil ont des stockages séparés.
 
 ## Strava MCP (Claude uniquement, pas depuis l'app)
 ```
@@ -120,16 +120,15 @@ Strava:get_gear(gear_types=["Shoe"])           → peut exiger une approbation c
 ```
 
 ## Points de vigilance
-- ⚠️ Graphes Cockpit (_CK) = snapshots statiques — ne se mettent pas à jour auto
-- ⚠️ `ACWR_DATA` dans gen.py est obsolète — remplacé par `_dynamicACWR()` (EMA) dans app.js
-- ⚠️ Token expire 10 sept. 2026 (penser à le révoquer après push — il transite en clair)
-- ⚠️ Nouveau champ gen.py = aussi l'ajouter dans assemble.py
-- ⚠️ Dette connue (audit) : échelle typo posée mais pas 100 % enforced sur le legacy ; graisses 700/800 encore dominantes ; reveal limité aux vues principales
+- ⚠️ Graphes Cockpit (`_CK`) = snapshots statiques — ne se mettent pas à jour auto
+- ⚠️ `ACWR_DATA` (gen.py) est un instantané daté du build ; l'app recalcule `_dynamicACWR()` en direct
+- ⚠️ Nouvelle donnée dans gen.py = l'ajouter à `src/datamap.py` (sinon elle n'atteint pas l'app)
+- ⚠️ Dette connue : échelle typo posée mais pas 100 % enforced sur le legacy ; graisses 700/800 dominantes ; `src/test.js` (test Node) en échec avant la refonte
 
-## Convention commits
+## Convention commits et branches
 ```
 feat(sprint-X): description (build N)
 fix: bug — cause (build N)
-data: log S{wk} seance {n} (Strava) (build N)
+data: log S{wk} seance {n} (Strava) (build N)      → branche data/S{wk}-{n}
 docs: description
 ```

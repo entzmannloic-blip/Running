@@ -15,7 +15,7 @@ import sys
 for _d in (os.path.dirname(os.path.abspath(__file__)), os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "src")):
     if os.path.exists(os.path.join(_d, "paths.py")):
         sys.path.insert(0, _d)
-from paths import WORK, OUT_HTML, html_url  # noqa: E402
+from paths import WORK, OUT_HTML, SRC, html_url  # noqa: E402
 import json
 import re
 import datetime as dt
@@ -269,10 +269,7 @@ for g in d.get("GEAR", []):
 # velo, hors perimetre course). Il DERIVE donc mecaniquement.
 # Derive constatee le 28/08/2026 : jusqu'a 31 km d'ecart sur une paire.
 # Referentiel Strava de la derniere resynchronisation :
-STRAVA_GEAR = {
-    "Clifton 10": 1229, "Gel Pulse 16": 229, "Cascadia 19": 259,
-    "Novablast 5 J": 788, "Magic Speed 4": 93, "Novablast 5 V": 172,
-}
+STRAVA_GEAR = dict(json.load(open(os.path.join(SRC, "strava_reference.json"), encoding="utf-8"))["chaussures"])
 for g in d.get("GEAR", []):
     ref = STRAVA_GEAR.get(g["modele"])
     if ref is None:

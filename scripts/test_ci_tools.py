@@ -87,7 +87,7 @@ def main():
         check(f"detecte : {label}", len(errs) >= 1, "aucune erreur remontee")
 
     # --- perimetre d'une PR (fusion automatique) ---
-    ok, off = pr_scope.classify(["data/seances.json", "data/meta.json", "src/gen.py", "index.html", "sw.js", "fit/S41-3.fit"])
+    ok, off = pr_scope.classify(["data/seances.json", "data/meta.json", "src/gen.py", "src/strava_reference.json", "index.html", "sw.js", "fit/S41-3.fit"])
     check("PR de donnees : perimetre autorise", ok and off == [], str(off))
     ok, off = pr_scope.classify(["data/seances.json", "src/app.js", ".github/workflows/verify.yml"])
     check("PR touchant le code : refusee, fichiers listes", (not ok) and off == ["src/app.js", ".github/workflows/verify.yml"], str(off))

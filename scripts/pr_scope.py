@@ -6,7 +6,7 @@ pr_scope.py — une PR est-elle « donnees seulement » (fusion automatique perm
     python scripts/pr_scope.py <base>...<head>     ex. origin/main...HEAD
     python scripts/pr_scope.py --files a b c
 
-Perimetre autorise : data/, fit/, src/gen.py, src/hist.json, index.html, sw.js
+Perimetre autorise : data/, fit/, src/gen.py, src/hist.json, src/strava_reference.json, index.html, sw.js
 (index.html, sw.js et data/ sont GENERES par le build, verifie par `build.py --check`).
 Tout autre fichier (src/app.js, CSS, workflows, scripts...) = PR de code, annoncee avant fusion.
 Code retour 0 = donnees seulement, 1 = code (fichiers hors perimetre listes).
@@ -15,7 +15,7 @@ import subprocess
 import sys
 
 ALLOWED_PREFIXES = ("data/", "fit/")
-ALLOWED_FILES = {"src/gen.py", "src/hist.json", "index.html", "sw.js"}
+ALLOWED_FILES = {"src/gen.py", "src/hist.json", "src/strava_reference.json", "index.html", "sw.js"}
 
 
 def classify(files):
