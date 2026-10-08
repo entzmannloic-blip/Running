@@ -2370,7 +2370,11 @@ def _acwr_compute():
     # valeur figee au build se decale de celle recalculee en direct par
     # l'app des qu'un jour passe sans courir (constate le 25/08 : 1,29 fige
     # contre 1,04 reel). La fenetre glissante doit suivre le calendrier.
-    _ref=max(_dt.date.today(), max(d for d,_ in faits))
+    import os as _os
+    # RUNNING_TODAY (AAAA-MM-JJ) fixe la date du build : build.py --check rejoue la date enregistree
+    # dans data/meta.json (BUILT_ON), ce qui rend le build reproductible d'un jour a l'autre.
+    _today=_dt.date.fromisoformat(_os.environ['RUNNING_TODAY']) if _os.environ.get('RUNNING_TODAY') else _dt.date.today()
+    _ref=max(_today, max(d for d,_ in faits))
     c7 =sum(re for d,re in faits if 0<=(_ref-d).days<=6)
     c28=sum(re for d,re in faits if 0<=(_ref-d).days<=27)
     _a=round(c7/(c28/4),2) if c28 else None
@@ -2558,6 +2562,10 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":232,"date":"8 octobre 2026","sha":"","tag":"Build reproductible et verification automatique GitHub","items":[
+    "BUILD REPRODUCTIBLE : gen.py calculait l ACWR a la date du jour ; la date de build est maintenant enregistree dans data/meta.json (BUILT_ON) et rejouee par build.py --check, qui ne casse donc plus le lendemain.",
+    "VERIFICATION AUTOMATIQUE : un workflow GitHub (verify) rejoue le build, le preflight, la validation des donnees et les tests de regression sur chaque pull request et chaque push sur main."
+  ]},
   {"build":231,"date":"8 octobre 2026","sha":"","tag":"PWA iPhone : cache versionne, hors-ligne, bandeau de nouvelle version","items":[
     "SERVICE WORKER : le cache porte le numero de build (plus de plan-v34 ecrit a la main), tous les fichiers du site sont pre-caches ; reseau d abord avec repli sur le cache apres 3 s ou hors-ligne.",
     "NOUVELLE VERSION : au retour au premier plan, l app compare son build a data/meta.json et propose Actualiser (utile : la PWA reste en memoire plusieurs jours sur iPhone).",

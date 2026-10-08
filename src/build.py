@@ -6,9 +6,11 @@
 3. node --check app.js, puis prepare site/ (src/app.js, sw.js, manifest, icones)
 4. ecrit index.html et data/*.json a la racine du depot (ce que GitHub Pages publie)
 
+Avec --stage, construit seulement site/ dans le dossier de travail (tests).
 Avec --check, n'ecrit rien : echoue (code 1) si index.html ou data/*.json committes
 different du resultat du build.
 """
+import datetime
 import json
 import os
 import shutil
@@ -68,8 +70,20 @@ def published_files():
     return files
 
 
+def build_date(check):
+    """Date du build : en --check, celle enregistree dans data/meta.json (BUILT_ON) ; sinon aujourd'hui."""
+    if check:
+        p = os.path.join(ROOT, "data", "meta.json")
+        if os.path.exists(p):
+            d = json.load(open(p, encoding="utf-8")).get("BUILT_ON")
+            if d:
+                return d
+    return os.environ.get("RUNNING_TODAY") or datetime.date.today().isoformat()
+
+
 def main():
     check = "--check" in sys.argv[1:]
+    ENV["RUNNING_TODAY"] = build_date(check)
     prepare()
     shutil.rmtree(SITE, ignore_errors=True)
     run([sys.executable, "gen.py"])
@@ -77,6 +91,9 @@ def main():
     run(["node", "--check", "app.js"])
     stage_site()
     files = published_files()
+    if "--stage" in sys.argv[1:]:
+        print("site/ construit dans", SITE, "(rien d'ecrit a la racine)")
+        return
     if check:
         bad = []
         for rel in files:

@@ -1,3 +1,4 @@
+import datetime
 import json
 import os
 
@@ -25,7 +26,8 @@ for fname, pairs in GROUPS.items():
     write(f'site/data/{fname}.json', dump({name: data[key] for name, key in pairs}))
 # meta.json : seulement la derniere entree du changelog (la liste complete est chargee a la demande)
 write('site/data/meta.json', dump({'CHANGELOG': [{
-    'build': build, 'date': latest['date'], 'tag': latest.get('tag', ''), 'sha': latest.get('sha', ''), 'items': []}]}))
+    'build': build, 'date': latest['date'], 'tag': latest.get('tag', ''), 'sha': latest.get('sha', ''), 'items': []}],
+    'BUILT_ON': os.environ.get('RUNNING_TODAY') or datetime.date.today().isoformat()}))
 
 BOOT = """<script>
 (function(){
