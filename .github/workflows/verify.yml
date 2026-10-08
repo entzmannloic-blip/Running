@@ -48,3 +48,5 @@ jobs:
         run: python scripts/test_regression.py
       - name: Accessibilite (titres, reperes, noms, cibles, texte, contraste)
         run: python scripts/audit_a11y.py
+      - name: Couleurs hors jetons (ne doit pas augmenter)
+        run: python scripts/audit_tokens.py

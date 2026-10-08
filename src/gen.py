@@ -2562,6 +2562,12 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":235,"date":"8 octobre 2026","sha":"","tag":"Coherence des chiffres, jauge VO2max stable, couleurs ramenees aux jetons","items":[
+    "COMPTEUR DE SORTIES : l accueil et Courses affichaient 58 et 59 pour la meme chose (une seance de PPG sans kilometrage etait comptee d un cote seulement). Meme definition partout, et libelle precis : sorties du plan.",
+    "JAUGE VO2MAX : la valeur s affiche d emblee, seul l arc s anime ; plus de passage par 0 sur un chiffre de sante.",
+    "COULEURS : 585 couleurs hexadecimales hors jetons ramenees a 278 (-52 pour cent) ; un controle (audit_tokens) interdit toute hausse. Remplacement par propriete (texte et fonds ont des jetons differents), regles du mode nuit preservees.",
+    "DONNEES VIDES : test qui charge l app sans aucune seance realisee ni palmares et verifie l absence de NaN, undefined et d erreur JavaScript sur les 4 vues."
+  ]},
   {"build":234,"date":"8 octobre 2026","sha":"","tag":"Accessibilite : titres, reperes, clavier, cibles tactiles, texte lisible, contrastes","items":[
     "STRUCTURE : un titre h1 par vue, repere main et lien d evitement fonctionnel, phases et semaines en vrais titres (h2/h3) ; les elements cliquables non natifs sont atteignables au clavier (tabindex, role button, Entree et Espace).",
     "LISIBILITE : plus aucun texte sous 12 px (les 19 tailles inferieures sont ramenees au jeton --t-data), texte courant a 13 px minimum.",

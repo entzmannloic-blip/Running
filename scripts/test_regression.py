@@ -296,12 +296,15 @@ def run():
                 "(function(){var ks=Object.keys(SEANCES_BY_WEEK);for(var i=ks.length-1;i>=0;i--){"
                 "var a=SEANCES_BY_WEEK[ks[i]];for(var j=0;j<a.length;j++){if(!(a[j].realise&&a[j].realise.statut==='fait'))return[ks[i],String(a[j].id)];}}return null;})()")
             wk, sid = target
-            p.evaluate("(a)=>localStorage.setItem('runlog_v1',JSON.stringify({[a[0]+'-'+a[1]]:{statut:'fait',km:'9.9',temps:'1:00:00'}}))", [wk, sid])
+            p.evaluate("(a)=>localStorage.setItem('runlog_v1',JSON.stringify({[a[0]+'-'+a[1]]:{statut:'fait',km:9.9,temps:'1:00:00'}}))", [wk, sid])
             p.reload(wait_until="load")
             p.wait_for_function("typeof findSeance==='function'&&typeof SEANCES_BY_WEEK!=='undefined'", timeout=8000)
             km = p.evaluate("(a)=>{var s=findSeance(a[0],a[1]);return s&&s.realise&&s.realise.km;}", [wk, sid])
-            check("T15 seance loggee restituee apres rechargement", km == "9.9", f"km={km}")
+            check("T15 seance loggee restituee apres rechargement", km == 9.9, f"km={km}")
             p.evaluate("localStorage.removeItem('runlog_v1')")
+            p.reload(wait_until="load")   # retire la seance de test de la memoire de la page
+            p.wait_for_function("typeof showTab==='function'&&!document.getElementById('boot-load')", timeout=8000)
+            p.evaluate("var o=document.getElementById('rwoverlay');if(o)o.style.display='none';")
         except Exception as e:
             check("T15 seance loggee", False, str(e)[:80])
 
@@ -364,6 +367,69 @@ def run():
             ctx4.close()
         except Exception as e:
             check("T16 bandeau de mise a jour", False, str(e)[:120])
+
+        # ── T17 : coherence des chiffres et des libelles ──
+        p.evaluate("showTab('accueil')")
+        n_home = int(p.evaluate("(document.querySelector('.wdg-st-solo b')||{}).textContent||-1"))
+        n_wrap = p.evaluate("_wrappedData().n")
+        check("T17 meme nombre de sorties sur l'accueil et sur Courses", n_home == n_wrap, f"accueil={n_home} courses={n_wrap}")
+        lab_home = p.evaluate("(function(){var e=document.querySelector('.wdg-st-solo');return e?e.innerText:'';})()")
+        check("T17 accueil : le compteur precise sa periode (« sorties du plan »)",
+              "du plan" in lab_home.lower(), repr(lab_home))
+        p.evaluate("showTab('palmares')")
+        p.wait_for_timeout(200)
+        lab_wr = p.evaluate("(function(){var e=document.querySelector('.wrl-t2');return e?e.innerText:'';})()")
+        check("T17 Courses : « sorties du plan » et meme nombre que l'accueil",
+              "sorties du plan" in lab_wr and lab_wr.strip().startswith(str(n_home)), repr(lab_wr))
+
+        # la jauge VO2max affiche sa valeur des le premier affichage (seul l'arc s'anime)
+        p.evaluate("showTab('cockpit')")
+        p.wait_for_timeout(180)
+        vo2_txt = p.evaluate("document.getElementById('vo2-val')&&document.getElementById('vo2-val').textContent")
+        vo2 = p.evaluate("_estimVO2()&&_estimVO2().vo2")
+        check("T17 jauge VO2max : valeur finale des le debut (pas de passage par 0)",
+              vo2 is not None and str(vo2_txt) == str(vo2), f"affiche={vo2_txt} attendu={vo2}")
+        p.evaluate("showTab('accueil')")
+
+        # donnees vides : aucune valeur cassee (NaN, undefined, Infinity) affichee sur les 4 vues
+        try:
+            ctx5 = b.new_context(viewport={"width": 390, "height": 844}, service_workers="block")
+            errs5 = []
+            def _route_seances(r):
+                resp = r.fetch()
+                d = resp.json()
+                for wk, arr in d["SEANCES_BY_WEEK"].items():
+                    for se in arr:
+                        se["realise"] = {"statut": "a_faire"}
+                r.fulfill(response=resp, body=json.dumps(d), content_type="application/json")
+            def _route_plan(r):
+                resp = r.fetch()
+                d = resp.json()
+                d["PALMARES"] = []
+                r.fulfill(response=resp, body=json.dumps(d), content_type="application/json")
+            ctx5.route("**/data/seances.json*", _route_seances)
+            ctx5.route("**/data/plan.json*", _route_plan)
+            ctx5.route("**/*open-meteo.com/**", lambda r: r.abort())
+            p5 = ctx5.new_page()
+            p5.on("pageerror", lambda e: errs5.append(str(e)[:120]))
+            p5.goto(HTML, wait_until="load", timeout=20000)
+            p5.wait_for_function("typeof showTab==='function'&&!document.getElementById('boot-load')", timeout=10000)
+            p5.wait_for_timeout(800)
+            p5.evaluate("var o=document.getElementById('rwoverlay');if(o)o.style.display='none';")
+            broken = []
+            for v in ["accueil", "plan", "cockpit", "palmares"]:
+                p5.evaluate(f"showTab('{v}')")
+                p5.wait_for_timeout(500)
+                txt = p5.evaluate(f"document.getElementById('vue-{v}').innerText")
+                import re as _re
+                for m in _re.finditer(r"NaN|undefined|Infinity|\[object Object\]", txt):
+                    broken.append(f"{v}: ...{txt[max(0, m.start()-30):m.end()+10]!r}")
+            check("T17 donnees vides : aucune valeur cassee (NaN, undefined, Infinity) sur les 4 vues",
+                  broken == [], "; ".join(broken[:4]))
+            check("T17 donnees vides : aucune erreur JavaScript", errs5 == [], "; ".join(errs5[:3]))
+            ctx5.close()
+        except Exception as e:
+            check("T17 donnees vides", False, str(e)[:120])
 
         # ── T13 : pas d'erreur JS accumulee sur tout le parcours ──
         check("T13 zero erreur JS sur tout le parcours", len(js_errors) == 0,
