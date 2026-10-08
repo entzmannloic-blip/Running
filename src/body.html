@@ -3,13 +3,15 @@
   <div class="appbar" id="appbar">
     <div class="cds" id="cd-strip"></div>
   </div>
-  <div id="vue-accueil"><div id="hero-plan"></div><div id="accueil-annee"></div></div>
-  <div id="vue-plan" style="display:none"><span id="main"></span>
+  <main id="main" tabindex="-1">
+  <div id="vue-accueil"><h1 class="sr-only">Accueil</h1><div id="hero-plan"></div><div id="accueil-annee"></div></div>
+  <div id="vue-plan" style="display:none"><h1 class="sr-only">Séances</h1>
     <div id="phases"></div>
     <p class="note-foot">Plan complet S25→S53. Dis-moi « j'ai fait la séance X de la semaine Y » et tout se met à jour.</p>
   </div>
   <div id="vue-cockpit" style="display:none"><div id="cockpit-contenu"></div><div id="dash-contenu"></div></div>
   <div id="vue-palmares" style="display:none"><div id="palmares-contenu"></div></div>
+  </main>
   <div class="maj-foot" id="maj-foot"></div>
 </div>
 <nav class="botbar" id="botbar" aria-label="Navigation principale"><button class="bi actif" id="tab-accueil" aria-current="page" onclick="showTab('accueil')"><svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/><path d="M9 20v-6h6v6"/></svg><span>Accueil</span></button><button class="bi" id="tab-plan" onclick="showTab('plan')"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 9h18M8 3v4M16 3v4"/></svg><span>Séances</span></button><button class="bi" id="tab-cockpit" onclick="showTab('cockpit')"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 1 9 9M12 12l5-3"/></svg><span>Cockpit</span></button><button class="bi" id="tab-palmares" onclick="showTab('palmares')"><svg viewBox="0 0 24 24"><path d="M5 21V4"/><path d="M5 4h11l-2 3 2 3H5"/></svg><span>Courses</span></button></nav>

@@ -296,12 +296,15 @@ def run():
                 "(function(){var ks=Object.keys(SEANCES_BY_WEEK);for(var i=ks.length-1;i>=0;i--){"
                 "var a=SEANCES_BY_WEEK[ks[i]];for(var j=0;j<a.length;j++){if(!(a[j].realise&&a[j].realise.statut==='fait'))return[ks[i],String(a[j].id)];}}return null;})()")
             wk, sid = target
-            p.evaluate("(a)=>localStorage.setItem('runlog_v1',JSON.stringify({[a[0]+'-'+a[1]]:{statut:'fait',km:'9.9',temps:'1:00:00'}}))", [wk, sid])
+            p.evaluate("(a)=>localStorage.setItem('runlog_v1',JSON.stringify({[a[0]+'-'+a[1]]:{statut:'fait',km:9.9,temps:'1:00:00'}}))", [wk, sid])
             p.reload(wait_until="load")
             p.wait_for_function("typeof findSeance==='function'&&typeof SEANCES_BY_WEEK!=='undefined'", timeout=8000)
             km = p.evaluate("(a)=>{var s=findSeance(a[0],a[1]);return s&&s.realise&&s.realise.km;}", [wk, sid])
-            check("T15 seance loggee restituee apres rechargement", km == "9.9", f"km={km}")
+            check("T15 seance loggee restituee apres rechargement", km == 9.9, f"km={km}")
             p.evaluate("localStorage.removeItem('runlog_v1')")
+            p.reload(wait_until="load")   # retire la seance de test de la memoire de la page
+            p.wait_for_function("typeof showTab==='function'&&!document.getElementById('boot-load')", timeout=8000)
+            p.evaluate("var o=document.getElementById('rwoverlay');if(o)o.style.display='none';")
         except Exception as e:
             check("T15 seance loggee", False, str(e)[:80])
 
@@ -364,6 +367,135 @@ def run():
             ctx4.close()
         except Exception as e:
             check("T16 bandeau de mise a jour", False, str(e)[:120])
+
+        # ── T17 : coherence des chiffres et des libelles ──
+        p.evaluate("showTab('accueil')")
+        n_home = int(p.evaluate("(document.querySelector('.wdg-st-solo b')||{}).textContent||-1"))
+        n_wrap = p.evaluate("_wrappedData().n")
+        check("T17 meme nombre de sorties sur l'accueil et sur Courses", n_home == n_wrap, f"accueil={n_home} courses={n_wrap}")
+        lab_home = p.evaluate("(function(){var e=document.querySelector('.wdg-st-solo');return e?e.innerText:'';})()")
+        check("T17 accueil : le compteur precise sa periode (« sorties du plan »)",
+              "du plan" in lab_home.lower(), repr(lab_home))
+        p.evaluate("showTab('palmares')")
+        p.wait_for_timeout(200)
+        lab_wr = p.evaluate("(function(){var e=document.querySelector('.wrl-t2');return e?e.innerText:'';})()")
+        check("T17 Courses : « sorties du plan » et meme nombre que l'accueil",
+              "sorties du plan" in lab_wr and lab_wr.strip().startswith(str(n_home)), repr(lab_wr))
+
+        # la jauge VO2max affiche sa valeur des le premier affichage (seul l'arc s'anime)
+        p.evaluate("showTab('cockpit')")
+        p.wait_for_timeout(180)
+        vo2_txt = p.evaluate("document.getElementById('vo2-val')&&document.getElementById('vo2-val').textContent")
+        vo2 = p.evaluate("_estimVO2()&&_estimVO2().vo2")
+        check("T17 jauge VO2max : valeur finale des le debut (pas de passage par 0)",
+              vo2 is not None and str(vo2_txt) == str(vo2), f"affiche={vo2_txt} attendu={vo2}")
+        p.evaluate("showTab('accueil')")
+
+        # donnees vides : aucune valeur cassee (NaN, undefined, Infinity) affichee sur les 4 vues
+        try:
+            ctx5 = b.new_context(viewport={"width": 390, "height": 844}, service_workers="block")
+            errs5 = []
+            def _route_seances(r):
+                resp = r.fetch()
+                d = resp.json()
+                for wk, arr in d["SEANCES_BY_WEEK"].items():
+                    for se in arr:
+                        se["realise"] = {"statut": "a_faire"}
+                r.fulfill(response=resp, body=json.dumps(d), content_type="application/json")
+            def _route_plan(r):
+                resp = r.fetch()
+                d = resp.json()
+                d["PALMARES"] = []
+                r.fulfill(response=resp, body=json.dumps(d), content_type="application/json")
+            ctx5.route("**/data/seances.json*", _route_seances)
+            ctx5.route("**/data/plan.json*", _route_plan)
+            ctx5.route("**/*open-meteo.com/**", lambda r: r.abort())
+            p5 = ctx5.new_page()
+            p5.on("pageerror", lambda e: errs5.append(str(e)[:120]))
+            p5.goto(HTML, wait_until="load", timeout=20000)
+            p5.wait_for_function("typeof showTab==='function'&&!document.getElementById('boot-load')", timeout=10000)
+            p5.wait_for_timeout(800)
+            p5.evaluate("var o=document.getElementById('rwoverlay');if(o)o.style.display='none';")
+            broken = []
+            for v in ["accueil", "plan", "cockpit", "palmares"]:
+                p5.evaluate(f"showTab('{v}')")
+                p5.wait_for_timeout(500)
+                txt = p5.evaluate(f"document.getElementById('vue-{v}').innerText")
+                import re as _re
+                for m in _re.finditer(r"NaN|undefined|Infinity|\[object Object\]", txt):
+                    broken.append(f"{v}: ...{txt[max(0, m.start()-30):m.end()+10]!r}")
+            check("T17 donnees vides : aucune valeur cassee (NaN, undefined, Infinity) sur les 4 vues",
+                  broken == [], "; ".join(broken[:4]))
+            check("T17 donnees vides : aucune erreur JavaScript", errs5 == [], "; ".join(errs5[:3]))
+            ctx5.close()
+        except Exception as e:
+            check("T17 donnees vides", False, str(e)[:120])
+
+        # ── T18 : mode sombre qui suit le reglage du telephone (prefers-color-scheme) ──
+        try:
+            for scheme, expected in (("dark", True), ("light", False)):
+                ctxd = b.new_context(viewport={"width": 390, "height": 844}, service_workers="block", color_scheme=scheme)
+                ctxd.route("**/*open-meteo.com/**", lambda r: r.abort())
+                pd = ctxd.new_page()
+                pd.goto(HTML, wait_until="load", timeout=20000)
+                pd.wait_for_function("typeof showTab==='function'&&!document.getElementById('boot-load')", timeout=10000)
+                has = pd.evaluate("document.body.classList.contains('nuit')")
+                check(f"T18 reglage {scheme} : mode nuit {'actif' if expected else 'inactif'}", has == expected, f"nuit={has}")
+                if scheme == "dark":
+                    bg = pd.evaluate("getComputedStyle(document.body).backgroundColor")
+                    check("T18 mode sombre : fond de page sombre", bg in ("rgb(11, 18, 32)",), bg)
+                    pd.emulate_media(color_scheme="light")
+                    pd.wait_for_timeout(200)
+                    check("T18 bascule en direct (sombre -> clair) sans recharger",
+                          not pd.evaluate("document.body.classList.contains('nuit')"))
+                    pd.emulate_media(color_scheme="dark")
+                    pd.wait_for_timeout(200)
+                    check("T18 bascule en direct (clair -> sombre) sans recharger",
+                          bool(pd.evaluate("document.body.classList.contains('nuit')")))
+                ctxd.close()
+            idx_txt2 = open(os.path.join(SITE, "index.html"), encoding="utf-8").read()
+            check("T18 theme-color declare pour le mode sombre",
+                  'name="theme-color" content="#0b1220" media="(prefers-color-scheme: dark)"' in idx_txt2)
+            # pas d'eclair clair au demarrage : l'ecran de chargement lui-meme est sombre
+            ctxe = b.new_context(viewport={"width": 390, "height": 844}, service_workers="block", color_scheme="dark")
+            ctxe.route("**/data/plan.json*", lambda r: r.abort())   # reste sur l'ecran d'erreur
+            pe = ctxe.new_page()
+            pe.goto(HTML, wait_until="load", timeout=20000)
+            pe.wait_for_timeout(600)
+            bgerr = pe.evaluate("getComputedStyle(document.getElementById('boot-err')).backgroundColor")
+            check("T18 ecran d'erreur de chargement sombre en mode sombre", bgerr != "rgb(248, 250, 252)" and bgerr.startswith("rgb(1"), bgerr)
+            ctxe.close()
+        except Exception as e:
+            check("T18 mode sombre", False, str(e)[:140])
+
+        # ── T19 : semaines ISO et fin d'annee (S53 deborde sur janvier 2027) ──
+        import re as _re2
+        for iso_date, expected_week in (("2026-12-31T10:00:00", 53), ("2027-01-01T10:00:00", 53),
+                                        ("2027-01-03T23:30:00", 53), ("2027-01-04T08:00:00", 1)):
+            try:
+                ctxy = b.new_context(viewport={"width": 390, "height": 844}, service_workers="block")
+                ctxy.route("**/*open-meteo.com/**", lambda r: r.abort())
+                py_ = ctxy.new_page()
+                errs_y = []
+                py_.on("pageerror", lambda e: errs_y.append(str(e)[:120]))
+                py_.clock.install(time=iso_date)
+                py_.goto(HTML, wait_until="load", timeout=20000)
+                py_.wait_for_function("typeof showTab==='function'&&!document.getElementById('boot-load')", timeout=10000)
+                py_.wait_for_timeout(600)
+                py_.evaluate("var o=document.getElementById('rwoverlay');if(o)o.style.display='none';")
+                wk = py_.evaluate("isoWeek(new Date())")
+                bad_y = []
+                for v in ("accueil", "plan", "cockpit", "palmares"):
+                    py_.evaluate(f"showTab('{v}')")
+                    py_.wait_for_timeout(300)
+                    txt = py_.evaluate(f"document.getElementById('vue-{v}').innerText")
+                    if _re2.search(r"NaN|undefined|Infinity", txt):
+                        bad_y.append(v)
+                check(f"T19 {iso_date[:10]} : semaine ISO {expected_week}, 4 vues sans NaN ni erreur",
+                      wk == expected_week and not bad_y and not errs_y, f"semaine={wk} vues={bad_y} erreurs={errs_y[:2]}")
+                ctxy.close()
+            except Exception as e:
+                check(f"T19 {iso_date[:10]}", False, str(e)[:120])
 
         # ── T13 : pas d'erreur JS accumulee sur tout le parcours ──
         check("T13 zero erreur JS sur tout le parcours", len(js_errors) == 0,

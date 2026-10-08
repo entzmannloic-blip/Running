@@ -94,6 +94,49 @@ def main():
     ok, off = pr_scope.classify([])
     check("PR vide : pas de fusion automatique", not ok)
 
+    # --- renommage : deplacer un fichier hors perimetre vers data/ ne doit pas passer pour « donnees seulement » ---
+    import subprocess
+
+    def git(d, *a):
+        return subprocess.run(["git", "-c", "user.email=t@t", "-c", "user.name=t", *a], cwd=d, capture_output=True,
+                              text=True, encoding="utf-8")
+
+    with tempfile.TemporaryDirectory() as d:
+        git(d, "init", "-q", "-b", "main")
+        os.makedirs(os.path.join(d, ".github", "workflows"))
+        open(os.path.join(d, ".github", "workflows", "verify.yml"), "w").write("name: verify" + chr(10))
+        os.makedirs(os.path.join(d, "data"))
+        open(os.path.join(d, "data", "meta.json"), "w").write('{"CHANGELOG":[{"build":5}]}')
+        git(d, "add", "-A")
+        git(d, "commit", "-q", "-m", "base")
+        git(d, "checkout", "-q", "-b", "pr")
+        git(d, "mv", ".github/workflows/verify.yml", "data/verify.yml")
+        git(d, "commit", "-q", "-m", "rename")
+        r = subprocess.run([sys.executable, os.path.join(HERE, "pr_scope.py"), "main...pr"], cwd=d, capture_output=True,
+                           text=True, encoding="utf-8")
+        check("renommage du workflow vers data/ : refuse (pas DATA_ONLY)",
+              r.returncode == 1 and "verify.yml" in r.stdout, (r.stdout + r.stderr)[:160])
+
+    # --- le numero de build doit augmenter dans chaque PR ---
+    def bump_check(new_build):
+        with tempfile.TemporaryDirectory() as d:
+            git(d, "init", "-q", "-b", "main")
+            os.makedirs(os.path.join(d, "data"))
+            open(os.path.join(d, "data", "meta.json"), "w").write('{"CHANGELOG":[{"build":5}]}')
+            git(d, "add", "-A")
+            git(d, "commit", "-q", "-m", "base")
+            git(d, "checkout", "-q", "-b", "pr")
+            open(os.path.join(d, "data", "meta.json"), "w").write('{"CHANGELOG":[{"build":%d}]}' % new_build)
+            git(d, "commit", "-q", "-am", "pr")
+            return subprocess.run([sys.executable, os.path.join(HERE, "check_build_increment.py"), "main"], cwd=d,
+                                  capture_output=True, text=True, encoding="utf-8")
+    r = bump_check(5)
+    check("PR sans incrementation du build : refusee", r.returncode == 1, (r.stdout + r.stderr)[:160])
+    r = bump_check(4)
+    check("PR qui fait reculer le build : refusee", r.returncode == 1, (r.stdout + r.stderr)[:160])
+    r = bump_check(6)
+    check("PR qui incremente le build : acceptee", r.returncode == 0, (r.stdout + r.stderr)[:160])
+
     print("\n  RESULTAT :", "OK" if not FAIL else f"{len(FAIL)} echec(s) — NE PAS PUSHER")
     sys.exit(1 if FAIL else 0)
 

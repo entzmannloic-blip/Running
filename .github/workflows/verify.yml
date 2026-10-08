@@ -34,6 +34,11 @@ jobs:
         run: |
           python -m pip install playwright
           python -m playwright install --with-deps chromium
+      - name: Le numero de build doit augmenter (PR)
+        if: github.event_name == 'pull_request'
+        run: |
+          git fetch --no-tags --depth=1 origin ${{ github.base_ref }}
+          python scripts/check_build_increment.py origin/${{ github.base_ref }}
       - name: Build reproductible (index.html, sw.js et data/ = resultat du build)
         run: python src/build.py --check
       - name: Preflight
@@ -46,3 +51,9 @@ jobs:
         run: python scripts/test_build.py
       - name: Tests de regression
         run: python scripts/test_regression.py
+      - name: Accessibilite (titres, reperes, noms, cibles, texte, contraste)
+        run: python scripts/audit_a11y.py
+      - name: Accessibilite en mode sombre
+        run: python scripts/audit_a11y.py --dark
+      - name: Couleurs hors jetons (ne doit pas augmenter)
+        run: python scripts/audit_tokens.py
