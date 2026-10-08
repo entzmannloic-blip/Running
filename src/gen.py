@@ -2558,6 +2558,11 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":230,"date":"8 octobre 2026","sha":"","tag":"Donnees hors de la page : data/*.json charges au demarrage, historique des versions a la demande","items":[
+    "DONNEES EN JSON : plan, seances, historique et meta sont des fichiers data/*.json charges en parallele au demarrage ; l application (src/app.js) ne change pas, les constantes gardent leurs noms. La page index.html ne contient plus les donnees.",
+    "HISTORIQUE DES VERSIONS : la liste complete (200 Ko) n est plus construite au demarrage mais chargee a la premiere ouverture du panneau.",
+    "ECHEC RESEAU : si les donnees ne se chargent pas, un message lisible et un bouton Reessayer remplacent l ecran blanc."
+  ]},
   {"build":229,"date":"8 octobre 2026","sha":"","tag":"Barre de navigation a 4 onglets, accessible au clavier et aux lecteurs d ecran","items":[
     "NAVIGATION : 4 onglets (Accueil, Seances, Cockpit, Courses) de largeur egale ; la barre est etiquetee et l onglet actif porte aria-current.",
     "TESTS : cibles tactiles de 44 px minimum, ordre de tabulation et ouverture a la touche Entree verifies."

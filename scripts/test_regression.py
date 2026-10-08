@@ -22,7 +22,8 @@ import sys
 for _d in (os.path.dirname(os.path.abspath(__file__)), os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "src")):
     if os.path.exists(os.path.join(_d, "paths.py")):
         sys.path.insert(0, _d)
-from paths import WORK, OUT_HTML, html_url  # noqa: E402
+from paths import WORK, OUT_HTML, SITE, DATA_JSON, html_url, site_text  # noqa: E402
+from datamap import GROUPS  # noqa: E402
 import json
 import sys
 
@@ -116,8 +117,7 @@ def run():
         no_dom = p.evaluate(
             "!document.getElementById('coach-ov')&&!document.querySelector('.botbar .bi.coach')")
         check("T07 chat coach retire (DOM : overlay et bouton)", bool(no_dom))
-        html_txt = open(OUT_HTML, encoding="utf-8").read()
-        check("T07 plus d'appel a api.anthropic.com", "api.anthropic.com" not in html_txt)
+        check("T07 plus d'appel a api.anthropic.com", "api.anthropic.com" not in site_text())
 
         # ── T08 : les conseils calcules localement restent ──
         kept = p.evaluate(
@@ -232,6 +232,78 @@ def run():
             check("T12 Palmares affiche la Deraille", bool(has_der))
         except Exception as e:
             check("T12 Palmares", False, str(e)[:80])
+
+        # ── T15 : donnees servies en JSON, hors du paquet JavaScript ──
+        site_files = ["index.html", "src/app.js", "data/plan.json", "data/seances.json",
+                      "data/historique.json", "data/meta.json", "data/changelog.json"]
+        missing = [f for f in site_files if not os.path.exists(os.path.join(SITE, *f.split("/")))]
+        check("T15 site : fichiers presents", missing == [], f"absents : {missing}")
+        idx = os.path.join(SITE, "index.html")
+        idx_txt = open(idx, encoding="utf-8").read() if os.path.exists(idx) else ""
+        check("T15 index.html ne contient plus les donnees",
+              bool(idx_txt) and "const SEMAINES=" not in idx_txt and "const SEANCES_BY_WEEK=" not in idx_txt
+              and len(idx_txt) < 400_000, f"{len(idx_txt)} caracteres")
+
+        data = json.load(open(DATA_JSON, encoding="utf-8"))
+        expected = {name: data[key] for name, key in
+                    [pair for g in GROUPS if g != "changelog" for pair in GROUPS[g]]}
+        bad = p.evaluate(
+            """(exp) => {
+              function eq(a,b){ if(a===b) return true;
+                if(typeof a!==typeof b||a===null||b===null||typeof a!=='object') return false;
+                if(Array.isArray(a)!==Array.isArray(b)) return false;
+                var ka=Object.keys(a), kb=Object.keys(b); if(ka.length!==kb.length) return false;
+                return ka.every(function(k){return eq(a[k],b[k]);}); }
+              return Object.keys(exp).filter(function(n){return !eq(window[n], exp[n]);});
+            }""", expected)
+        check("T15 donnees JSON identiques a data.json (toutes les constantes)", bad == [], f"differentes : {bad[:6]}")
+        check("T15 CHANGELOG de depart = derniere entree",
+              p.evaluate("CHANGELOG[0].build") == data["CHANGELOG"][0]["build"])
+
+        # la fenetre de version n'est plus construite au demarrage : elle l'est a l'ouverture
+        check("T15 panneau de versions non construit au demarrage",
+              not p.evaluate("!!document.getElementById('ver-ov')"))
+        p.evaluate("openVersionPanel()")
+        try:
+            p.wait_for_selector("#ver-ov.open", timeout=4000)
+            n_items = p.evaluate("document.querySelectorAll('#ver-ov .ver-item').length")
+            check("T15 panneau de versions : toutes les builds a l'ouverture",
+                  n_items == len(data["CHANGELOG"]), f"{n_items} / {len(data['CHANGELOG'])}")
+            p.evaluate("closeVersionPanel()")
+        except Exception as e:
+            check("T15 panneau de versions s'ouvre", False, str(e)[:80])
+
+        # echec reseau : message lisible et bouton de relance, jamais un ecran blanc
+        try:
+            ctx2 = b.new_context(viewport={"width": 390, "height": 844}, service_workers="block")
+            ctx2.route("**/data/*.json*", lambda r: r.abort())
+            p2 = ctx2.new_page()
+            p2.goto(HTML, wait_until="load", timeout=20000)
+            p2.wait_for_timeout(800)
+            err = p2.evaluate(
+                "(function(){var e=document.getElementById('boot-err');"
+                "if(!e)return null;var r=e.getBoundingClientRect();"
+                "return{visible:r.width>0&&r.height>0,txt:e.innerText,btn:!!e.querySelector('button')};})()")
+            check("T15 donnees indisponibles : message + bouton Reessayer",
+                  bool(err and err["visible"] and "indisponible" in err["txt"].lower() and err["btn"]), str(err))
+            ctx2.close()
+        except Exception as e:
+            check("T15 donnees indisponibles", False, str(e)[:80])
+
+        # les seances loggees dans localStorage sont toujours restituees apres le chargement asynchrone
+        try:
+            target = p.evaluate(
+                "(function(){var ks=Object.keys(SEANCES_BY_WEEK);for(var i=ks.length-1;i>=0;i--){"
+                "var a=SEANCES_BY_WEEK[ks[i]];for(var j=0;j<a.length;j++){if(!(a[j].realise&&a[j].realise.statut==='fait'))return[ks[i],String(a[j].id)];}}return null;})()")
+            wk, sid = target
+            p.evaluate("(a)=>localStorage.setItem('runlog_v1',JSON.stringify({[a[0]+'-'+a[1]]:{statut:'fait',km:'9.9',temps:'1:00:00'}}))", [wk, sid])
+            p.reload(wait_until="load")
+            p.wait_for_function("typeof findSeance==='function'&&typeof SEANCES_BY_WEEK!=='undefined'", timeout=8000)
+            km = p.evaluate("(a)=>{var s=findSeance(a[0],a[1]);return s&&s.realise&&s.realise.km;}", [wk, sid])
+            check("T15 seance loggee restituee apres rechargement", km == "9.9", f"km={km}")
+            p.evaluate("localStorage.removeItem('runlog_v1')")
+        except Exception as e:
+            check("T15 seance loggee", False, str(e)[:80])
 
         # ── T13 : pas d'erreur JS accumulee sur tout le parcours ──
         check("T13 zero erreur JS sur tout le parcours", len(js_errors) == 0,

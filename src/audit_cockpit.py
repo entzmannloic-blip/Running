@@ -41,7 +41,8 @@ import json, re, sys
 import statistics as st
 
 DATA = 'data.json'
-HTML = 'plan-entrainement.html'
+from paths import html_url  # noqa: E402
+HTML = 'site/index.html'
 
 
 def semaine_courante():
@@ -255,7 +256,7 @@ def main():
         errs = []
         p.on("pageerror", lambda e: errs.append(str(e)[:150]))
         p.route("**/archive-api.open-meteo.com/**", meteo)
-        p.goto("file://" + HTML, wait_until="load", timeout=25000)
+        p.goto(html_url(), wait_until="load", timeout=25000)
         p.wait_for_timeout(2000)
         if p.evaluate("document.getElementById('rwoverlay')"):
             p.evaluate("document.getElementById('rwoverlay').style.display='none'")
