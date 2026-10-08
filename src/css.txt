@@ -15,6 +15,8 @@
   /* ===== RAYONS / PROFONDEUR iOS 27 ===== */
   /* ===== SURFACES (le mode sombre les redefinit : body.nuit) ===== */
   --bg-page:#f2f2f7;--bg-card:#fff;--bord-card:#e2e8f0;
+  --gris-pale:#f1f5f9;      /* fond de tableau / puce legere */
+  --primary-fill:#0f766e;   /* fond de bouton a texte blanc (5,5:1), identique en sombre */
   --rayon:12px;--rayon-lg:18px;
   --ombre:0 1px 2px rgba(15,23,42,.06),0 4px 12px -6px rgba(15,23,42,.10);
   --ombre-lg:0 2px 6px rgba(15,23,42,.07),0 18px 36px -14px rgba(15,23,42,.22);

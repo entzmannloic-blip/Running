@@ -26,7 +26,7 @@ HEX = re.compile(r"#[0-9a-fA-F]{6}\b")
 TEXT = {"#1e293b": "--texte", "#475569": "--texte-deux", "#64748b": "--texte-trois", "#94a3b8": "--gris",
         "#0d9488": "--primary", "#0f766e": "--primary-deux", "#16a34a": "--ok", "#15803d": "--ok-deux",
         "#f59e0b": "--warn", "#b45309": "--warn-deux", "#ef4444": "--danger", "#b91c1c": "--danger-deux"}
-FILL = {"#f0fdf4": "--ok-fond", "#f8fafc": "--gris-fond", "#e2e8f0": "--gris-clair", "#94a3b8": "--gris",
+FILL = {"#f1f5f9": "--gris-pale", "#f0fdf4": "--ok-fond", "#f8fafc": "--gris-fond", "#e2e8f0": "--gris-clair", "#94a3b8": "--gris",
         "#0d9488": "--primary", "#0f766e": "--primary-deux", "#99f6e4": "--primary-clair", "#f0fdfa": "--primary-fond",
         "#16a34a": "--ok", "#15803d": "--ok-deux", "#bbf7d0": "--ok-clair", "#dcfce7": "--ok-fond",
         "#f59e0b": "--warn", "#b45309": "--warn-deux", "#fde68a": "--warn-clair", "#fef3c7": "--warn-fond",

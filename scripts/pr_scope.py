@@ -32,7 +32,8 @@ def main():
         files = args[1:]
     else:
         rng = args[0] if args else "origin/main...HEAD"
-        files = subprocess.run(["git", "diff", "--name-only", rng], capture_output=True, text=True,
+        # --no-renames : un fichier deplace hors perimetre (ex. le workflow vers data/) doit lister aussi son ancien chemin
+        files = subprocess.run(["git", "diff", "--no-renames", "--name-only", rng], capture_output=True, text=True,
                                encoding="utf-8").stdout.splitlines()
     ok, off = classify(files)
     if ok:

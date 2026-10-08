@@ -25,7 +25,7 @@ Une séance enrichie = **une petite PR de données**. Rien d'autre ne doit y fig
 - **La séance** : dans le bloc de sa semaine (`for n, arr in list(SEANCES_BY_WEEK.items()):` puis `if n==NN:`, avec `_SNN = {str(x["id"]): x for x in arr}`), renseigner `_SNN["<id>"]["realise"]={...}`. Copier la structure d'une séance déjà loggée de la **même semaine** ou de la semaine précédente. Champs courants de `realise` : `statut` (`fait`, `partiel`, `saute`), `km`, `temps` (`h:mm:ss`), `allure` (`m:ss/km`), `fc_moy`, `fc_max`, `re` (effort relatif Strava), `cadence`, `elevation_gain`, `kcal`, `rpe_ressenti`, `commentaire`, `revue` (HTML du bilan), `pr`, `ach`, `pr_detail`, `splits` (`[{"km","allure","fc"}]`).
 - **Si la séance diffère du plan** : mettre aussi à jour `titre`, `sous`, `metriques`, `objectif`, `struct`, `segments`, `chaussure_realise`, et `date` si elle est différente.
 - **Chaussures** : dans `GEAR`, mettre à jour `km` (arrondi) d'après `get_gear`.
-- **Journal** : une entrée de `CHANGELOG` en tête, `build` = dernier + 1, `date`, `tag` court et `items` factuels (voir une entrée existante). Le numéro de build est vérifié par le preflight.
+- **Journal** : une entrée de `CHANGELOG` en tête, `build` = dernier + 1, `date`, `tag` court et `items` factuels (voir une entrée existante). Le numéro de build est vérifié par le preflight (cohérence gen.py / build) et par le job `verify` (il doit être strictement supérieur à celui de `main`).
 - Pas d'emoji écrit en paire de surrogates (`👍`) dans `gen.py` : caractère littéral ou `\U0001F44D` (voir `docs/LESSONS.md`).
 
 ## 3. Mettre à jour le référentiel Strava : `src/strava_reference.json`

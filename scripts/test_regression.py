@@ -468,6 +468,35 @@ def run():
         except Exception as e:
             check("T18 mode sombre", False, str(e)[:140])
 
+        # ── T19 : semaines ISO et fin d'annee (S53 deborde sur janvier 2027) ──
+        import re as _re2
+        for iso_date, expected_week in (("2026-12-31T10:00:00", 53), ("2027-01-01T10:00:00", 53),
+                                        ("2027-01-03T23:30:00", 53), ("2027-01-04T08:00:00", 1)):
+            try:
+                ctxy = b.new_context(viewport={"width": 390, "height": 844}, service_workers="block")
+                ctxy.route("**/*open-meteo.com/**", lambda r: r.abort())
+                py_ = ctxy.new_page()
+                errs_y = []
+                py_.on("pageerror", lambda e: errs_y.append(str(e)[:120]))
+                py_.clock.install(time=iso_date)
+                py_.goto(HTML, wait_until="load", timeout=20000)
+                py_.wait_for_function("typeof showTab==='function'&&!document.getElementById('boot-load')", timeout=10000)
+                py_.wait_for_timeout(600)
+                py_.evaluate("var o=document.getElementById('rwoverlay');if(o)o.style.display='none';")
+                wk = py_.evaluate("isoWeek(new Date())")
+                bad_y = []
+                for v in ("accueil", "plan", "cockpit", "palmares"):
+                    py_.evaluate(f"showTab('{v}')")
+                    py_.wait_for_timeout(300)
+                    txt = py_.evaluate(f"document.getElementById('vue-{v}').innerText")
+                    if _re2.search(r"NaN|undefined|Infinity", txt):
+                        bad_y.append(v)
+                check(f"T19 {iso_date[:10]} : semaine ISO {expected_week}, 4 vues sans NaN ni erreur",
+                      wk == expected_week and not bad_y and not errs_y, f"semaine={wk} vues={bad_y} erreurs={errs_y[:2]}")
+                ctxy.close()
+            except Exception as e:
+                check(f"T19 {iso_date[:10]}", False, str(e)[:120])
+
         # ── T13 : pas d'erreur JS accumulee sur tout le parcours ──
         check("T13 zero erreur JS sur tout le parcours", len(js_errors) == 0,
               "; ".join(js_errors[:3]))

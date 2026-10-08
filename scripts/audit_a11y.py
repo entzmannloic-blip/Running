@@ -33,9 +33,10 @@ MIN_FONT = 12  # px
 BODY_FONT = 13  # px
 
 JS = r"""
-(view) => {
+(arg) => {
+  const view = arg.view, isView = arg.isView;
   const out = [];
-  const root = document.getElementById('vue-' + view);
+  const root = document.querySelector(arg.sel);
   const vis = (e) => { const r = e.getBoundingClientRect(); const s = getComputedStyle(e);
     return r.width > 0 && r.height > 0 && s.visibility !== 'hidden' && s.display !== 'none' && s.opacity !== '0'; };
   const sel = (e) => { let s = e.tagName.toLowerCase(); if (e.id) s += '#' + e.id;
@@ -45,12 +46,12 @@ JS = r"""
   // ---- titres et reperes
   const h = [...root.querySelectorAll('h1,h2,h3,h4,h5,h6,[role=heading]')].filter(vis);
   const h1 = h.filter(x => x.tagName === 'H1' || x.getAttribute('aria-level') === '1');
-  if (h1.length !== 1) out.push({ rule: 'H1', el: '#vue-' + view, msg: h1.length + ' titre(s) de niveau 1 visible(s)', text: '' });
-  let prev = 0;
-  h.forEach(x => { const l = x.tagName.startsWith('H') ? +x.tagName[1] : +(x.getAttribute('aria-level') || 2);
+  if (isView && h1.length !== 1) out.push({ rule: 'H1', el: '#vue-' + view, msg: h1.length + ' titre(s) de niveau 1 visible(s)', text: '' });
+  let prev = isView ? 0 : 1;
+  h.forEach(x => { const l = x.getAttribute('aria-level') ? +x.getAttribute('aria-level') : (x.tagName.startsWith('H') ? +x.tagName[1] : 2);
     if (prev && l > prev + 1) add('H2', x, 'saut de niveau h' + prev + ' -> h' + l); prev = l; });
   const mains = [...document.querySelectorAll('main,[role=main]')].filter(vis);
-  if (mains.length !== 1) out.push({ rule: 'L1', el: 'document', msg: mains.length + ' repere(s) main visible(s)', text: '' });
+  if (isView && mains.length !== 1) out.push({ rule: 'L1', el: 'document', msg: mains.length + ' repere(s) main visible(s)', text: '' });
   document.querySelectorAll('nav').forEach(n => { if (!n.getAttribute('aria-label') && !n.getAttribute('aria-labelledby')) add('L1', n, 'nav sans nom'); });
 
   // ---- controles
@@ -131,8 +132,28 @@ def main():
         for v in VIEWS:
             p.evaluate(f"showTab('{v}')")
             p.wait_for_timeout(500)
-            for r in p.evaluate(JS, v):
+            for r in p.evaluate(JS, {"view": v, "sel": f"#vue-{v}", "isView": True}):
                 rows.append((v, r))
+        # feuilles et fiches (ouvertes dans l'overlay), puis composants rares injectes dans la page
+        p.evaluate("showTab('accueil')")
+        scenarios = [("feuille semaine", "ouvrirSemaine(41)"), ("fiche seance", "ouvrirSeance(41,3)"),
+                     ("fiche partielle S27", "ouvrirSeance(27,2)"), ("fiche partielle S32", "ouvrirSeance(32,1)")]
+        for name, call in scenarios:
+            p.evaluate(call)
+            p.wait_for_timeout(500)
+            for r in p.evaluate(JS, {"view": name, "sel": "#boite", "isView": False}):
+                rows.append((name, r))
+            p.evaluate("fermer()")
+            p.wait_for_timeout(250)
+        p.evaluate("""(function(){var d=document.createElement('div');d.id='a11y-probe';d.style.padding='12px';
+          d.innerHTML='<div class="wdg-alert">Chaleur — pars avant 8h, hydrate-toi</div>'
+            +'<div class="wdg-alert wdg-alert-soft">Temps chaud — surveille ta FC</div>'
+            +'<span class="st-partiel sem-statut">PARTIEL</span>'
+            +'<button class="wr-share" style="animation:none">Terminer</button>'
+            +'<button class="rp-replay">Rejouer</button>';
+          document.getElementById('vue-accueil').appendChild(d);})()""")
+        for r in p.evaluate(JS, {"view": "composants", "sel": "#a11y-probe", "isView": False}):
+            rows.append(("composants", r))
         b.close()
 
     by_rule = {}
