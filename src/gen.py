@@ -2562,6 +2562,10 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":233,"date":"8 octobre 2026","sha":"","tag":"Contrat d enrichissement : un seul fichier de reference Strava, documentation a jour","items":[
+    "ENRICHISSEMENT : docs/ENRICHISSEMENT.md decrit le circuit complet (Strava, gen.py, build, branche, PR, fusion) pour le projet Claude ; CLAUDE.md, TECHNICAL.md et src/README.md mis a jour.",
+    "REFERENTIEL STRAVA : les valeurs de reference des audits (activites, chaussures, mois) vivent dans src/strava_reference.json au lieu d etre recopiees dans deux scripts ; une seance loggee ne modifie plus le code des audits."
+  ]},
   {"build":232,"date":"8 octobre 2026","sha":"","tag":"Build reproductible et verification automatique GitHub","items":[
     "BUILD REPRODUCTIBLE : gen.py calculait l ACWR a la date du jour ; la date de build est maintenant enregistree dans data/meta.json (BUILT_ON) et rejouee par build.py --check, qui ne casse donc plus le lendemain.",
     "VERIFICATION AUTOMATIQUE : un workflow GitHub (verify) rejoue le build, le preflight, la validation des donnees et les tests de regression sur chaque pull request et chaque push sur main."
