@@ -32,10 +32,16 @@ A chaque nouvelle seance loguee, ajouter sa ligne au referentiel avec les
 valeurs Strava. Le controle A0 ci-dessous signale toute seance loguee qui
 n'aurait pas de reference -- il est donc impossible d'oublier.
 """
+import os
+import sys
+for _d in (os.path.dirname(os.path.abspath(__file__)), os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "src")):
+    if os.path.exists(os.path.join(_d, "paths.py")):
+        sys.path.insert(0, _d)
+from paths import WORK, OUT_HTML, html_url  # noqa: E402
 import json
 import sys
 
-DATA = "/tmp/data.json"
+DATA = os.path.join(WORK, "data.json")
 
 # ── Referentiel Strava : date -> (km, effort_relatif, D+) ────────────
 # Etabli par reconciliation integrale le 31/08/2026.

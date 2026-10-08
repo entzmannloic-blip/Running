@@ -1,9 +1,9 @@
 # CLAUDE.md — Contexte Running PWA
 
 ## ⚠ Learning — LIRE EN PREMIER
-Ce projet apprend de ses erreurs. **Avant tout push**, lancer depuis /tmp :
+Ce projet apprend de ses erreurs. **Avant tout push**, lancer après le build :
 ```
-python3 scripts/preflight.py
+python scripts/preflight.py
 ```
 Il encode mécaniquement les erreurs passées (pipeline stale, build désync, syntaxe JS, emoji surrogate-pair, mauvaise semaine ISO, token en clair, HTML tronqué). Un échec critique = **ne pas pousser**.
 
@@ -25,21 +25,26 @@ Le détail de chaque leçon (cause racine + garde-fou) est dans **docs/LESSONS.m
 ## Règles absolues (voir docs/TECHNICAL.md §14 pour le détail)
 
 1. **POC avant prod** — Toute feature visuelle = artifact POC → validation Loïc → code prod
-2. **Checklist build** : `python3 gen.py && python3 assemble.py && node --check app.js`
-   - `node --check` qui échoue = STOP, ne jamais push
+2. **Checklist build** : `python src/build.py` (gen + assemble + `node --check`)
+   - Un échec de build ou de `node --check` = STOP, ne jamais push
 3. **CHANGELOG obligatoire** — Incrémenter le build ET ajouter une entrée avant chaque push
 4. **Fichiers** — Toujours pousser `src/` modifiés + `index.html` ensemble (commit atomique via Git Data API)
 5. **Chaussures** — `Strava:get_gear` après chaque log de séance → update gen.py (km arrondi) → rebuild
 6. **SHA** — Toujours GET le SHA/ref avant le commit (sinon 409 Conflict)
 7. **⚠️ Emojis dans gen.py** — Ne jamais écrire un emoji via paire de surrogates (ex. `\uD83D\uDC4D`) en Python : `open('w')` tronque puis `.write()` lève UnicodeEncodeError → gen.py vidé. Utiliser le caractère littéral ou `\U0001F44D`. Si gen.py vidé : le restaurer depuis le dernier build poussé (`raw.githubusercontent.com/.../main/src/gen.py`).
 
-## Pipeline build
+## Pipeline build (portable — Windows, Linux, CI)
+Depuis la racine du dépôt, une seule commande (plus de `/tmp` ni de `/mnt/user-data`) :
 ```bash
-cp src/gen.py src/app.js src/css.txt src/css_extra.txt src/body.html src/assemble.py src/hist.json /tmp/
-cd /tmp && python3 gen.py && python3 assemble.py && node --check app.js
-# sortie attendue gen.py : "Semaines: 30 | Séances: 131"
-cp /mnt/user-data/outputs/plan-entrainement.html index.html
+python src/build.py            # copie src/ dans build/, gen.py, assemble.py, node --check, écrit index.html
+python src/build.py --check    # n'écrit rien : échoue si index.html committé ≠ résultat du build
+python scripts/preflight.py    # contrôles statiques (après le build)
+python scripts/test_regression.py   # tests runtime (Playwright + Chromium)
 ```
+- Dossier de travail : `build/` (ignoré par Git), surchargeable par la variable `RUNNING_WORK`.
+- Chemins centralisés dans `src/paths.py`. Sous Windows, définir `PYTHONUTF8=1` pour lancer preflight et les tests à la main (`build.py` le fait seul).
+- Sortie attendue de gen.py : « Semaines: 30 | Séances: 137 » (le chiffre 131 des anciennes docs est périmé).
+- Les copies `src/preflight.py` et `src/release.py` doivent rester identiques à `scripts/` (l'ancien `release.py` les pousse) ; elles seront consolidées plus tard.
 
 ## Fichiers clés (compteurs au build 51)
 - `src/gen.py` (~932 lignes) — données : plan, séances, chaussures, dossiers, palmarès, CHANGELOG

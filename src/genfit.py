@@ -85,12 +85,12 @@ def build_all(data_path, out_dir):
     return made
 
 if __name__=='__main__':
-    made=build_all('/tmp/data.json','/tmp/fit_out')
+    made=build_all('data.json','fit_out')
     print(f"{len(made)} fichiers .fit générés")
     # auto-validation CRC + parsabilité
     bad=0
     for base,ln,nst in made:
-        b=open(f'/tmp/fit_out/{base}','rb').read()
+        b=open(f'fit_out/{base}','rb').read()
         if fit_crc(b[:-2])!=struct.unpack('<H',b[-2:])[0]:
             print("  CRC FAIL", base); bad+=1
     print("Tous CRC OK" if bad==0 else f"{bad} CRC en échec")

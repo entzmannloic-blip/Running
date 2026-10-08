@@ -23,7 +23,7 @@ def date_for(arr,weeknum):
 
 # -*- coding: utf-8 -*-
 import json, re
-CSS=open('/tmp/css.txt').read()
+CSS=open('css.txt',encoding='utf-8').read()
 
 P_REC="6:15-6:45/km"; P_EF="5:50-6:25/km"; P_AM="≈5:20/km"; P_SEUIL="≈4:50/km"; P_TRAIL="à l'effort"
 P_S30="≈4:40/km"; P_S60="≈4:55/km"; F_S30="172-180"; F_S60="166-174"
@@ -2195,7 +2195,7 @@ DOSSIERS={
 }
 print("Semaines:",len(SEANCES_BY_WEEK)+1,"| Séances:",sum(len(v) for v in SEANCES_BY_WEEK.values()))
 import json as _j
-_hist=_j.load(open('/tmp/hist.json'))
+_hist=_j.load(open('hist.json',encoding='utf-8'))
 
 # ═══════════════════════════════════════════════════════════════════
 # HIST — volumes hebdomadaires (graphiques de progression du Cockpit)
@@ -2558,6 +2558,10 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":225,"date":"8 octobre 2026","sha":"","tag":"Build portable : une seule commande, plus de dependance au dossier /tmp","items":[
+    "BUILD PORTABLE : python src/build.py construit index.html depuis la racine du depot, sous Windows comme sous Linux. Les chemins /tmp et /mnt/user-data sont remplaces par un module commun src/paths.py (dossier de travail build/, ignore par Git).",
+    "CONTROLE : python src/build.py --check echoue si index.html n est pas exactement le resultat du build. preflight.py et test_regression.py passent sous Windows (16/16)."
+  ]},
   {"build":224,"date":"8 octobre 2026","sha":"","tag":"Passe complete du Cockpit : projection, ACWR, polarisation, compteurs et totaux remis d'aplomb","items":[
     "PROJECTION MARATHON (boule de cristal) : 3h56 -> 3h41. Ce n'est pas un changement de forme, c'est la correction de ses entrees. Elle lisait realise.allure, souvent la moyenne de TOUTE la seance (echauffement et recups compris), et comptait la sortie vallonnee du 29/09 (5:51/km) comme une seance de seuil, soit un point a 4h21. Nouveau champ realise.allure_travail (allure des blocs seuls) pour 19/07 (4:28), 30/07 (5:09), 28/08 (4:41), 02/09 (4:36) et 06/10 (5:18), et realise.hors_projection pour le 29/09. A lire avec prudence : le seul 06/10 donne un equivalent marathon de 3h47, le reste est tire vers le bas par les seuils.",
     "ACWR DU BANDEAU : le tuile du haut affichait 1,00 « maitrise » pendant que l'alerte juste a cote disait 2,35. La courbe hebdomadaire utilisait une moyenne exponentielle par semaine (et prenait la semaine en cours, incomplete, pour une semaine pleine). Elle utilise maintenant la meme definition que partout ailleurs (charge 7 jours / moyenne 28 jours), prise a la fin de chaque semaine, et a aujourd'hui pour la semaine en cours.",
@@ -3908,5 +3912,5 @@ PALMARES=[
 ]
 _j.dump({"PHASES":PHASES,"COUL":COUL,"SEMAINES":SEMAINES,"SBW":SEANCES_BY_WEEK,"GEAR":GEAR,"RACES":RACES,
   "PROFIL":PROFIL,"PROJ":PROJ,"RECORDS":RECORDS,"VIGILANCE":VIGILANCE,"S24R":S24_REALISE,
-  "HIST":_hist["HIST"],"POLAR":_hist["POLAR"],"ALLURES":ALLURES,"ALLURES_COURSE":ALLURES_COURSE,"ZONES_FC":ZONES_FC,"MONTHLY":MONTHLY,"SAISON2026":SAISON2026,"SAISON_EFF":SAISON_EFF,"ACWR_DATA":ACWR_DATA,"RECORDS_PERF":RECORDS_PERF,"JOURNAL":JOURNAL,"REWINDS":REWINDS,"MAJ":CHANGELOG[0]["date"],"HEATMAP":HEATMAP,"DOSSIERS":DOSSIERS,"PALMARES":PALMARES,"CHANGELOG":CHANGELOG},open('/tmp/data.json','w'),ensure_ascii=False)
+  "HIST":_hist["HIST"],"POLAR":_hist["POLAR"],"ALLURES":ALLURES,"ALLURES_COURSE":ALLURES_COURSE,"ZONES_FC":ZONES_FC,"MONTHLY":MONTHLY,"SAISON2026":SAISON2026,"SAISON_EFF":SAISON_EFF,"ACWR_DATA":ACWR_DATA,"RECORDS_PERF":RECORDS_PERF,"JOURNAL":JOURNAL,"REWINDS":REWINDS,"MAJ":CHANGELOG[0]["date"],"HEATMAP":HEATMAP,"DOSSIERS":DOSSIERS,"PALMARES":PALMARES,"CHANGELOG":CHANGELOG},open('data.json','w',encoding='utf-8'),ensure_ascii=False)
 print("OK")

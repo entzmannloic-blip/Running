@@ -43,7 +43,7 @@ casse la chaine de livraison. On ne peut plus en oublier un.
 
 import re, sys, json
 
-APP = '/tmp/app.js'
+APP = 'app.js'
 
 # ------------------------------------------------------------------ registre
 # cle : (statut, description, justification si STATIC)

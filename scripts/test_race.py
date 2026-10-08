@@ -9,9 +9,15 @@ s'applique a la NOUVELLE vue, qui devient blanche.
 
 Ce script mesure a partir de quel delai le bug disparait.
 """
+import os
+import sys
+for _d in (os.path.dirname(os.path.abspath(__file__)), os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "src")):
+    if os.path.exists(os.path.join(_d, "paths.py")):
+        sys.path.insert(0, _d)
+from paths import WORK, OUT_HTML, html_url  # noqa: E402
 from playwright.sync_api import sync_playwright
 
-HTML = "file:///mnt/user-data/outputs/plan-entrainement.html"
+HTML = html_url()
 
 with sync_playwright() as pw:
     b = pw.chromium.launch()

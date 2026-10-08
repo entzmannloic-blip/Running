@@ -10,13 +10,19 @@ Sortie : liste d'anomalies classees par severite.
   RISQUE   = piege latent, casse a la prochaine occasion
   INFO     = a surveiller, pas bloquant
 """
+import os
+import sys
+for _d in (os.path.dirname(os.path.abspath(__file__)), os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "src")):
+    if os.path.exists(os.path.join(_d, "paths.py")):
+        sys.path.insert(0, _d)
+from paths import WORK, OUT_HTML, html_url  # noqa: E402
 import json
 import re
 import datetime as dt
 from collections import Counter, defaultdict
 
-DATA = "/tmp/data.json"
-APPJS = "/tmp/app.js"
+DATA = os.path.join(WORK, "data.json")
+APPJS = os.path.join(WORK, "app.js")
 
 ANO = []
 def bug(code, msg):    ANO.append(("BUG", code, msg))
