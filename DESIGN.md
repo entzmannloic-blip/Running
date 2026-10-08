@@ -7,7 +7,7 @@ colors:
   primary-soft: "#99f6e4"
   primary-wash: "#f0fdfa"
   ok: "#16a34a"
-  ok-deep: "#15803d"
+  ok-deep: "#166534"
   ok-soft: "#bbf7d0"
   ok-wash: "#dcfce7"
   warn: "#f59e0b"
@@ -23,8 +23,9 @@ colors:
   slate-wash: "#f8fafc"
   ink: "#1e293b"
   ink-2: "#475569"
-  ink-3: "#64748b"
+  ink-3: "#5b6b80"
   paper: "#ffffff"
+  page: "#f2f2f7"
 typography:
   display:
     fontFamily: "system-ui, -apple-system, 'Segoe UI', sans-serif"
@@ -126,7 +127,7 @@ Palette retenue et sobre : un teal, trois états, un neutre slate.
 - **Rouge danger** (#ef4444) : charge aiguë élevée, forme basse, alerte. Variantes `danger-deep`, `danger-soft`, `danger-wash`.
 
 ### Neutral
-- **Encre** (#1e293b) texte principal ; **Encre 2** (#475569) texte secondaire ; **Encre 3** (#64748b) légendes et étiquettes.
+- **Encre** (#1e293b) texte principal ; **Encre 2** (#475569) texte secondaire ; **Encre 3** (#5b6b80) légendes et étiquettes.
 - **Papier** (#ffffff) surface des cartes ; **Ardoise pâle** (#f8fafc) fond de l'app ; **Ligne** (#e2e8f0) bordures et séparateurs ; **Ardoise** (#94a3b8) éléments inactifs.
 
 ### Mode sombre
@@ -166,6 +167,9 @@ Hybride : surfaces à plat avec une bordure fine `slate-line`, ombres douces et 
 ### Shadow Vocabulary
 - **Ombre carte** (`0 1px 2px rgba(15,23,42,.06), 0 4px 12px -6px rgba(15,23,42,.10)`) : état de repos des cartes.
 - **Ombre levée** (`0 2px 6px rgba(15,23,42,.07), 0 18px 36px -14px rgba(15,23,42,.22)`) : survol et éléments en avant.
+
+### Mouvement
+Décélération exponentielle (`cubic-bezier(.25,1,.5,1)`), jamais de rebond ni d'élasticité. Tout mouvement et toute animation infinie ont une alternative sous `prefers-reduced-motion`.
 
 ### Named Rules
 **The Quiet Shadow Rule.** L'ombre est diffuse et basse en opacité ; jamais de bord noir ni d'ombre dure.

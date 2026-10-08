@@ -2562,6 +2562,10 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":237,"date":"8 octobre 2026","sha":"","tag":"Finition de la refonte : mouvement sans rebond, documentation et audit final","items":[
+    "MOUVEMENT : les 9 courbes d easing a rebond (overshoot) sont remplacees par une decelaration exponentielle ; les animations infinies restent coupees sous prefers-reduced-motion.",
+    "DOCUMENTATION : DESIGN.md synchronise avec les jetons finaux (texte, vert, page, mode sombre, mouvement) ; docs/AUDIT-2026-10.md compare l audit avant et apres (11/20 puis 15/20)."
+  ]},
   {"build":236,"date":"8 octobre 2026","sha":"","tag":"Mode sombre qui suit le reglage du telephone","items":[
     "MODE SOMBRE : l app suit le reglage iOS (clair ou sombre), en direct et des l ecran de chargement. Memes teintes de marque ; surfaces, neutres de texte et variantes de texte redefinis par jetons (--bg-page, --bg-card, --bord-card).",
     "REPARATION : l ancien mode nuit, inactif depuis la disparition de son bouton, laissait des cartes blanches avec du texte clair ; surfaces et degrades pastel reconstruits.",
