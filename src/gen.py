@@ -2562,6 +2562,9 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":239,"date":"8 octobre 2026","sha":"","tag":"Journal des decisions de la refonte","items":[
+    "DOCUMENTATION : docs/REFONTE-DECISIONS.md conserve le registre des arbitrages de la refonte (ecarts au plan, couts, points mineurs laisses, actions en attente)."
+  ]},
   {"build":238,"date":"8 octobre 2026","sha":"","tag":"Corrections de la relecture finale : mode sombre des fiches, fusion automatique plus sure, build qui doit augmenter","items":[
     "MODE SOMBRE : texte illisible corrige sur la pastille Partiel, les boutons Terminer et Rejouer, l alerte chaleur, les tableaux des fiches, les boutons de fiche ; l audit d accessibilite couvre desormais les feuilles de semaine, les fiches de seance et les composants rares en clair et en sombre.",
     "ACCESSIBILITE DES FICHES : contrastes, cibles de 44 px, texte courant a 13 px, niveau de titre des sections Prevu et Realise.",
