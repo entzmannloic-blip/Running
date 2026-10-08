@@ -2562,6 +2562,9 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":241,"date":"8 octobre 2026","sha":"","tag":"CLAUDE.md : estimation a chaque demande, compte rendu de derive, astuces tokens","items":[
+    "DOCUMENTATION : CLAUDE.md demande une estimation a chaque demande, un compte rendu estime contre reel apres chaque livraison, des regles pour ne pas depenser de tokens inutilement et des astuces pour Loic."
+  ]},
   {"build":240,"date":"8 octobre 2026","sha":"","tag":"CLAUDE.md : preference d estimation d effort","items":[
     "DOCUMENTATION : CLAUDE.md demande, avant toute tache importante, une estimation par etape (tokens et part en pour cent), l etat des limites du plan et une recommandation."
   ]},
