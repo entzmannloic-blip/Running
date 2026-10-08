@@ -5,6 +5,7 @@ audit_a11y.py — audit d'accessibilite des 4 vues (390 px), sans dependance ext
 
     python scripts/audit_a11y.py            # rapport + code retour 1 s'il y a des violations
     python scripts/audit_a11y.py --detail   # liste des elements en cause
+    python scripts/audit_a11y.py --dark     # meme audit en mode sombre (reglage du telephone)
 
 Regles (inspirees de WCAG 2.2 AA) :
   H1  un seul <h1> visible par vue                    H2  pas de saut de niveau de titre
@@ -79,7 +80,8 @@ JS = r"""
     let layers = []; for (let n = e; n && n.nodeType === 1; n = n.parentElement) { const s = getComputedStyle(n);
       if (s.backgroundImage && s.backgroundImage !== 'none') return null;
       const c = parse(s.backgroundColor); if (c && c.a > 0) { layers.push(c); if (c.a === 1) break; } }
-    let base = { r: 248, g: 250, b: 252, a: 1 }; // --gris-fond
+    let base = parse(getComputedStyle(document.body).backgroundColor) || { r: 248, g: 250, b: 252, a: 1 };
+    if (base.a < 1) base = over(base, { r: 255, g: 255, b: 255, a: 1 });
     for (let i = layers.length - 1; i >= 0; i--) base = over(layers[i], base); return base; };
   const emojiOnly = /^[\p{Extended_Pictographic}️‍\s]+$/u;
   const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
@@ -111,7 +113,8 @@ def main():
     with sync_playwright() as pw:
         b = pw.chromium.launch()
         ctx = b.new_context(viewport={"width": 390, "height": 844}, device_scale_factor=2, locale="fr-FR",
-                            service_workers="block", reduced_motion="reduce")
+                            service_workers="block", reduced_motion="reduce",
+                            color_scheme="dark" if "--dark" in sys.argv[1:] else "light")
         ctx.route("**/*open-meteo.com/**", lambda r: r.abort())
         p = ctx.new_page()
         p.clock.install(time="2026-10-08T10:00:00")

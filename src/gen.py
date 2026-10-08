@@ -2562,6 +2562,11 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":236,"date":"8 octobre 2026","sha":"","tag":"Mode sombre qui suit le reglage du telephone","items":[
+    "MODE SOMBRE : l app suit le reglage iOS (clair ou sombre), en direct et des l ecran de chargement. Memes teintes de marque ; surfaces, neutres de texte et variantes de texte redefinis par jetons (--bg-page, --bg-card, --bord-card).",
+    "REPARATION : l ancien mode nuit, inactif depuis la disparition de son bouton, laissait des cartes blanches avec du texte clair ; surfaces et degrades pastel reconstruits.",
+    "CONTROLE : audit_a11y.py --dark verifie les contrastes en mode sombre ; captures de reference claires et sombres."
+  ]},
   {"build":235,"date":"8 octobre 2026","sha":"","tag":"Coherence des chiffres, jauge VO2max stable, couleurs ramenees aux jetons","items":[
     "COMPTEUR DE SORTIES : l accueil et Courses affichaient 58 et 59 pour la meme chose (une seance de PPG sans kilometrage etait comptee d un cote seulement). Meme definition partout, et libelle precis : sorties du plan.",
     "JAUGE VO2MAX : la valeur s affiche d emblee, seul l arc s anime ; plus de passage par 0 sur un chiffre de sante.",

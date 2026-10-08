@@ -81,7 +81,7 @@ function toggleTheme(){const n=document.body.classList.toggle('nuit');document.g
 
 /* ===== onglets ===== */
 /* Couleurs de TEXTE : les teintes de marque nues (graphiques) sont remplacees par leurs variantes profondes (contraste AA). */
-function _tc(c){return({'#ef4444':'var(--danger-deux)','#16a34a':'var(--ok-deux)','#0d9488':'var(--primary-deux)','#f59e0b':'var(--warn-deux)','#94a3b8':'var(--texte-trois)'})[String(c).toLowerCase()]||c;}
+function _tc(c){return({'#ef4444':'var(--danger-deux)','#16a34a':'var(--ok-deux)','#0d9488':'var(--primary-deux)','#f59e0b':'var(--warn-deux)','#94a3b8':'var(--texte-trois)','#65a30d':'var(--ok-deux)','#b45309':'var(--warn-deux)','#b91c1c':'var(--danger-deux)'})[String(c).toLowerCase()]||c;}
 function showTab(t){
   if(navigator.vibrate)try{navigator.vibrate(8)}catch(e){}
   ['accueil','plan','cockpit','palmares'].forEach(id=>{
@@ -2357,7 +2357,7 @@ function initFormeHelp(){
     </div>
     <div class="fh-note">💡 Le score est un <strong>composite</strong> : il répond à « comment se passe mon entraînement », pas seulement à « suis-je fatigué ». Au lendemain d'une grosse sortie, l'ACWR et l'adhérence peuvent rester excellents alors que la fraîcheur s'effondre. <strong>Regarde toujours la composante Fraîcheur et le message du jour</strong> avant de décider d'une séance de qualité.</div>
     <div class="fh-note">💡 Tape directement sur la barre "Forme du jour" pour voir le détail de chaque composante avec tes valeurs du jour en temps réel.</div>
-    <div class="fh-note" style="background:#f0fdf4;color:var(--ok-deux)">🎯 L'objectif à long terme : maintenir le score au-dessus de 75 sur les semaines de charge, et au-dessus de 80 pendant les allègements. Le trend (↑ ↓ →) te dit si tu vas dans le bon sens.</div>
+    <div class="fh-note" style="background:var(--ok-fond);color:var(--ok-deux)">🎯 L'objectif à long terme : maintenir le score au-dessus de 75 sur les semaines de charge, et au-dessus de 80 pendant les allègements. Le trend (↑ ↓ →) te dit si tu vas dans le bon sens.</div>
   </div>
 </div>`);}
 
@@ -2482,9 +2482,9 @@ function renderPalmares(){
 <h1 class="lt-title" style="margin-bottom:2px">Courses</h1>
 <div style="font-size:var(--t-caption);color:var(--texte-deux);margin-bottom:14px">À venir &amp; passées · objectifs et résultats</div><button class="wr-launch" onclick="openWrapped()"><span class="wrl-ico">✨</span><span class="wrl-txt"><span class="wrl-t1">Ta saison en chiffres</span><span class="wrl-t2">${_wd.n} sorties du plan · ${_wd.km} km · ${_wd.dplus} m D+</span></span><span class="wrl-go">▶</span></button>${_aVenir}<h2 class="crs-lab">Passées</h2>
 <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px">
-  <div style="background:var(--bg-card,#fff);border:.5px solid var(--bord-card,#e2e8f0);border-radius:12px;padding:10px;text-align:center"><div style="font-size:20px;font-weight:700;color:var(--texte)">${P.length}</div><div style="font-size:var(--t-data);text-transform:uppercase;letter-spacing:.05em;color:var(--texte-deux);margin-top:4px">Courses</div></div>
-  <div style="background:var(--bg-card,#fff);border:.5px solid var(--bord-card,#e2e8f0);border-radius:12px;padding:10px;text-align:center"><div style="font-size:20px;font-weight:700;color:var(--texte)">${totalKm.toFixed(0)}</div><div style="font-size:var(--t-data);text-transform:uppercase;letter-spacing:.05em;color:var(--texte-deux);margin-top:4px">km courus</div></div>
-  <div style="background:var(--bg-card,#fff);border:.5px solid var(--bord-card,#e2e8f0);border-radius:12px;padding:10px;text-align:center"><div style="font-size:20px;font-weight:700;color:var(--texte)">${(totalDplus/1000).toFixed(1)}k</div><div style="font-size:var(--t-data);text-transform:uppercase;letter-spacing:.05em;color:var(--texte-deux);margin-top:4px">D+ cumulé</div></div>
+  <div style="background:var(--bg-card);border:.5px solid var(--bord-card);border-radius:12px;padding:10px;text-align:center"><div style="font-size:20px;font-weight:700;color:var(--texte)">${P.length}</div><div style="font-size:var(--t-data);text-transform:uppercase;letter-spacing:.05em;color:var(--texte-deux);margin-top:4px">Courses</div></div>
+  <div style="background:var(--bg-card);border:.5px solid var(--bord-card);border-radius:12px;padding:10px;text-align:center"><div style="font-size:20px;font-weight:700;color:var(--texte)">${totalKm.toFixed(0)}</div><div style="font-size:var(--t-data);text-transform:uppercase;letter-spacing:.05em;color:var(--texte-deux);margin-top:4px">km courus</div></div>
+  <div style="background:var(--bg-card);border:.5px solid var(--bord-card);border-radius:12px;padding:10px;text-align:center"><div style="font-size:20px;font-weight:700;color:var(--texte)">${(totalDplus/1000).toFixed(1)}k</div><div style="font-size:var(--t-data);text-transform:uppercase;letter-spacing:.05em;color:var(--texte-deux);margin-top:4px">D+ cumulé</div></div>
 </div>
 ${P.slice().sort((a,b)=>b.date.localeCompare(a.date)).map((p,i)=>{
   const typeLabel=types[p.type]||p.type;
@@ -2492,8 +2492,8 @@ ${P.slice().sort((a,b)=>b.date.localeCompare(a.date)).map((p,i)=>{
   const mois=['janv.','févr.','mars','avr.','mai','juin','juil.','août','sept.','oct.','nov.','déc.'];
   const dateStr=d.getDate()+' '+mois[d.getMonth()]+' '+d.getFullYear();
   const classGen=p.classement_gen?`<span style="font-size:var(--t-data);font-weight:600;padding:2px 8px;border-radius:99px;background:var(--primary-fond);color:var(--primary-deux)">#${p.classement_gen}${p.total_finishers?' / '+p.total_finishers:''} général</span>`:'';
-  const classCat=p.classement_cat?`<span style="font-size:var(--t-data);font-weight:600;padding:2px 8px;border-radius:99px;background:#f0fdf4;color:var(--ok-deux)">#${p.classement_cat} cat.</span>`:'';
-  return`<div style="background:var(--bg-card,#fff);border:.5px solid var(--bord-card,#e2e8f0);border-radius:14px;margin-bottom:10px;overflow:hidden">
+  const classCat=p.classement_cat?`<span style="font-size:var(--t-data);font-weight:600;padding:2px 8px;border-radius:99px;background:var(--ok-fond);color:var(--ok-deux)">#${p.classement_cat} cat.</span>`:'';
+  return`<div style="background:var(--bg-card);border:.5px solid var(--bord-card);border-radius:14px;margin-bottom:10px;overflow:hidden">
     <div style="display:flex;align-items:stretch">
       <div style="width:5px;background:${p.accent};flex:0 0 5px"></div>
       <div style="padding:12px 12px;flex:1;min-width:0">
@@ -3070,11 +3070,11 @@ function _decoupRuns(){
 }
 function _decoupVerdict(d){
   var ecart=d.pct-d.attendu;
-  if(d.pct<3)                return {t:"Footing ma\u00eetris\u00e9",c:"#16a34a",f:"#dcfce7"};
-  if(ecart<=-2)              return {t:"Bien tenu",c:"#16a34a",f:"#dcfce7"};
-  if(d.pct<6||ecart<=0)      return {t:"Conforme",c:"#65a30d",f:"#ecfccb"};
-  if(d.pct<9||ecart<=1.5)    return {t:"Sous tension",c:"#b45309",f:"#fef3c7"};
-  return {t:"S\u00e9ance subie",c:"#b91c1c",f:"#fee2e2"};
+  if(d.pct<3)                return {t:"Footing ma\u00eetris\u00e9",c:"#16a34a",f:"var(--ok-fond)"};
+  if(ecart<=-2)              return {t:"Bien tenu",c:"#16a34a",f:"var(--ok-fond)"};
+  if(d.pct<6||ecart<=0)      return {t:"Conforme",c:"#65a30d",f:"var(--ok-fond)"};
+  if(d.pct<9||ecart<=1.5)    return {t:"Sous tension",c:"#b45309",f:"var(--warn-fond)"};
+  return {t:"S\u00e9ance subie",c:"#b91c1c",f:"var(--danger-fond)"};
 }
 function _decoupRender(){
   var el=document.getElementById('decoup-body');if(!el)return;
@@ -3502,8 +3502,8 @@ ${card('ckDP','⛰ Dénivelé D+','',null,'m',75,'','dp')}
 </div>
 </div>
 <div id="ck-modal" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,.6);z-index:200;align-items:flex-end">
-  <div style="background:var(--bg-card,#fff);border-radius:18px 18px 0 0;width:100%;max-height:90vh;overflow-y:auto">
-    <div style="position:sticky;top:0;background:var(--bg-card,#fff);padding:14px 14px 10px;border-bottom:.5px solid var(--bord-card,#e2e8f0)">
+  <div style="background:var(--bg-card);border-radius:18px 18px 0 0;width:100%;max-height:90vh;overflow-y:auto">
+    <div style="position:sticky;top:0;background:var(--bg-card);padding:14px 14px 10px;border-bottom:.5px solid var(--bord-card)">
       <div style="width:36px;height:4px;background:#cbd5e1;border-radius:99px;margin:0 auto 12px"></div>
       <button onclick="document.getElementById('ck-modal').style.display='none'" style="position:absolute;top:14px;right:14px;width:28px;height:28px;border-radius:50%;background:var(--gris-fond);border:none;color:var(--texte-deux);font-size:15px;cursor:pointer">✕</button>
       <div style="font-size:16px;font-weight:700;color:var(--texte)" id="ck-m-title"></div>

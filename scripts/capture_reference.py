@@ -26,6 +26,7 @@ FIXED_NOW = "2026-10-08T10:00:00"
 
 
 def capture(out_dir, scheme="light"):
+    suffix = "-dark" if scheme == "dark" else ""
     from playwright.sync_api import sync_playwright
 
     os.makedirs(out_dir, exist_ok=True)
@@ -47,26 +48,29 @@ def capture(out_dir, scheme="light"):
             p.evaluate(f"showTab('{v}')")
             p.wait_for_timeout(600)
             p.evaluate("window.scrollTo(0,0)")
-            p.screenshot(path=os.path.join(out_dir, f"{v}.png"))
+            p.screenshot(path=os.path.join(out_dir, f"{v}{suffix}.png"))
         b.close()
 
 
 def main():
     args = sys.argv[1:]
+    names = [f"{v}{sfx}" for sfx in ("", "-dark") for v in VIEWS]
     if "--check" in args:
         tmp = tempfile.mkdtemp(prefix="running-ref-")
         capture(tmp)
-        diffs = [v for v in VIEWS
-                 if not os.path.exists(os.path.join(REF_DIR, f"{v}.png"))
-                 or open(os.path.join(tmp, f"{v}.png"), "rb").read()
-                 != open(os.path.join(REF_DIR, f"{v}.png"), "rb").read()]
+        capture(tmp, "dark")
+        diffs = [n for n in names
+                 if not os.path.exists(os.path.join(REF_DIR, f"{n}.png"))
+                 or open(os.path.join(tmp, f"{n}.png"), "rb").read()
+                 != open(os.path.join(REF_DIR, f"{n}.png"), "rb").read()]
         if diffs:
             print("DIFFERENCES :", ", ".join(diffs), "(captures dans", tmp + ")")
             sys.exit(1)
-        print("Captures identiques aux references (4/4)")
+        print(f"Captures identiques aux references ({len(names)}/{len(names)} : clair et sombre)")
         return
     out = args[args.index("--out") + 1] if "--out" in args else REF_DIR
     capture(out)
+    capture(out, "dark")
     print("Captures ecrites dans", out)
 
 

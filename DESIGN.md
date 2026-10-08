@@ -129,6 +129,9 @@ Palette retenue et sobre : un teal, trois états, un neutre slate.
 - **Encre** (#1e293b) texte principal ; **Encre 2** (#475569) texte secondaire ; **Encre 3** (#64748b) légendes et étiquettes.
 - **Papier** (#ffffff) surface des cartes ; **Ardoise pâle** (#f8fafc) fond de l'app ; **Ligne** (#e2e8f0) bordures et séparateurs ; **Ardoise** (#94a3b8) éléments inactifs.
 
+### Mode sombre
+Le mode sombre suit le réglage du téléphone (`prefers-color-scheme`, classe `nuit` sur `<body>`, en direct). Mêmes teintes de marque : le teal, le vert, l'ambre et le rouge de **remplissage** ne changent pas ; seuls changent les **surfaces** (`--bg-page` #0b1220, `--bg-card` #1b2536, `--bord-card` #334155), les **neutres de texte** (`--texte` #e8eef7, `--texte-deux` #c3cee0, `--texte-trois` #9aa7bd) et les **variantes de texte et de fond teinté** (`--primary-deux` #5eead4, `--ok-deux` #86efac, `--warn-deux` #fcd34d, `--danger-deux` #fca5a5 ; fonds `-fond` et `-clair` assombris). `audit_a11y.py --dark` contrôle les contrastes. Les fonds en dégradé pastel sont remplacés par `--bg-card` en mode sombre.
+
 ### Named Rules
 **The One Voice Rule.** Le teal est le seul accent de marque. Une couleur d'état n'est jamais utilisée pour décorer, et chaque état garde un seul sens.
 **The Numbers First Rule.** La valeur se lit avant son étiquette : gros chiffre, petite étiquette en capitales.
@@ -202,4 +205,5 @@ Anneau ou demi-cercle SVG avec la valeur centrée en gros : forme du jour (rouge
 - **Don't** ajouter une couleur ad hoc hors tokens (les dégradés par course sont la seule exception).
 - **Don't** utiliser une couleur d'état pour décorer.
 - **Don't** introduire une taille de texte hors de l'échelle à 7 niveaux.
+- **Don't** écrire un fond blanc ou une couleur de texte en dur : utiliser `--bg-card`, `--bg-page` et les jetons de texte, sinon la vue casse en mode sombre.
 - **Don't** afficher une valeur par défaut qui ressemble à une mesure (0, NaN, undefined) quand la donnée manque.
