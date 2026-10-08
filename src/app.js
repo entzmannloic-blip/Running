@@ -2298,9 +2298,8 @@ function closeInstall(){const o=document.getElementById('install-ov');if(o)o.cla
 function dismissInstall(){_lsSet('install_dismissed','1');const b=document.getElementById('install-banner');if(b)b.remove();}
 
 /* ===== Historique des versions ===== */
-function initVersionPanel(){
+function _buildVersionPanel(cl){
   if(!document.body||typeof document.body.insertAdjacentHTML!=='function')return;
-  const cl=(typeof CHANGELOG!=='undefined'?CHANGELOG:[])||[];
   const latest=cl[0]||{build:'—',date:'—'};
   document.body.insertAdjacentHTML('beforeend',`
 <div id="ver-ov" onclick="if(event.target===this)closeVersionPanel()">
@@ -2360,7 +2359,18 @@ function initFormeHelp(){
   </div>
 </div>`);}
 
-function openVersionPanel(){const o=document.getElementById('ver-ov');if(o)o.classList.add('open');}
+/* Le panneau de versions (200 Ko de changelog) n'est plus construit au demarrage :
+   la liste est chargee et le panneau cree a la premiere ouverture. */
+async function openVersionPanel(){
+  if(!document.getElementById('ver-ov')){
+    let cl;
+    try{cl=await loadChangelog();}
+    catch(e){alert('Historique indisponible hors connexion. Réessaie une fois en ligne.');return;}
+    _buildVersionPanel(cl);
+  }
+  const o=document.getElementById('ver-ov');
+  if(o)requestAnimationFrame(function(){o.classList.add('open');});
+}
 function closeVersionPanel(){const o=document.getElementById('ver-ov');if(o)o.classList.remove('open');}
 
 function checkAutoSync(){
@@ -4088,7 +4098,28 @@ function initBarre(se){const piste=document.getElementById('piste');if(!piste)re
     e.addEventListener('click',()=>{if(segActif)segActif.classList.remove('actif');if(segActif===e){segActif=null;pan.classList.remove('visible');return;}segActif=e;e.classList.add('actif');dnom.textContent=seg.nom;drole.textContent=seg.role;dgr.innerHTML=`<div><div class="di-label">Durée</div><div class="di-val">${fmt(seg.duree)}</div></div><div><div class="di-label">Bloc</div><div class="di-val">${seg.bloc}</div></div><div><div class="di-label">Début</div><div class="di-val">${fmt(seg.debut)}</div></div><div><div class="di-label">Fin</div><div class="di-val">${fmt(seg.fin)}</div></div>`;pan.classList.add('visible');});
     piste.appendChild(e);});
 }
-hydrateLogs();hydrateOverrides();try{_ckRebuild();}catch(e){console.warn('_ckRebuild',e);}initQuickLog();initCreneaux();initSessionMenu();initInstall();initVersionPanel();initFormeHelp();initCkHelp();renderHeader();renderPlan();rwAuto();setTimeout(checkAutoSync,800);
+hydrateLogs();hydrateOverrides();try{_ckRebuild();}catch(e){console.warn('_ckRebuild',e);}initQuickLog();initCreneaux();initSessionMenu();initInstall();initFormeHelp();initCkHelp();renderHeader();renderPlan();rwAuto();setTimeout(checkAutoSync,800);
+/* Nouvelle version : l'app installee sur iPhone reste en memoire des jours. Au retour au premier
+   plan (et 4 s apres le demarrage), on compare le build en cours a data/meta.json (jamais mis en cache). */
+var _RUN_BUILD=(typeof CHANGELOG!=='undefined'&&CHANGELOG[0])?CHANGELOG[0].build:0,_updLast=0;
+function _showUpdateBanner(){
+  if(document.getElementById('upd-banner'))return;
+  document.body.insertAdjacentHTML('beforeend','<div id="upd-banner" class="upd-banner" role="status"><span>Nouvelle version prête</span><button type="button" onclick="location.reload()">Actualiser</button></div>');
+}
+async function _checkNewVersion(force){
+  if(!force&&Date.now()-_updLast<60000)return;
+  _updLast=Date.now();
+  if(document.getElementById('upd-banner'))return;
+  try{
+    const r=await fetch('data/meta.json?t='+Date.now(),{cache:'no-store'});
+    if(!r.ok)return;
+    const m=await r.json();
+    const b=m&&m.CHANGELOG&&m.CHANGELOG[0]&&m.CHANGELOG[0].build;
+    if(b&&b>_RUN_BUILD)_showUpdateBanner();
+  }catch(e){}
+}
+document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible')_checkNewVersion();});
+setTimeout(_checkNewVersion,4000);
 if('serviceWorker'in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
 
 if(typeof window!=='undefined'){window.addEventListener('load',function(){setTimeout(function(){try{_revealScan()}catch(e){}},350)});}

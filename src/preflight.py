@@ -80,10 +80,13 @@ def check_build_number():
         crit("L02 build : impossible de lire CHANGELOG[0].build dans gen.py")
         return
     gen_build = int(m.group(1))
-    html = open(OUT_HTML, encoding="utf-8").read()
-    hm = re.search(r'"build":\s*(\d+)', html)
+    meta = os.path.join(os.path.dirname(OUT_HTML), "data", "meta.json")
+    if not os.path.exists(meta):
+        crit("L02 build : data/meta.json introuvable dans le site construit")
+        return
+    hm = re.search(r'"build":\s*(\d+)', open(meta, encoding="utf-8").read())
     if not hm:
-        crit("L02 build : numero de build introuvable dans l'HTML")
+        crit("L02 build : numero de build introuvable dans data/meta.json")
         return
     html_build = int(hm.group(1))
     if gen_build != html_build:
@@ -214,13 +217,13 @@ def check_html_sane():
     if not os.path.exists(OUT_HTML):
         return
     html = open(OUT_HTML, encoding="utf-8").read()
-    if len(html) < 400_000:
-        warn(f"L08 html : taille suspecte ({len(html)} octets, attendu ~700k)")
+    if len(html) < 100_000:
+        warn(f"L08 html : taille suspecte ({len(html)} octets, attendu ~160k : page + CSS, donnees dans data/)")
     if not html.rstrip().endswith("</html>"):
         crit("L08 html : le fichier ne se termine pas par </html> (tronque ?)")
     if "\x00" in html:
         crit("L08 html : null byte detecte dans l'HTML")
-    if not any("L08" in c for c in CRIT) and len(html) >= 400_000:
+    if not any("L08" in c for c in CRIT) and len(html) >= 100_000:
         ok(f"L08 html : sain ({len(html)} octets, ferme correctement)")
 
 

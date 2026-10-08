@@ -1786,3 +1786,6 @@ body,.accueil{background:#f2f2f7}
     transform:none;
   }
 }
+/* Bandeau « Nouvelle version prête » (au-dessus de la barre de navigation) */
+.upd-banner{position:fixed;left:var(--sp-4);right:var(--sp-4);bottom:calc(84px + env(safe-area-inset-bottom));z-index:95;display:flex;align-items:center;justify-content:space-between;gap:var(--sp-3);padding:var(--sp-2) var(--sp-2) var(--sp-2) var(--sp-4);background:var(--texte);color:var(--blanc);border-radius:var(--rayon);box-shadow:var(--ombre-lg);font-size:var(--t-callout);font-weight:var(--fw-semi)}
+.upd-banner button{min-height:44px;padding:0 var(--sp-4);border:none;border-radius:var(--rayon-pill);background:var(--primary);color:var(--blanc);font:inherit;font-weight:var(--fw-bold);cursor:pointer}

@@ -15,14 +15,14 @@ import sys
 for _d in (os.path.dirname(os.path.abspath(__file__)), os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "src")):
     if os.path.exists(os.path.join(_d, "paths.py")):
         sys.path.insert(0, _d)
-from paths import WORK, OUT_HTML, html_url  # noqa: E402
+from paths import WORK, OUT_HTML, html_url, site_text  # noqa: E402
 import json
 import re
 
 D = json.load(open(os.path.join(WORK, "data.json"), encoding="utf-8"))
 JS = open(os.path.join(WORK, "app.js"), encoding="utf-8").read()
 GEN = open(os.path.join(WORK, "gen.py"), encoding="utf-8").read()
-HTML = open(OUT_HTML, encoding="utf-8").read()
+HTML = site_text()
 
 DETTE, INCO, INFO = [], [], []
 
