@@ -76,4 +76,5 @@ Final: minor (deferred): ecran de chargement retire meme si app.js plante a l in
 Final: minor (deferred): CI non epinglee (playwright, actions par tag majeur)
 Final: Ruling: l ancien contraste du bouton du bandeau de version est corrige au passage (--primary-fill) alors que le relecteur le classait Minor — cout: aucun
 Final: complete (commit e18dee6, tests: release.py phases 1-3 vertes, regression 58/58, a11y clair+sombre 0, tokens, test_ci_tools, test_build, validate_data, build --check, captures 8/8)
+Post-refonte: Ruling: mode sombre retire entierement a la demande de Loic (il n apportait rien) — build 242 — cout si faux: reconstruire par jetons (voir historique git builds 236-238)
 ```

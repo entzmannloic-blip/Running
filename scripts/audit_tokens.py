@@ -7,8 +7,7 @@ audit_tokens.py — couleurs hexadecimales « en dur » (hors jetons) : le nombr
     python scripts/audit_tokens.py --update   # reecrit la base apres une reduction volontaire
     python scripts/audit_tokens.py --top      # detail des teintes les plus frequentes
 
-Compte, dans src/css.txt + src/css_extra.txt (declarations hors definitions de variables --x et hors regles
-du mode nuit) et dans les styles en ligne de src/app.js (color:, background:, border-color:), les couleurs #rrggbb.
+Compte, dans src/css.txt + src/css_extra.txt (declarations hors definitions de variables --x) et dans les styles en ligne de src/app.js (color:, background:, border-color:), les couleurs #rrggbb.
 Exceptions assumees (voir DESIGN.md) : blanc #fff sur texte/fonds d'accent, degrades, ombres, SVG des graphiques,
 degrades par course (dossiers, dans les donnees).
 """
@@ -72,7 +71,7 @@ def transform_css(css, fn):
 
 
 def skipped_context(ctx):
-    return any("nuit" in c or "prefers-color-scheme" in c for c in ctx)
+    return any("prefers-color-scheme" in c for c in ctx)
 
 
 def css_declarations(css):

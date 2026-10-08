@@ -32,9 +32,6 @@ write('site/data/meta.json', dump({'CHANGELOG': [{
 BOOT = """<script>
 (function(){
 var V="@@BUILD@@",EAGER=@@EAGER@@;
-// Mode sombre : suit le reglage du telephone des le premier affichage (ecran de chargement compris) et en direct
-var mq=window.matchMedia&&matchMedia("(prefers-color-scheme: dark)");
-if(mq){var th=function(){document.body.classList.toggle("nuit",mq.matches);};th();if(mq.addEventListener)mq.addEventListener("change",th);else if(mq.addListener)mq.addListener(th);}
 function get(f){return fetch("data/"+f+".json?v="+V).then(function(r){if(!r.ok)throw new Error(f+" "+r.status);return r.json();});}
 function fail(){var l=document.getElementById("boot-load");if(l)l.hidden=true;var e=document.getElementById("boot-err");if(e)e.hidden=false;}
 var cl=null;
@@ -63,8 +60,7 @@ HTML = f"""<!DOCTYPE html>
 <html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta http-equiv="Cache-Control" content="no-cache, must-revalidate"><meta http-equiv="Pragma" content="no-cache">
 <title>Plan d'entraînement — {data['PROFIL']['prenom']} · Saison 2026</title>
-<meta name="theme-color" content="#0f172a" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#0b1220" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#0f172a">
 <link rel="manifest" href="manifest.json">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
