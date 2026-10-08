@@ -2562,6 +2562,9 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":243,"date":"8 octobre 2026","sha":"","tag":"CLAUDE.md : estimations en points de la limite de session","items":[
+    "DOCUMENTATION : les estimations et comptes rendus sont exprimes en points de la limite de session de 5 heures (celle affichee a l ecran), et non en part de la fenetre de contexte."
+  ]},
   {"build":242,"date":"8 octobre 2026","sha":"","tag":"Mode sombre retire : l app reste toujours blanche","items":[
     "MODE SOMBRE RETIRE (demande de Loic, il n apportait rien) : environ 170 regles CSS, le demarrage qui suivait le reglage du telephone, la couleur de barre sombre, les tests, l audit et les captures sombres. Un iPhone regle en sombre n a plus aucun effet sur l app.",
     "TEST : T18 verifie que l app reste blanche meme avec un telephone en mode sombre."
