@@ -9,6 +9,12 @@ tous les Rewinds, toutes les fenetres Cockpit — et on capture la moindre
 erreur JS. Objectif : trouver les bugs qui ne se voient que sur un
 chemin precis.
 """
+import os
+import sys
+for _d in (os.path.dirname(os.path.abspath(__file__)), os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "src")):
+    if os.path.exists(os.path.join(_d, "paths.py")):
+        sys.path.insert(0, _d)
+from paths import WORK, OUT_HTML, html_url  # noqa: E402
 import datetime as _dt
 import json
 import sys
@@ -19,8 +25,8 @@ import sys
 # la reference et doit etre lance sans argument.
 RAPIDE = "--rapide" in sys.argv
 
-HTML = "file:///mnt/user-data/outputs/plan-entrainement.html"
-DATA = json.load(open("/tmp/data.json", encoding="utf-8"))
+HTML = html_url()
+DATA = json.load(open(os.path.join(WORK, "data.json"), encoding="utf-8"))
 
 ANO = []
 def ano(code, msg):

@@ -4,22 +4,27 @@
 preflight.py — Verification automatique AVANT chaque push (build Running PWA).
 
 Encode chaque erreur passee en test mecanique : une erreur qui devient un
-check ne peut plus etre oubliee. A lancer depuis /tmp apres gen.py + assemble.py,
+check ne peut plus etre oubliee. A lancer apres python src/build.py,
 juste avant le push GitHub.
 
-    python3 preflight.py
+    python scripts/preflight.py
 
 Sortie : liste PASS/FAIL. Si un seul FAIL critique => NE PAS PUSHER.
 Chaque check reference la lecon correspondante dans docs/LESSONS.md.
 """
+import os
+import sys
+for _d in (os.path.dirname(os.path.abspath(__file__)), os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "src")):
+    if os.path.exists(os.path.join(_d, "paths.py")):
+        sys.path.insert(0, _d)
+from paths import WORK, OUT_HTML, html_url  # noqa: E402
 import json
 import os
 import re
 import subprocess
 import sys
 
-TMP = "/tmp"
-OUT_HTML = "/mnt/user-data/outputs/plan-entrainement.html"
+TMP = WORK
 DATA = os.path.join(TMP, "data.json")
 GEN = os.path.join(TMP, "gen.py")
 APP = os.path.join(TMP, "app.js")
@@ -47,19 +52,19 @@ def ok(msg):
 # ─────────────────────────────────────────────────────────────
 def check_pipeline_fresh():
     if not os.path.exists(DATA):
-        crit("L01 pipeline : /tmp/data.json absent — gen.py n'a pas tourne depuis /tmp")
+        crit("L01 pipeline : data.json absent — lancer python src/build.py")
         return
     if not os.path.exists(OUT_HTML):
         crit("L01 pipeline : HTML de sortie absent — assemble.py n'a pas tourne")
         return
     # data.json doit etre plus recent que gen.py (regenere apres la derniere edition)
     if os.path.getmtime(DATA) < os.path.getmtime(GEN):
-        crit("L01 pipeline : data.json plus vieux que gen.py — RELANCER gen.py depuis /tmp")
+        crit("L01 pipeline : data.json plus vieux que gen.py — RELANCER python src/build.py")
     else:
         ok("L01 pipeline : data.json frais (posterieur a gen.py)")
     # HTML doit etre plus recent que data.json
     if os.path.getmtime(OUT_HTML) < os.path.getmtime(DATA):
-        crit("L01 pipeline : HTML plus vieux que data.json — RELANCER assemble.py depuis /tmp")
+        crit("L01 pipeline : HTML plus vieux que data.json — RELANCER python src/build.py")
     else:
         ok("L01 pipeline : HTML frais (posterieur a data.json)")
 
@@ -94,7 +99,7 @@ def check_build_number():
 # ─────────────────────────────────────────────────────────────
 def check_node():
     if not os.path.exists(APP):
-        warn("L03 node : /tmp/app.js absent, check saute")
+        warn("L03 node : app.js absent du dossier de travail, check saute")
         return
     r = subprocess.run(["node", "--check", APP], capture_output=True, text=True)
     if r.returncode != 0:

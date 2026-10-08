@@ -155,3 +155,12 @@ Les fichiers de travail `/tmp` sont volatils. Pour repartir :
   (`/pages/builds/latest`, `/actions/runs`), pas via l'URL raw.
 - Un deploy qui échoue se corrige souvent en **régénérant proprement** l'HTML
   (voir L01) puis en repoussant — pas en re-run (le PAT fine-grained n'a pas Actions).
+
+## Retour arrière (refonte d'octobre 2026)
+
+- Le tag Git `pre-refonte` marque la dernière version avant la refonte (build 224).
+- Annuler une phase fusionnée : `git revert -m 1 <commit de fusion>` puis build + contrôles.
+- Revenir à l'état d'avant la refonte (lecture seule) : `git checkout pre-refonte`.
+- Les captures de référence des 4 vues sont dans `tests/reference/` ; `python scripts/capture_reference.py --check`
+  signale tout changement visuel (à relancer après `python src/build.py`). Un changement voulu se valide en
+  réécrivant les captures (`python scripts/capture_reference.py`) dans le même commit.

@@ -45,10 +45,16 @@ USAGE
 ================================================================================
 """
 
+import os
+import sys
+for _d in (os.path.dirname(os.path.abspath(__file__)), os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "src")):
+    if os.path.exists(os.path.join(_d, "paths.py")):
+        sys.path.insert(0, _d)
+from paths import WORK, OUT_HTML, html_url  # noqa: E402
 import subprocess, sys, os, json, re, time
 
-WORK = '/tmp'
-OUT = '/mnt/user-data/outputs'
+OUT = WORK
+PY = '"' + sys.executable + '"'
 REPO = 'entzmannloic-blip/Running'
 
 
@@ -72,17 +78,20 @@ class Phase:
 
 
 def run(cmd, cwd=WORK):
-    p = subprocess.run(cmd, shell=True, cwd=cwd, capture_output=True, text=True)
+    p = subprocess.run(cmd, shell=True, cwd=cwd, capture_output=True, text=True,
+                       encoding='utf-8', errors='replace', env=dict(os.environ, PYTHONUTF8='1'))
     return p.returncode, (p.stdout or '') + (p.stderr or '')
 
 
 def main():
+    import build
+    build.prepare()
     pousser = '--push' in sys.argv
     phases = []
 
     # ------------------------------------------------ PHASE 1 : RECHERCHE
     p1 = Phase(1, "RECHERCHE — l'existant est-il sous controle ?")
-    rc, out = run(f'python3 {WORK}/kpi_registry.py')
+    rc, out = run(f'{PY} "{WORK}/kpi_registry.py"')
     manques = [l.strip() for l in out.splitlines() if 'MANQUEMENT' in l]
     p1.ajoute("registre des KPI du Cockpit", rc == 0,
               "toutes les series declarees et reellement recalculees" if rc == 0
@@ -93,9 +102,9 @@ def main():
 
     # ------------------------------------------- PHASE 2 : EXPERIMENTATION
     p2 = Phase(2, "EXPERIMENTATION — la construction est-elle saine ?")
-    rc, out = run('python3 gen.py')
+    rc, out = run(f'{PY} gen.py')
     p2.ajoute("gen.py", rc == 0, out.strip().splitlines()[0] if out.strip() else "")
-    rc, out = run('python3 assemble.py')
+    rc, out = run(f'{PY} assemble.py')
     p2.ajoute("assemble.py", rc == 0, out.strip().splitlines()[-1] if out.strip() else "")
     rc, _ = run('node --check app.js')
     p2.ajoute("syntaxe JavaScript", rc == 0)
@@ -114,11 +123,11 @@ def main():
                             ('audit_visuel.py --rapide', "audit visuel (rendu et lisibilite)"),
                             ('audit_runtime.py --rapide', "audit runtime (parcours echantillonne)")]:
         fichier, _, options = script.partition(' ')
-        chemin = f'{WORK}/{fichier}'
+        chemin = next((c for c in (os.path.join(WORK, fichier), os.path.join(WORK, '..', 'scripts', fichier)) if os.path.exists(c)), os.path.join(WORK, fichier))
         if not os.path.exists(chemin):
             p3.ajoute(libelle, False, "script introuvable")
             continue
-        rc, out = run(f'python3 {chemin} {options}'.strip())
+        rc, out = run(f'{PY} "{chemin}" {options}'.strip())
         ligne = next((l.strip() for l in out.splitlines()
                       if 'RESULTAT' in l or 'RESULTAT' in l.upper()), '')
         bloquant = ('NE PAS PUSHER' in out) or ('ECHOUE' in out) or (rc != 0)

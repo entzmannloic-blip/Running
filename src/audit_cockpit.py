@@ -40,8 +40,8 @@ USAGE
 import json, re, sys
 import statistics as st
 
-DATA = '/tmp/data.json'
-HTML = '/mnt/user-data/outputs/plan-entrainement.html'
+DATA = 'data.json'
+HTML = 'plan-entrainement.html'
 
 
 def semaine_courante():
