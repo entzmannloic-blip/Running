@@ -129,16 +129,16 @@ Strava:get_gear(gear_types=["Shoe"])           → peut exiger une approbation c
 Loïc s'en sert pour décider : c'est une règle à chaque demande, pas seulement pour les gros chantiers.
 
 ### 1. Avant : une estimation à chaque demande
-- **Demande qui déclenche des actions** : tableau `étape | tokens | part en %` (cadrage, réalisation, vérification…), fourchettes et non valeurs uniques. Part en % = part de la conversation en cours (ou de la fenêtre de contexte si c'est un premier échange).
-- **Demande minuscule** (quelques actions) : une seule ligne « Estimation : ~N tokens (x %) ».
+- **Demande qui déclenche des actions** : tableau `étape | tokens | points de limite` (cadrage, réalisation, vérification…), fourchettes et non valeurs uniques. **Points de limite = points de la limite de session de 5 heures**, celle que Loïc voit à l'écran (lue avec `get_usage`), et non la part de la fenêtre de contexte. Dans une longue conversation, chaque action relit tout le contexte : le coût en points est bien supérieur à la taille du texte ajouté.
+- **Demande minuscule** (quelques actions) : une seule ligne « Estimation : ~N tokens (~x points de limite) ».
 - **État réel des limites du plan** (outil `get_usage` : fenêtre de 5 heures et hebdomadaire) et si l'étape tient dans ce qui reste.
 - **Recommandation** : faire maintenant, attendre la remise à zéro de la fenêtre, ou découper. Ne jamais estimer en temps (heures, jours) ; dire que ce sont des ordres de grandeur.
 - Pour un chantier de plus de quelques actions, attendre la réponse de Loïc avant de lancer.
 
 ### 2. Après : un compte rendu de dérive à chaque livraison
-Relever `get_usage` au début (tokens du contexte, % de la fenêtre de 5 heures) et à la fin, et ajouter les tokens des sous-agents (annoncés dans leur retour). Puis, une fois la fonctionnalité livrée :
+Relever `get_usage` au début et à la fin : la **mesure principale est le nombre de points de la fenêtre de 5 heures consommés** (même unité que l'estimation et que l'écran de Loïc) ; les tokens ajoutés au contexte et ceux des sous-agents ne sont qu'une information secondaire. Préciser que la limite est celle du compte : elle inclut tout autre usage depuis le début de la fenêtre. Puis, une fois la fonctionnalité livrée :
 
-| Étape | Estimé | Réel | Écart |
+| Étape | Estimé (points) | Réel (points) | Écart |
 |---|---|---|---|
 | … | N à M | X | +x % / dans la fourchette / −x % |
 
