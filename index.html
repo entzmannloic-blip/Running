@@ -2049,7 +2049,7 @@ body.nuit :is(.seance-fit,.theo-btn.theo-btn-rich,.theo-btn-arr,.fit-btn){backgr
 <div id="boot-err" role="alert" hidden><p>Données indisponibles. Vérifie ta connexion puis réessaie.</p><button type="button" class="btn-nav" onclick="location.reload()">Réessayer</button></div>
 <script>
 (function(){
-var V="240",EAGER=["plan", "seances", "historique", "meta"];
+var V="241",EAGER=["plan", "seances", "historique", "meta"];
 // Mode sombre : suit le reglage du telephone des le premier affichage (ecran de chargement compris) et en direct
 var mq=window.matchMedia&&matchMedia("(prefers-color-scheme: dark)");
 if(mq){var th=function(){document.body.classList.toggle("nuit",mq.matches);};th();if(mq.addEventListener)mq.addEventListener("change",th);else if(mq.addListener)mq.addListener(th);}

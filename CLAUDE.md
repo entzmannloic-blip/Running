@@ -125,14 +125,43 @@ Strava:get_gear(gear_types=["Shoe"])           → peut exiger une approbation c
 - ⚠️ Nouvelle donnée dans gen.py = l'ajouter à `src/datamap.py` (sinon elle n'atteint pas l'app)
 - ⚠️ Dette connue : échelle typo posée mais pas 100 % enforced sur le legacy ; graisses 700/800 dominantes ; `src/test.js` (test Node) en échec avant la refonte
 
-## Estimations d'effort (préférence de Loïc)
-Avant toute tâche de plus de quelques actions (refonte, nouvelle fonctionnalité, audit, série de corrections), donner une estimation qui aide à décider :
-- **découpée par étape** (cadrage, réalisation, vérification…) ;
-- **pour chaque étape** : une fourchette de **tokens** et la **part en %** (référence : la conversation en cours, ou la fenêtre de contexte si c'est un premier échange) ;
-- **l'état réel des limites du plan** (outil `get_usage` : fenêtre de 5 heures et hebdomadaire) et si l'étape tient dans ce qui reste ;
-- **une recommandation** : faire maintenant, attendre la remise à zéro de la fenêtre, ou découper.
+## Estimations d'effort et suivi des tokens (préférence de Loïc)
+Loïc s'en sert pour décider : c'est une règle à chaque demande, pas seulement pour les gros chantiers.
 
-Format : un tableau `étape | tokens | part en %`. Ne jamais estimer en temps (heures, jours). Ce sont des ordres de grandeur : le dire. Loïc décide ensuite ; ne rien lancer avant sa réponse.
+### 1. Avant : une estimation à chaque demande
+- **Demande qui déclenche des actions** : tableau `étape | tokens | part en %` (cadrage, réalisation, vérification…), fourchettes et non valeurs uniques. Part en % = part de la conversation en cours (ou de la fenêtre de contexte si c'est un premier échange).
+- **Demande minuscule** (quelques actions) : une seule ligne « Estimation : ~N tokens (x %) ».
+- **État réel des limites du plan** (outil `get_usage` : fenêtre de 5 heures et hebdomadaire) et si l'étape tient dans ce qui reste.
+- **Recommandation** : faire maintenant, attendre la remise à zéro de la fenêtre, ou découper. Ne jamais estimer en temps (heures, jours) ; dire que ce sont des ordres de grandeur.
+- Pour un chantier de plus de quelques actions, attendre la réponse de Loïc avant de lancer.
+
+### 2. Après : un compte rendu de dérive à chaque livraison
+Relever `get_usage` au début (tokens du contexte, % de la fenêtre de 5 heures) et à la fin, et ajouter les tokens des sous-agents (annoncés dans leur retour). Puis, une fois la fonctionnalité livrée :
+
+| Étape | Estimé | Réel | Écart |
+|---|---|---|---|
+| … | N à M | X | +x % / dans la fourchette / −x % |
+
+Verdict en une phrase (dans la fourchette, ou dérive de +x % au total), **la cause principale de l'écart**, et ce qu'il faut corriger dans les prochaines estimations. Le % de fenêtre du plan est un entier : le dire quand l'écart est trop fin pour être mesuré.
+
+### 3. Ne pas brûler de tokens pour rien (règles pour Claude)
+- Chaque appel d'outil relit tout le contexte : plus la conversation est longue, plus chaque action coûte. Regrouper les commandes indépendantes en un seul appel.
+- Ne jamais lire en entier les gros fichiers (`index.html`, `src/gen.py`, `src/app.js`, `data/*.json`, captures) : `grep`, `sed -n 'a,bp'`, `head`, `tail`.
+- Filtrer les sorties de commande (`| tail -5`, `grep RESULTAT`) ; ne pas relire un fichier qu'on vient d'écrire ou d'éditer.
+- Préférer le texte aux images (`get_page_text`, scripts d'audit) ; une capture seulement si le rendu visuel est le sujet, et à échelle réduite.
+- Lancer les contrôles lourds (`release.py`, audits complets) une fois par phase, pas à chaque petite édition. Ne jamais surveiller la CI en boucle : l'Auto-fix réveille la session.
+- Sous-agents : seulement quand ils protègent le contexte principal ou apportent un regard indépendant (relecture finale) ; leur coût s'ajoute (une relecture complète a coûté ~170 000 tokens).
+- Modèle : Sonnet suffit pour exécuter un plan ; un modèle plus puissant seulement pour la relecture finale ou une décision d'architecture. Éviter le mode rapide sans besoin.
+- Écrire un plan puis exécuter : ne pas redessiner en cours de route. Le plan et le journal (`docs/REFONTE-DECISIONS.md`) permettent de reprendre dans une conversation neuve.
+
+### 4. Astuces pour Loïc
+- **Une conversation par chantier.** Quand une phase est fusionnée, ouvrir une nouvelle conversation : Claude relit `CLAUDE.md` et repart avec un contexte léger. C'est le plus gros levier (cette refonte a fini à ~670 000 tokens de contexte : chaque action y coûtait cher).
+- Commandes utiles dans Claude Code : `/context` (ce qui remplit la fenêtre), `/compact` (résumer à un moment naturel, entre deux phases), `/clear` (repartir de zéro).
+- Demander l'estimation **avant** (c'est la règle) et lancer les gros chantiers juste après la remise à zéro de la fenêtre de 5 heures.
+- Ne pas coller de gros fichiers ni de longues sorties dans le message : donner un chemin, Claude lit ce qu'il faut.
+- Grouper les demandes liées dans un seul message plutôt que d'en enchaîner dix petites.
+- Dire « mode économe » pour des réponses courtes et sans reformulation ; dire « pas de relecture indépendante » pour un petit changement.
+- Une demande floue coûte plus cher qu'une demande précise : indiquer le fichier ou l'écran concerné.
 
 ## Convention commits et branches
 ```
