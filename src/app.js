@@ -1867,7 +1867,7 @@ function ouvrirSemaine(num){const s=SEMAINES.find(x=>x.num===num);const ph=PHASE
     const rightEl=isDone
       ?`<div class="seance-fleche sc-check">✓</div>`
       :isSkipped
-        ?`<div class="seance-fleche" style="color:var(--warn);font-size:20px">—</div>`
+        ?`<div class="seance-fleche" style="color:var(--warn-deux);font-size:20px">—</div>`
         :loggable
           ?`<div class="ql-btn" onclick="event.stopPropagation();ouvrirQuickLog(${num},${se.id})" role="button" aria-label="Enregistrer la séance" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();event.stopPropagation();ouvrirQuickLog(${num},${se.id});}"><i class="ti ti-check"></i></div>${menuBtn}`
           :menuBtn;

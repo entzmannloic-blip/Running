@@ -132,6 +132,12 @@ Ne jamais soustraire `new Date('YYYY-MM-DD')` à une date locale. Une course don
 
 ---
 
+## L10 — Séance « non réalisée » : flèche ambre illisible (contraste 1,93:1)
+
+- **Symptôme** : le job `verify` échoue à l'étape Accessibilité (`C1`, `div.seance-fleche`, ambre sur fond ambre clair) dès qu'une séance de la semaine affichée est marquée `skipped`.
+- **Cause racine** : le tiret « — » de la carte d'une séance sautée utilisait `var(--warn)` (#f59e0b) sur `--warn-fond`. Défaut latent, invisible tant qu'aucune séance sautée ne figurait dans la semaine auditée.
+- **Garde-fou** : `var(--warn-deux)` (#b45309, ~4,9:1) pour tout texte sur fond ambre ; `python scripts/audit_a11y.py` en local avant la PR quand on marque une séance `skipped`. Le job `verify` ne donne pas ses logs : rejouer l'audit en local.
+
 ## Quirks Strava MCP (non mécanisables, à connaître)
 
 - Les activités **privées** n'apparaissent pas dans `list_activities`, quelle que soit
