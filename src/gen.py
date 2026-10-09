@@ -2586,6 +2586,7 @@ CHANGELOG=[
     "CHAUSSURES : Novablast 5 J 788 -> 818 km (Strava).",
     "A VALIDER : le RPE 5 est une estimation de Claude, a ajuster par Loic.",
     "SEANCE : renforcement PPG du 08/10 marque non realise (journee de repos indiquee par Loic).",
+    "CORRECTIF : fleche des seances non realisees en --warn-deux (contraste 1,93:1 -> 4,9:1), detecte par l audit d accessibilite.",
   ]},
   {"build":243,"date":"8 octobre 2026","sha":"","tag":"CLAUDE.md : estimations en points de la limite de session","items":[
     "DOCUMENTATION : les estimations et comptes rendus sont exprimes en points de la limite de session de 5 heures (celle affichee a l ecran), et non en part de la fenetre de contexte."
