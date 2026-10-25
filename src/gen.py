@@ -1010,7 +1010,7 @@ META=[
 (41,'marathon','Allure marathon',76,'Élevée','≈ 80 % facile · 20 % qualité',"Une seule grosse séance : 3×4 km AM. Longue en endurance pure."),
 (42,'marathon','Pic — séance reine',88,'Maximale','≈ 82 % facile · 18 % qualité',"Pic à ton plafond : longue reine 30 km dont 14 AM, seul gros stimulus."),
 (43,'marathon','Dernier gros bloc',76,'Élevée','≈ 80 % facile · 20 % qualité',"Dernière grosse spécifique (2×6 km AM), longue en endurance, on commence à fraîchir."),
-(44,'affutage','Affûtage 1',54,'Modérée','≈ 80 % facile · 20 % qualité',"Décharge nette + intensité courte maintenue (Bosquet) : on évacue la fatigue."),
+(44,'affutage','Affûtage 1',54,'Modérée','≈ 80 % facile · 20 % qualité',"Décharge nette + une seule séance d'intensité (seuil 30, conditionnel) : on évacue la fatigue."),
 (45,'affutage','Semaine course',58,'Course','—',"Affûtage final + Marathon de Nice le 8 nov. Objectif A. (16 km décharge + 42 km course.)"),
 (46,'transition','Récup marathon',22,'Légère','100 % facile',"Récupération marathon très progressive : footings très faciles, mobilité."),
 (47,'transition','Rappels trail',55,'Modérée','≈ 80 % facile · 20 % trail',"Réveil trail : descente, nocturne — sert aussi le D+ de la SaintExpress."),
@@ -2160,6 +2160,22 @@ for n, arr in list(SEANCES_BY_WEEK.items()):
         "revue":REVUE_PERRINE_25}
     })
 
+for n, arr in list(SEANCES_BY_WEEK.items()):
+    if n != "44":
+        continue
+    _S44 = {str(x["id"]): x for x in arr}
+    _S44["1"]["sous"]="Footing vraiment facile, plat ou en bosses douces (100-200 m de D+ au plus)."
+    _S44["1"]["metriques"]=dict(_S44["1"]["metriques"], FC="135-145")
+    _S44["1"]["vigilance"]="FC 145 maximum, 6:10/km ou plus lent, ceinture cardiaque si possible. Si les cuisses tirent apres le trail du 24/10 : terrain plat, ou repos. Montees a l'effort (marche autorisee), descentes relachees, aucune descente raide."
+    _S44["2"]["sous"]="Derniere seance d'intensite avant Nice : on garde le jus, le volume baisse."
+    _S44["2"]["struct"]=[{"nom":"Échauffement","txt":"20 min facile + 3 lignes droites."},
+      {"nom":"Corps","txt":"3 × 6 min à seuil 30 (4:40-4:45/km, pas plus vite), récup 3 min footing très lent entre les blocs. Arret apres 2 blocs si le 3e est dur."},
+      {"nom":"Retour","txt":"10 min souple."}]
+    _S44["2"]["vigilance"]="Séance conditionnelle : seulement si les jambes sont libres lundi, sinon footing facile. Le dernier bloc a la même allure que le premier. 11 km au total au maximum. Ceinture cardiaque : FC 172-180 en repere, pas en cible. Aucune autre séance dure avant Nice."
+    _S44["3"]["metriques"]=dict(_S44["3"]["metriques"], FC="135-145")
+    _S44["3"]["vigilance"]="Lignes droites relâchées, jamais en sprint. Si le trail du 24/10 laisse des courbatures : terrain plat. D+ léger toléré (150 m au plus) jusqu'à ce mercredi ; plus aucune descente soutenue ensuite."
+    _S44["4"]["vigilance"]=_S44["4"]["vigilance"]+" Les 4 derniers km : 5:17 à 5:23/km, pas plus vite. La bonne sensation du km 5 se retrouve a Nice : rester derrière le meneur 3h45. Terrain plat, aucun dénivelé."
+
 _S35_REVUE=("<p><strong>La plus petite semaine de la pr\\u00e9paration \\u2014 22,1 km, deux s\\u00e9ances. Et pourtant l'une des plus utiles.</strong></p><p><strong>Le bilan chiffr\\u00e9 :</strong> 2 s\\u00e9ances sur 6 pr\\u00e9vues, 22,1 km pour 66 cibl\\u00e9s, charge 276. Lundi saut\\u00e9 sur fatigue apr\\u00e8s les 25 km du 22/08, mardi et mercredi indisponibles (randonn\\u00e9es dans le Cantal, 1150 m de d\\u00e9nivel\\u00e9 cumul\\u00e9), samedi non r\\u00e9alis\\u00e9e.</p><p><strong>Ce qui rend la semaine utile malgr\\u00e9 tout : le seuil du vendredi.</strong> 2\\u00d78 min avec une cible \\u00e0 4:45/km, r\\u00e9alis\\u00e9 \\u00e0 4:39 puis 4:42. Sept secondes d'amplitude \\u00e0 l'int\\u00e9rieur des blocs, et surtout un bloc 2 <em>plus lent</em> que le bloc 1 \\u2014 aucune acc\\u00e9l\\u00e9ration apr\\u00e8s la r\\u00e9cup\\u00e9ration, alors que c'\\u00e9tait le pi\\u00e8ge annonc\\u00e9. <strong>Quatre secondes d'\\u00e9cart \\u00e0 la cible, contre 11, 26 puis 33 sur les trois s\\u00e9ances pr\\u00e9c\\u00e9dentes : la s\\u00e9rie d'\\u00e9checs de discipline est cass\\u00e9e.</strong></p><p><strong>Le point noir :</strong> le footing du jeudi, prescrit \\u00e0 6:00-6:20/km avec un plafond de FC \\u00e0 145, couru \\u00e0 5:33/km avec 156 de moyenne. Effort relatif 151 au lieu des 60 attendus. Le kilom\\u00e8tre 1 \\u00e0 123 bpm prouve que la FC n'\\u00e9tait pas haute au d\\u00e9part \\u2014 c'est l'allure qui l'a fait monter, pas la chaleur.</p><p><strong>Ce que la semaine confirme sur la r\\u00e9cup\\u00e9ration :</strong> apr\\u00e8s 1150 m de d\\u00e9nivel\\u00e9 en randonn\\u00e9e sur deux jours, aucune douleur, aucune jambe lourde, cadence stable. La capacit\\u00e9 de r\\u00e9cup\\u00e9ration n'est pas un facteur limitant.</p><p><strong>D\\u00e9cision pour S36 :</strong> semaine de d\\u00e9part aux \\u00c9tats-Unis, quatre s\\u00e9ances de lundi \\u00e0 jeudi avant le vol du vendredi. L'ACWR est retomb\\u00e9 \\u00e0 0,67 \\u2014 la longue du 22/08 est sortie de la fen\\u00eatre 7 jours, la marge existe. Le seuil passe \\u00e0 2\\u00d710 min et se place le mercredi, pour laisser deux jours avant l'avion. Jeudi devient un simple d\\u00e9verrouillage.</p>")
 
 S40_REVUE=("<p><strong>Semaine à fort coût : 6 sorties, 75,2 km, charge 915 — et un renversement net entre la discipline retrouvée à froid et perdue en course.</strong></p><p><strong>Le déroulé :</strong> lundi, 13 km avec Yannis : FC stable sur le cœur de séance, premier signal encourageant depuis le retour des USA. Mardi, le seuil prévu devient une sortie vallonnée avec Edwige (RE 171), 3ᵉ jour de course d'affilée et fatigue signalée. Mercredi, la séance allégée devient 18 km à 6:30/km avec une FC sous 143 : l'exécution la plus disciplinée depuis le retour, mais au mauvais moment du cycle. Jeudi, renforcement sauté, journée trop difficile. Samedi, activation avec Yannis et Manon : une légère accélération finale fait grimper la FC à 174-179, signal de dette de sommeil. Dimanche, semi du Run In Lyon couru malade, puis 3,8 km en run/marche avec Perrine le soir (charge 7).</p><p><strong>Le fil de la semaine :</strong> la discipline d'allure est démontrée à froid (mercredi) et perdue à chaud en course (dimanche) dès que le repère humain disparaît. La confirmation est nette : le facteur décisif n'est pas l'alerte technique mais la présence de quelqu'un à suivre.</p><p><strong>Le vrai sujet n'est plus l'allure, c'est la récupération.</strong> Cinq nuits de 3-4h, maladie, et une course à FC quasi maximale 5 semaines avant Nice : la semaine suivante doit être pensée autour de la guérison, pas du plan initial.</p><p><strong>Verdict : semaine chargée et instructive, à digérer plutôt qu'à enchaîner.</strong></p>")
@@ -2817,6 +2833,10 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":259,"date":"25 octobre 2026","sha":"","tag":"S44 : consignes d'affutage ajustees (seuil conditionnel, D+ leger, longue plate)","items":[
+    "PLAN : S44 (affutage) ajustee : footings a FC 145 maximum avec D+ leger toleré jusqu'a mercredi, seuil 30 du mardi conditionnel (4:40-4:45/km, arret apres 2 blocs, ceinture) comme derniere seance d'intensite, longue du 01/11 plate avec 4 km a 5:17-5:23 derriere le meneur 3h45.",
+    "PLAN : les semaines 47 et 48 (trail et sortie nocturne avant la SaintExpress) sont deja en place apres Nice ; aucune modification.",
+  ]},
   {"build":258,"date":"25 octobre 2026","sha":"","tag":"S43-7/8 : sortie progressive 9,7 km a 5:07/km + course-marche avec Perrine","items":[
     "SEANCE : sortie du dimanche matin non planifiee : 9,70 km en 49:36, 5:07/km (de 5:11 a 4:56), FC 151 moy / 164 max, D+ 27 m, effort relatif 87, Novablast 5 J ; le lendemain du trail de l'Esterel.",
     "SEANCE : sortie chill avec Perrine : 3,79 km en 32:41, course-marche 2 min / 1 min, FC 122 moy, effort relatif 9.",
