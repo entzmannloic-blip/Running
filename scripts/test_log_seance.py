@@ -56,7 +56,12 @@ def logge(cle):
     w, i = cle[1:].split("-")
     with open(os.path.join(ROOT, "data", "seances.json"), encoding="utf-8") as f:
         sbw = json.load(f)["SEANCES_BY_WEEK"]
-    return [s for s in sbw[w] if str(s["id"]) == i][0]
+    s = [s for s in sbw[w] if str(s["id"]) == i][0]
+    textes = os.path.join(ROOT, "data", "textes.json")  # revues et splits charges a la demande
+    if os.path.exists(textes):
+        with open(textes, encoding="utf-8") as f:
+            s["realise"].update(json.load(f)["SEANCES"].get(f"{w}-{i}", {}))
+    return s
 
 
 def test_valeurs():
