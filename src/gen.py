@@ -71,6 +71,22 @@ def _charge_rewinds():
     _noms = [_n for _n in _os.listdir(_os.path.join(_TEXTES, "rewinds")) if _n.endswith(".json")]
     _noms.sort(key=lambda _n: int(_n[1:-5]))
     return [json.loads(_lit_texte("rewinds", _n)) for _n in _noms]
+
+def _charge_logs(sbw):
+    """logs/S44-2.json (scripts/log_seance.py) -> champs de la seance + bloc realise."""
+    if not _os.path.isdir("logs"):
+        return
+    for _nom in sorted(_os.listdir("logs")):
+        if not _nom.endswith(".json"):
+            continue
+        _w, _i = _nom[1:-5].split("-", 1)
+        _cible = [_x for _x in sbw.get(int(_w), sbw.get(_w)) or [] if str(_x["id"]) == _i]
+        if len(_cible) != 1:
+            raise SystemExit(f"logs/{_nom} : seance introuvable dans le plan")
+        _log = json.load(open(_os.path.join("logs", _nom), encoding="utf-8"))
+        for _k, _v in _log.get("seance", {}).items():
+            _cible[0][_k] = segs(_v) if _k == "segments" else _v
+        _cible[0]["realise"] = _log["realise"]
 # --- fin des textes
 
 CSS=open('css.txt',encoding='utf-8').read()
@@ -2163,6 +2179,7 @@ for n, arr in list(SEANCES_BY_WEEK.items()):
 
 
 
+_charge_logs(SEANCES_BY_WEEK)
 _charge_revues_semaines(SEMAINES)
 
 PHASES=[
@@ -2710,6 +2727,11 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":265,"date":"27 octobre 2026","sha":"","tag":"P2 Pipeline de log (2/3) : script Strava vers log de séance","items":[
+    "LOG : scripts/log_seance.py transforme les réponses Strava (recopiées en fichier) en log de séance : splits, segments, température, chaussure, dénivelé, terrain route ou trail, découplage. Il met aussi à jour la référence Strava, GEAR et le CHANGELOG.",
+    "LOGS : les nouvelles séances loggées vivent dans src/logs/ (un fichier par séance), chargées par gen.py ; les séances déjà loggées restent dans gen.py.",
+    "TESTS : le script retrouve à l'identique les valeurs de trois séances loggées à la main (footing du 27/10 avec découplage, allure marathon du 21/10, trail du 24/10).",
+    "AUCUN CHANGEMENT VISIBLE."]},
   {"build":264,"date":"27 octobre 2026","sha":"","tag":"P2 Pipeline de log (1/3) : textes hors de gen.py","items":[
     "TEXTES : les 88 revues de séance, 17 revues de semaine et 18 Rewinds quittent gen.py pour src/textes/ (un fichier par séance, par semaine ou par Rewind). gen.py passe de 800 à 555 Ko.",
     "AUCUN CHANGEMENT VISIBLE : les fichiers publiés sont identiques à l'octet près à ceux du build 263."]},

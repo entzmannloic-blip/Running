@@ -2,3 +2,6 @@ build/
 __pycache__/
 *.pyc
 .superpowers/
+
+# Reponses Strava recopiees pour scripts/log_seance.py (temporaires)
+strava/
