@@ -1674,3 +1674,5 @@ main:focus{outline:none}
 .seance-fleche.sc-check{color:var(--ok-deux)!important}
 .sw-tag,.rpe-val{color:var(--warn-deux)!important}
 .ql-btn{width:44px;height:44px;flex:0 0 44px}
+.ck-fresh{font-size:var(--t-data);color:var(--texte-trois);margin-top:8px}
+.ck-fresh-old{color:var(--warn);font-weight:700}

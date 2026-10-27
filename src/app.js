@@ -89,7 +89,7 @@ function showTab(t){
     var _tb=document.getElementById('tab-'+id);
     if(t===id)_tb.setAttribute('aria-current','page');else _tb.removeAttribute('aria-current');
   });
-  if(t==='cockpit'){renderCockpit();renderDash();setTimeout(()=>{if(typeof _vo2Reveal==='function')_vo2Reveal();if(typeof _effRender==='function')_effRender();if(typeof _heatRender==='function')_heatRender();if(typeof _saisonRender==='function')_saisonRender();if(typeof _decoupRender==='function')_decoupRender();if(typeof _profilRender==='function')_profilRender();},250);}
+  if(t==='cockpit'){renderCockpit();renderDash();_ckFreshness();setTimeout(()=>{if(typeof _vo2Reveal==='function')_vo2Reveal();if(typeof _effRender==='function')_effRender();if(typeof _heatRender==='function')_heatRender();if(typeof _saisonRender==='function')_saisonRender();if(typeof _decoupRender==='function')_decoupRender();if(typeof _profilRender==='function')_profilRender();},250);}
   if(t==='palmares')renderPalmares();
   /* Le saut vers la semaine en cours ne se faisait qu'a la PREMIERE ouverture
      de l'onglet : toute visite suivante repartait en haut, c'est-a-dire en
@@ -324,6 +324,22 @@ function _ckRebuild(){
     if(_CK.CAD)_CK.CAD[N]={w:lbl,v:ws.map(function(w){return _val('CAD','v',w,agg[w]&&agg[w].cad);})};
     if(_CK.PACE){var _pp=(_CK._PACE_ORIG&&_CK._PACE_ORIG[N])||{};var _L=lbl.length;var _tail=function(a){return Array.isArray(a)?a.slice(-_L):a;};_CK.PACE[N]={w:lbl,v:ws.map(function(w){return agg[w]?agg[w].pace:null;}),ef:ws.map(function(w){return agg[w]?agg[w].z2:null;}),am:ws.map(function(w){return agg[w]?agg[w].am:null;}),se:ws.map(function(w){return agg[w]?agg[w].se:null;})};}
   });
+  /* Valeurs PAR SEMAINE (pour les tendances) : une semaine sans course vaut 0 (jamais sautee),
+     une semaine avant le debut des donnees vaut null. _PW.ref = derniere semaine de la fenetre. */
+  (function(){
+    var ref=lastN(1)[0];var known=Object.keys(agg).map(Number);
+    ['VOL','RE','CAD'].forEach(function(k){var mm=_origMap(k,k==='VOL'?'a':'v');Object.keys(mm).forEach(function(x){known.push(+x);});});
+    var minW=known.length?Math.min.apply(null,known):ref;
+    var PW={ref:ref,VOL:{},RE:{},CAD:{}};
+    for(var w=ref-25;w<=ref;w++){
+      if(agg[w]){PW.VOL[w]=agg[w].km;PW.RE[w]=agg[w].re;PW.CAD[w]=agg[w].cad;continue;}
+      var mv=_origMap('VOL','a')[w],mr=_origMap('RE','v')[w],mc=_origMap('CAD','v')[w];
+      PW.VOL[w]=mv!==undefined?mv:(w>=minW?0:null);
+      PW.RE[w]=mr!==undefined?mr:(w>=minW?0:null);
+      PW.CAD[w]=mc!==undefined?mc:null;
+    }
+    _CK._PW=PW;
+  })();
   // ACWR_DATA realigne sur la SEULE definition retenue (fenetre glissante
   // 7/28 jours via _acwrCompute). Auparavant ce bloc recalculait sur les
   // 4 dernieres semaines LOGUEES, ce qui produisait un second chiffre,
@@ -1246,7 +1262,7 @@ function hmStats(){
   const days=Object.keys(HEATMAP).sort();
   let best=0,cur=0,prev=null;
   days.forEach(iso=>{const d=new Date(iso+'T00:00:00');if(prev&&Math.round((d-prev)/86400000)===1)cur++;else cur=1;if(cur>best)best=cur;prev=d;});
-  const totalKm=Object.values(HEATMAP).reduce((a,b)=>a+b,0);
+  const totalKm=(typeof SAISON2026!=='undefined'&&SAISON2026.km!=null)?SAISON2026.km:Object.values(HEATMAP).reduce((a,b)=>a+b,0); /* source unique : SAISON2026.km */
   return '🔥 Plus longue série : <strong>'+best+' jours</strong> · <strong>'+days.length+'</strong> jours courus · <strong>'+Math.round(totalKm)+' km</strong> en 2026';
 }
 function renderHeatmap(){
@@ -1313,7 +1329,7 @@ const DASH_GROUPS=[
   {id:'cal',ic:'📅',t:"Aujourd'hui & calendrier"},
   {id:'coach',ic:'🧠',t:'Analyse du coach'},
   {id:'annee',ic:'🔥',t:'Année & trophées'},
-  {id:'saison',ic:'📊',t:'Saison en chiffres'},
+  {id:'saison',ic:'📊',t:'2026 en chiffres'},
   {id:'charge',ic:'❤️',t:'Charge & physiologie'},
   {id:'perf',ic:'🏆',t:'Performances & objectifs'},
   {id:'profil',ic:'⛰️',t:'Profil & matériel'},
@@ -1374,6 +1390,21 @@ function marathonProjection(){
   q.forEach((e,i)=>{const w=e.w*(1+i*0.4);num+=e.sec*w;den+=w;trend.push(num/den);});
   return{sec:num/den,n:q.length,sources:q,trend:trend};
 }
+/* Projection unique : tout ce qui est "projeté" (colonne Performances, allures de course, marathon projeté)
+   dérive de marathonProjection() — plus aucune valeur recopiée dans gen.py. */
+function _fmtT(t){t=Math.round(t);if(t>=3600){var h=Math.floor(t/3600),m=Math.round((t%3600)/60);if(m===60){h++;m=0;}return h+'h'+String(m).padStart(2,'0');}return Math.floor(t/60)+':'+String(t%60).padStart(2,'0');}
+function _paceKm(t,km){var p=Math.round(t/km);return Math.floor(p/60)+':'+String(p%60).padStart(2,'0')+'/km';}
+function _projAt(P,km){return P.sec*Math.pow(km/42.195,1.07);}
+function _syncProjection(){
+  try{
+    if(typeof marathonProjection!=='function'||typeof PROFIL==='undefined'||typeof PROJ==='undefined')return null;
+    var P=marathonProjection(),mp=P.sec;
+    var obj=(typeof ALLURES_COURSE!=='undefined'?ALLURES_COURSE:[]).find(function(a){return /objectif/i.test(a.d);})||{d:'Marathon objectif',temps:PROFIL.cible_marathon||'3h45',allure:'5:20/km'};
+    var rows=[['5 km',5],['10 km',10],['Semi 21,1 km',21.0975],['30 km',30]].map(function(r){var t=_projAt(P,r[1]);return{d:r[0],temps:'~'+_fmtT(t),allure:'~'+_paceKm(t,r[1])};});
+    rows.push(obj);rows.push({d:'Marathon projeté',temps:'~'+_s2hm(mp),allure:'~'+_paceKm(mp,42.195)});
+    return {P:P,rows:rows};
+  }catch(e){return null;}
+}
 function renderCrystalBall(){
   const P=marathonProjection();const goal=PROJ.goal,gmin=PROJ.gmin,gmax=PROJ.gmax;
   const clamp=v=>Math.max(0,Math.min(100,v));
@@ -1402,7 +1433,7 @@ function renderCrystalBall(){
     <div class="cb-method">Méthode : mélange pondéré de ta forme de départ et de tes séances qualité loguées — test 10 km via Riegel (exp. 1,07), allure marathon ×1,015, seuil 30 ×1,12 / seuil 60 ×1,06, projetés sur 42,195 km. Les séances récentes pèsent davantage.</div>
   </div>`;
 }
-function renderDash(){const el=document.getElementById('dash-contenu');
+function renderDash(){const el=document.getElementById('dash-contenu');const _SP=_syncProjection(),_PJ=_SP&&_SP.P;
   const today=new Date();const _raceJ=function(d){const r=RACES.find(x=>x.dossier===d);return r?Math.max(0,_joursAvant(r.date)):'—';};const cd=[null,_raceJ('nice'),_raceJ('saintexpress')];
   const allSe=Object.values(SEANCES_BY_WEEK).flat();const total=allSe.length;
   const faites=allSe.filter(s=>s.realise&&(s.realise.statut==='fait'||s.realise.statut==='partiel')).length;
@@ -1474,8 +1505,8 @@ function renderDash(){const el=document.getElementById('dash-contenu');
     <div class="kpi-t">🏆 Tes trophées 2026</div>
     ${renderTrophees()}
   </div>
-  </div></section>`+dgrpHead('saison','📊','Saison en chiffres')+`
-  <!-- 1. Saison en chiffres -->
+  </div></section>`+dgrpHead('saison','📊','2026 en chiffres')+`
+  <!-- 1. 2026 en chiffres (depuis le 1er janvier) -->
   <div class="kpi">
     <div class="kpi-t">📅 Ta saison 2026 en chiffres</div>
     <div class="kpi-r">Depuis le 1er janvier 2026 · <strong>Run + Trail uniquement</strong>, aligné sur Strava (${SAISON2026.sorties} activités). Hikes et raquettes non inclus dans le compteur Strava running.</div>
@@ -1499,7 +1530,7 @@ function renderDash(){const el=document.getElementById('dash-contenu');
 <!-- 6. Zones FC + allures -->
   <div class="kpi">
     <div class="kpi-t">❤️ Zones FC & allures correspondantes</div>
-    <div class="kpi-r">Calculées sur ta FC max réelle (192 bpm). Les allures sont indicatives <strong>à plat</strong> — la FC reste le juge en côte ou par forte chaleur. À recaler après le test 10 km (S31).</div>
+    <div class="kpi-r">Calculées sur ta FC max réelle (192 bpm). Les allures sont indicatives <strong>à plat</strong> — la FC reste le juge en côte ou par forte chaleur.</div>
     <div class="zfc">${ZONES_FC.map(z=>`<div class="zfc-row"><span class="zfc-z" style="background:${z.col}">${z.z}</span><span class="zfc-n">${z.nom}</span><span class="zfc-b">${z.bpm} bpm</span><span class="zfc-p">${z.pct}</span><span class="zfc-a">${z.allure}</span></div>`).join('')}</div>
   </div>
 
@@ -1522,12 +1553,12 @@ function renderDash(){const el=document.getElementById('dash-contenu');
 
   </div></section>`+dgrpHead('perf','🏆','Performances & objectifs')+renderCrystalBall()+`
   <!-- 7. Allures d'entraînement -->
-  <div class="kpi"><div class="kpi-t">⏱️ Tes allures d'entraînement</div><div class="kpi-r">Dont le <strong>seuil 30</strong> (proche 10 km) et le <strong>seuil 60</strong> (proche semi). À recaler après le test 10 km (S31).</div><div class="allure-grid">${ALLURES.map(a=>`<div class="allure"><div class="allure-v">${a.val}</div><div class="allure-n">${a.nom}</div><div class="allure-s">${a.sub}</div></div>`).join('')}</div></div>
+  <div class="kpi"><div class="kpi-t">⏱️ Tes allures d'entraînement</div><div class="kpi-r">Dont le <strong>seuil 30</strong> (proche 10 km) et le <strong>seuil 60</strong> (proche semi).</div><div class="allure-grid">${ALLURES.map(a=>`<div class="allure"><div class="allure-v">${a.val}</div><div class="allure-n">${a.nom}</div><div class="allure-s">${a.sub}</div></div>`).join('')}</div></div>
 
   <!-- 8. Allures de course + records -->
   <div class="kpi">
     <div class="kpi-t">🏆 Performances & projections</div>
-    <div class="kpi-r">Meilleurs efforts réels depuis ton Strava · à comparer avec tes projections actuelles. Le semi 2022 reste ta référence officielle (course).</div>
+    <div class="kpi-r">Meilleurs efforts réels depuis ton Strava · à comparer avec tes projections actuelles. Le semi Run In Lyon 2026 (1h52:30, couru malade) est ta référence de course ; la colonne « Projeté aujourd'hui » vient de la projection marathon en direct.</div>
     <table style="width:100%;border-collapse:collapse;font-size:.84rem">
       <thead><tr style="color:var(--texte-trois);font-size:var(--t-data);font-weight:800;text-transform:uppercase;letter-spacing:.06em">
         <th style="text-align:left;padding:8px 6px;border-bottom:1px solid var(--gris-clair)">Distance</th>
@@ -1537,13 +1568,13 @@ function renderDash(){const el=document.getElementById('dash-contenu');
       </tr></thead>
       <tbody>${RECORDS_PERF.map((r,i)=>`<tr style="border-bottom:1px solid var(--gris-clair)">
         <td style="padding:8px 6px;font-weight:800">${r.dist}</td>
-        <td style="padding:8px 6px;text-align:center"><div style="font-weight:700">${r.temps_rec||'—'}</div><div style="font-size:var(--t-data);color:var(--texte-trois)">${r.record_sub}</div></td>
+        <td style="padding:8px 6px;text-align:center"><div style="font-weight:700">${r.temps_rec||'—'}</div><div style="font-size:var(--t-data);color:var(--texte-trois)">${r.record_sub}</div>${r.ref_course?`<div style="font-weight:700;margin-top:4px">${r.ref_course}</div><div style="font-size:var(--t-data);color:var(--texte-trois)">${r.ref_course_sub}</div>`:''}</td>
         <td style="padding:8px 6px;text-align:center"><div style="font-weight:700;color:var(--primary-deux)">${r.temps_act}</div><div style="font-size:var(--t-data);color:var(--texte-trois)">${r.actuel_sub}</div></td>
-        <td style="padding:8px 6px;text-align:right"><div style="font-weight:700">${r.actuel}</div></td>
+        <td style="padding:8px 6px;text-align:right">${(function(){const km=({'5 km':5,'10 km':10,'Semi 21,1':21.0975})[r.dist];if(!_PJ||!km)return '<div style="font-weight:700">'+r.actuel+'</div>';const t=_projAt(_PJ,km);return '<div style="font-weight:700">'+_fmtT(t)+'</div><div style="font-size:var(--t-data);color:var(--texte-trois)">'+_paceKm(t,km)+'</div>';})()}</td>
       </tr>`).join('')}</tbody>
     </table>
     <div style="margin-top:14px"><div class="kpi-t" style="font-size:.88rem;margin-bottom:8px">Allures de course estimées (Riegel)</div>
-    <div class="course-grid">${ALLURES_COURSE.map(a=>`<div class="course-row"><span class="course-d">${a.d}</span><span class="course-t">${a.temps}</span><span class="course-a">${a.allure}</span></div>`).join('')}</div></div>
+    <div class="course-grid">${((_SP&&_SP.rows)||ALLURES_COURSE).map(a=>`<div class="course-row"><span class="course-d">${a.d}</span><span class="course-t">${a.temps}</span><span class="course-a">${a.allure}</span></div>`).join('')}</div></div>
   </div>
 
   <!-- 9. Objectifs course -->
@@ -1557,10 +1588,10 @@ function renderDash(){const el=document.getElementById('dash-contenu');
     </div>
     <div class="rec-grid" style="margin-top:12px">
       <div class="rec"><div class="rec-v">3h45</div><div class="rec-l">Marathon objectif</div><div class="rec-s">Nice · 8 nov.</div></div>
-      <div class="rec"><div class="rec-v" style="font-size:1.15rem">~3h38-3h42</div><div class="rec-l">Marathon projeté</div><div class="rec-s">depuis ta forme actuelle</div></div>
+      <div class="rec"><div class="rec-v" style="font-size:1.15rem">${_PJ?'~'+_s2hm(_PJ.sec):'—'}</div><div class="rec-l">Marathon projeté</div><div class="rec-s">depuis ta forme actuelle</div></div>
       <div class="rec"><div class="rec-v">Plaisir</div><div class="rec-l">SaintExpress 45 km</div><div class="rec-s">28 nov.</div></div>
     </div>
-    <div class="rev-coach" style="margin-top:14px">La stratégie : <strong>cibler 3h45 (5:20/km)</strong> et laisser le corps aller chercher 3h38-3h42 si tout va bien le jour J. L'erreur classique sur un premier marathon avec objectif ambitieux = partir sur la projection et exploser aux 35 km. Ici on part prudent et on accélère si le corps l'autorise.</div>
+    <div class="rev-coach" style="margin-top:14px">La stratégie : <strong>cibler 3h45 (5:20/km)</strong> et laisser le corps aller chercher ${_PJ?'~'+_s2hm(_PJ.sec):'mieux'} si tout va bien le jour J. L'erreur classique sur un premier marathon avec objectif ambitieux = partir sur la projection et exploser aux 35 km. Ici on part prudent et on accélère si le corps l'autorise.</div>
   </div>
 
   </div></section>`+dgrpHead('profil','⛰️','Profil & matériel')+`
@@ -2177,7 +2208,7 @@ const _CK_HELP={
     <div class="ch-rule"><div class="ch-dot" style="background:var(--warn)"></div><div><strong>Semaine spécifique trail</strong> → D+ 600–1000 m</div></div>
     <div class="ch-tip">💡 Pour la Déraille (+901m) et SaintExpress, le D+ hebdo doit idéalement atteindre 500–800m dans les 4 semaines précédentes. Ce graphe permet de vérifier que la spécificité trail est bien intégrée.</div>`},
   z2:{t:'Z2 pace — Allure EF',c:'#0d9488',body:`<p>Allure moyenne de tes footings faciles semaine par semaine. C'est <strong>l'indicateur fondamental</strong> du développement aérobie.</p>
-    <p>La Zone 2 = effort où tu peux tenir une conversation. FC < 144 bpm pour toi.</p>
+    <p>La Zone 2 = effort où tu peux tenir une conversation. FC entre 134 et 154 bpm pour toi (zone Z2) ; sur un footing, vise 150 maximum.</p>
     <div class="ch-rule"><div class="ch-dot" style="background:var(--primary)"></div><div><strong>Courbe descendante</strong> (allure plus rapide) = ta forme aérobie progresse. Tu vas plus vite sans travailler plus fort.</div></div>
     <div class="ch-rule"><div class="ch-dot" style="background:var(--warn)"></div><div><strong>Courbe plate</strong> = stagnation. Normal en période de maintien ou de volume élevé.</div></div>
     <div class="ch-rule"><div class="ch-dot" style="background:var(--danger)"></div><div><strong>Courbe montante</strong> = régression. Souvent liée à la fatigue, la chaleur, ou un ACWR > 1.3.</div></div>
@@ -2452,7 +2483,7 @@ function openWrapped(){
   const paris=Math.round(d.km/2.4); // longueur approx d'un tour du périph parisien ~35km... on prend un repère parlant: distance Lyon->? Simplifions: équiv. en % d'un marathon
   const marathons=(d.km/42.195).toFixed(1);
   const cards=[
-    {bg:'linear-gradient(160deg,#0f172a,#1e3a5f)',ico:'\u{1F3C3}',big:d.n,unit:'sorties',sub:'C\u2019est parti pour ta saison en chiffres'},
+    {bg:'linear-gradient(160deg,#0f172a,#1e3a5f)',ico:'\u{1F3C3}',big:d.n,unit:'sorties',sub:'C\u2019est parti pour ta saison en chiffres, depuis la S24'},
     {bg:'linear-gradient(160deg,#0d9488,#0891b2)',ico:'\u{1F4CF}',big:d.km,unit:'km parcourus',sub:'Soit '+marathons+' marathons bout \u00e0 bout'},
     {bg:'linear-gradient(160deg,#b45309,#f59e0b)',ico:'\u26F0\uFE0F',big:d.dplus,unit:'m\u00e8tres de D+',sub:eiffel+'\u00d7 la Tour Eiffel, grimp\u00e9s avec les jambes'},
     {bg:'linear-gradient(160deg,#7c3aed,#a78bfa)',ico:'\u23F1\uFE0F',big:d.heures,unit:'heures d\u2019effort',sub:'De transpiration bien plac\u00e9e'},
@@ -2807,32 +2838,32 @@ function _ckRenderAll(win){
      (ex. les 8 dernieres semaines contre les 8 d'avant) et on affiche
      l'ecart en pourcentage avec une fleche. */
   (function(){
-    function serie(cle,champ){
-      try{var o=_CK[cle]&&_CK[cle][W];if(!o)return null;
-        var a=o[champ]||o.v||o.a;return Array.isArray(a)?a.filter(function(x){return typeof x==='number';}):null;
-      }catch(e){return null;}
+    /* Fenetre courante = les W dernieres semaines COMPLETES ; precedente = les W d'avant.
+       La semaine en cours (_curWeek) est exclue : incomplete, elle donnait -57 % un mardi.
+       Une semaine sans course compte pour 0 (volume, effort) ; la cadence est la moyenne des semaines courues. */
+    function fen(cle,mode){
+      var PW=_CK._PW;if(!PW||!PW[cle])return null;
+      var fin=PW.ref;if(fin>=_curWeek())fin=_curWeek()-1;
+      var cur=[],prv=[];
+      for(var w=fin-W+1;w<=fin;w++)cur.push(PW[cle][w]);
+      for(var w2=fin-2*W+1;w2<=fin-W;w2++)prv.push(PW[cle][w2]);
+      if(mode==='somme'&&cur.concat(prv).some(function(x){return x===null||x===undefined;}))return null;
+      var f=function(a){var v=a.filter(function(x){return typeof x==='number';});if(mode==='moy'){var n=v.filter(function(x){return x>0;});return n.length?n.reduce(function(s,x){return s+x;},0)/n.length:null;}return v.reduce(function(s,x){return s+x;},0);};
+      return [f(prv),f(cur)];
     }
-    function pose(id,vals,inverse){
-      var el=document.getElementById(id);if(!el||!vals)return;
-      // On EXCLUT la semaine en cours : elle est incomplete par nature et
-      // faisait apparaitre des chutes de -57 % un mardi matin, ce qui n'a
-      // aucun sens. On ne compare que des semaines terminees.
-      vals=vals.slice(0,-1);
-      if(vals.length<4){el.textContent='\u2014';el.style.color=_tc('var(--texte-trois)');return;}
-      var h=Math.floor(vals.length/2);
-      var av=vals.slice(0,h),ap=vals.slice(h);
-      var moy=function(x){return x.reduce(function(a,b){return a+b;},0)/x.length;};
-      var m1=moy(av),m2=moy(ap);
-      if(!m1){el.textContent='—';return;}
-      var d=(m2-m1)/m1*100;
+    function pose(id,pair,inverse){
+      var el=document.getElementById(id);if(!el)return;
+      if(!pair||!pair[0]||pair[1]===null){el.textContent='\u2014';el.style.color=_tc('var(--texte-trois)');return;}
+      var d=(pair[1]-pair[0])/pair[0]*100;
       var bon=inverse?(d<0):(d>0);
       var fl=Math.abs(d)<2?'\u2192':(d>0?'\u2191':'\u2193');
       el.textContent=fl+' '+(d>0?'+':'')+d.toFixed(0)+'%';
+      el.title='vs les '+W+' semaines pr\u00e9c\u00e9dentes';
       el.style.color=_tc(Math.abs(d)<2?'var(--texte-trois)':(bon?'#16a34a':'#f59e0b'));
     }
-    pose('ck-km-trend',serie('VOL','a'),false);
-    pose('ck-re-trend',serie('RE','v'),false);
-    pose('ck-cad-trend',serie('CAD','v'),false);
+    pose('ck-km-trend',fen('VOL','somme'),false);
+    pose('ck-re-trend',fen('RE','somme'),false);
+    pose('ck-cad-trend',fen('CAD','moy'),false);
   })();
   (function(){var se=document.getElementById('ck-summary');if(!se)return;try{var pts=_ckSummary();if(!pts.length){se.style.display='none';return;}se.style.display='';se.innerHTML=pts.map(function(p){var c=p.t==='warn'?'#ef4444':p.t==='ok'?'#16a34a':'#0891b2';return '<div class="cks-row"><span class="cks-dot" style="background:'+c+'"></span><span>'+p.x+'</span></div>';}).join('');}catch(e){se.style.display='none';}})();
   (function(){var cv=document.getElementById('ck-cad-kpi');if(!cv)return;try{var cs=(_CK&&_CK.CAD&&_CK.CAD[W]&&Array.isArray(_CK.CAD[W].v))?_CK.CAD[W].v.filter(x=>x!=null):[];if(cs.length){var srt=cs.slice().sort((a,b)=>a-b);var med=srt[Math.floor(srt.length/2)];cv.innerHTML=Math.round(med)+'<span class="ck-ku">spm</span>';}else{cv.innerHTML='—<span class="ck-ku">spm</span>';}}catch(e){}})();
@@ -2904,7 +2935,9 @@ function _ckSummary(){
           var _first=_avg(_byw[_wks[0]]),_last=_avg(_byw[_wks[_wks.length-1]]);
           var _delta=(_last/_first-1)*100;
           if(_delta>2)pts.push({t:'ok',x:'Efficience aérobie en progression — le moteur grossit'});
-          else if(_delta<-3)pts.push({t:'info',x:'Efficience en léger recul — normal en récup/chaleur non corrigée'});
+          else if(_delta<-3){var _ld=_sess[_sess.length-1].date,_mo=new Date(_ld+'T12:00:00').getMonth();
+            /* La chaleur n'explique le recul qu'en saison chaude (juin-septembre) */
+            pts.push({t:'info',x:(_mo>=5&&_mo<=8)?'Efficience en léger recul — normal en récup/chaleur non corrigée':'Efficience en léger recul — normal en semaine de récupération ou d\u2019aff\u00fbtage'});}
         }
       }
     }catch(e){}
@@ -3052,6 +3085,11 @@ function _effSessions(){
     if(!pace||!fc||fc>=162||!s.date)return;
     // Garde-fou : une vraie séance EF ne descend pas sous ~4:45/km à FC<162 (sinon reliquat de qualité)
     if(pace<4.75)return;
+    // Non comparables a une sortie facile sur le plat : fort denivele (>= 15 m/km), course-marche, allure de marche
+    const km=parseFloat(String(r.km).replace(',','.'))||0;
+    if(km>0&&(r.elevation_gain||0)/km>=15)return;
+    if(/run\/marche|course[- ]marche|run\s*&\s*walk|marche/i.test((s.titre||'')+' '+(s.type||'')))return;
+    if(pace>7.5)return;
     out.push({wk:+wk,date:s.date,pace:pace,fc:fc,temp:r.temp||null});
   }));
   try{(S24R.runs||[]).forEach(run=>{
@@ -3127,6 +3165,11 @@ async function _effRender(){
 }
 async function _heatRender(){
   const el=document.getElementById('heat-body');if(!el)return;
+  /* Hors saison chaude (octobre a mai) et sans sortie chaude recente, la carte n'a rien a dire : on la masque. */
+  const _hc=document.getElementById('heat-card');const _mo=new Date().getMonth();
+  const _saison=_mo>=5&&_mo<=8;
+  if(_hc)_hc.style.display=_saison?'':'none';
+  if(!_saison)return;
   // Toutes les séances faites des 21 derniers jours (trails inclus — l'exposition compte quel que soit le sport)
   const today=new Date();today.setHours(0,0,0,0);
   const lim=new Date(today.getTime()-21*86400000);
@@ -3165,19 +3208,19 @@ function _saisonRender(){
   const pts=SAISON_EFF.points;
   const paceStr=s=>{const m=Math.floor(s/60),ss=Math.round(s%60);return m+':'+String(ss).padStart(2,'0');};
   const base=pts[0],cur=pts[pts.length-1];
-  const gainSec=base.pace_s-cur.pace_s;
+  const gainSec=Math.round(base.pace_s-cur.pace_s);
   const gainPct=((cur.eff/base.eff)-1)*100;
   // barres : plus l'allure est basse (rapide), plus la barre est haute → on inverse
   const paces=pts.map(p=>p.pace_s),mn=Math.min(...paces),mx=Math.max(...paces),rg=(mx-mn)||1;
-  const cols=['#94a3b8','#38bdf8','#0d9488'];
+  const cols=['#94a3b8','#38bdf8','#0d9488','#0f766e'];
   const bars=pts.map((p,i)=>{
     const h=30+((mx-p.pace_s)/rg)*70; // 30-100%
     return `<div class="sais-col"><div class="sais-bar-wrap"><div class="sais-pace">${paceStr(p.pace_s)}</div><div class="sais-bar" style="height:${h}%;background:${cols[i]||'#0d9488'}"></div></div><div class="sais-lbl">${p.saison}</div><div class="sais-mois">${p.mois}${p.corr?' 🌡️':''}</div></div>`;
   }).join('');
   el.innerHTML=`
-    <div class="sais-head"><span class="sais-gain">▲ ${gainSec} s/km</span><span class="sais-gain-sub">plus rapide à effort égal depuis l'hiver (+${gainPct.toFixed(1)}%)</span></div>
+    <div class="sais-head"><span class="sais-gain">${gainSec>=3?'▲ '+gainSec+' s/km':gainSec<=-3?'▼ '+Math.abs(gainSec)+' s/km':'→ stable'}</span><span class="sais-gain-sub">${gainSec>=3?"plus rapide à effort égal depuis l'hiver (+"+gainPct.toFixed(1)+"%)":gainSec<=-3?"plus lent à effort égal qu'en hiver ("+gainPct.toFixed(1)+"%)":"à effort égal, comparable à l'hiver ("+(gainPct>0?'+':'')+gainPct.toFixed(1)+"%)"}</span></div>
     <div class="sais-chart">${bars}</div>
-    <div class="sais-note">À FC égale (145 bpm), tu cours ${gainSec} s/km plus vite qu'en février. L'été (🌡️) est corrigé de la chaleur — sans ça, il paraîtrait plus lent qu'il ne l'est.</div>`;
+    <div class="sais-note">${SAISON_EFF.note||''} L'été (🌡️) est corrigé de la chaleur par estimation.</div>`;
 }
 function _decoupRuns(){
   // Sorties eligibles avec un KPI decouplage valide (calcule au log, jamais recalcule ici)
@@ -3509,6 +3552,27 @@ function _ckZone(n,el){
   var v=document.getElementById('vue-cockpit');if(v)v.scrollTop=0;
   window.scrollTo(0,0);
 }
+/* Fraicheur : chaque carte du Cockpit affiche sa source et la date de sa donnee (COCKPIT_SOURCES, genere par gen.py). */
+function _ckFreshness(){
+  try{
+    if(typeof COCKPIT_SOURCES==='undefined')return;
+    var now=new Date();now.setHours(12,0,0,0);
+    var M=['janv.','f\u00e9vr.','mars','avr.','mai','juin','juil.','ao\u00fbt','sept.','oct.','nov.','d\u00e9c.'];
+    var fr=function(d){var x=d.split('-');return +x[2]+' '+M[+x[1]-1];};
+    document.querySelectorAll('.ck-card,#saison-card,.kpi').forEach(function(card){
+      if(card.querySelector(':scope > .ck-fresh'))return;
+      var te=card.querySelector('.ck-ct,.vo2-lbl,.kpi-t');if(!te)return;
+      var t=te.textContent||'';
+      var src=COCKPIT_SOURCES.find(function(c){return t.indexOf(c.carte)>=0;});
+      if(!src)return;
+      if(card.classList.contains('kpi')&&!/Performances/.test(t))return;
+      var age=Math.round((now-new Date(src.date+'T12:00:00'))/86400000);
+      var el=document.createElement('div');el.className='ck-fresh'+(age>14?' ck-fresh-old':'');
+      el.textContent='Source : '+src.source+' \u00b7 \u00e0 jour au '+fr(src.date)+(age>14?' ('+age+' jours)':'');
+      card.appendChild(el);
+    });
+  }catch(e){}
+}
 function renderCockpit(){
   const el=document.getElementById('cockpit-contenu');
   if(el.innerHTML.trim()){_ckRenderAll(_ckWin);return;}
@@ -3607,7 +3671,7 @@ ${card('ckDP','⛰ Dénivelé D+','',null,'m',75,'','dp')}
 </div>
 <div class="ck-sec ck-sec-tg" data-open="0" onclick="_ckToggleSec(this)">🔋 Moteur aérobie<span class="ck-sec-chev">▸</span></div>
 <div class="ck-sec-body" data-sec="0" style="display:none">
-<div class="ck-card"><div class="ck-ch"><div><div class="ck-ct">Z2 pace — allure EF à FC&lt;144<button class="ck-help" onclick="event.stopPropagation();openCkHelp('z2')">?</button></div><div class="ck-cs">indicateur n°1 du développement</div></div><div style="text-align:right"><div style="font-size:22px;font-weight:700;color:var(--primary-deux)" id="ck-z2-val">5:54</div><div class="ck-cs">/km</div></div></div><div style="font-size:var(--t-data);font-weight:600;margin:4px 0 6px" id="ck-z2-delta"></div><div class="ck-cw" id="ckZ2W"><svg id="ckZ2" height="85" style="display:block;width:100%"></svg><div class="ck-tt" id="ckZ2T"></div></div><div class="ck-xl" id="ckZ2X"></div></div>
+<div class="ck-card"><div class="ck-ch"><div><div class="ck-ct">Z2 pace — allure EF (zone 134-154)<button class="ck-help" onclick="event.stopPropagation();openCkHelp('z2')">?</button></div><div class="ck-cs">indicateur n°1 du développement</div></div><div style="text-align:right"><div style="font-size:22px;font-weight:700;color:var(--primary-deux)" id="ck-z2-val">5:54</div><div class="ck-cs">/km</div></div></div><div style="font-size:var(--t-data);font-weight:600;margin:4px 0 6px" id="ck-z2-delta"></div><div class="ck-cw" id="ckZ2W"><svg id="ckZ2" height="85" style="display:block;width:100%"></svg><div class="ck-tt" id="ckZ2T"></div></div><div class="ck-xl" id="ckZ2X"></div></div>
 <div class="ck-card"><div class="ck-ch"><div><div class="ck-ct">💓 Découplage cardiaque<button class="ck-help" onclick="event.stopPropagation();openCkHelp('dc')">?</button></div><div class="ck-cs">dérive FC sortie longue · &lt;5% idéal</div></div><div style="font-size:22px;font-weight:700" id="ck-dc-val">—</div></div><div class="ck-cw" id="ckDCW"><svg id="ckDC" height="75" style="display:block;width:100%"></svg><div class="ck-tt" id="ckDCT"></div></div><div class="ck-xl" id="ckDCX"></div></div>
 </div>
 <div class="ck-sec ck-sec-tg" data-open="0" onclick="_ckToggleSec(this)">📈 Allure &amp; vitesse<span class="ck-sec-chev">▸</span></div>
@@ -3912,9 +3976,9 @@ function realiseBloc(num,se){const r=se.realise||{statut:'a_faire'};
 const COACH_THEORY={
  ef:{nom:'Endurance fondamentale',
    pourquoi:"Construire le moteur aérobie qui porte tout le reste : densifier mitochondries et capillaires, et apprendre au corps à brûler les graisses. C'est 80 % de ton volume — sans cette base large, pas de seuil élevé ni de tenue sur marathon.",
-   comment:"Allure conversationnelle, FC sous ~75 % FCmax (≤ 144). Si tu peux parler en phrases complètes, c'est bon. Ralentis sans ego : trop vite = zone grise, ton ennemi n°1. Foulée souple, respiration facile par le nez.",
+   comment:"Allure conversationnelle, FC en zone Z2 (134-154), plafond 150 sur un footing. Si tu peux parler en phrases complètes, c'est bon. Ralentis sans ego : trop vite = zone grise, ton ennemi n°1. Foulée souple, respiration facile par le nez.",
    theorie:"<p><strong>Le principe du 80/20 (polarisation).</strong> Les coureurs qui progressent le plus courent ~80 % de leur volume très facile et ~20 % vraiment dur. Le piège, c'est la « zone grise » : ni assez lent pour récupérer et construire, ni assez rapide pour stimuler — c'est ton point faible historique (53 % de tes km y passaient).</p><p><strong>Ce qui se passe physiologiquement.</strong> À basse intensité, tu recrutes les fibres lentes (type I) et tu stimules la <em>biogenèse mitochondriale</em> : plus de « centrales énergétiques » dans tes muscles. Tu densifies aussi ton réseau capillaire (plus d'oxygène livré) et tu améliores l'<em>oxydation des lipides</em> — apprendre à brûler le gras épargne ton glycogène, la clé pour ne pas taper le mur à Nice.</p><p><strong>Pourquoi si lent ?</strong> Ces adaptations dépendent du <em>volume</em> et de la <em>durée</em>, pas de l'intensité. Courir plus vite ne les accélère pas — ça ajoute juste de la fatigue qui t'empêche de bien faire tes séances qualité. Facile vraiment facile, dur vraiment dur.</p>",
-   lecture:{fcBand:[0,144],fcLabel:"≤ 144 (75 % FCmax)"}},
+   lecture:{fcBand:[0,150],fcLabel:"≤ 150 (78 % FCmax)"}},
  seuil:{nom:'Seuil',
    pourquoi:"Repousser ton seuil lactique — le point où le lactate s'accumule plus vite que tu ne l'élimines. Plus ton seuil est haut, plus tu cours vite longtemps sans « exploser ». C'est le déterminant n°1 de ta perf du 10 km au marathon.",
    comment:"Allure « confortablement dure » : tu pourrais lâcher 3-4 mots, pas une phrase. ~4:40/km (seuil 30) ou ~4:55 (seuil 60), FC 88-92 % FCmax (169-177). Tu dois finir en te disant « j'aurais pu tenir un bloc de plus », pas vidé.",
@@ -3932,7 +3996,7 @@ const COACH_THEORY={
    lecture:{fcBand:[0,0],fcLabel:"variable (effort, pas allure)"}},
  longue:{nom:'Sortie longue',
    pourquoi:"La séance reine du marathon. Elle apprend à ton corps à <em>durer</em> : étend tes réserves de glycogène, densifie les capillaires, et entraîne la tête à tenir l'effort long. Avec finish allure marathon, elle simule la fin de course quand ça pique.",
-   comment:"Corps en EF (≤ 144), finish AM si prévu. Mange et bois AVANT d'avoir faim ou soif — c'est l'entraînement du fueling autant que des jambes. Sur le finish, garde du jus : tu dois finir solide, pas cramé.",
+   comment:"Corps en EF (≤ 150), finish AM si prévu. Mange et bois AVANT d'avoir faim ou soif — c'est l'entraînement du fueling autant que des jambes. Sur le finish, garde du jus : tu dois finir solide, pas cramé.",
    theorie:"<p><strong>Pourquoi c'est la séance reine.</strong> Le marathon se gagne sur l'endurance, et l'endurance se construit sur la durée. La sortie longue étend tes réserves de glycogène, multiplie les capillaires, et surtout muscle ta tête : apprendre à rester efficace quand c'est long et inconfortable.</p><p><strong>Le fueling, ta priorité n°1.</strong> C'est ton limiteur identifié — l'effondrement de La Circaète (km 21) venait d'un déficit d'eau et d'électrolytes par forte chaleur. La sortie longue est <em>l'</em>occasion de répéter ton plan : électrolytes réguliers, gels testés (4Endurance, Nduranz), boire avant la soif. Ne jamais découvrir son fueling le jour de la course.</p><p><strong>Le finish allure marathon.</strong> Courir les derniers km à 5:20 sur des jambes déjà fatiguées, c'est répéter <em>exactement</em> le 35e km de Nice. C'est dur, c’est volontaire, et c'est ce qui fait la différence entre finir fort et marcher.</p>",
    lecture:{fcBand:[0,150],fcLabel:"corps ≤ 144, finish ~155-163"}},
  test:{nom:'Test / recalibrage',
@@ -4059,12 +4123,12 @@ function svgLactate(){
 /* ===== Panneau théorie & coaching approfondi (pilote S25) ===== */
 const RICH_THEORY={
  ef:{titre:'Endurance fondamentale',icone:'🌱',sections:[
-   {h:'Le moteur aérobie, ta fondation',html:`<p>L'endurance fondamentale, c'est 80 % de ton volume et la base de <strong>toute</strong> ta performance. À cette intensité, tu construis le moteur : tu multiplies les <em>mitochondries</em> (les centrales énergétiques de tes muscles), tu densifies ton réseau de <em>capillaires</em> (plus d'oxygène livré à chaque foulée), et tu renforces ton cœur. Rien de spectaculaire séance par séance — mais c'est la somme de ces footings qui fait qu'en novembre tu tiendras 42 km.</p>`+svgZonesFC(0)+`<p>Sur un EF, tu vis dans la <strong>Z1-Z2</strong> : FC sous ~144 (75 % de tes 192 de FCmax). Pas plus.</p>`},
+   {h:'Le moteur aérobie, ta fondation',html:`<p>L'endurance fondamentale, c'est 80 % de ton volume et la base de <strong>toute</strong> ta performance. À cette intensité, tu construis le moteur : tu multiplies les <em>mitochondries</em> (les centrales énergétiques de tes muscles), tu densifies ton réseau de <em>capillaires</em> (plus d'oxygène livré à chaque foulée), et tu renforces ton cœur. Rien de spectaculaire séance par séance — mais c'est la somme de ces footings qui fait qu'en novembre tu tiendras 42 km.</p>`+svgZonesFC(0)+`<p>Sur un EF, tu vis dans la <strong>Z1-Z2</strong> : FC en zone Z2 (134-154, soit 70 à 80 % de tes 192 de FCmax), plafond 150 sur un footing.</p>`},
    {h:'La polarisation 80/20',html:`<p>Les coureurs qui progressent le plus courent <strong>très facile la plupart du temps</strong>, et <strong>vraiment dur le reste</strong>. Le danger, c'est le milieu — la fameuse « zone grise » : ni assez lent pour récupérer et construire, ni assez rapide pour créer un vrai stimulus. Tu paies la fatigue d'un effort dur sans en récolter les bénéfices.</p>`+svg8020()+`<p class="theo-perso">📌 <strong>Pour toi, Loïc :</strong> ton analyse historique montrait <strong>53 % de tes km en zone grise</strong>. C'est ton chantier n°1. Sur tes footings, vise <strong>≥ 6:00/km</strong> et ne négocie pas, même si tu te sens bien — surtout si tu te sens bien.</p>`},
    {h:'Apprendre à brûler les graisses',html:`<p>À basse intensité, ton corps puise majoritairement dans les <em>lipides</em> — un stock quasi illimité. Plus tu cours lentement et souvent, plus tu deviens efficace pour brûler du gras. L'enjeu : <strong>épargner ton glycogène</strong> (le carburant rapide mais limité). Un coureur qui oxyde bien les graisses tape le mur du marathon beaucoup plus tard. L'EF, c'est littéralement l'entraînement de cette filière.</p>`},
    {h:'Le test de la parole',html:`<p>La meilleure jauge ne coûte rien : <strong>si tu peux tenir une conversation en phrases complètes, l'allure est bonne</strong>. Dès que tu haches tes phrases, tu es trop vite. Respire facilement par le nez, foulée souple et relâchée. Sur un EF tu dois finir <strong>frais</strong>, capable d'en refaire autant.</p>`},
    {h:'Les 3 erreurs classiques',html:`<p><strong>1. L'ego du chrono.</strong> Courir « pas trop lent pour ne pas avoir honte » = zone grise garantie.<br><strong>2. Accélérer sur la fin.</strong> Finir vite un footing flatte, mais ajoute de la fatigue parasite.<br><strong>3. Sauter l'EF parce que « c'est juste un footing ».</strong> C'est la séance qui construit le plus, justement parce qu'elle est facile.</p>`}],
-   coach:`<p>Loïc, sur tes footings, l'objectif n'est jamais la distance ni l'allure : c'est de <strong>tenir le réflexe « facile = vraiment facile »</strong>. FC plafonnée à 144, allure ≥ 6:00/km, sans négocier — c'est ton antidote à la zone grise qui te plombait. Quand un footing inclut des lignes droites, ce sont 6 accélérations courtes et <strong>relâchées</strong>, juste pour réveiller la foulée : jamais un travail de vitesse, jamais en force, pour préserver ton dos.</p>`},
+   coach:`<p>Loïc, sur tes footings, l'objectif n'est jamais la distance ni l'allure : c'est de <strong>tenir le réflexe « facile = vraiment facile »</strong>. FC plafonnée à 150, allure ≥ 6:00/km, sans négocier — c'est ton antidote à la zone grise qui te plombait. Quand un footing inclut des lignes droites, ce sont 6 accélérations courtes et <strong>relâchées</strong>, juste pour réveiller la foulée : jamais un travail de vitesse, jamais en force, pour préserver ton dos.</p>`},
  am:{titre:'Allure marathon',icone:'🎯',sections:[
    {h:'La spécificité : t\'entraîner comme tu courses',html:`<p>Plus tu approches de Nice, plus l'entraînement doit <strong>ressembler à la course</strong>. Tenir précisément 5:20/km en séance apprend deux choses à ton corps : à ton <em>système nerveux</em>, le geste exact à cette allure ; à ton <em>métabolisme</em>, le bon mélange de carburants. C'est la définition de la spécificité — et c'est pour ça que ces séances montent en volume à mesure que la course approche.</p>`},
    {h:'Le métabolisme à allure marathon',html:`<p>À 5:20/km, tu brûles un <strong>mélange de glucides et de graisses</strong>. Le glycogène (sucre stocké dans les muscles et le foie) est ton carburant rapide, mais limité : ~90 à 120 minutes de stock. Au-delà, si tu n'as pas rechargé, c'est la panne.</p>`+svgGlycogen()+`<p>D'où les deux parades que cette séance entraîne : mieux <strong>oxyder les graisses</strong> (pour épargner le glycogène) et <strong>apprendre à manger en courant</strong>.</p>`},
@@ -4078,7 +4142,7 @@ const RICH_THEORY={
    {h:'Le fueling, ton limiteur n°1',html:`<p class="theo-perso">📌 C'est <strong>ton</strong> point faible identifié. À La Circaète, tu t'es effondré au km 20-21 : pas par manque de jambes, mais par <strong>déficit d'eau et d'électrolytes</strong> par 26-31°C. Yannis t'a relancé avec une pastille de sodium.</p><p>La sortie longue est <em>l'</em>occasion de répéter ton plan, jamais de l'improviser le jour J :</p><p><strong>• Électrolytes :</strong> 1 pastille toutes les 45 min sur effort long ou par chaleur, sans attendre.<br><strong>• Hydratation :</strong> boire <strong>avant</strong> d'avoir soif (~500-600 ml/h).<br><strong>• Glucides :</strong> 1 gel testé toutes les 40-45 min (4Endurance Pro, Nduranz NRGY — déjà validés en training).<br><strong>• Règle d'or :</strong> rien de nouveau le jour de la course.</p>`},
    {h:'L\'endurance mentale (la durabilité)',html:`<p>Au-delà du physique, la sortie longue entraîne ta <strong>durabilité</strong> : ta capacité à garder une foulée efficace quand la fatigue s'installe. Deux coureurs avec le même VO2max ne finissent pas pareil un marathon — c'est la durabilité qui les sépare. Et ça, ça ne se travaille qu'en accumulant des kilomètres fatigués.</p>`},
    {h:'Le finish allure marathon',html:`<p>Quand la sortie longue se termine par quelques km à 5:20/km sur des jambes déjà entamées, tu répètes <strong>exactement le 35e km de Nice</strong>. C'est dur, c’est volontaire, et c'est ce qui fait la différence entre finir solide et marcher. Garde toujours du jus pour ce finish : tu dois le terminer en contrôle, pas cramé.</p>`}],
-   coach:`<p>Loïc, sur tes sorties longues, deux non-négociables. <strong>Un : le fueling, dès le départ et même sans « besoin »</strong> — c'est l'automatisme à graver après ta défaillance de juin (pastilles d'électrolytes + gels testés, boire avant la soif). <strong>Deux : la régularité de l'allure</strong>, en EF (≤ 144) sur le corps. Quand un finish allure marathon est prévu, garde du jus pour le tenir en contrôle : c'est la répétition exacte du 35e km de Nice. Plus tard, ces longues iront jusqu'à 30 km avec 14 km de finish AM — la vraie séance reine de ta prépa.</p>`},
+   coach:`<p>Loïc, sur tes sorties longues, deux non-négociables. <strong>Un : le fueling, dès le départ et même sans « besoin »</strong> — c'est l'automatisme à graver après ta défaillance de juin (pastilles d'électrolytes + gels testés, boire avant la soif). <strong>Deux : la régularité de l'allure</strong>, en EF (≤ 150) sur le corps. Quand un finish allure marathon est prévu, garde du jus pour le tenir en contrôle : c'est la répétition exacte du 35e km de Nice. Plus tard, ces longues iront jusqu'à 30 km avec 14 km de finish AM — la vraie séance reine de ta prépa.</p>`},
  seuil:{titre:'Seuil',icone:'🔥',sections:[
    {h:'Qu\'est-ce que le seuil ?',html:`<p>À l'effort, tes muscles produisent du <em>lactate</em>. Tant que ton corps l'élimine (la « clairance ») aussi vite qu'il le produit, tu tiens. Au-delà d'une certaine intensité — ton <strong>seuil lactique</strong> — le lactate s'accumule, l'acidité monte, et tu dois ralentir.</p>`+svgLactate()+`<p>Entraîner le seuil, c'est déplacer ce point de bascule <strong>plus haut</strong> : courir plus vite, plus longtemps, avant de « cramer ».</p>`},
    {h:'Le déterminant n°1 de ton chrono',html:`<p>Plus que le VO2max (largement génétique), c'est ton seuil qui décide de ta performance du 10 km au marathon. C'est aussi la qualité qui répond le plus vite à l'entraînement : <strong>quelques semaines de seuil bien fait font gagner des minutes</strong>. C'est ton meilleur retour sur investissement par heure courue.</p>`},
