@@ -176,7 +176,7 @@ def check_week_dates():
 
 
 # ─────────────────────────────────────────────────────────────
-# L06 — data.json parse + compteurs attendus (30 semaines / 131 seances)
+# L06 — data.json parse + compteurs attendus (30 semaines / 141 seances)
 # ─────────────────────────────────────────────────────────────
 def check_data_integrity():
     if not os.path.exists(DATA):
@@ -190,13 +190,86 @@ def check_data_integrity():
     n_sea = sum(len(v) for v in d.get("SBW", {}).values())
     if n_sem != 30:
         warn(f"L06 data : {n_sem} semaines (attendu 30)")
-    if n_sea != 131:
-        warn(f"L06 data : {n_sea} seances (attendu 131)")
-    if n_sem == 30 and n_sea == 131:
-        ok("L06 data : 30 semaines / 131 seances")
+    if n_sea != 141:
+        warn(f"L06 data : {n_sea} seances (attendu 141)")
+    if n_sem == 30 and n_sea == 141:
+        ok("L06 data : 30 semaines / 141 seances")
 
 
 # ─────────────────────────────────────────────────────────────
+# L09 — Textes visibles : pas de code \uXXXX affiche, pas de mots francais sans accent
+# L10 — Fraicheur : chaque carte du Cockpit declare sa source ; avertit au-dela de 14 jours
+# ──────────────────────────────────────────────────────────
+_ACCENT_KEYS = {"revue", "interpretation", "note", "txt", "vigilance", "objectif", "sub", "detail", "theme"}
+_NO_ACCENT = re.compile(
+    r"\b(seances?|realis[e]e?s?|derive|preparation|recuperation|tres|etait|apres|deja|meme|periode|"
+    r"resultats?|probleme|difficulte|equilibre|premiere|derniere|entrainement|decision|energie|"
+    r"kilometres?|donnees|accelere\w*|reflexe|durabilite|precis\w*)\b", re.I)
+
+
+def _walk_strings(o, key=None):
+    if isinstance(o, dict):
+        for k, v in o.items():
+            if k == "CHANGELOG":
+                continue
+            yield from _walk_strings(v, k)
+    elif isinstance(o, list):
+        for v in o:
+            yield from _walk_strings(v, key)
+    elif isinstance(o, str):
+        yield key, o
+
+
+def check_texts():
+    if not os.path.exists(DATA):
+        return
+    d = json.load(open(DATA, encoding="utf-8"))
+    esc, noacc = [], []
+    for key, txt in _walk_strings(d):
+        if re.search(r"\\u[0-9a-fA-F]{4}", txt):
+            esc.append(txt[:50])
+        if key in _ACCENT_KEYS:
+            m = _NO_ACCENT.search(re.sub(r"<[^>]+>", " ", txt))
+            if m:
+                noacc.append(f"{key}: « {m.group(0)} »")
+    if esc:
+        crit(f"L09 texte : {len(esc)} code(s) \\uXXXX affiche(s) tel(s) quel(s), ex. {esc[0]!r}")
+    else:
+        ok("L09 texte : aucun code \\uXXXX visible")
+    if noacc:
+        crit(f"L09 accents : {len(noacc)} mot(s) sans accent dans des textes visibles, ex. {noacc[0]}")
+    else:
+        ok("L09 accents : textes visibles accentues")
+
+
+def check_freshness():
+    if not os.path.exists(DATA):
+        return
+    d = json.load(open(DATA, encoding="utf-8"))
+    src = d.get("COCKPIT_SOURCES")
+    if not src:
+        crit("L10 fraicheur : COCKPIT_SOURCES absent (chaque carte du Cockpit doit declarer sa source et sa date)")
+        return
+    import datetime
+    ref = os.environ.get("RUNNING_TODAY")
+    if not ref:
+        try:
+            ref = json.load(open(os.path.join(TMP, "site", "data", "meta.json"), encoding="utf-8")).get("BUILT_ON")
+        except Exception:
+            ref = None
+    today = datetime.date.fromisoformat(ref) if ref else datetime.date.today()
+    vieux = []
+    for c in src:
+        age = (today - datetime.date.fromisoformat(c["date"])).days
+        if age > 14:
+            vieux.append(f"{c['carte']} ({age} j)")
+    if vieux:
+        warn("L10 fraicheur : donnees de plus de 14 jours : " + ", ".join(vieux))
+    else:
+        ok(f"L10 fraicheur : {len(src)} cartes a jour (< 14 jours)")
+
+
+# ──────────────────────────────────────────────────────────
 # L07 — Aucun token GitHub en dur dans les fichiers pousses
 # ─────────────────────────────────────────────────────────────
 def check_no_token():
@@ -234,6 +307,8 @@ def main():
     check_surrogates()
     check_week_dates()
     check_data_integrity()
+    check_texts()
+    check_freshness()
     check_no_token()
     check_html_sane()
 

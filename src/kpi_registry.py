@@ -67,6 +67,8 @@ REGISTRE = {
                    None),
     '_ORIG':      ('DERIVED', 'Sauvegarde des series d origine pour la fusion '
                               'avec l historique pre-plan', None),
+    '_PW':        ('DERIVED', 'Valeurs par semaine (VOL, RE, CAD) pour les tendances : '
+                              'semaine sans course = 0, comparaison a la fenetre precedente', None),
 }
 
 # Indicateurs hors _CK, rendus par une fonction dediee : la fonction doit exister

@@ -13,8 +13,8 @@
 
 ## Athlète
 - **Loïc Entzmann** · Lyon · M0 (30-34) · 84 kg
-- FCmax 192 · Z2 max 144 bpm · Seuil marche ~160 bpm
-- **Courses 2026** : Trail Déraille 5 juil (24km) · Marathon Nice 8 nov (objectif 3h45) · SaintExpress 28 nov (45km nuit)
+- FCmax 192 · Z2 134-154 bpm (footings prescrits à FC ≤ 150) · Seuil marche ~160 bpm
+- **Courses 2026 à venir** : Marathon Nice 8 nov (objectif 3h45) · SaintExpress 28 nov (45 km nuit). Déjà courues : Trail Déraille (5 juil), Run In Lyon semi (4 oct, 1:52:30)
 
 ## Règles absolues (voir docs/TECHNICAL.md §14 pour le détail historique)
 
@@ -40,7 +40,7 @@ python scripts/release.py      # porte complète (audits Strava, Cockpit…) —
 ```
 - Dossier de travail : `build/` (ignoré par Git), surchargeable par `RUNNING_WORK`. Chemins centralisés dans `src/paths.py`. Sous Windows, définir `PYTHONUTF8=1` pour lancer preflight et les tests à la main.
 - **Reproductibilité** : `gen.py` calcule l'ACWR « à aujourd'hui » ; la date de build est enregistrée dans `data/meta.json` (`BUILT_ON`) et rejouée par `--check` (variable `RUNNING_TODAY`).
-- Sortie attendue de gen.py : « Semaines: 30 | Séances: 137 ».
+- Sortie attendue de gen.py : « Semaines: 30 | Séances: 141 ».
 - Les copies `src/preflight.py` et `src/release.py` doivent rester identiques à `scripts/` (l'ancien `release.py` les référence) ; consolidation à prévoir.
 
 ## Fichiers clés
@@ -78,7 +78,7 @@ Accueil · Séances · Cockpit · Courses
 Voir **DESIGN.md** (« Le carnet de l'entraîneur ») et `src/css.txt :root`. **1 primaire** `--primary:#0d9488` (teal) ; états `--ok` `--warn` `--danger` ; neutres slate ; échelle typo `--t-display…--t-data`. Ne pas réintroduire de couleurs ad hoc. Dégradés par course (dossiers) préservés exprès. Mouvement : `.vue-in`, reveal au scroll, press-scale, haptique, tout sous `prefers-reduced-motion`.
 
 ## Données clés gen.py
-- Plan : S25→S53 (30 semaines, 137 séances)
+- Plan : S25→S53 (30 semaines, 141 séances)
 - Courses : `RACES` — Déraille, Nice, SaintExpress
 - Chaussures : `GEAR` (6 paires, `gear_id` Strava ci-dessous) ; palmarès : `PALMARES`
 - Séances loggées : `arr[i]["realise"]={...}` dans un bloc `if n==NN:` de la boucle des semaines (voir docs/ENRICHISSEMENT.md)
