@@ -45,20 +45,25 @@ def digest(site):
 
 def main():
     print("\nTEST BUILD — reproductibilite")
+    # Dates de test derivees du depot (BUILT_ON) : une date figee devient fausse des qu'une seance
+    # plus recente est loguee (l'ACWR ne peut pas etre calcule avant la derniere seance).
+    import datetime
+    day_a = json.load(open(os.path.join(ROOT, "data", "meta.json"), encoding="utf-8"))["BUILT_ON"]
+    day_c = (datetime.date.fromisoformat(day_a) + datetime.timedelta(days=7)).isoformat()
     # --stage : construit site/ dans un dossier temporaire, sans rien ecrire a la racine du depot.
     with tempfile.TemporaryDirectory() as a, tempfile.TemporaryDirectory() as b, tempfile.TemporaryDirectory() as c:
-        ra = build(a, "2026-10-20", ["--stage"])
-        rb = build(b, "2026-10-20", ["--stage"])
-        rc = build(c, "2026-11-02", ["--stage"])
+        ra = build(a, day_a, ["--stage"])
+        rb = build(b, day_a, ["--stage"])
+        rc = build(c, day_c, ["--stage"])
         ok_sites = all(os.path.exists(os.path.join(w, "site", "index.html")) for w in (a, b, c))
         check("builds produits", ok_sites, (ra.stdout + ra.stderr)[-300:])
         if not ok_sites:
             sys.exit(1)
         data_a = json.load(open(os.path.join(a, "data.json"), encoding="utf-8"))
-        check("gen.py suit RUNNING_TODAY (ACWR au 2026-10-20)", data_a["ACWR_DATA"]["ref"] == "2026-10-20",
+        check("gen.py suit RUNNING_TODAY (ACWR au " + day_a + ")", data_a["ACWR_DATA"]["ref"] == day_a,
               str(data_a["ACWR_DATA"]["ref"]))
         meta_a = json.load(open(os.path.join(a, "site", "data", "meta.json"), encoding="utf-8"))
-        check("meta.json enregistre BUILT_ON", meta_a.get("BUILT_ON") == "2026-10-20", str(meta_a.get("BUILT_ON")))
+        check("meta.json enregistre BUILT_ON", meta_a.get("BUILT_ON") == day_a, str(meta_a.get("BUILT_ON")))
         check("deux builds du meme jour sont identiques (octet pour octet)",
               digest(os.path.join(a, "site")) == digest(os.path.join(b, "site")))
         da, dc = digest(os.path.join(a, "site")), digest(os.path.join(c, "site"))

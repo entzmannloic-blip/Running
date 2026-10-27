@@ -2852,6 +2852,7 @@ CHANGELOG=[
     "REWINDS : S36, S39, S40, S41, S42 et S43 créés (chiffres mesurés). S37 et S38 n'ont aucune course : pas de Rewind.",
     "EFFICIENCE : point d'automne ajouté (352 s/km à 145 bpm) ; la conclusion 'plus rapide depuis l'hiver' est retirée : l'automne est comparable à février (347 s/km).",
     "TEXTES : codes \\u00e9 visibles dans les revues S31, S33, S35 corrigés ; revue S34, interprétation de l'ACWR et séances non faites des S42-S43 remises avec leurs accents.",
+    "OUTILS : le bouton du Rewind passe à 44 px de haut (cible tactile, l'audit d'accessibilité échouait dès qu'un Rewind existe pour la semaine) ; test_build.py dérive ses dates de BUILT_ON au lieu d'une date figée (le test échouait depuis le log du 25/10).",
     "ALLURES : l'allure marathon est datée du bloc de 14 km du 15/10 (5:11/km en déplacement, FC 161) ; mention 'à recaler après le test 10 km (S31)' retirée de la vigilance.",
   ]},
   {"build":260,"date":"27 octobre 2026","sha":"","tag":"P0 avant Nice : dossier Nice recalé (chaussures, zones de FC, lièvre) et trail du 24/10 reclassé","items":[
