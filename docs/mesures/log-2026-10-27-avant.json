@@ -1,0 +1,25 @@
+{
+ "titre": "AVANT — log S44 seance 2 (footing du 27/10), circuit d'ENRICHISSEMENT.md build 262",
+ "note": "Tailles mesurees (wc, git diff) sur la vraie seance. La creation de la PR (bloquee par l'acces API) est comptee pour un seul appel normal.",
+ "actions": [
+  {"action": "Lire docs/ENRICHISSEMENT.md", "lu": 6600, "nature": "texte"},
+  {"action": "Strava list_activities", "lu": 3300, "nature": "code"},
+  {"action": "Strava get_activity_performance", "lu": 9700, "nature": "code"},
+  {"action": "Strava get_activity_streams (resolution 1000, decouplage)", "lu": 13500, "nature": "nombres"},
+  {"action": "Strava get_gear", "lu": 830, "nature": "code"},
+  {"action": "Ecrire les streams dans un fichier pour decouplage.py", "ecrit": 13500, "nature": "nombres"},
+  {"action": "Lancer decouplage.py + lire GEAR, CHANGELOG, strava_reference", "lu": 2100, "ecrit": 450, "nature": "code"},
+  {"action": "grep : trouver les blocs S43/S44 dans gen.py (1er essai vide)", "lu": 50, "ecrit": 120, "nature": "code"},
+  {"action": "grep : trouver les blocs S43/S44 dans gen.py", "lu": 3500, "ecrit": 120, "nature": "code"},
+  {"action": "sed : lire une seance modele (S42-3) et le bloc S44", "lu": 7650, "ecrit": 120, "nature": "texte"},
+  {"action": "sed : lire GEAR", "lu": 800, "ecrit": 60, "nature": "code"},
+  {"action": "Editer gen.py : bloc realise + revue (splits calcules a la main)", "lu": 80, "ecrit": 2900, "nature": "texte"},
+  {"action": "Editer gen.py : GEAR", "lu": 80, "ecrit": 120, "nature": "code"},
+  {"action": "Editer gen.py : CHANGELOG", "lu": 80, "ecrit": 500, "nature": "texte"},
+  {"action": "Editer strava_reference.json : activite", "lu": 80, "ecrit": 120, "nature": "code"},
+  {"action": "Editer strava_reference.json : chaussure", "lu": 80, "ecrit": 60, "nature": "code"},
+  {"action": "Build + preflight + validate_data + release.py", "lu": 700, "ecrit": 250, "nature": "code"},
+  {"action": "Branche, commit, pr_scope, push", "lu": 300, "ecrit": 450, "nature": "code"},
+  {"action": "Ouvrir la PR", "lu": 200, "ecrit": 700, "nature": "texte"}
+ ]
+}
