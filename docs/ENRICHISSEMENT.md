@@ -1,73 +1,86 @@
 # Enrichir l'app après une séance — contrat pour Claude
 
-> Document de référence pour le projet Claude. Il remplace les anciennes consignes de livraison (copie dans `/tmp`, push par l'API Git Data, token en clair). Mis à jour : octobre 2026 (build 232).
+> Document de référence pour le projet Claude. Mis à jour : octobre 2026 (build 265, chantier P2 « pipeline de log »).
 
 ## Le circuit
 
 ```
 Loïc court → Strava → il envoie la séance à Claude
-→ Claude lit Strava (MCP) → modifie src/gen.py + src/strava_reference.json
-→ python src/build.py → contrôles locaux → branche + pull request
-→ GitHub vérifie (job « verify ») → fusion → GitHub Pages publie → l'iPhone affiche « Nouvelle version prête »
+→ Claude lit Strava (MCP) → recopie l'essentiel dans strava/<id>.json
+→ python scripts/log_seance.py → Claude écrit la revue (src/textes/seances/S44-2.html)
+→ python src/build.py → contrôles → branche + pull request → fusion → l'iPhone affiche « Nouvelle version prête »
 ```
 
-Une séance enrichie = **une petite PR de données**. Rien d'autre ne doit y figurer.
+Une séance enrichie = **une petite PR de données**. Ne plus ouvrir `src/gen.py` pour logger : le script s'en charge.
 
 ## 1. Lire Strava (outils MCP)
 
-1. `Strava:list_activities(first=2)` : retrouver l'activité (date, distance).
-2. `Strava:get_activity_performance(activity_id)` : km, temps, FC moyenne et max, tours (laps), meilleurs efforts.
-3. `Strava:get_activity_streams(activity_id, streams, resolution)` : seulement si besoin d'analyse fine (dérive de FC, segments).
-4. `Strava:get_gear(gear_types=["Shoe"])` : kilométrage de chaque paire (peut demander une approbation côté app).
+1. `Strava:list_activities(range_start, range_end)` sur la journée de la séance (une seule activité en retour).
+2. `Strava:get_activity_performance(activity_id)` : FC moyenne et max, tours (laps).
+3. `Strava:get_gear(gear_types=["Shoe"])` : kilométrage de la paire utilisée.
+4. **Seulement pour un footing, une sortie longue ou une récupération sur route** (D+ < ~15 m/km, 40 min ou plus) : `Strava:get_activity_streams(activity_id, resolution=1000, streams=["time","heart_rate","velocity_smooth"])`, pour le découplage. Jamais pour une séance d'intensité ni un trail : c'est le poste le plus coûteux du log.
 
-## 2. Modifier `src/gen.py` (source des données)
+## 2. Recopier l'essentiel dans `strava/<id>.json` (dossier ignoré par Git)
 
-- **La séance** : dans le bloc de sa semaine (`for n, arr in list(SEANCES_BY_WEEK.items()):` puis `if n==NN:`, avec `_SNN = {str(x["id"]): x for x in arr}`), renseigner `_SNN["<id>"]["realise"]={...}`. Copier la structure d'une séance déjà loggée de la **même semaine** ou de la semaine précédente. Champs courants de `realise` : `statut` (`fait`, `partiel`, `saute`), `km`, `temps` (`h:mm:ss`), `allure` (`m:ss/km`), `fc_moy`, `fc_max`, `re` (effort relatif Strava), `cadence`, `elevation_gain`, `kcal`, `rpe_ressenti`, `commentaire`, `revue` (HTML du bilan), `pr`, `ach`, `pr_detail`, `splits` (`[{"km","allure","fc"}]`).
-- **Température et dérive cardiaque, à chaque log** : relever la température Strava de la sortie (`weather.temperature` de `list_activities`) et la stocker dans `realise.temp` (entier). Pour une sortie éligible (facile, longue ou récupération, sur route, D+ < ~15 m/km, fenêtre de 40 min ou plus), récupérer `get_activity_streams(resolution=1000, streams=[time,heart_rate,velocity_smooth])`, lancer la procédure `src/decouplage.py` (`analyse(streams, temp)`) et stocker le résultat dans `realise.decouplage` (qualité `fiable`, `incertain`, `non_calculable` ou `non_representatif`). L'app n'utilise que les `fiable`.
-- **Rewind avec la revue de la semaine** : quand la semaine est terminée et sa revue écrite, ajouter son Rewind à `REWINDS` (en **fin de liste** : `rwAuto()` ouvre le dernier élément le lundi). Compter 6 à 8 slides construites sur les chiffres mesurés (volume, séance clé, point fort, point noir, suite). Une semaine sans aucune course n'a pas de Rewind. Dernière à jour : S43.
-- **Si la séance diffère du plan** : mettre aussi à jour `titre`, `sous`, `metriques`, `objectif`, `struct`, `segments`, `chaussure_realise`, et `date` si elle est différente.
-- **Chaussures** : dans `GEAR`, mettre à jour `km` (arrondi) d'après `get_gear`.
-- **Journal** : une entrée de `CHANGELOG` en tête, `build` = dernier + 1, `date`, `tag` court et `items` factuels (voir une entrée existante). Le numéro de build est vérifié par le preflight (cohérence gen.py / build) et par le job `verify` (il doit être strictement supérieur à celui de `main`).
-- Pas d'emoji écrit en paire de surrogates (`👍`) dans `gen.py` : caractère littéral ou `\U0001F44D` (voir `docs/LESSONS.md`).
+Champs Strava recopiés tels quels, et les tours sous forme compacte `[moving_time, distance, avg_hr, max_hr, elevation_gain]` :
 
-## 3. Mettre à jour le référentiel Strava : `src/strava_reference.json`
+```json
+{"id":"20753555995","start_local":"2026-10-27T17:04:11","sport_type":"Run","gear_id":"28498174",
+ "distance":10035.6,"moving_time":3510,"elapsed_time":3525,"elevation_gain":31,"relative_effort":86,
+ "total_calories":754,"avg_cadence":85.9994,"pr_count":0,"achievement_count":0,"temperature":18.4,
+ "average_heartrate":145.58,"max_heartrate":165,"gear_total_distance":1284244,
+ "laps":[[340,1000,141.713,150,4.2],[347,1000,147.666,152,4.8]]}
+```
 
-Les audits comparent l'app à ce référentiel (« source de vérité » Strava). Trois blocs :
-- `activites` : `"AAAA-MM-JJ": [km, effort_relatif, D+]` (ajouter la nouvelle sortie ; plusieurs sorties le même jour = totaux additionnés) ;
-- `chaussures` : kilométrage Strava de chaque paire (mêmes valeurs que `GEAR` dans `gen.py`, à ±5 km) ;
-- `mois` : totaux des mois **clos** `[km, sorties]`.
+`temperature` vient de `weather.temperature` de `list_activities` ; `gear_total_distance` du `get_gear` de la paire. Si les flux ont été demandés : les écrire tels quels dans `strava/<id>-streams.json`. Exemples complets : `tests/fixtures/strava/`.
 
-## 4. Construire et contrôler en local
+## 3. Lancer le script
+
+```bash
+python scripts/log_seance.py S44-2 strava/20753555995.json [--streams strava/20753555995-streams.json]
+       [--blocs "1-8:Footing facile:vert,9-10:Fin:orange"] [--titre "…" --sous "…"] [--rpe 5] [--statut partiel]
+```
+
+Il écrit, sans rien inventer :
+- `src/logs/S44-2.json` : le bloc `realise` (km, temps, allure, FC, effort relatif, cadence, D+, kcal, température, splits par km, terrain route ou trail, découplage, identifiant Strava) et les champs de la séance (chaussure, date si elle diffère du plan, titre et sous-titre si `--titre`/`--sous`, segments si `--blocs`) ;
+- `src/strava_reference.json` : l'activité du jour (additionnée s'il y a déjà une sortie ce jour-là) et le kilométrage de la chaussure ;
+- `GEAR` dans `src/gen.py` : le kilométrage de la chaussure ;
+- une entrée de `CHANGELOG` (build + 1). `--sans-changelog` pour plusieurs séances dans un même build.
+
+Il refuse de réécrire un log existant (`--force`) et de logger deux fois la même activité Strava. Le commentaire factuel est produit automatiquement ; `--commentaire` le remplace. Le découplage suit `src/decouplage.py` (seuls les `fiable` servent dans l'app).
+
+## 4. Écrire les textes
+
+- **La revue de la séance** : `src/textes/seances/S44-2.html` (HTML court : verdict, point à corriger, suite). C'est le seul texte à rédiger pour une séance.
+- **La revue de la semaine**, quand elle est terminée : `src/textes/semaines/S44.html`.
+- **Le Rewind de la semaine** (s'il y a eu au moins une course) : `src/textes/rewinds/S44.json`, 6 à 8 slides sur les chiffres mesurés (copier la structure d'un Rewind existant). Ils sont rangés par numéro de semaine : le plus récent est ouvert le lundi.
+- Une séance non faite (`skipped`) ou une modification du plan se fait encore dans le bloc de la semaine de `src/gen.py` (voir les semaines précédentes).
+
+## 5. Construire et contrôler en local
 
 ```bash
 python src/build.py                 # régénère index.html, sw.js et data/*.json
-python scripts/preflight.py         # contrôles statiques (build, dates ISO, secrets…)
-python scripts/validate_data.py     # format des données
-python scripts/release.py           # porte complète (audits Strava, Cockpit, régression) — ne JAMAIS utiliser --push
+python scripts/preflight.py         # contrôles statiques
+python scripts/release.py           # porte complète — ne JAMAIS utiliser --push ; filtrer : | grep -i "phases\|echec"
 ```
 
-`release.py` doit finir par « Phases 1 a 3 vertes ». Un échec = on corrige, on ne pousse pas. Sous Windows, définir `PYTHONUTF8=1` si on lance un script à la main.
+`release.py` doit finir par « Phases 1 a 3 vertes ». Un échec = on corrige, on ne pousse pas.
 
-## 5. Branche, commit, pull request
+## 6. Branche, commit, pull request, fusion
 
-- Branche depuis `main` à jour : `data/S{sem}-{n}` (ex. `data/S41-3`).
-- Fichiers attendus dans le commit : `src/gen.py`, `src/strava_reference.json`, `index.html`, `sw.js`, `data/*.json` (+ `fit/` si un fichier de séance change). Ils sont **générés** : ne jamais les éditer à la main.
-- Message : `data: log S41 seance 3 vallonne 07/10 (Strava) (build 233)`.
-- Ouvrir la PR vers `main`, titre identique, corps : ce qui est loggé (date, km, durée, chaussure) et les valeurs Strava utilisées.
-
-## 6. Fusion
-
-1. `python scripts/pr_scope.py origin/main...HEAD` doit répondre `DATA_ONLY`. Sinon c'est une PR de code : l'annoncer à Loïc avant de fusionner.
-2. Le contrôle GitHub **`verify`** doit être vert (il rejoue le build, le preflight, le format des données, la reproductibilité et les tests de régression).
-3. Si 1 et 2 sont vrais : fusion sans relecture, `gh pr merge --squash --delete-branch`. Loïc a autorisé la fusion automatique des PR de données.
-4. Vérifier la publication : `gh api repos/entzmannloic-blip/Running/pages/builds/latest` (statut `built`) puis `https://entzmannloic-blip.github.io/Running/data/meta.json` (le build attendu).
+- Branche depuis `main` à jour : `data/S{sem}-{n}`. Fichiers : `src/logs/`, `src/textes/`, `src/gen.py`, `src/strava_reference.json`, `index.html`, `sw.js`, `data/*.json`. Ne pas committer `strava/`.
+- Message et titre de PR : `data: log S44 seance 2 footing 27/10 (Strava) (build 263)` ; corps : date, km, durée, chaussure, identifiant Strava.
+- `python scripts/pr_scope.py origin/main...HEAD` doit répondre `DATA_ONLY`, puis contrôle GitHub `verify` vert : fusion sans relecture (`gh pr merge --squash --delete-branch`). Sinon c'est une PR de code : l'annoncer à Loïc.
+- Vérifier la publication : `data/meta.json` publié porte le build attendu.
 
 ## 7. Retour arrière
 
-`git revert -m 1 <commit de fusion>` (ou `git revert <commit>` pour une fusion « squash »), nouvelle PR, même circuit. Le tag `pre-refonte` marque la version d'avant la refonte (build 224).
+`git revert <commit>` (fusion « squash »), nouvelle PR, même circuit. Pour une seule séance : supprimer `src/logs/S44-2.json` et sa revue, rebuild.
 
 ## Règles de sécurité
 
-- **Aucun token dans le dépôt** (le preflight le vérifie). Le PAT mentionné dans les anciennes notes expirait le 10 septembre 2026 : l'accès se fait désormais par `gh` (connexion `entzmannloic-blip`). Ne jamais écrire un token dans un fichier, un message de commit ou une PR.
+- **Aucun token dans le dépôt** (le preflight le vérifie). L'accès se fait par `gh`.
 - Ne modifier ni `.github/`, ni `src/app.js`, ni le CSS dans une PR de données.
 - Les chiffres viennent de Strava ou de Loïc : ne rien inventer. Si une valeur manque, laisser le champ absent plutôt que mettre un 0.
+- Pas d'emoji écrit en paire de surrogates dans `gen.py` (voir `docs/LESSONS.md`).
+- Le repo publié s'appelle `entzmannloic-blip/Running` (`Labfact/running` y redirige).
