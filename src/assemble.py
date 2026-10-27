@@ -21,6 +21,25 @@ def write(path, text):
     open(path, 'w', encoding='utf-8', newline=chr(10)).write(text)
 
 
+# textes.json : revues de seance et de semaine, splits, slides des Rewinds. Charges a l'ouverture
+# d'une fiche (window.loadTextes), donc retires des fichiers lus au demarrage. data.json reste complet.
+full = data
+data = json.loads(json.dumps(full))
+textes = {'SEANCES': {}, 'SEMAINES': {}, 'REWINDS': {}}
+for w, arr in data['SBW'].items():
+    for s in arr:
+        r = s.get('realise') or {}
+        t = {k: r.pop(k) for k in ('revue', 'splits') if k in r}
+        if t:
+            textes['SEANCES'][f"{w}-{s['id']}"] = t
+for s in data['SEMAINES']:
+    if 'revue' in s:
+        textes['SEMAINES'][str(s['num'])] = s.pop('revue')
+for rw in data['REWINDS']:
+    if 'slides' in rw:
+        textes['REWINDS'][rw['id']] = rw.pop('slides')
+write('site/data/textes.json', dump(textes))
+
 # data/*.json : un objet {NOM_GLOBAL: valeur} par fichier (voir datamap.py)
 for fname, pairs in GROUPS.items():
     write(f'site/data/{fname}.json', dump({name: data[key] for name, key in pairs}))
@@ -35,6 +54,11 @@ var V="@@BUILD@@",EAGER=@@EAGER@@;
 function get(f){return fetch("data/"+f+".json?v="+V).then(function(r){if(!r.ok)throw new Error(f+" "+r.status);return r.json();});}
 function fail(){var l=document.getElementById("boot-load");if(l)l.hidden=true;var e=document.getElementById("boot-err");if(e)e.hidden=false;}
 var cl=null;
+var tx=null;
+window.loadTextes=function(){
+  if(!tx)tx=get("textes").catch(function(e){tx=null;throw e;});
+  return tx;
+};
 window.loadChangelog=function(){
   if(!cl)cl=get("changelog").then(function(o){window.CHANGELOG=o.CHANGELOG;return o.CHANGELOG;}).catch(function(e){cl=null;throw e;});
   return cl;

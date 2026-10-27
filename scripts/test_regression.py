@@ -496,6 +496,39 @@ def run():
         except Exception as e:
             check("T20 debugCockpit", False, str(e)[:120])
 
+        # ── T21 : textes charges a la demande (data/textes.json) ──
+        # Pas lus au demarrage ; une fiche seance, une fiche semaine et un Rewind affichent leur texte.
+        try:
+            D = json.load(open(DATA_JSON, encoding="utf-8"))
+            sem = max(s["num"] for s in D["SEMAINES"] if s.get("revue"))
+            wk = str(sem)
+            se = next(x for x in D["SBW"][wk] if (x.get("realise") or {}).get("revue"))
+            rw = D["REWINDS"][-1]["id"]
+            pt = b.new_page(viewport={"width": 390, "height": 844})
+            vus = []
+            pt.on("request", lambda r: vus.append(r.url))
+            pt.goto(HTML, wait_until="load", timeout=20000)
+            pt.wait_for_timeout(1200)
+            check("T21 textes.json non charge au demarrage", not any("textes.json" in u for u in vus),
+                  str([u for u in vus if "textes" in u])[:120])
+            pt.evaluate(f"ouvrirSeance({sem},{json.dumps(se['id'])})")
+            pt.wait_for_timeout(800)
+            txt = pt.evaluate("[...document.querySelectorAll('.rev-coach')].map(e=>e.innerHTML).join('')")
+            check(f"T21 fiche S{sem}-{se['id']} : revue affichee apres chargement",
+                  len(txt) > 50 and txt != "—", txt[:80])
+            pt.evaluate(f"ouvrirSemaine({sem})")
+            pt.wait_for_timeout(600)
+            body = pt.evaluate("document.body.textContent")
+            check(f"T21 fiche semaine {sem} : revue presente, pas de placeholder",
+                  "Revue de la semaine à venir" not in body, "placeholder affiche")
+            pt.evaluate(f"rwOpen('{rw}')")
+            pt.wait_for_timeout(500)
+            check(f"T21 Rewind {rw} s'ouvre avec ses slides",
+                  pt.evaluate("!!document.querySelector('#rwoverlay.on') && rwCur && rwCur.slides.length>0") is True)
+            pt.close()
+        except Exception as e:
+            check("T21 textes a la demande", False, str(e)[:120])
+
         # ── T13 : pas d'erreur JS accumulee sur tout le parcours ──
         check("T13 zero erreur JS sur tout le parcours", len(js_errors) == 0,
               "; ".join(js_errors[:3]))

@@ -1664,7 +1664,7 @@ function rwRender(){const r=rwCur;if(!r)return;const s=r.slides[rwIdx];
   card.innerHTML=`<div class="rw-prog">${prog}</div><button class="rw-close" onclick="event.stopPropagation();rwClose()">\u2715</button>
     <div class="rw-kicker">${s.kicker}</div><div class="rw-big">${s.big}</div><div class="rw-txt">${s.txt}</div>
     <div class="rw-hint">tape pour continuer \u00b7 ${rwIdx+1}/${r.slides.length}</div>`;}
-function rwOpen(id){rwCur=REWINDS.find(x=>x.id===id);if(!rwCur)return;rwIdx=0;document.getElementById('rwoverlay').classList.add('on');document.body.style.overflow='hidden';rwRender();
+function rwOpen(id){rwCur=REWINDS.find(x=>x.id===id);if(!rwCur||!rwCur.slides)return;rwIdx=0;document.getElementById('rwoverlay').classList.add('on');document.body.style.overflow='hidden';rwRender();
   try{localStorage.setItem('rw_seen',id);}catch(e){}}
 function rwNext(){if(!rwCur)return;if(rwIdx<rwCur.slides.length-1){rwIdx++;rwRender();}else rwClose();}
 function rwClose(){const o=document.getElementById('rwoverlay');if(o)o.classList.remove('on');document.body.style.overflow='';rwCur=null;}
@@ -4289,6 +4289,19 @@ function initBarre(se){const piste=document.getElementById('piste');if(!piste)re
     e.addEventListener('click',()=>{if(segActif)segActif.classList.remove('actif');if(segActif===e){segActif=null;pan.classList.remove('visible');return;}segActif=e;e.classList.add('actif');dnom.textContent=seg.nom;drole.textContent=seg.role;dgr.innerHTML=`<div><div class="di-label">Durée</div><div class="di-val">${fmt(seg.duree)}</div></div><div><div class="di-label">Bloc</div><div class="di-val">${seg.bloc}</div></div><div><div class="di-label">Début</div><div class="di-val">${fmt(seg.debut)}</div></div><div><div class="di-label">Fin</div><div class="di-val">${fmt(seg.fin)}</div></div>`;pan.classList.add('visible');});
     piste.appendChild(e);});
 }
+/* Textes charges a la demande (revues, splits, slides des Rewinds) : data/textes.json, voir assemble.py.
+   Les fonctions qui les affichent attendent le chargement (_avecTextes) ; un echec n'empeche pas d'ouvrir. */
+let _textesOk=false;
+function _fusionTextes(T){
+  Object.entries(T.SEANCES||{}).forEach(([k,v])=>{const i=k.indexOf('-');const se=findSeance(k.slice(0,i),k.slice(i+1));
+    if(!se||!se.realise)return;if(!se.realise.revue&&v.revue!=null)se.realise.revue=v.revue;if(!se.realise.splits&&v.splits)se.realise.splits=v.splits;});
+  SEMAINES.forEach(s=>{const t=(T.SEMAINES||{})[s.num];if(t!=null&&!s.revue)s.revue=t;});
+  REWINDS.forEach(r=>{const t=(T.REWINDS||{})[r.id];if(t&&!r.slides)r.slides=t;});
+}
+function textesPrets(){if(_textesOk||typeof loadTextes!=='function')return Promise.resolve();
+  return loadTextes().then(T=>{_fusionTextes(T);_textesOk=true;}).catch(e=>console.warn('textes',e));}
+function _avecTextes(fn){return function(...a){if(_textesOk)return fn.apply(this,a);textesPrets().then(()=>fn.apply(this,a));};}
+ouvrirSeance=_avecTextes(ouvrirSeance);ouvrirSemaine=_avecTextes(ouvrirSemaine);rwOpen=_avecTextes(rwOpen);
 hydrateLogs();hydrateOverrides();try{_ckRebuild();}catch(e){console.warn('_ckRebuild',e);}initQuickLog();initCreneaux();initSessionMenu();initInstall();initFormeHelp();initCkHelp();renderHeader();renderPlan();rwAuto();setTimeout(checkAutoSync,800);
 /* Nouvelle version : l'app installee sur iPhone reste en memoire des jours. Au retour au premier
    plan (et 4 s apres le demarrage), on compare le build en cours a data/meta.json (jamais mis en cache). */
