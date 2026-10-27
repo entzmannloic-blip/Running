@@ -152,6 +152,17 @@ Ne jamais soustraire `new Date('YYYY-MM-DD')` à une date locale. Une course don
   moindre écart. À lancer aussi à la main après un log : `debugCockpit()` dans la console du navigateur (ordinateur).
 - **Reste connu.** Le découplage cardiaque n'est plus calculé depuis le 06/08 (procédure `src/decouplage.py`, streams Strava).
 
+## L12 — Tuile ACWR : une semaine de retard sur le résumé (27/10)
+
+- **Symptôme.** La tuile ACWR du Cockpit affichait 0,67 alors que le résumé et la carte Charge affichaient 0,74 ;
+  `T20` a échoué le 27/10, deux jours après le build 259.
+- **Cause.** La tuile lisait la dernière valeur de la série hebdomadaire (S43 terminée), le reste calculait l'ACWR
+  du jour. Les deux valeurs coïncident le jour du build, puis divergent.
+- **Règle.** Un indicateur affiché à plusieurs endroits vient d'une seule fonction (`_acwrCompute()` pour l'ACWR du
+  jour) ; une série hebdomadaire ne sert qu'à son graphe.
+- **Garde-fou mécanisé.** Déjà en place : `debugCockpit()` et `T20` comparent la tuile à l'ACWR du jour. Ils ne
+  pouvaient pas le voir le jour du build, où les deux valeurs étaient égales.
+
 ## Quirks Strava MCP (non mécanisables, à connaître)
 
 - Les activités **privées** n'apparaissent pas dans `list_activities`, quelle que soit

@@ -2841,7 +2841,7 @@ function _ckRenderAll(win){
   document.getElementById('ck-vol-sub').textContent=totalKm.toFixed(0)+' km · '+W+' sem.';
   _ckBar('ckRE','ckREW','ckRET','ckREX',D.RE[W],{col:'#0d9488',h:80});
   _ckLine('ckACWR','ckACWRW','ckACWRT','ckACWRX',D.ACWR[W].w,[{v:D.ACWR[W].v,color:'#f59e0b',lbl:''}],v=>v.toFixed(2),{h:65,fill:false,zones:[[0,0.8,'#0d9488'],[0.8,1.3,'#16a34a'],[1.3,2,'#ef4444']]});
-  var _av0=D.ACWR[W].v.filter(function(x){return x!=null;});const al=_av0.length?_av0[_av0.length-1]:1.0;
+  var _av0=D.ACWR[W].v.filter(function(x){return x!=null;});/* La tuile affiche l'ACWR DU JOUR (meme source que le resume et la carte Charge) ; la serie hebdomadaire ne sert qu'au graphe. */var _alive=null;try{_alive=_acwrCompute();}catch(e){_alive=null;}const al=(_alive&&typeof _alive.acwr==='number')?_alive.acwr:(_av0.length?_av0[_av0.length-1]:1.0);
   var _av=document.getElementById('ck-acwr-val');_av.textContent=al.toFixed(2);
   var _acol=al>1.5?'#ef4444':al>1.3?'#f59e0b':al<0.8?'#0d9488':'#16a34a';
   _av.style.color=_tc(_acol);_av.classList.remove('warn');
