@@ -42,6 +42,12 @@ def prepare():
         p = os.path.join(SRC, name)
         if os.path.isfile(p):
             shutil.copy2(p, os.path.join(WORK, name))
+    # Textes (revues, Rewinds) lus par gen.py : copie fraiche, sans fichier perime
+    textes = os.path.join(WORK, "textes")
+    if os.path.isdir(textes):
+        shutil.rmtree(textes)
+    if os.path.isdir(os.path.join(SRC, "textes")):
+        shutil.copytree(os.path.join(SRC, "textes"), textes)
 
 
 def stage_site():

@@ -1,0 +1,43 @@
+{
+ "id": "S39",
+ "titre": "Ta semaine 39",
+ "sous": "Le retour · 21-27 septembre",
+ "slides": [
+  {
+   "bg": "linear-gradient(160deg,#0f172a,#1e3a5f)",
+   "kicker": "REWIND · SEMAINE 39",
+   "big": "🎬",
+   "txt": "21,8 km en deux sorties : la reprise après 17 jours sans courir.<br>Tape pour avancer."
+  },
+  {
+   "bg": "linear-gradient(160deg,#334155,#0f172a)",
+   "kicker": "LE VOLUME",
+   "big": "21,8 km",
+   "txt": "en 2 sorties sur 4 prévues. Seulement des randonnées dans les parcs nationaux pendant le road trip."
+  },
+  {
+   "bg": "linear-gradient(160deg,#065f46,#022c22)",
+   "kicker": "VENICE BEACH",
+   "big": "4:50/km",
+   "txt": "pour 11,6 km, FC 168 : proche de l'allure seuil au lieu du footing à 5:50-6:25 prévu. Sortie à la sensation, 33 min d'arrêts sur la jetée."
+  },
+  {
+   "bg": "linear-gradient(160deg,#134e4a,#042f2e)",
+   "kicker": "LA LONGUE RACCOURCIE",
+   "big": "10,2 km",
+   "txt": "au lieu de 16, le lendemain du retour. Fatigue et décalage horaire assumés."
+  },
+  {
+   "bg": "linear-gradient(160deg,#7c2d12,#1c0a00)",
+   "kicker": "LA DÉRIVE",
+   "big": "144 → 174",
+   "txt": "bpm entre le km 1 et le dernier segment, allure de 5:45 à 5:03/km. Troisième signal du même diagnostic après San Francisco et Venice."
+  },
+  {
+   "bg": "linear-gradient(160deg,#b45309,#451a03)",
+   "kicker": "LA SUITE",
+   "big": "S40",
+   "txt": "Retour à la ligne de base avant le semi Run In Lyon du 4 octobre."
+  }
+ ]
+}

@@ -1,0 +1,55 @@
+{
+ "id": "S31",
+ "titre": "Ta semaine 31",
+ "sous": "Absorption marathon · 27 juil-2 août · canicule",
+ "slides": [
+  {
+   "bg": "linear-gradient(160deg,#0f172a,#1e3a5f)",
+   "kicker": "REWIND · SEMAINE 31",
+   "big": "🎬",
+   "txt": "Une semaine d'absorption réussie — et une leçon qui vaut plus que les kilomètres.<br>Tape pour avancer."
+  },
+  {
+   "bg": "linear-gradient(160deg,#0c4a6e,#082f49)",
+   "kicker": "LA BAISSE VOULUE",
+   "big": "−39 %",
+   "txt": "45,5 km et charge 404, contre 621 en S30. <strong>Exactement ce qu'il fallait</strong> après un marathon, sous 36-38 °C."
+  },
+  {
+   "bg": "linear-gradient(160deg,#7c2d12,#1c0a00)",
+   "kicker": "LA VITESSE INTACTE",
+   "big": "2:57/km",
+   "txt": "en pointe sur les 6×30 du lundi, en negative split parfait. <strong>19 s/km plus rapide qu'au 21 juillet.</strong>"
+  },
+  {
+   "bg": "linear-gradient(160deg,#134e4a,#042f2e)",
+   "kicker": "LA DISCIPLINE",
+   "big": "0 sec",
+   "txt": "passée au-dessus de 150 bpm mardi, FC moyenne 138, découplage 3 %. Une EF pilotée au cardio, parfaitement tenue."
+  },
+  {
+   "bg": "linear-gradient(160deg,#9a3412,#431407)",
+   "kicker": "LA DÉCOUVERTE",
+   "big": "5:35 → 4:55",
+   "txt": "dimanche, FC 136 → 161. <strong>Sans jamais décider d'accélérer.</strong> C'est là que ta dérive a été identifiée pour la première fois."
+  },
+  {
+   "bg": "linear-gradient(160deg,#581c87,#1e1b4b)",
+   "kicker": "POURQUOI ÇA COMPTE",
+   "big": "🎯",
+   "txt": "C'est le mécanisme exact qui fait exploser un marathon parti trop vite. <strong>L'identifier en juillet vaut mieux que le découvrir à Nice.</strong>"
+  },
+  {
+   "bg": "linear-gradient(160deg,#134e4a,#042f2e)",
+   "kicker": "VERDICT DU COACH",
+   "big": "A−",
+   "txt": "Absorption bien menée, repos respecté pour le pied, vitesse préservée. <strong>Et surtout : le vrai point faible enfin nommé.</strong>"
+  },
+  {
+   "bg": "linear-gradient(160deg,#b45309,#451a03)",
+   "kicker": "LA SUITE",
+   "big": "S32",
+   "txt": "Reprise progressive — et le début du travail de retenue.<br><strong>Un chiffre avant chaque sortie. 🎯</strong>"
+  }
+ ]
+}

@@ -1,0 +1,55 @@
+{
+ "id": "S34",
+ "titre": "Ta semaine 34",
+ "sous": "Le record et la leçon · 17-23 août",
+ "slides": [
+  {
+   "bg": "linear-gradient(160deg,#0f172a,#1e3a5f)",
+   "kicker": "REWIND · SEMAINE 34",
+   "big": "🎬",
+   "txt": "Un record personnel, et la dérive la plus longue de ta préparation. Les deux dans la même sortie.<br>Tape pour avancer."
+  },
+  {
+   "bg": "linear-gradient(160deg,#581c87,#1e1b4b)",
+   "kicker": "LE RECORD",
+   "big": "1h46:18",
+   "txt": "sur les 21,1 premiers kilomètres de samedi. <strong>Six minutes plus rapide que ton PB officiel de semi</strong> (1h52:39), et 26 s/km de mieux qu'à Paris 2022."
+  },
+  {
+   "bg": "linear-gradient(160deg,#0c4a6e,#082f49)",
+   "kicker": "POUR MOINS CHER",
+   "big": "−12 bpm",
+   "txt": "165 de moyenne contre 176 à Paris. <strong>Plus vite, avec douze pulsations en moins.</strong> Quatre ans et demi de progression, mesurés."
+  },
+  {
+   "bg": "linear-gradient(160deg,#7f1d1d,#450a0a)",
+   "kicker": "MAIS AUSSI",
+   "big": "25 km",
+   "txt": "de dérive continue. Cible 5:20, réalisé 4:56. Les cinq tranches de 5 km toutes sous la cible — <strong>la dérive la plus longue depuis le début du suivi.</strong>"
+  },
+  {
+   "bg": "linear-gradient(160deg,#9a3412,#431407)",
+   "kicker": "LA CHARGE",
+   "big": "394",
+   "txt": "d'effort relatif sur cette seule sortie. Ta plus haute de la saison, loin devant le trail de 27 km (246)."
+  },
+  {
+   "bg": "linear-gradient(160deg,#581c87,#1e1b4b)",
+   "kicker": "TON DIAGNOSTIC",
+   "big": "5:00",
+   "txt": "« ce n'est pas mon allure marathon, mon allure semi est entre 4:50 et 4:55 ». <strong>Tu l'as identifié seul, et c'est exact.</strong> Ta zone de confort est à 5:00, pas 5:20."
+  },
+  {
+   "bg": "linear-gradient(160deg,#134e4a,#042f2e)",
+   "kicker": "VERDICT DU COACH",
+   "big": "C+",
+   "txt": "Comme travail d'allure : raté. Comme test de logistique et d'auto-diagnostic : réussi. <strong>La leçon vaut plus que la séance.</strong>"
+  },
+  {
+   "bg": "linear-gradient(160deg,#b45309,#451a03)",
+   "kicker": "LA SUITE",
+   "big": "S35",
+   "txt": "Cantal, randonnées et une semaine tronquée.<br><strong>Le chiffre prime sur la sensation. 🎯</strong>"
+  }
+ ]
+}

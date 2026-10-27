@@ -1,0 +1,55 @@
+{
+ "id": "S30",
+ "titre": "Ta semaine 30",
+ "sous": "Semaine ViaRhôna · 20-26 juillet · marathon",
+ "slides": [
+  {
+   "bg": "linear-gradient(160deg,#0f172a,#1e3a5f)",
+   "kicker": "REWIND · SEMAINE 30",
+   "big": "🎬",
+   "txt": "La plus grosse semaine de ta préparation. Et de loin.<br>Tape pour avancer."
+  },
+  {
+   "bg": "linear-gradient(160deg,#065f46,#022c22)",
+   "kicker": "LE VOLUME",
+   "big": "74,2 km",
+   "txt": "en 4 sorties, charge 621. <strong>Ton plus haut volume de la saison</strong> — 21 km de plus que la semaine précédente."
+  },
+  {
+   "bg": "linear-gradient(160deg,#581c87,#1e1b4b)",
+   "kicker": "LE JALON",
+   "big": "42,52 km",
+   "txt": "Vienne → Saint-Rambert-d'Albon. <strong>Un marathon complet à l'entraînement</strong>, jeudi, en pleine préparation."
+  },
+  {
+   "bg": "linear-gradient(160deg,#0c4a6e,#082f49)",
+   "kicker": "LE CHIFFRE QUI COMPTE",
+   "big": "141,8",
+   "txt": "bpm sur les 15 premiers kilomètres à 5:36/km. <strong>Très bas pour cette allure</strong> — la base aérobie est là."
+  },
+  {
+   "bg": "linear-gradient(160deg,#134e4a,#042f2e)",
+   "kicker": "LA PREUVE",
+   "big": "5:16 · 5:15",
+   "txt": "les kilomètres 41 et 42, à ton allure cible Nice, <strong>sur des jambes qui avaient déjà 40 km</strong>. C'est ça, la vraie réponse."
+  },
+  {
+   "bg": "linear-gradient(160deg,#7c2d12,#1c0a00)",
+   "kicker": "LA VITESSE AUSSI",
+   "big": "3:16/km",
+   "txt": "en pointe finale sur les 8×30 sec du mardi. Ta plus rapide de la saison, deux jours avant le marathon."
+  },
+  {
+   "bg": "linear-gradient(160deg,#134e4a,#042f2e)",
+   "kicker": "VERDICT DU COACH",
+   "big": "A",
+   "txt": "Un marathon encaissé sans incident, une nutrition validée, et la fin de course la plus instructive de ta saison. <strong>Tu la termines debout.</strong>"
+  },
+  {
+   "bg": "linear-gradient(160deg,#b45309,#451a03)",
+   "kicker": "LA SUITE",
+   "big": "S31",
+   "txt": "Absorption — on digère avant de repartir.<br><strong>Le repos fait partie du plan. 🎯</strong>"
+  }
+ ]
+}

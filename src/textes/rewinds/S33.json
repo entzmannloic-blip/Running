@@ -1,0 +1,55 @@
+{
+ "id": "S33",
+ "titre": "Ta semaine 33",
+ "sous": "Déplacement La Rochelle · 10-16 août",
+ "slides": [
+  {
+   "bg": "linear-gradient(160deg,#0f172a,#1e3a5f)",
+   "kicker": "REWIND · SEMAINE 33",
+   "big": "🎬",
+   "txt": "39,7 km loin de chez toi — et la première vraie réussite d'allure marathon.<br>Tape pour avancer."
+  },
+  {
+   "bg": "linear-gradient(160deg,#134e4a,#042f2e)",
+   "kicker": "LE VOLUME",
+   "big": "39,7 km",
+   "txt": "en 4 sorties, charge 292. Volume en retrait assumé : cinq jours à La Rochelle et une organisation familiale contrainte."
+  },
+  {
+   "bg": "linear-gradient(160deg,#065f46,#022c22)",
+   "kicker": "LA SÉANCE QUI COMPTE",
+   "big": "11 s",
+   "txt": "d'amplitude sur ton bloc de 6 km à allure marathon, jeudi. Moyenne 5:17 pour une cible à 5:20. <strong>Ta première réussite d'allure marathon de la préparation.</strong>"
+  },
+  {
+   "bg": "linear-gradient(160deg,#0c4a6e,#082f49)",
+   "kicker": "DANS QUELLES CONDITIONS",
+   "big": "5h30",
+   "txt": "de sommeil, après 7 heures de voiture, sur un terrain inconnu. <strong>Et tu as tenu le chiffre quand même.</strong>"
+  },
+  {
+   "bg": "linear-gradient(160deg,#134e4a,#042f2e)",
+   "kicker": "LA PROGRESSION",
+   "big": "128 → 11",
+   "txt": "secondes d'amplitude, du trail du 9 août à ce bloc. L'axe de travail identifié dix jours plus tôt a produit un résultat mesurable."
+  },
+  {
+   "bg": "linear-gradient(160deg,#0c4a6e,#082f49)",
+   "kicker": "LE SIGNAL CACHÉ",
+   "big": "139",
+   "txt": "bpm samedi pour 5:59/km, contre 138 pour 6:09/km le mardi. Plus vite pour une pulsation de plus — <strong>la fatigue venait du sommeil, pas du moteur.</strong>"
+  },
+  {
+   "bg": "linear-gradient(160deg,#134e4a,#042f2e)",
+   "kicker": "VERDICT DU COACH",
+   "big": "A−",
+   "txt": "Quatre arbitrages, quatre bons : repos lundi, seuil décalé, sortie écourtée samedi, déverrouillage abandonné. <strong>Une semaine pilotée, pas subie.</strong>"
+  },
+  {
+   "bg": "linear-gradient(160deg,#b45309,#451a03)",
+   "kicker": "LA SUITE",
+   "big": "S34",
+   "txt": "Retour à Lyon, et le pic avant les États-Unis.<br><strong>Un chiffre avant chaque départ. 🎯</strong>"
+  }
+ ]
+}

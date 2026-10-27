@@ -1,0 +1,79 @@
+{
+ "id": "S32",
+ "titre": "Ta semaine 32",
+ "sous": "Reprise progressive · 3-9 août · canicule",
+ "slides": [
+  {
+   "bg": "linear-gradient(160deg,#0f172a,#1e3a5f)",
+   "kicker": "REWIND · SEMAINE 32",
+   "big": "🎬",
+   "txt": "5 sorties, un pied qui se tait enfin, et une leçon qui vaut pour Nice.<br>Tape pour avancer."
+  },
+  {
+   "bg": "linear-gradient(160deg,#065f46,#022c22)",
+   "kicker": "LE VOLUME",
+   "big": "67,3 km",
+   "txt": "en 5 sorties — ta plus grosse semaine depuis ViaRhôna. Soit à peu près Lyon → Saint-Étienne… où tu as justement fini dimanche."
+  },
+  {
+   "bg": "linear-gradient(160deg,#7c2d12,#1c0a00)",
+   "kicker": "TEMPS EN MOUVEMENT",
+   "big": "7h07",
+   "txt": "de course, 5 194 kcal brûlées, et ≈ 61 000 battements de cœur. Le moteur a tourné long."
+  },
+  {
+   "bg": "linear-gradient(160deg,#1e3a8a,#0c1c3d)",
+   "kicker": "LE DÉNIVELÉ",
+   "big": "817 m",
+   "txt": "dont 662 sur la seule journée de dimanche. Le reste de la semaine était plat comme une table."
+  },
+  {
+   "bg": "linear-gradient(160deg,#134e4a,#042f2e)",
+   "kicker": "LA SORTIE QUI COMPTE",
+   "big": "132 bpm",
+   "txt": "Vendredi, cible ≤135 annoncée à l'avance. Résultat : FC entre 124 et 136 sur 10 km, sans un seul emballement. <strong>Retenue parfaite.</strong>"
+  },
+  {
+   "bg": "linear-gradient(160deg,#9a3412,#431407)",
+   "kicker": "ET SON MIROIR",
+   "big": "5:07/km",
+   "txt": "Dimanche, km 27, seul, sans cible. 7:15 → 5:07/km et FC 139 → 166 en six kilomètres. <strong>Tu n'as jamais décidé d'accélérer.</strong>"
+  },
+  {
+   "bg": "linear-gradient(160deg,#581c87,#1e1b4b)",
+   "kicker": "LA LEÇON DE LA SEMAINE",
+   "big": "🎯",
+   "txt": "<strong>Ta retenue existe quand elle est chiffrée. Elle disparaît quand elle est laissée au ressenti.</strong><br>Vendredi et dimanche l'ont prouvé à 48 h d'écart."
+  },
+  {
+   "bg": "linear-gradient(160deg,#14532d,#052e16)",
+   "kicker": "LE DOSSIER CLOS",
+   "big": "0 douleur",
+   "txt": "au pied, sur 5 sorties, dont 27 km de trail avec descentes techniques. <strong>La gêne du 23/07 est derrière toi.</strong>"
+  },
+  {
+   "bg": "linear-gradient(160deg,#0c4a6e,#082f49)",
+   "kicker": "LA CHARGE",
+   "big": "ACWR 0,97",
+   "txt": "Charge aiguë 487, chronique 504/semaine. Pile la zone optimale — ni sous-charge, ni surcharge."
+  },
+  {
+   "bg": "linear-gradient(160deg,#7f1d1d,#1c0a00)",
+   "kicker": "LE POINT MATÉRIEL",
+   "big": "👟",
+   "txt": "Dimanche : Novablast route sur 662 m de sentier, au lieu des Cascadia. <strong>Aucune conséquence — cette fois.</strong>"
+  },
+  {
+   "bg": "linear-gradient(160deg,#134e4a,#042f2e)",
+   "kicker": "VERDICT DU COACH",
+   "big": "B+",
+   "txt": "Physiquement excellent : volume, santé, charge maîtrisée. <strong>Mais 2 sorties sur 5 hors plan, une dérive non décidée et deux erreurs de chaussures.</strong> Le corps suit mieux que la discipline."
+  },
+  {
+   "bg": "linear-gradient(160deg,#b45309,#451a03)",
+   "kicker": "LA SUITE",
+   "big": "S33",
+   "txt": "Allègement — seuil 2×10 et longue 18 km plafonnée en FC.<br><strong>L'objectif : finir sans avoir accéléré. 🎯</strong>"
+  }
+ ]
+}

@@ -1,0 +1,67 @@
+{
+ "id": "S25",
+ "titre": "Ta semaine 25",
+ "sous": "Reprise & déblocage · 15-19 juin · canicule",
+ "slides": [
+  {
+   "bg": "linear-gradient(160deg,#0f172a,#1e3a5f)",
+   "kicker": "REWIND · SEMAINE 25",
+   "big": "🎬",
+   "txt": "5 séances, canicule, fast finish et bonus chez les parents.<br>Tape pour avancer."
+  },
+  {
+   "bg": "linear-gradient(160deg,#065f46,#022c22)",
+   "kicker": "LE VOLUME",
+   "big": "56,6 km",
+   "txt": "en 5 sorties — une semaine de reprise qui ressemble à une vraie semaine. Ta base reprend ses droits."
+  },
+  {
+   "bg": "linear-gradient(160deg,#7c2d12,#1c0a00)",
+   "kicker": "LA FC DE LA SEMAINE",
+   "big": "144 bpm",
+   "txt": "Moyenne sur l'ensemble des sorties faciles. Moteur Z2 propre, régulier, dans les cibles."
+  },
+  {
+   "bg": "linear-gradient(160deg,#1e3a8a,#0c1c3d)",
+   "kicker": "LE COUP DE REIN",
+   "big": "4:58/km",
+   "txt": "Dernier km de la sortie longue, au 4e jour consécutif, 30°C dehors. Sub-5 min. <strong>Tu avais encore du carburant.</strong>"
+  },
+  {
+   "bg": "linear-gradient(160deg,#581c87,#1e1b4b)",
+   "kicker": "LA CANICULE",
+   "big": "31°C",
+   "txt": "Pic de la semaine. 4 séances sur 5 démarrées avant 8h30. La discipline de l'horaire, c'est une compétence de compétiteur."
+  },
+  {
+   "bg": "linear-gradient(160deg,#9a3412,#431407)",
+   "kicker": "LA SÉANCE CLUE",
+   "big": "5:14/km",
+   "txt": "Bloc AM de 6 km mercredi à midi · 30°C · lendemain de soirée. FC 165/181. <strong>Tenu.</strong> Menti à personne."
+  },
+  {
+   "bg": "linear-gradient(160deg,#134e4a,#042f2e)",
+   "kicker": "LE BONUS",
+   "big": "10 km",
+   "txt": "Vendredi 7h25 chez les parents. FC 144. Personne ne t'y obligeait. C'est ça, la discipline d'un marathonien."
+  },
+  {
+   "bg": "linear-gradient(160deg,#3b0764,#0f172a)",
+   "kicker": "LES CHAUSSURES",
+   "big": "4 paires",
+   "txt": "Clifton · Gel Pulse · Magic Speed · Novablast J. Rotation parfaite. La V (verte) attend son tour."
+  },
+  {
+   "bg": "linear-gradient(160deg,#14532d,#052e16)",
+   "kicker": "VERDICT DU COACH",
+   "big": "A",
+   "txt": "Semaine 5/5. Volume solide, qualité maintenue en conditions difficiles, fast finish, bonus. <strong>La Déraille dans 16 jours, tu arrives bien.</strong>"
+  },
+  {
+   "bg": "linear-gradient(160deg,#b45309,#451a03)",
+   "kicker": "LA SUITE",
+   "big": "S26",
+   "txt": "Allègement + prépa Déraille — 35 km · séance spécifique mercredi.<br><strong>On garde les poudres sèches. 🎯</strong>"
+  }
+ ]
+}
