@@ -2180,6 +2180,15 @@ for n, arr in list(SEANCES_BY_WEEK.items()):
       "commentaire":"Non réalisée : aucune activité Strava le lundi 26/10. Pas de rattrapage.",
       "pr":0,"ach":0,"pr_detail":[],
       "revue":"<strong>Footing non couru, sans conséquence.</strong> En affûtage, un footing facile en moins ne change rien à la forme. Le seuil du mardi reste à décider selon les jambes."}
+    _S44["2"]["titre"]="Footing facile (seuil remplacé)"
+    _S44["2"]["sous"]="Séance conditionnelle : le seuil 3×6 min a laissé place à un footing facile de 10 km sur les quais."
+    _S44["2"]["chaussure_realise"]="HOKA Clifton 10"
+    _S44["2"]["realise"]={"statut":"fait","decouplage":{"pct":0.85,"bpm":-1.1,"fen_min":45,"temp":18,"attendu":6,"p1":"5:54/km","fc1":146,"p2":"5:54/km","fc2":145,"qualite":"incertain","algo":"decoup-v1"},"temp":18,"km":10.04,"temps":"58:30","allure":"5:50/km","fc_moy":146,"fc_max":165,"re":86,
+      "cadence":86,"elevation_gain":31,"kcal":754,
+      "commentaire":"Prevu : seuil 3x6 min si les jambes etaient libres, sinon footing facile. Realise : footing de 10,04 km sur les quais (Rhone, Confluence, Saone) en 58:30 de deplacement, 5:50/km, FC 146 moy / 165 max, D+ 31 m, 18 °C. Km 1-8 entre 5:40 et 6:06 (FC 142-149), km 9 a 5:31 (FC 151, pic 165 sur le pont de la Guillotiere), km 10 a 5:40 (FC 143).",
+      "pr":0,"ach":0,"pr_detail":[],
+      "splits":[{"km":1,"allure":"5:40","fc":142},{"km":2,"allure":"5:47","fc":148},{"km":3,"allure":"5:59","fc":149},{"km":4,"allure":"5:55","fc":144},{"km":5,"allure":"6:00","fc":145},{"km":6,"allure":"5:50","fc":146},{"km":7,"allure":"5:49","fc":146},{"km":8,"allure":"6:06","fc":144},{"km":9,"allure":"5:31","fc":151},{"km":10,"allure":"5:40","fc":143}],
+      "revue":"<p><strong>Le seuil a été remplacé par un footing : le bon choix à 12 jours de Nice.</strong> 10 km à 5:50/km pour une FC de 146, très régulière (même allure et même FC entre la première et la seconde moitié).</p><p><strong>Le point à corriger :</strong> la consigne du footing était 6:10/km ou plus lent et FC 145 au maximum. Tu es 20 s/km plus vite et juste au-dessus en FC, avec une accélération au km 9 (5:31, pic à 165). Rien de grave, mais c'est la même tendance que sur les sorties d'allure : en affûtage, les footings servent à récupérer.</p><p><strong>Suite :</strong> footing + lignes droites mercredi à FC 135-145, plat.</p>"}
 
 _S35_REVUE=("<p><strong>La plus petite semaine de la préparation — 22,1 km, deux séances. Et pourtant l'une des plus utiles.</strong></p><p><strong>Le bilan chiffré :</strong> 2 séances sur 6 prévues, 22,1 km pour 66 ciblés, charge 276. Lundi sauté sur fatigue après les 25 km du 22/08, mardi et mercredi indisponibles (randonnées dans le Cantal, 1150 m de dénivelé cumulé), samedi non réalisée.</p><p><strong>Ce qui rend la semaine utile malgré tout : le seuil du vendredi.</strong> 2×8 min avec une cible à 4:45/km, réalisé à 4:39 puis 4:42. Sept secondes d'amplitude à l'intérieur des blocs, et surtout un bloc 2 <em>plus lent</em> que le bloc 1 — aucune accélération après la récupération, alors que c'était le piège annoncé. <strong>Quatre secondes d'écart à la cible, contre 11, 26 puis 33 sur les trois séances précédentes : la série d'échecs de discipline est cassée.</strong></p><p><strong>Le point noir :</strong> le footing du jeudi, prescrit à 6:00-6:20/km avec un plafond de FC à 145, couru à 5:33/km avec 156 de moyenne. Effort relatif 151 au lieu des 60 attendus. Le kilomètre 1 à 123 bpm prouve que la FC n'était pas haute au départ — c'est l'allure qui l'a fait monter, pas la chaleur.</p><p><strong>Ce que la semaine confirme sur la récupération :</strong> après 1150 m de dénivelé en randonnée sur deux jours, aucune douleur, aucune jambe lourde, cadence stable. La capacité de récupération n'est pas un facteur limitant.</p><p><strong>Décision pour S36 :</strong> semaine de départ aux États-Unis, quatre séances de lundi à jeudi avant le vol du vendredi. L'ACWR est retombé à 0,67 — la longue du 22/08 est sortie de la fenêtre 7 jours, la marge existe. Le seuil passe à 2×10 min et se place le mercredi, pour laisser deux jours avant l'avion. Jeudi devient un simple déverrouillage.</p>")
 
@@ -2241,7 +2250,7 @@ COUL={p["id"]:p["c"] for p in PHASES}
 # Strava et alerte des que l'ecart depasse 5 km.
 # Derniere resynchronisation : 28/08/2026.
 GEAR=[
-  {"marque":"HOKA","modele":"Clifton 10","km":1274},
+  {"marque":"HOKA","modele":"Clifton 10","km":1284},
   {"marque":"ASICS","modele":"Novablast 5 J","km":877},
   {"marque":"ASICS","modele":"Novablast 5 V","km":202},
   {"marque":"ASICS","modele":"Gel Pulse 16","km":229},
@@ -2879,6 +2888,9 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":263,"date":"27 octobre 2026","sha":"","tag":"Log S44 séance 2 : footing du 27/10 (seuil remplacé)","items":[
+    "SÉANCE : S44 séance 2 loggée depuis Strava : footing de 10,04 km en 58:30 (5:50/km), FC 146/165, D+ 31 m, 18 °C, Clifton 10. Le seuil conditionnel a été remplacé par un footing facile.",
+    "CHAUSSURES : Clifton 10 à 1284 km."]},
   {"build":262,"date":"27 octobre 2026","sha":"","tag":"P1 Données justes (2/2) : tendances, efficience, projection unique, fraîcheur du Cockpit, Z2 unique","items":[
     "COCKPIT : les pourcentages de tendance des tuiles (km, effort, cadence) comparent les N dernières semaines complètes aux N précédentes ; une semaine sans course compte pour 0, la semaine en cours est exclue (8 semaines : -13 % de volume, +1 % d'effort).",
     "EFFICIENCE : les sorties à fort dénivelé (15 m/km ou plus), en course-marche ou à allure de marche n'entrent plus dans le calcul ; le message de recul n'invoque la chaleur qu'en saison chaude.",
