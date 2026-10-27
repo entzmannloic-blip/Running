@@ -2727,6 +2727,10 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":267,"date":"27 octobre 2026","sha":"","tag":"P2 Pipeline de log : textes chargés à l'ouverture d'une fiche","items":[
+    "CHARGEMENT : les revues de séance et de semaine, les splits et les diapositives des Rewinds ne sont plus lus au démarrage : data/textes.json est chargé à la première ouverture d'une fiche ou d'un Rewind (et mis en cache hors-ligne par le service worker).",
+    "POIDS : premier chargement de 336 à 261 Ko compressés (−22 %).",
+    "AUCUN CHANGEMENT VISIBLE : captures des 4 vues identiques au pixel près."]},
   {"build":266,"date":"27 octobre 2026","sha":"","tag":"P2 Pipeline de log : nouveau circuit documenté et mesuré","items":[
     "DOC : docs/ENRICHISSEMENT.md décrit le nouveau circuit (Strava → fichier d'entrée → scripts/log_seance.py → revue → build).",
     "MESURE : la même séance (footing du 27/10) coûte 19 400 tokens au lieu de 25 400 (−24 %) et 12 actions au lieu de 19 ; sans découplage, environ −45 %.",

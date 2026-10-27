@@ -72,6 +72,7 @@ Accueil · Séances · Cockpit · Courses
 ## Chargement des données et PWA
 - `index.html` charge `data/{plan,seances,historique,meta}.json` en parallèle puis `src/app.js` ; chaque fichier est un objet `{NOM: valeur}` copié sur `window` (les constantes gardent leurs noms : `SEMAINES`, `SEANCES_BY_WEEK`, `CHANGELOG`…). Échec réseau : message « Données indisponibles » + bouton Réessayer (`#boot-err`).
 - `CHANGELOG` au démarrage = la dernière entrée seulement ; `loadChangelog()` charge la liste complète à l'ouverture du panneau de versions.
+- Revues de séance et de semaine, splits et slides des Rewinds : retirés des fichiers de démarrage par `assemble.py`, dans `data/textes.json`, chargé par `loadTextes()` à la première ouverture d'une fiche ou d'un Rewind (`ouvrirSeance`, `ouvrirSemaine`, `rwOpen` enveloppées par `_avecTextes`). `build/data.json` reste complet pour les audits.
 - `sw.js` (généré) : cache `plan-<build>`, pré-cache de tout le site, réseau d'abord avec repli cache après 3 s ou hors-ligne. `_checkNewVersion()` affiche le bandeau « Nouvelle version prête » au retour au premier plan.
 
 ## Design system
