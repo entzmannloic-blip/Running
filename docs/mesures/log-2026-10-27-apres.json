@@ -1,0 +1,18 @@
+{
+ "titre": "APRES — meme seance (S44-2, footing du 27/10) rejouee par le nouveau circuit (scripts/log_seance.py, build 265)",
+ "note": "Memes appels Strava qu'avant (tailles identiques), sauf list_activities limite a la journee. Script, revue, build et controles executes reellement sur une branche jetable. A confirmer sur la prochaine vraie seance.",
+ "actions": [
+  {"action": "Lire docs/ENRICHISSEMENT.md (nouvelle version)", "lu": 5941, "nature": "texte"},
+  {"action": "Strava list_activities (journee de la seance)", "lu": 1500, "nature": "code"},
+  {"action": "Strava get_activity_performance", "lu": 9700, "nature": "code"},
+  {"action": "Strava get_activity_streams (resolution 1000, decouplage)", "lu": 13500, "nature": "nombres"},
+  {"action": "Strava get_gear", "lu": 830, "nature": "code"},
+  {"action": "Ecrire strava/<id>.json (champs et tours compacts)", "ecrit": 670, "nature": "code"},
+  {"action": "Ecrire les streams dans strava/<id>-streams.json", "ecrit": 13500, "nature": "nombres"},
+  {"action": "Lancer scripts/log_seance.py", "lu": 180, "ecrit": 160, "nature": "code"},
+  {"action": "Ecrire la revue src/textes/seances/S44-2.html", "ecrit": 1000, "nature": "texte"},
+  {"action": "Build + preflight + release.py", "lu": 700, "ecrit": 250, "nature": "code"},
+  {"action": "Branche, commit, pr_scope, push", "lu": 300, "ecrit": 450, "nature": "code"},
+  {"action": "Ouvrir la PR", "lu": 200, "ecrit": 700, "nature": "texte"}
+ ]
+}

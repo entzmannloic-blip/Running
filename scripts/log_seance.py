@@ -202,7 +202,10 @@ def maj_reference(e, modele, date, ajouter_activite):
     km = round(e["distance"] / 1000, 4)
     if ajouter_activite:
         act = ref["activites"]
-        if date in act:  # plusieurs sorties le meme jour : totaux additionnes
+        nouv = [km, e["relative_effort"], int(round(e["elevation_gain"]))]
+        if date in act and [round(act[date][0], 2), act[date][1], act[date][2]] == [round(km, 2)] + nouv[1:]:
+            print(f"Reference : {date} contient deja cette sortie, inchangee")
+        elif date in act:  # plusieurs sorties le meme jour : totaux additionnes
             old = act[date]
             act[date] = [round(old[0] + km, 4), old[1] + e["relative_effort"], old[2] + int(round(e["elevation_gain"]))]
         else:

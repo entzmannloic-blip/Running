@@ -2727,6 +2727,10 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":266,"date":"27 octobre 2026","sha":"","tag":"P2 Pipeline de log : nouveau circuit documenté et mesuré","items":[
+    "DOC : docs/ENRICHISSEMENT.md décrit le nouveau circuit (Strava → fichier d'entrée → scripts/log_seance.py → revue → build).",
+    "MESURE : la même séance (footing du 27/10) coûte 19 400 tokens au lieu de 25 400 (−24 %) et 12 actions au lieu de 19 ; sans découplage, environ −45 %.",
+    "SÉCURITÉ : le script ne compte plus deux fois une sortie déjà présente dans la référence Strava."]},
   {"build":265,"date":"27 octobre 2026","sha":"","tag":"P2 Pipeline de log (2/3) : script Strava vers log de séance","items":[
     "LOG : scripts/log_seance.py transforme les réponses Strava (recopiées en fichier) en log de séance : splits, segments, température, chaussure, dénivelé, terrain route ou trail, découplage. Il met aussi à jour la référence Strava, GEAR et le CHANGELOG.",
     "LOGS : les nouvelles séances loggées vivent dans src/logs/ (un fichier par séance), chargées par gen.py ; les séances déjà loggées restent dans gen.py.",

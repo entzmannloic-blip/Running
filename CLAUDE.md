@@ -7,7 +7,7 @@
 
 ## Identité
 **App** : Running PWA — suivi de saison de course à pied pour Loïc Entzmann (installée sur l'écran d'accueil de l'iPhone via Safari, hors App Store)
-**Repo** : entzmannloic-blip/Running (GitHub Pages) — le build publié se lit dans `data/meta.json`
+**Repo** : entzmannloic-blip/Running (GitHub Pages ; `Labfact/running` y redirige) — le build publié se lit dans `data/meta.json`
 **Accès GitHub** : `gh` connecté (compte `entzmannloic-blip`). Aucun token dans le dépôt.
 **Coach IA intégré** : retiré (octobre 2026). Le coaching se fait dans Claude après chaque séance.
 
@@ -22,7 +22,7 @@
 2. **Build** : `python src/build.py` (gen + assemble + `node --check`). Un échec = STOP, ne jamais pousser
 3. **CHANGELOG obligatoire** — Incrémenter le build ET ajouter une entrée en tête de `CHANGELOG` dans `src/gen.py` avant chaque push
 4. **Fichiers générés** — `index.html`, `sw.js` et `data/*.json` sont **produits par le build** : ne jamais les éditer à la main, toujours les committer avec les sources modifiées (le job `verify` refuse un décalage)
-5. **Chaussures** — `Strava:get_gear` après chaque log de séance → `GEAR` dans gen.py (km arrondi) + `src/strava_reference.json` → rebuild
+5. **Chaussures** — `Strava:get_gear` après chaque log de séance → `gear_total_distance` dans le fichier d'entrée de `scripts/log_seance.py`, qui met à jour `GEAR` et `src/strava_reference.json` → rebuild
 6. **Livraison par pull request** — branche depuis `main` à jour, PR, contrôle GitHub `verify` vert, fusion `--squash`. PR de données seulement (`python scripts/pr_scope.py origin/main...HEAD` → `DATA_ONLY`) : fusion sans relecture. Toute autre PR (app.js, CSS, scripts, workflows) : l'annoncer à Loïc avant de fusionner
 7. **⚠️ Emojis dans gen.py** — Ne jamais écrire un emoji via paire de surrogates (ex. `👍`) en Python. Utiliser le caractère littéral ou `\U0001F44D`. Si gen.py est vidé : le restaurer depuis `git` (`git checkout -- src/gen.py` ou le dernier commit)
 
@@ -81,7 +81,7 @@ Voir **DESIGN.md** (« Le carnet de l'entraîneur ») et `src/css.txt :root`. **
 - Plan : S25→S53 (30 semaines, 141 séances)
 - Courses : `RACES` — Déraille, Nice, SaintExpress
 - Chaussures : `GEAR` (6 paires, `gear_id` Strava ci-dessous) ; palmarès : `PALMARES`
-- Séances loggées : `arr[i]["realise"]={...}` dans un bloc `if n==NN:` de la boucle des semaines (voir docs/ENRICHISSEMENT.md)
+- Séances loggées : depuis le build 265, un fichier par séance dans `src/logs/` (produit par `scripts/log_seance.py`) ; les plus anciennes restent dans les blocs `if n==NN:` de gen.py. Revues de séance et de semaine, Rewinds : `src/textes/` (voir docs/ENRICHISSEMENT.md)
 
 ## Parc chaussures (gear_id Strava — les km actuels sont dans `GEAR`, `data/plan.json`)
 | Modèle | Convention | gear_id Strava |

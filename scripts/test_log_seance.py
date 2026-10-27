@@ -109,6 +109,13 @@ def test_ecriture():
         check(f"CHANGELOG : build {build + 1} en tete", f'CHANGELOG=[\n  {{"build":{build + 1},' in gen)
         compile(gen, "gen.py", "exec")
         check("gen.py reste du Python valide", True)
+        ref_avant = open(log_seance.REF, encoding="utf-8").read()
+        log_seance.main(["S44-3", chemin_e, "--force", "--sans-changelog"])
+        check("--force : reference Strava inchangee", open(log_seance.REF, encoding="utf-8").read() == ref_avant)
+        os.remove(os.path.join(tmp, "logs", "S44-3.json"))
+        log_seance.main(["S44-3", chemin_e, "--sans-changelog"])
+        check("sortie deja dans la reference : pas de double compte",
+              json.load(open(log_seance.REF, encoding="utf-8"))["activites"]["2026-10-29"][0] == 10.0356)
         try:
             log_seance.main(["S44-3", chemin_e])
             check("refus de reecrire un log existant", False)
