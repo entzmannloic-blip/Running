@@ -1,0 +1,49 @@
+{
+ "id": "S40",
+ "titre": "Ta semaine 40",
+ "sous": "Run In Lyon · 28 septembre-4 octobre",
+ "slides": [
+  {
+   "bg": "linear-gradient(160deg,#0f172a,#1e3a5f)",
+   "kicker": "REWIND · SEMAINE 40",
+   "big": "🎬",
+   "txt": "75,2 km, un semi couru malade, et un footing de 18 km parfaitement tenu.<br>Tape pour avancer."
+  },
+  {
+   "bg": "linear-gradient(160deg,#334155,#0f172a)",
+   "kicker": "LE VOLUME",
+   "big": "75,2 km",
+   "txt": "en 6 sorties, la plus grosse semaine depuis le retour des États-Unis."
+  },
+  {
+   "bg": "linear-gradient(160deg,#065f46,#022c22)",
+   "kicker": "LE SIGNAL",
+   "big": "6:05/km",
+   "txt": "avec Yannis : du km 3 au km 11, 6:14-6:36/km à FC 134-141. Premier signal encourageant depuis le retour."
+  },
+  {
+   "bg": "linear-gradient(160deg,#134e4a,#042f2e)",
+   "kicker": "LA DISCIPLINE",
+   "big": "137 bpm",
+   "txt": "sur 18,04 km à 6:30/km, FC rarement au-dessus de 143, RE 93. Sortie non planifiée, la meilleure exécution technique depuis le retour."
+  },
+  {
+   "bg": "linear-gradient(160deg,#7c2d12,#1c0a00)",
+   "kicker": "RUN IN LYON",
+   "big": "1:52:30",
+   "txt": "pour 21,3 km à 5:20/km. Couru malade après 5 nuits à 3-4 h de sommeil, FC 171 dès le km 2."
+  },
+  {
+   "bg": "linear-gradient(160deg,#1e3a8a,#0c1c3d)",
+   "kicker": "LE SPLIT",
+   "big": "+27 s/km",
+   "txt": "entre les 10 premiers km (5:06) et les 10 suivants (5:33). Explosion progressive, FC 15 à 20 bpm au-dessus de la zone marathon."
+  },
+  {
+   "bg": "linear-gradient(160deg,#b45309,#451a03)",
+   "kicker": "LA SUITE",
+   "big": "S41",
+   "txt": "Récupération le lendemain, puis le premier bloc à allure marathon de l'automne."
+  }
+ ]
+}

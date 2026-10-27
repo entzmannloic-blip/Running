@@ -1,0 +1,55 @@
+{
+ "id": "S29",
+ "titre": "Ta semaine 29",
+ "sous": "Seuil découverte · 13-19 juillet · canicule",
+ "slides": [
+  {
+   "bg": "linear-gradient(160deg,#0f172a,#1e3a5f)",
+   "kicker": "REWIND · SEMAINE 29",
+   "big": "🎬",
+   "txt": "Une reprise magistrale qui se termine en apothéose.<br>Tape pour avancer."
+  },
+  {
+   "bg": "linear-gradient(160deg,#065f46,#022c22)",
+   "kicker": "LE VOLUME",
+   "big": "53,7 km",
+   "txt": "en 4 sorties et 5h14 de mouvement. Zéro douleur, et une confiance qui explose."
+  },
+  {
+   "bg": "linear-gradient(160deg,#0c4a6e,#082f49)",
+   "kicker": "L'ÉCOUTE",
+   "big": "2 jours",
+   "txt": "off lundi et mardi après le double trail. <strong>Tu n'as pas forcé la reprise</strong> — et tout le reste de la semaine en a découlé."
+  },
+  {
+   "bg": "linear-gradient(160deg,#7c2d12,#1c0a00)",
+   "kicker": "LA SORTIE LONGUE",
+   "big": "23 km",
+   "txt": "sous canicule, avec 31 records personnels au passage et un protocole nutrition affiné."
+  },
+  {
+   "bg": "linear-gradient(160deg,#581c87,#1e1b4b)",
+   "kicker": "LA SÉANCE DE LA SEMAINE",
+   "big": "4:24",
+   "txt": "et 4:31/km sur le seuil 30, pour une cible à 4:40. <strong>15 secondes au kilomètre plus vite que prévu</strong> — en te sentant très bien."
+  },
+  {
+   "bg": "linear-gradient(160deg,#134e4a,#042f2e)",
+   "kicker": "LE BON ARBITRAGE",
+   "big": "PPG",
+   "txt": "sautée. Et c'est le bon choix : <strong>on ne sacrifie jamais le seuil ni la sortie longue</strong> pour du renforcement."
+  },
+  {
+   "bg": "linear-gradient(160deg,#134e4a,#042f2e)",
+   "kicker": "VERDICT DU COACH",
+   "big": "A",
+   "txt": "Reprise progressive, arbitrages justes, séance clé au-dessus des attentes. <strong>La progression est désormais visible partout.</strong>"
+  },
+  {
+   "bg": "linear-gradient(160deg,#b45309,#451a03)",
+   "kicker": "LA SUITE",
+   "big": "S30",
+   "txt": "Semaine ViaRhôna — le marathon à l'entraînement.<br><strong>Le vrai test. 🎯</strong>"
+  }
+ ]
+}

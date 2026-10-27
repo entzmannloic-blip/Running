@@ -1,0 +1,49 @@
+{
+ "id": "S43",
+ "titre": "Ta semaine 43",
+ "sous": "Dans le sud · 19-25 octobre",
+ "slides": [
+  {
+   "bg": "linear-gradient(160deg,#0f172a,#1e3a5f)",
+   "kicker": "REWIND · SEMAINE 43",
+   "big": "🎬",
+   "txt": "54,6 km, un trail de 642 m de D+ et trois sorties à bonne allure.<br>Tape pour avancer."
+  },
+  {
+   "bg": "linear-gradient(160deg,#334155,#0f172a)",
+   "kicker": "LE VOLUME",
+   "big": "54,6 km",
+   "txt": "en 5 sorties, après la plus grosse semaine. Le footing du lundi et celui du jeudi sautés."
+  },
+  {
+   "bg": "linear-gradient(160deg,#065f46,#022c22)",
+   "kicker": "ALLURE MARATHON",
+   "big": "5:14/km",
+   "txt": "sur 11 km sous la pluie, FC 156 (montre seule, sans ceinture). Régulier : écart-type de 5 s/km."
+  },
+  {
+   "bg": "linear-gradient(160deg,#134e4a,#042f2e)",
+   "kicker": "FRÉJUS",
+   "big": "5:08/km",
+   "txt": "sur 10 km au feeling, FC 158. Soit 12 s/km sous la cible marathon sans l'avoir cherché."
+  },
+  {
+   "bg": "linear-gradient(160deg,#7c2d12,#1c0a00)",
+   "kicker": "L'ESTÉREL",
+   "big": "642 m",
+   "txt": "de D+ sur 20 km, 7:09/km, FC 142. Km 1-12 à FC 137, km 13-20 à 151, pic 181 au km 18."
+  },
+  {
+   "bg": "linear-gradient(160deg,#1e3a8a,#0c1c3d)",
+   "kicker": "LE DIMANCHE",
+   "big": "5:07/km",
+   "txt": "sur 9,7 km, FC 151, progressif de 5:11 à 4:56 sur la fin, le lendemain du trail."
+  },
+  {
+   "bg": "linear-gradient(160deg,#b45309,#451a03)",
+   "kicker": "LA SUITE",
+   "big": "S44",
+   "txt": "Marathon de Nice le 8 novembre. Dernière semaine de charge avant l'affûtage."
+  }
+ ]
+}

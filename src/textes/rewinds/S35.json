@@ -1,0 +1,55 @@
+{
+ "id": "S35",
+ "titre": "Ta semaine 35",
+ "sous": "La plus petite · 24-30 août",
+ "slides": [
+  {
+   "bg": "linear-gradient(160deg,#0f172a,#1e3a5f)",
+   "kicker": "REWIND · SEMAINE 35",
+   "big": "🎬",
+   "txt": "22,1 km, deux séances. La plus petite de la préparation — et pourtant celle qui casse la série.<br>Tape pour avancer."
+  },
+  {
+   "bg": "linear-gradient(160deg,#334155,#0f172a)",
+   "kicker": "LE VOLUME",
+   "big": "22,1 km",
+   "txt": "en 2 sorties sur 6 prévues. Lundi sauté sur fatigue, mardi et mercredi indisponibles, samedi non réalisée."
+  },
+  {
+   "bg": "linear-gradient(160deg,#1e3a8a,#0c1c3d)",
+   "kicker": "LE CANTAL",
+   "big": "1150 m",
+   "txt": "de dénivelé en deux randonnées — Plomb du Cantal et Puy Mary. Hors périmètre course, mais le travail musculaire compte."
+  },
+  {
+   "bg": "linear-gradient(160deg,#065f46,#022c22)",
+   "kicker": "LA SÉANCE QUI SAUVE LA SEMAINE",
+   "big": "4 s",
+   "txt": "d'écart à la cible sur le seuil de vendredi. 2×8 min visés à 4:45, réalisés à 4:39 et 4:42."
+  },
+  {
+   "bg": "linear-gradient(160deg,#065f46,#022c22)",
+   "kicker": "LE DÉTAIL QUI COMPTE",
+   "big": "4:39 → 4:42",
+   "txt": "Le bloc 2 est <strong>plus lent</strong> que le bloc 1. Tu n'as pas accéléré après la récupération — c'était exactement le piège annoncé."
+  },
+  {
+   "bg": "linear-gradient(160deg,#134e4a,#042f2e)",
+   "kicker": "LA SÉRIE CASSÉE",
+   "big": "−4 s",
+   "txt": "après −11, −26 et −33 s/km sur les trois séances précédentes. <strong>Trois échecs, puis une réussite.</strong>"
+  },
+  {
+   "bg": "linear-gradient(160deg,#7c2d12,#1c0a00)",
+   "kicker": "LE POINT NOIR",
+   "big": "156",
+   "txt": "bpm sur le footing du jeudi, pour un plafond à 145. Couru à 5:33 au lieu de 6:00-6:20. Le km 1 à 123 bpm prouve que <strong>c'est l'allure qui a fait monter la FC, pas la chaleur.</strong>"
+  },
+  {
+   "bg": "linear-gradient(160deg,#b45309,#451a03)",
+   "kicker": "LA SUITE",
+   "big": "S36",
+   "txt": "Quatre séances avant l'envol pour San Francisco.<br><strong>Le seuil passe à 2×10. 🎯</strong>"
+  }
+ ]
+}

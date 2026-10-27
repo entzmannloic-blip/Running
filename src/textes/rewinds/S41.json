@@ -1,0 +1,49 @@
+{
+ "id": "S41",
+ "titre": "Ta semaine 41",
+ "sous": "Retour à la normale · 5-11 octobre",
+ "slides": [
+  {
+   "bg": "linear-gradient(160deg,#0f172a,#1e3a5f)",
+   "kicker": "REWIND · SEMAINE 41",
+   "big": "🎬",
+   "txt": "69,3 km, un bloc marathon propre et une longue de 30 km.<br>Tape pour avancer."
+  },
+  {
+   "bg": "linear-gradient(160deg,#334155,#0f172a)",
+   "kicker": "LE VOLUME",
+   "big": "69,3 km",
+   "txt": "en 4 sorties : récupération, bloc marathon, sortie vallonnée, sortie longue."
+  },
+  {
+   "bg": "linear-gradient(160deg,#065f46,#022c22)",
+   "kicker": "LA RÉCUP",
+   "big": "142 bpm",
+   "txt": "à 6:09/km sur 8,04 km, lendemain du semi. Retour à la ligne de base : 11 bpm de moins que l'activation du 3 octobre à allure égale."
+  },
+  {
+   "bg": "linear-gradient(160deg,#134e4a,#042f2e)",
+   "kicker": "3 × 4 KM",
+   "big": "5:18/km",
+   "txt": "trois blocs à 5:18 de moyenne (FC 159, 159, 162), 11 des 12 km dans la fenêtre 5:15-5:25. Dérive de +3 bpm entre le bloc 1 et le bloc 3."
+  },
+  {
+   "bg": "linear-gradient(160deg,#7c2d12,#1c0a00)",
+   "kicker": "LA PLUIE",
+   "big": "242 m",
+   "txt": "de D+ sur 15 km à 5:59/km, FC moyenne 146 : dans le cadre malgré le relief."
+  },
+  {
+   "bg": "linear-gradient(160deg,#1e3a8a,#0c1c3d)",
+   "kicker": "LA LONGUE",
+   "big": "30,1 km",
+   "txt": "à 5:39/km, FC 149, vendredi 9 octobre. Allures par 10 km : 5:40, 5:40, 5:37. Dérive cardiaque mesurée 6,8 % (attendu 8 %), fiable."
+  },
+  {
+   "bg": "linear-gradient(160deg,#b45309,#451a03)",
+   "kicker": "LA SUITE",
+   "big": "S42",
+   "txt": "Une semaine à 79 km avec la longue spécifique."
+  }
+ ]
+}

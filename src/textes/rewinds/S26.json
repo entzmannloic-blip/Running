@@ -1,0 +1,49 @@
+{
+ "id": "S26",
+ "titre": "Ta semaine 26",
+ "sous": "Allègement + canicule · 22-28 juin · J-13→J-7 Déraille",
+ "slides": [
+  {
+   "bg": "linear-gradient(160deg,#0f172a,#1c3d2e)",
+   "kicker": "REWIND · SEMAINE 26",
+   "big": "🌡️",
+   "txt": "La semaine que la canicule a mangée. 40°C le jour, 30°C la nuit.<br>Tape pour avancer."
+  },
+  {
+   "bg": "linear-gradient(160deg,#065f46,#022c22)",
+   "kicker": "LE VOLUME",
+   "big": "21,9 km",
+   "txt": "sur 35 planifiés, en 2 sorties sur 4. La canicule a décidé — <strong>toi, tu as décidé de ne pas te battre contre elle.</strong>"
+  },
+  {
+   "bg": "linear-gradient(160deg,#7c2d12,#1c0a00)",
+   "kicker": "LES JOURS SAUTÉS",
+   "big": "Mar + Mer",
+   "txt": "Pas de lâche. Du jugement. 4 nuits sans vraie récupération — <strong>savoir ne pas courir, c'est une compétence.</strong>"
+  },
+  {
+   "bg": "linear-gradient(160deg,#1e3a8a,#0c1c3d)",
+   "kicker": "LES 2 SORTIES",
+   "big": "FC 148",
+   "txt": "Lundi 11,3 km à 5:53. Jeudi 10,7 km à 5:47 avec dérive cardiaque maîtrisée. <strong>Z2 propre les deux fois — le moteur tourne.</strong>"
+  },
+  {
+   "bg": "linear-gradient(160deg,#7f1d1d,#1c0a00)",
+   "kicker": "LE SACRIFICE",
+   "big": "Spéc. trail",
+   "txt": "La séance vallonnée n'a pas eu lieu. Le stimulus manque — <strong>mais la fraîcheur est intacte. À J-7, c'est elle qui compte.</strong>"
+  },
+  {
+   "bg": "linear-gradient(160deg,#134e4a,#042f2e)",
+   "kicker": "VERDICT DU COACH",
+   "big": "B+",
+   "txt": "Semaine incomplète mais bien arbitrée. Conditions extrêmes, zéro prise de risque, les 2 séances clés exécutées proprement. <strong>Le corps est prêt.</strong>"
+  },
+  {
+   "bg": "linear-gradient(160deg,#b45309,#451a03)",
+   "kicker": "LA SUITE",
+   "big": "S27",
+   "txt": "Semaine de course — Déraille dimanche.<br><strong>C'est ton jour. 🏁</strong>"
+  }
+ ]
+}

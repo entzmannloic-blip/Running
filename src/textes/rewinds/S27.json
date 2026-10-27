@@ -1,0 +1,61 @@
+{
+ "id": "S27",
+ "titre": "Ta semaine 27",
+ "sous": "Semaine course · 29 juin-5 juillet · Trail Déraille",
+ "slides": [
+  {
+   "bg": "linear-gradient(160deg,#0f172a,#1c3d2e)",
+   "kicker": "REWIND · SEMAINE 27",
+   "big": "🏁",
+   "txt": "La semaine de course. Objectif : relancer la machine.<br>Tape pour avancer."
+  },
+  {
+   "bg": "linear-gradient(160deg,#065f46,#022c22)",
+   "kicker": "LE VOLUME",
+   "big": "53 km",
+   "txt": "dont la Déraille (23,3 km · D+957m). Une vraie semaine de course, bien remplie."
+  },
+  {
+   "bg": "linear-gradient(160deg,#1e3a8a,#0c1c3d)",
+   "kicker": "LUNDI AVEC EDWIGE",
+   "big": "13 km",
+   "txt": "Sortie tranquille à deux, 5:39/km par 30°C. Le plaisir recharge autant que le repos."
+  },
+  {
+   "bg": "linear-gradient(160deg,#7c2d12,#1c0a00)",
+   "kicker": "MARDI",
+   "big": "Stop",
+   "txt": "Tempo interrompu par un souci gastrique. <strong>Arrêté au bon moment — écouter le corps, c'est aussi ça courir intelligemment.</strong>"
+  },
+  {
+   "bg": "linear-gradient(160deg,#134e4a,#042f2e)",
+   "kicker": "JEUDI · AFFÛTAGE",
+   "big": "FC 148",
+   "txt": "10,5 km en Z2 pure, zéro PR, digestion rétablie. La sortie parfaite à J-3. Le corps en automatique."
+  },
+  {
+   "bg": "linear-gradient(160deg,#7f1d1d,#1c0a00)",
+   "kicker": "DIMANCHE · LA COURSE",
+   "big": "2:52:48",
+   "txt": "Trail Déraille · 66e/180 (top 37%) · 11e/18 M0. <strong>FC 168 tenue sur 2h52 sans effondrement.</strong>"
+  },
+  {
+   "bg": "linear-gradient(160deg,#581c87,#1e1b4b)",
+   "kicker": "LA DESCENTE",
+   "big": "4:46/km",
+   "txt": "Km 18 en pleine descente technique. <strong>Ta vraie arme — elle est intacte.</strong>"
+  },
+  {
+   "bg": "linear-gradient(160deg,#b45309,#451a03)",
+   "kicker": "VERDICT DU COACH",
+   "big": "A",
+   "txt": "Course de gestion réussie sur 4h de sommeil et zéro prépa trail. La tête a fait la différence. <strong>Objectifs atteints, zéro séquelle.</strong>"
+  },
+  {
+   "bg": "linear-gradient(160deg,#0d9488,#0f766e)",
+   "kicker": "LA SUITE",
+   "big": "Nice",
+   "txt": "Cap sur le Marathon — 8 novembre.<br><strong>Le vrai objectif commence maintenant.</strong>"
+  }
+ ]
+}

@@ -1,0 +1,49 @@
+{
+ "id": "S36",
+ "titre": "Ta semaine 36",
+ "sous": "Avant l'envol · 31 août-6 septembre",
+ "slides": [
+  {
+   "bg": "linear-gradient(160deg,#0f172a,#1e3a5f)",
+   "kicker": "REWIND · SEMAINE 36",
+   "big": "🎬",
+   "txt": "56,2 km en cinq sorties avant et pendant San Francisco.<br>Tape pour avancer."
+  },
+  {
+   "bg": "linear-gradient(160deg,#334155,#0f172a)",
+   "kicker": "LE VOLUME",
+   "big": "56,2 km",
+   "txt": "en 5 sorties, dont une optionnelle faite à San Francisco. Les quatre séances prévues avant le vol ont toutes été tenues."
+  },
+  {
+   "bg": "linear-gradient(160deg,#065f46,#022c22)",
+   "kicker": "LE SEUIL",
+   "big": "4:59/km",
+   "txt": "sur 8,59 km. Bloc 1 à 4:31 (cible 4:45), bloc 2 à 4:38 puis 4:42. Séance coupée volontairement pour préserver la quatrième séance avant le vol."
+  },
+  {
+   "bg": "linear-gradient(160deg,#134e4a,#042f2e)",
+   "kicker": "LA FRAÎCHEUR",
+   "big": "144 bpm",
+   "txt": "de FC moyenne sur le footing du mardi à 5:34/km, plafond 148 tenu. Deux lignes droites accélérées de 22 s contre 96-102 m sur les premières."
+  },
+  {
+   "bg": "linear-gradient(160deg,#7c2d12,#1c0a00)",
+   "kicker": "LE DÉVERROUILLAGE",
+   "big": "5:41/km",
+   "txt": "avec une amie, FC 143 moyenne : prévu à 6:10-6:30. Suivre plutôt que mener n'a pas suffi à ralentir."
+  },
+  {
+   "bg": "linear-gradient(160deg,#1e3a8a,#0c1c3d)",
+   "kicker": "SAN FRANCISCO",
+   "big": "14,3 km",
+   "txt": "dans Golden Gate Park et Lands End, 220 m de D+. FC moyenne 154, pic à 180 sur la côte la plus raide, aucune douleur."
+  },
+  {
+   "bg": "linear-gradient(160deg,#b45309,#451a03)",
+   "kicker": "LA SUITE",
+   "big": "S37",
+   "txt": "Deux semaines de road trip aux États-Unis : randonnées dans les parcs, aucune course enregistrée."
+  }
+ ]
+}
