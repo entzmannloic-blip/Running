@@ -2727,6 +2727,16 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":268,"date":"27 octobre 2026","sha":"","tag":"P3 Système de mouvement","items":[
+    "ONGLETS : transition de vue depuis la barre (fondu et glissement de 8 px dans le sens de la barre, barre et en-tête immobiles) ; sans transition de vue (iOS < 18), même mouvement en CSS.",
+    "FICHES : la carte de séance ou de semaine s'agrandit jusqu'à devenir sa fiche et s'y referme au retour.",
+    "SCROLL : les cartes apparaissent en CSS (Safari 26) à la place du script ; la barre d'onglets se rétracte quand on descend et revient quand on remonte.",
+    "GRAPHES : les courbes du Cockpit se tracent et les barres montent à leur première apparition ; le profil de course se dessine au fil du scroll.",
+    "CHIFFRES : forme, ACWR et J-N comptent jusqu'à leur valeur à leur première apparition.",
+    "CÉLÉBRATIONS : une coche ou un trait qui se dessine ; plus de confettis ni de rebond.",
+    "TOUCHER : retour visuel seul ; tout le code de vibration est retiré (l'iPhone ne vibre pas pour une web app).",
+    "CORRECTION : la légende du profil de Nice annonçait « sommet 897 m vers le km 15 » (valeurs d'un trail) ; elle est calculée depuis le profil, avec des graduations jusqu'au km 40.",
+    "DURÉES : 120, 240 et 360 ms, décélération exponentielle ; tout est coupé sous « réduire les animations »."]},
   {"build":267,"date":"27 octobre 2026","sha":"","tag":"P2 Pipeline de log : textes chargés à l'ouverture d'une fiche","items":[
     "CHARGEMENT : les revues de séance et de semaine, les splits et les diapositives des Rewinds ne sont plus lus au démarrage : data/textes.json est chargé à la première ouverture d'une fiche ou d'un Rewind (et mis en cache hors-ligne par le service worker).",
     "POIDS : premier chargement de 336 à 261 Ko compressés (−22 %).",

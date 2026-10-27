@@ -76,7 +76,7 @@ Accueil · Séances · Cockpit · Courses
 - `sw.js` (généré) : cache `plan-<build>`, pré-cache de tout le site, réseau d'abord avec repli cache après 3 s ou hors-ligne. `_checkNewVersion()` affiche le bandeau « Nouvelle version prête » au retour au premier plan.
 
 ## Design system
-Voir **DESIGN.md** (« Le carnet de l'entraîneur ») et `src/css.txt :root`. **1 primaire** `--primary:#0d9488` (teal) ; états `--ok` `--warn` `--danger` ; neutres slate ; échelle typo `--t-display…--t-data`. Ne pas réintroduire de couleurs ad hoc. Dégradés par course (dossiers) préservés exprès. Mouvement : `.vue-in`, reveal au scroll, press-scale, haptique, tout sous `prefers-reduced-motion`.
+Voir **DESIGN.md** (« Le carnet de l'entraîneur ») et `src/css.txt :root`. **1 primaire** `--primary:#0d9488` (teal) ; états `--ok` `--warn` `--danger` ; neutres slate ; échelle typo `--t-display…--t-data`. Ne pas réintroduire de couleurs ad hoc. Dégradés par course (dossiers) préservés exprès. Mouvement (P3, build 268) : 120/240/360 ms, transitions de vue (onglets par `goTab`, carte → fiche par `ouvrirCarte`/`fermerAnime`), apparitions au scroll en CSS, barre d'onglets rétractable, graphes tracés, chiffres qui comptent, célébrations par tracé, pas d'haptique ; tout sous `prefers-reduced-motion` (détail dans DESIGN.md « Mouvement »).
 
 ## Données clés gen.py
 - Plan : S25→S53 (30 semaines, 141 séances)
@@ -97,8 +97,8 @@ Voir **DESIGN.md** (« Le carnet de l'entraîneur ») et `src/css.txt :root`. **
 ## Séquence de démarrage JS
 ```
 boot (index.html) : fetch data/*.json → Object.assign(window) → charge src/app.js
-app.js : hydrateLogs() → hydrateOverrides() → init*() → renderHeader() → renderPlan() → rwAuto() → checkAutoSync()
-showTab(t) : haptique + bascule display + .actif + aria-current + render lazy + .vue-in + _revealScan()
+app.js : _bbInit() → hydrateLogs() → hydrateOverrides() → init*() → renderHeader() → renderPlan() → rwAuto() → checkAutoSync()
+goTab(t) (barre) : transition de vue → showTab(t) : bascule display + .actif + aria-current + render lazy + repli .vue-in
 ```
 
 ## localStorage
