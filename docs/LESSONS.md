@@ -163,6 +163,18 @@ Ne jamais soustraire `new Date('YYYY-MM-DD')` à une date locale. Une course don
 - **Garde-fou mécanisé.** Déjà en place : `debugCockpit()` et `T20` comparent la tuile à l'ACWR du jour. Ils ne
   pouvaient pas le voir le jour du build, où les deux valeurs étaient égales.
 
+## L13 — CI rouge le lendemain d'un build : T15 et l'ACWR du jour (29/10)
+
+- **Symptôme.** `verify` a échoué sur les PR #19 et #20 du lot 5 (builds faites après minuit, CI à 23 h UTC la
+  veille) : « T15 données JSON identiques à data.json — différentes : ACWR_DATA ». Rejoué en local, T15 échouait aussi
+  sur un build de la veille ouvert le lendemain.
+- **Cause.** L'app recalcule en direct `ACWR_DATA.acwr`, `charge7j` et `charge28j` à la date du téléphone
+  (`_acwrCompute()`, leçon L12) ; T15 les comparait aux valeurs figées du build. Égales le jour du build seulement :
+  toute CI rejouée un autre jour (PR fusionnée le lendemain, fuseau UTC de GitHub autour de minuit) passait au rouge.
+- **Règle.** Un test qui compare les données publiées aux données du build exclut ce que l'app recalcule en direct.
+- **Garde-fou mécanisé.** T15 ignore ces trois champs ; les échecs de régression sortent en annotations GitHub
+  (`::error`), lisibles par l'API quand les journaux de la CI ne le sont pas.
+
 ## Quirks Strava MCP (non mécanisables, à connaître)
 
 - Les activités **privées** n'apparaissent pas dans `list_activities`, quelle que soit

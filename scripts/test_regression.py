@@ -38,6 +38,10 @@ def check(name, cond, detail=""):
         PASS.append(name)
     else:
         FAIL.append(f"{name}" + (f" — {detail}" if detail else ""))
+        # dans GitHub Actions, chaque echec devient une annotation lisible sans ouvrir les journaux
+        if os.environ.get("GITHUB_ACTIONS"):
+            msg = (f"{name} — {detail}" if detail else name).replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A")
+            print(f"::error title=Regression::{msg[:900]}", flush=True)
 
 
 def run():
@@ -254,7 +258,11 @@ def run():
                 if(Array.isArray(a)!==Array.isArray(b)) return false;
                 var ka=Object.keys(a), kb=Object.keys(b); if(ka.length!==kb.length) return false;
                 return ka.every(function(k){return eq(a[k],b[k]);}); }
-              return Object.keys(exp).filter(function(n){return !eq(window[n], exp[n]);});
+              /* ACWR_DATA.acwr, charge7j et charge28j sont recalcules en direct par l'app (fenetre glissante
+                 7/28 jours a la date du telephone) : ils ne valent les chiffres du build que le jour du build. */
+              function vif(n,o){if(n!=='ACWR_DATA'||!o||typeof o!=='object')return o;var c=Object.assign({},o);
+                delete c.acwr;delete c.charge7j;delete c.charge28j;return c;}
+              return Object.keys(exp).filter(function(n){return !eq(vif(n,window[n]), vif(n,exp[n]));});
             }""", expected)
         check("T15 donnees JSON identiques a data.json (toutes les constantes)", bad == [], f"differentes : {bad[:6]}")
         check("T15 CHANGELOG de depart = derniere entree",
