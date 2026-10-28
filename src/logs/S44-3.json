@@ -1,0 +1,95 @@
+{
+ "seance": {
+  "chaussure_realise": "ASICS Gel Pulse 16",
+  "titre": "Footing avec Yannis (lignes droites non faites)"
+ },
+ "realise": {
+  "statut": "fait",
+  "decouplage": {
+   "pct": 4.26,
+   "bpm": 2.0,
+   "fen_min": 61,
+   "temp": 15,
+   "attendu": 6,
+   "p1": "5:53/km",
+   "fc1": 147,
+   "p2": "5:58/km",
+   "fc2": 149,
+   "qualite": "incertain",
+   "algo": "decoup-v1"
+  },
+  "temp": 15,
+  "km": 11.03,
+  "temps": "1:05:17",
+  "allure": "5:55/km",
+  "fc_moy": 148,
+  "fc_max": 163,
+  "re": 103,
+  "cadence": 87,
+  "elevation_gain": 42,
+  "kcal": 853,
+  "terrain": "route",
+  "commentaire": "Realise : 11,03 km en 1:05:17 de deplacement (1:09:49 ecoulees), 5:55/km, FC 148 moy / 163 max, D+ 42 m, 15 °C, ASICS Gel Pulse 16.",
+  "pr": 0,
+  "ach": 0,
+  "pr_detail": [],
+  "splits": [
+   {
+    "km": 1,
+    "allure": "5:29",
+    "fc": 145
+   },
+   {
+    "km": 2,
+    "allure": "5:30",
+    "fc": 157
+   },
+   {
+    "km": 3,
+    "allure": "6:22",
+    "fc": 139
+   },
+   {
+    "km": 4,
+    "allure": "5:58",
+    "fc": 145
+   },
+   {
+    "km": 5,
+    "allure": "6:09",
+    "fc": 147
+   },
+   {
+    "km": 6,
+    "allure": "6:03",
+    "fc": 151
+   },
+   {
+    "km": 7,
+    "allure": "5:59",
+    "fc": 151
+   },
+   {
+    "km": 8,
+    "allure": "5:50",
+    "fc": 150
+   },
+   {
+    "km": 9,
+    "allure": "6:01",
+    "fc": 146
+   },
+   {
+    "km": 10,
+    "allure": "6:04",
+    "fc": 146
+   },
+   {
+    "km": 11,
+    "allure": "5:42",
+    "fc": 147
+   }
+  ],
+  "strava_id": "20767357038"
+ }
+}

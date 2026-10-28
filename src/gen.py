@@ -2214,7 +2214,7 @@ GEAR=[
   {"marque":"HOKA","modele":"Clifton 10","km":1284},
   {"marque":"ASICS","modele":"Novablast 5 J","km":877},
   {"marque":"ASICS","modele":"Novablast 5 V","km":202},
-  {"marque":"ASICS","modele":"Gel Pulse 16","km":229},
+  {"marque":"ASICS","modele":"Gel Pulse 16","km":240},
   {"marque":"Brooks","modele":"Cascadia 19","km":259},
   {"marque":"ASICS","modele":"Magic Speed 4","km":93},
 ]
@@ -2727,6 +2727,9 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":271,"date":"28 octobre 2026","sha":"","tag":"Log S44 seance 3 : Footing avec Yannis (lignes droites non faites) du 28/10","items":[
+    "SEANCE : S44 seance 3 loggee depuis Strava : Footing avec Yannis (lignes droites non faites), 11,03 km en 1:05:17 (5:55/km), FC 148/163, D+ 42 m, 15 °C, Gel Pulse 16.",
+    "CHAUSSURES : Gel Pulse 16 a 240 km."]},
   {"build":270,"date":"28 octobre 2026","sha":"","tag":"Rewind de séance : correctifs","items":[
     "FICHE : le bouton « Revoir ma séance » est en haut de la fiche.",
     "ANALYSE DU COACH : tout le contenu s'affiche d'emblée et défile sur iPhone (plus rien de coupé sous le prévu face au réalisé)."]},
