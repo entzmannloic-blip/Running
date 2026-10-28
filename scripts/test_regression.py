@@ -690,6 +690,7 @@ def run():
             pm.evaluate("rsOuvrir('44-2',0)")
             pm.wait_for_timeout(5300)
             img = pm.evaluate("document.querySelector('.rs-sl:last-child').getAttribute('aria-label')")
+            pm.keyboard.press("Escape")
             pm.evaluate("rsOuvrir('44-2',7)")
             pm.wait_for_timeout(6000)
             coach = pm.evaluate("document.querySelector('.rs-sl:last-child').getAttribute('aria-label')")
@@ -702,7 +703,7 @@ def run():
             pm.wait_for_timeout(900)
             ou = pm.evaluate("[...document.querySelectorAll('.rs-ou-carte .rs-verd')].map(v=>v.innerText.trim())")
             check("T23 Où j'en suis : 5 courbes, chacune avec un verdict",
-                  len(ou) == 5 and all(v in ("Progresse", "Stable", "Recule", "À confirmer") for v in ou) and not errs, f"{ou} {errs[:1]}")
+                  len(ou) == 5 and all(v in ("Progresse", "Stable", "Recule", "À confirmer", "En hausse", "En baisse") for v in ou) and not errs, f"{ou} {errs[:1]}")
             ctx.close()
         except Exception as e:
             check("T23 Rewind de séance", False, str(e)[:160])

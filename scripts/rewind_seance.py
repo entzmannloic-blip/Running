@@ -116,16 +116,32 @@ def reduit(n, m=MAX_POINTS):
     return sorted({round(i * (n - 1) / (m - 1)) for i in range(m)})
 
 
+def bouche(serie, mini=None):
+    """Remplace les trous (null, NaN, FC sous le minimum : ceinture decrochee) par la derniere valeur valide."""
+    ok = lambda x: isinstance(x, (int, float)) and x == x and (mini is None or x >= mini)
+    premiere = next((x for x in serie if ok(x)), None)
+    if premiere is None:
+        raise SystemExit("flux sans aucune valeur valide")
+    out, der = [], premiere
+    for x in serie:
+        der = x if ok(x) else der
+        out.append(der)
+    return out
+
+
 def construire(e, cib=None):
     st = e["streams"]
     n = len(st["time"])
-    for _, k in FLUX:
+    for c, k in FLUX:
+        if c == "fc" and not st.get(k):
+            continue  # pas de ceinture ni de capteur : le Rewind saute l'image du coeur
         if len(st.get(k) or []) != n:
             raise SystemExit(f"flux {k} absent ou de longueur differente ({len(st.get(k) or [])} pour {n})")
+        st[k] = bouche(st[k], 40 if c == "fc" else None)
     if abs(st["distance"][-1] - e["summary"]["distance"]) > 60:
         raise SystemExit("le flux de distance ne correspond pas a la distance Strava")
     idx = reduit(n)
-    flux = {c: [st[k][i] for i in idx] for c, k in FLUX}
+    flux = {c: [st[k][i] for i in idx] for c, k in FLUX if st.get(k)}
     perf = e.get("performance") or {}
     noms = {s["id"]: s for s in perf.get("segment_efforts", [])}
     efforts = {b[2]: b for b in perf.get("best_efforts", []) if len(b) > 2}
@@ -145,7 +161,7 @@ def construire(e, cib=None):
     out = {"strava_id": str(e["id"]), "debut": e["start_local"], "lieu": e.get("location_summary"),
            "meteo": {"temperature": w.get("temperature"), "condition": w.get("condition")},
            "resume": {k: s.get(k) for k in ("distance", "moving_time", "elapsed_time", "elevation_gain")},
-           "flux": flux, "trace": projette(decode_polyline(e["reduced_polyline"])),
+           "flux": flux, "trace": projette(decode_polyline(e["reduced_polyline"])) if e.get("reduced_polyline") else [],
            "tours": perf.get("laps") or [], "meilleurs": [b[:2] for b in perf.get("best_efforts", [])], "prs": prs}
     if cib:
         out["cible"] = cib

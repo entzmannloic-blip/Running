@@ -105,10 +105,11 @@ def validate(d):
             continue
         fl = rw.get("flux") or {}
         n = len(fl.get("t") or [])
-        if n < 20 or any(len(fl.get(k) or []) != n for k in ("d", "alt", "v", "fc")):
+        if n < 20 or any(len(fl.get(k) or []) != n for k in ("d", "alt", "v")) or (fl.get("fc") and len(fl["fc"]) != n):
             errs.append(f"rewind-{cle}.json : flux absents ou de longueurs differentes")
-        if len(rw.get("trace") or []) < 2:
-            errs.append(f"rewind-{cle}.json : trace absent")
+        mauvais = [k for k, s in fl.items() for x in s if not isinstance(x, (int, float)) or x != x]
+        if mauvais or any(x < 40 for x in fl.get("fc") or []):
+            errs.append(f"rewind-{cle}.json : valeurs nulles ou aberrantes dans les flux ({', '.join(sorted(set(mauvais))) or 'fc < 40'})")
         if not (rw.get("coach") or {}).get("verdict"):
             errs.append(f"rewind-{cle}.json : pas de verdict tire de la revue (src/textes/seances/S{cle}.html)")
     for name, content in files.items():

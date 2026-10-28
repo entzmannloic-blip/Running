@@ -73,11 +73,11 @@ def coach_de(revue):
                 out['bien_implicite'] = reste
         elif mv:
             out['note'], out['note_texte'] = mv.group(1).upper(), reste
-        elif re.search(r'corriger|à revoir|point faible', bas):
+        elif re.search(r'corriger|à revoir|point faible|surveiller|reste haut', bas):
             out['corriger'] = reste
-        elif re.search(r'ce qui est bon|ce qui est bien|le bon', bas):
+        elif re.search(r'ce qui est bon|ce qui est bien|le bon|solide', bas):
             out['bien'] = reste
-        elif re.search(r'^suite|prochaine|conseil', bas):
+        elif re.search(r'^suite|pour la suite|prochaine|conseil', bas):
             out['conseil'] = reste
     if 'bien' not in out and 'bien_implicite' in out:
         out['bien'] = out['bien_implicite']

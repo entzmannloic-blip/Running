@@ -4487,10 +4487,13 @@ if(typeof document!=='undefined'){
 var RS=(function(){
 'use strict';
 const AUTO=true; /* défilement automatique ; false = toucher seulement, comme les Rewinds de semaine */
-const DUREES=[4500,5000,5500,4500,4500,5000,4000,0,5000]; /* 0 : l'analyse du coach attend « Continuer » */
+const DUREES=[4500,5000,5500,4500,4500,5000,4000,0,0]; /* 0 : l'analyse du coach attend « Continuer » */
 const D_PRESS=120,D_ETAT=240,D_ECRAN=360,EASE='cubic-bezier(.25,1,.5,1)',NS='http://www.w3.org/2000/svg';
 const RM=()=>_reduceMotion();
 const TOL=5,PART_OK=.8;
+let verrous=0,sauve=null;
+function verrouille(){if(verrous++===0){sauve=[document.documentElement.style.overflow,document.body.style.overflow];document.documentElement.style.overflow='hidden';document.body.style.overflow='hidden';}}
+function deverrouille(){if(verrous>0&&--verrous===0&&sauve){document.documentElement.style.overflow=sauve[0];document.body.style.overflow=sauve[1];sauve=null;}}
 
 /* ---------- utilitaires ---------- */
 function pose(e,a){if(!a)return;for(const[k,v] of Object.entries(a)){if(v==null||v===false)continue;
@@ -4546,12 +4549,12 @@ function cibleDe(s){const r=s.realise||{};if(r.cible)return r.cible;
   const a=sec(m[1]),b=sec(m[2]),c={rapide:Math.min(a,b),lent:Math.max(a,b),texte:m[0],source:'Allure prévue au plan'};
   const f=String((s.metriques||{}).FC||'').trim().match(/^(\d{3})\s*[-–]\s*(\d{3})$/);if(f){c.fc_min=+f[1];c.fc_max=+f[2];}return c;}
 function histo(){const out=[];Object.entries(window.SEANCES_BY_WEEK||{}).forEach(([w,arr])=>arr.forEach(s=>{const r=s.realise||{};
-  if(r.statut!=='fait'||!r.km)return;const titre=s.titre||'';
+  if((r.statut!=='fait'&&r.statut!=='partiel')||!r.km)return;const titre=s.titre||'';
   out.push({cle:`${w}-${s.id}`,sem:+w,date:s.date||'',type:s.type||'',titre,km:r.km,t:tempsS(r.temps),fc:r.fc_moy||null,temp:r.temp!=null?r.temp:null,
     dplus:r.elevation_gain!=null?r.elevation_gain:null,trail:/trail/i.test((s.type||'')+' '+titre),cible:cibleDe(s),
     splits:(r.splits||[]).filter(x=>/^\d:\d\d$/.test(x.allure||'')).map(x=>[sec(x.allure),x.fc]),decouplage:r.decouplage||null});}));
   return out.sort((a,b)=>(a.date+'|'+pad(a.sem)+'-'+pad(+a.cle.split('-')[1])).localeCompare(b.date+'|'+pad(b.sem)+'-'+pad(+b.cle.split('-')[1])));}
-function evalSeance(x){if(!x.cible||x.splits.length<3)return null;const c=x.cible,lo=c.rapide-TOL,hi=c.lent!=null?c.lent+TOL:Infinity;
+function evalSeance(x){if(!x.cible||x.cible.rapide==null||x.splits.length<3)return null;const c=x.cible,lo=c.rapide-TOL,hi=c.lent!=null?c.lent+TOL:Infinity;
   const inn=x.splits.filter(([p])=>p>=lo&&p<=hi).length;return {inn,tot:x.splits.length,ok:inn/x.splits.length>=PART_OK};}
 function trouve(cle){const i=cle.indexOf('-');return ((window.SEANCES_BY_WEEK||{})[cle.slice(0,i)]||[]).find(x=>String(x.id)===cle.slice(i+1));}
 function prochaine(date){let best=null;Object.entries(window.SEANCES_BY_WEEK||{}).forEach(([w,arr])=>arr.forEach(s=>{
@@ -4568,7 +4571,7 @@ function seanceDe(cle,rw){const s=trouve(cle),r=s.realise||{},m=s.metriques||{};
 const titreSeance=se=>se.titre.replace(/\s*\((non planifie|non planifié)\)\s*/i,'').trim();
 
 function analyse(se){
-  const f=se.flux,n=f.t.length,dt=new Array(n).fill(0),pause=new Array(n).fill(false);let mov=0;
+  const f=se.flux,n=f.t.length,dt=new Array(n).fill(0),pause=new Array(n).fill(false),sansFC=!(f.fc&&f.fc.length);let mov=0;
   for(let i=1;i<n;i++){dt[i]=f.t[i]-f.t[i-1];const dd=f.d[i]-f.d[i-1];pause[i]=dt[i]>20&&dd/dt[i]<.6;if(!pause[i])mov+=dt[i];}
   const kal=mov?se.resume.moving_time/mov:1,M=[0];for(let i=1;i<n;i++)M.push(M[i-1]+(pause[i]?0:dt[i]*kal));
   const vl=f.v.map((x,i)=>(f.v[Math.max(0,i-1)]+x+f.v[Math.min(n-1,i+1)])/3),pl=vl.map(x=>x>.5?1000/x:null);
@@ -4580,17 +4583,17 @@ function analyse(se){
   if(se.splits_depot.length){splits=se.splits_depot.map(([k,p,fc])=>({n:k,lab:String(k),p,fc,dist:1}));src='tours';}
   else{splits=[];const tot=f.d[n-1];let k=1,prev=0;
     while(prev<tot-50){const fin=Math.min(k*1000,tot),dist=(fin-prev)/1000,tm=Mde(fin)-Mde(prev);let sw=0,sh=0;
-      for(let i=1;i<n;i++){if(pause[i])continue;const mid=(f.d[i]+f.d[i-1])/2;if(mid>prev&&mid<=fin){sw+=dt[i];sh+=dt[i]*(f.fc[i]+f.fc[i-1])/2;}}
+      for(let i=1;i<n;i++){if(pause[i])continue;const mid=(f.d[i]+f.d[i-1])/2;if(mid>prev&&mid<=fin&&!sansFC){sw+=dt[i];sh+=dt[i]*(f.fc[i]+f.fc[i-1])/2;}}
       splits.push({n:k,lab:fin<k*1000?fN(dist,2):String(k),p:tm/dist,fc:sw?Math.round(sh/sw):null,dist});prev=fin;k++;}
     src='flux';}
   const zb=ZB(),zones=zb.map(z=>({z:z.z,nom:z.nom,t:0}));let tz=0;
-  for(let i=1;i<n;i++){if(pause[i])continue;const v=(f.fc[i]+f.fc[i-1])/2,zi=zb.findIndex(z=>v>=z.lo&&v<z.hi);if(zi>=0){zones[zi].t+=dt[i];tz+=dt[i];}}
+  for(let i=1;i<n;i++){if(pause[i]||sansFC)continue;const v=(f.fc[i]+f.fc[i-1])/2,zi=zb.findIndex(z=>v>=z.lo&&v<z.hi);if(zi>=0){zones[zi].t+=dt[i];tz+=dt[i];}}
   zones.forEach(z=>z.part=tz?z.t/tz:0);
   const c=se.cible;let cf=null;
   if(c){let ta=0,tin=0,tv=0,tf=0,tfin=0;
-    for(let i=1;i<n;i++){if(pause[i])continue;const fc=(f.fc[i]+f.fc[i-1])/2;
-      if(c.fc_max!=null){tf+=dt[i];if(fc<=c.fc_max&&(c.fc_min==null||fc>=c.fc_min))tfin+=dt[i];}
-      if(vl[i]<1)continue;const p=1000/vl[i];ta+=dt[i];
+    for(let i=1;i<n;i++){if(pause[i])continue;const fc=sansFC?0:(f.fc[i]+f.fc[i-1])/2;
+      if(c.fc_max!=null&&!sansFC){tf+=dt[i];if(fc<=c.fc_max&&(c.fc_min==null||fc>=c.fc_min))tfin+=dt[i];}
+      if(c.rapide==null||vl[i]<1)continue;const p=1000/vl[i];ta+=dt[i];
       if(p>=c.rapide-TOL&&(c.lent==null||p<=c.lent+TOL))tin+=dt[i];else if(p<c.rapide-TOL)tv+=dt[i];}
     cf={part:ta?tin/ta:0,vite:ta?tv/ta:0,fc:tf?tfin/tf:null};}
   const full=splits.filter(s=>s.dist>=.95);
@@ -4600,12 +4603,12 @@ function prevu(se){
   const r=se.realise,c=se.cible,dp=se.distance_prevue,rows=[],pr=sec(r.allure);
   const dOk=dp&&Math.abs(r.km-dp.km)<=dp.km*.1;
   rows.push({nom:'Distance',prevu:dp?dp.texte:'—',reel:fN(r.km,2)+' km',etat:dp?(dOk?'ok':'ko'):null,ecart:dp?(dOk?'dans la marge de 10 %':(r.km>dp.km?'+':'−')+fN(Math.abs(r.km-dp.km),1)+' km'):null});
-  if(c&&pr!=null){const ok=pr>=c.rapide-TOL&&(c.lent==null||pr<=c.lent+TOL);
-    rows.push({nom:'Allure',prevu:c.lent!=null?`${fA(c.rapide)}–${fA(c.lent)}`:`${fA(c.rapide)} ou plus lent`,reel:fA(pr)+'/km',etat:ok?'ok':'ko',
+  if(c&&c.rapide!=null&&pr!=null){const ok=pr>=c.rapide-TOL&&(c.lent==null||pr<=c.lent+TOL);
+    rows.push({nom:'Allure',prevu:c.lent!=null?`${fA(c.rapide)}–${fA(c.lent)}`:`${fA(c.rapide)}/km ou plus lent`,reel:fA(pr)+'/km',etat:ok?'ok':'ko',
       ecart:ok?'à 5 s près':(pr<c.rapide-TOL?`${c.rapide-pr} s/km trop vite`:`${pr-c.lent} s/km trop lent`)});}
   else rows.push({nom:'Allure',prevu:'—',reel:pr!=null?fA(pr)+'/km':'—',etat:null,ecart:null});
   if(c&&c.fc_max!=null&&r.fc_moy){const fc=r.fc_moy,ok=fc<=c.fc_max&&(c.fc_min==null||fc>=c.fc_min);
-    rows.push({nom:'FC',prevu:c.fc_min!=null?`${c.fc_min}–${c.fc_max}`:`≤ ${c.fc_max}`,reel:`${fc} moy`,etat:ok?'ok':'ko',ecart:ok?null:(fc>c.fc_max?`+${fc-c.fc_max} bpm`:`${fc-c.fc_min} bpm`)});}
+    rows.push({nom:'FC',prevu:c.fc_min!=null?`${c.fc_min}–${c.fc_max}`:`≤ ${c.fc_max}`,reel:`${fc} moy`,etat:ok?'ok':'ko',ecart:ok?null:(fc>c.fc_max?`+${fc-c.fc_max} bpm`:`−${c.fc_min-fc} bpm`)});}
   else rows.push({nom:'FC',prevu:'—',reel:r.fc_moy?`${r.fc_moy} moy`:'—',etat:null,ecart:null});
   return rows;
 }
@@ -4623,8 +4626,8 @@ function img1(se,a){
   const t=h('div',{class:'rs-tuiles'},tu('Temps',r.temps,null,'en déplacement'),tu('Allure',fA(sec(r.allure)),'/km'),
     tu('FC moyenne',String(r.fc_moy),'bpm',`max ${r.fc_max}`),tu('Dénivelé','+'+(r.elevation_gain!=null?r.elevation_gain:se.resume.elevation_gain),'m'),
     tu('Température',m.temperature!=null?fN(m.temperature,0):'—',m.temperature!=null?'°C':null,METEO[m.condition]||null),
-    tu('Chaussure',se.chaussure.replace(/^(HOKA|ASICS|Brooks)\s+/,'')||'—',null,se.chaussure_km!=null?`${fN(se.chaussure_km)} km au compteur`:null));
-  const go=h('button',{class:'rs-raccourci',type:'button',onclick:e=>{e.stopPropagation();LECT.va(7);}},'Aller à l\'analyse du coach',ico(I_FL,16));
+    tu('Chaussure',se.chaussure.replace(/^(HOKA|ASICS|Brooks)\s+/,'')||'—',null,se.chaussure_km!=null?`${fN(se.chaussure_km)} km au compteur aujourd'hui`:null));
+  const go=h('button',{class:'rs-raccourci',type:'button',onclick:e=>{e.stopPropagation();LECT.va(IMG.indexOf(img8));}},'Aller à l\'analyse du coach',ico(I_FL,16));
   const kick=h('p',{class:'rs-kick'},'La séance en chiffres'),ti=h('h2',{class:'rs-titre'},titreSeance(se));
   return {el:h('div',null,kick,ti,big,t,go),titre:'La séance en chiffres',joue(){compte(km,r.km,v=>fN(v,2));apparait([kick,ti,big,...t.children,go]);}};
 }
@@ -4636,7 +4639,7 @@ function img2(se,a){
   for(let i=1;i<pt.length;i++)cum.push(cum[i-1]+Math.hypot(pt[i][0]-pt[i-1][0],pt[i][1]-pt[i-1][1]));
   const tot=cum[cum.length-1]||1,dTot=se.flux.d[se.flux.d.length-1],dPath='M'+pt.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join('L');
   const id=nid('rsmt'),mk=sv('path',{d:dPath,fill:'none',stroke:'#fff','stroke-width':12,'stroke-linecap':'round','stroke-linejoin':'round',pathLength:1,'stroke-dasharray':1,'stroke-dashoffset':0});
-  const segs=sv('g',{mask:`url(#${id})`,'stroke-width':4.5,'stroke-linecap':'round'});
+  const segs=sv('g',{'stroke-width':4.5,'stroke-linecap':'round'});
   for(let i=1;i<pt.length;i++){const p=a.pl[a.idxD((cum[i]+cum[i-1])/2/tot*dTot)];
     segs.append(sv('line',{x1:pt[i-1][0].toFixed(1),y1:pt[i-1][1].toFixed(1),x2:pt[i][0].toFixed(1),y2:pt[i][1].toFixed(1),stroke:a.couleurDe(p)}));}
   const[x0,y0]=pt[0],[x1,y1]=pt[pt.length-1],boucle=Math.hypot(x1-x0,y1-y0)<14;
@@ -4647,7 +4650,7 @@ function img2(se,a){
   const leg=h('div',{class:'rs-legende'},h('span',null,`${fA(a.dom.lent)} /km`),h('i'),h('span',null,`${fA(a.dom.rapide)} /km`));
   const kick=h('p',{class:'rs-kick'},'Le tracé'),ti=h('h2',{class:'rs-titre'},String(se.lieu||'').replace(/,\s*France$/,'')||'Ton parcours');
   const cap=h('p',{class:'rs-cap'},'La couleur suit ton allure : plus le trait est clair, plus tu allais vite. ',boucle?'Départ et arrivée au même endroit.':'Rond creux : départ ; point plein : arrivée.');
-  return {el:h('div',null,kick,ti,g,leg,cap),titre:'Le tracé',joue(){apparait([kick,ti]);dessine(mk,6*D_ECRAN,D_ETAT);apparait([arr,leg,cap],6*D_ECRAN+D_ETAT);}};
+  return {el:h('div',null,kick,ti,g,leg,cap),titre:'Le tracé',joue(){apparait([kick,ti]);if(!RM()){const L=segs.children.length;[...segs.children].forEach((l,i)=>l.animate([{opacity:0},{opacity:1}],{duration:D_PRESS,delay:D_ETAT+i/L*6*D_ECRAN,fill:'backwards'}));}apparait([arr,leg,cap],6*D_ECRAN+D_ETAT);}};
 }
 function img3(se,a){
   const f=se.flux,n=f.t.length,W=340,Hh=200,L=40,R=10,T=14,B=26,dTot=f.d[n-1],amin=Math.min(...f.alt),amax=Math.max(...f.alt);
@@ -4660,10 +4663,10 @@ function img3(se,a){
   const kmLab=[0,Math.round(dTot/2000),dTot/1000];
   const axes=sv('g',null,[amin,amax].map(v=>[sv('line',{x1:L,x2:W-R,y1:y(v),y2:y(v),class:'rs-grille'}),sv('text',{x:L-6,y:y(v)+4,class:'rs-ax','text-anchor':'end'},Math.round(v)+' m')]),
     kmLab.map((k,i)=>sv('text',{x:x(k*1000),y:Hh-6,class:'rs-ax','text-anchor':i===0?'start':i===2?'end':'middle'},i===2?fN(k,2)+' km':k+' km')));
-  const point=sv('g',null,sv('circle',{r:11,fill:'rgba(153,246,228,.22)'}),sv('circle',{r:5.5,fill:'#f8fafc'}));
+  let aireP;const point=sv('g',null,sv('circle',{r:11,fill:'rgba(153,246,228,.22)'}),sv('circle',{r:5.5,fill:'#f8fafc'}));
   point.setAttribute('transform',`translate(${pts[n-1][0].toFixed(1)},${pts[n-1][1].toFixed(1)})`);
   const g=sv('svg',{viewBox:`0 0 ${W} ${Hh}`,class:'rs-g',role:'img','aria-label':`Profil d'altitude de ${Math.round(amin)} à ${Math.round(amax)} mètres`},
-    sv('defs',null,sv('mask',{id,maskUnits:'userSpaceOnUse',x:0,y:0,width:W,height:Hh},rect)),axes,sv('g',{mask:`url(#${id})`},sv('path',{d:aire,fill:'rgba(13,148,136,.2)'}),lignes),point);
+    sv('defs',null,sv('mask',{id,maskUnits:'userSpaceOnUse',x:0,y:0,width:W,height:Hh},rect)),axes,sv('g',null,aireP=sv('path',{d:aire,fill:'rgba(13,148,136,.2)'}),lignes),point);
   const dp=se.realise.elevation_gain!=null?se.realise.elevation_gain:se.resume.elevation_gain;
   const kick=h('p',{class:'rs-kick'},'Le relief'),ti=h('h2',{class:'rs-titre'},`+${dp} m de dénivelé`);
   const cap=h('p',{class:'rs-cap'},`Entre ${Math.round(amin)} et ${Math.round(amax)} m d'altitude. Le point rejoue ta sortie à ton rythme, pauses comprises, et le profil prend la couleur de ton allure.`);
@@ -4673,7 +4676,9 @@ function img3(se,a){
       const px=pts[i][0]+(pts[i+1][0]-pts[i][0])*fr,py=pts[i][1]+(pts[i+1][1]-pts[i][1])*fr;
       kf.push({transform:`translate(${px.toFixed(1)}px,${py.toFixed(1)}px)`,offset:k/K});kr.push({transform:`scaleX(${((px-L)/(W-L-R)).toFixed(4)})`,offset:k/K});}
     point.removeAttribute('transform');point.style.transform=kf[K].transform;
-    const o={duration:9*D_ECRAN,delay:D_ETAT,easing:'linear',fill:'both'};point.animate(kf,o);rect.animate(kr,o);}};
+    const o={duration:9*D_ECRAN,delay:D_ETAT,easing:'linear',fill:'both'};point.animate(kf,o);
+    [...lignes.children].forEach((l,j)=>l.animate([{opacity:0},{opacity:1}],{duration:D_PRESS,delay:D_ETAT+(f.t[j+1]-t0)/((tN-t0)||1)*9*D_ECRAN,fill:'backwards'}));
+    aireP.animate([{opacity:0},{opacity:1}],{duration:D_ECRAN,delay:D_ETAT+9*D_ECRAN,easing:EASE,fill:'backwards'});}};
 }
 function img4(se,a){
   const sp=a.splits,n=sp.length,W=340,Hh=214,L=40,R=8,T=28,B=28,c=se.cible,ps=sp.map(s=>s.p);
@@ -4705,9 +4710,9 @@ function img5(se,a){
     if(z.lo>lo&&z.lo<hi)bandes.append(sv('text',{x:L-6,y:y(z.lo)+4,class:'rs-ax','text-anchor':'end'},z.lo));});
   const sm=f.fc.map((v,i)=>(f.fc[Math.max(0,i-1)]+v+f.fc[Math.min(n-1,i+1)])/3),d='M'+sm.map((v,i)=>x(f.t[i]).toFixed(1)+','+y(v).toFixed(1)).join('L');
   const id=nid('rsmc'),rect=sv('rect',{x:L,y:0,width:W-L-R,height:Hh,fill:'#fff',style:'transform-box:fill-box;transform-origin:0 50%'});
-  const trace=sv('g',{mask:`url(#${id})`},sv('path',{d,fill:'none',stroke:'#f8fafc','stroke-width':2,'stroke-linejoin':'round'}));let cl=null;
+  const fcP=sv('path',{d,fill:'none',stroke:'#f8fafc','stroke-width':2,'stroke-linejoin':'round',pathLength:1,'stroke-dasharray':1,'stroke-dashoffset':0}),trace=sv('g',null,fcP);let cl=null,fcA=null;
   if(c&&c.fc_max!=null&&c.fc_max>lo&&c.fc_max<hi){const idc=nid('rscc');
-    trace.append(sv('clipPath',{id:idc},sv('rect',{x:L,y:0,width:W-L-R,height:y(c.fc_max)})),sv('path',{d,fill:'none',stroke:'#fbbf24','stroke-width':2.5,'stroke-linejoin':'round','clip-path':`url(#${idc})`}));
+    trace.append(sv('clipPath',{id:idc},sv('rect',{x:L,y:0,width:W-L-R,height:y(c.fc_max)})),fcA=sv('path',{d,fill:'none',stroke:'#fbbf24','stroke-width':2.5,'stroke-linejoin':'round','clip-path':`url(#${idc})`,pathLength:1,'stroke-dasharray':1,'stroke-dashoffset':0}));
     cl=sv('line',{x1:L,x2:W-R,y1:y(c.fc_max),y2:y(c.fc_max),class:'rs-cible'});}
   const legF=cl?h('p',{class:'rs-leg'},h('i'),`Cible ≤ ${c.fc_max} bpm`,h('i',{class:'rs-ambre'}),'au-dessus'):null;
   const mi=Math.round((tN-t0)/60);
@@ -4720,11 +4725,11 @@ function img5(se,a){
   const derive=dc&&dc.qualite==='fiable'?h('p',{class:'rs-cap'},'Dérive cardiaque : ',h('b',null,(dc.pct>0?'+':'')+fN(dc.pct,1)+' %'),` (fiable, sur ${dc.fen_min} min).`)
     :h('p',{class:'rs-cap'},dc?`Dérive cardiaque non retenue : mesure ${dc.qualite==='incertain'?'incertaine':'non représentative'}${dc.fen_min?` (fenêtre de ${dc.fen_min} min)`:''}.`:'Dérive cardiaque non mesurée sur cette séance.');
   const kick=h('p',{class:'rs-kick'},'Le cœur'),ti=h('h2',{class:'rs-titre'},`FC moyenne ${se.realise.fc_moy}, pic à ${se.realise.fc_max}`);
-  return {el:h('div',null,kick,ti,g,legF,zbar,zleg,derive),titre:'Le cœur',joue(){apparait([kick,ti]);devoile(rect,6*D_ECRAN,D_ETAT);apparait([cl,legF,zbar,zleg,derive],6*D_ECRAN);}};
+  return {el:h('div',null,kick,ti,g,legF,zbar,zleg,derive),titre:'Le cœur',joue(){apparait([kick,ti]);dessine(fcP,6*D_ECRAN,D_ETAT);if(fcA)dessine(fcA,6*D_ECRAN,D_ETAT);apparait([cl,legF,zbar,zleg,derive],6*D_ECRAN);}};
 }
 function img6(se,a){
   const S=serie(se.cle,H),c=se.cible,cf=a.cf,kick=h('p',{class:'rs-kick'},'La discipline d\'allure');let haut;
-  if(c&&cf){const pct=Math.round(cf.part*100),ok=cf.part>=PART_OK,v=h('b',null,String(pct));
+  if(c&&c.rapide!=null&&cf){const pct=Math.round(cf.part*100),ok=cf.part>=PART_OK,v=h('b',null,String(pct));
     const arc=sv('circle',{cx:80,cy:80,r:62,class:'rs-arc',pathLength:100,'stroke-dasharray':100,'stroke-dashoffset':100-pct,transform:'rotate(-90 80 80)'});
     const puce=h('span',{class:'rs-puce '+(ok?'ok':'ko')},ico(ok?I_OK:I_ATT,14),ok?'Dans la cible':(cf.vite>=(1-cf.part)/2?'Hors cible : trop rapide':'Hors cible'));
     haut=h('div',{class:'rs-disc'},h('div',{class:'rs-anneau'},sv('svg',{viewBox:'0 0 160 160','aria-hidden':'true'},sv('circle',{cx:80,cy:80,r:62,class:'rs-piste'}),arc),
@@ -4747,7 +4752,7 @@ function img7(se,a){
     titre=best.rang===1?`Record personnel sur « ${best.nom} »`:`meilleur temps perso sur « ${best.nom} »`;
     details=(best.distance?`${fN(best.distance,0)} m en ${fT(best.t)}, soit ${fA(best.t/best.distance*1000)}/km`:`${fT(best.t)}`)+(best.fc?`, FC ${best.fc}.`:'.')+(se.prs.length>1?` ${se.prs.length} trophées Strava sur cette sortie.`:'');}
   else if(a.rapide){const s=a.rapide,tour=a.src==='tours'?se.tours[s.n-1]:null;centre=h('div',{class:'rs-big'},fA(s.p),h('small',null,'/km'));
-    titre=`Km ${s.lab}, ton kilomètre le plus rapide`;details=`FC ${s.fc} de moyenne sur ce kilomètre`+(tour?`, pic à ${tour[3]}.`:'.');}
+    titre=`Km ${s.lab}, ton kilomètre le plus rapide`;details=s.fc?`FC ${s.fc} de moyenne sur ce kilomètre`+(tour?`, pic à ${tour[3]}.`:'.'):'';}
   else{centre=h('div',{class:'rs-big'},fN(se.realise.km,1));titre='kilomètres courus';details='';}
   const anneau=sv('circle',{cx:50,cy:50,r:47,class:'rs-med-trait',pathLength:1,'stroke-dasharray':1,'stroke-dashoffset':0,transform:'rotate(-90 50 50)'});
   const med=h('div',{class:'rs-medaille'},sv('svg',{viewBox:'0 0 100 100','aria-hidden':'true'},sv('circle',{cx:50,cy:50,r:47,class:'rs-med-fond'}),anneau),h('div',{class:'rs-medaille-c'},centre,h('p',{class:'rs-cap'},titre)));
@@ -4757,9 +4762,9 @@ function img7(se,a){
 function img8(se,a){
   const C=se.coach,rows=prevu(se),c=se.cible,icones=[];
   const kick=h('p',{class:'rs-kick'},'L\'analyse du coach terrain'),ti=h('h2',{class:'rs-titre'},'Prévu face au réalisé');
-  const tab=h('div',{class:'rs-tab',role:'table','aria-label':'Prévu face au réalisé'},h('div',{class:'th',role:'columnheader'},''),h('div',{class:'th',role:'columnheader'},'Prévu'),h('div',{class:'th',role:'columnheader'},'Réalisé'),h('div',{class:'th',role:'columnheader'},''));
+  const tab=h('div',{class:'rs-tab','aria-label':'Prévu face au réalisé'},h('div',{class:'th'},''),h('div',{class:'th'},'Prévu'),h('div',{class:'th'},'Réalisé'),h('div',{class:'th'},''));
   rows.forEach(r=>{const ic=r.etat?h('span',{class:'rs-icone '+r.etat,role:'img','aria-label':r.etat==='ok'?'dans la cible':'hors cible'},ico(r.etat==='ok'?I_OK:I_X,15)):h('span',{class:'rs-icone'});icones.push(ic);
-    tab.append(h('div',{class:'nom',role:'cell'},r.nom),h('div',{role:'cell'},r.prevu),h('div',{class:'rea',role:'cell'},h('span',null,r.reel,r.ecart?h('span',{class:'ecart'},r.ecart):null)),h('div',{class:'et',role:'cell'},ic));});
+    tab.append(h('div',{class:'nom'},r.nom),h('div',null,r.prevu),h('div',{class:'rea'},h('span',null,r.reel,r.ecart?h('span',{class:'ecart'},r.ecart):null)),h('div',{class:'et'},ic));});
   let note=null;const m=se.metriques||{};
   if(c&&/remplacement|modifi/i.test(c.source||''))note=h('p',{class:'rs-note'},`Prévu au plan : ${[m.Type||se.type,m.Allure,m.FC?'FC '+m.FC:null].filter(Boolean).join(', ')}. Remplacé : la cible devient ${c.texte}.`);
   else if(!c)note=h('p',{class:'rs-note'},`Pas de cible d'allure lisible pour cette séance${se.objectif?`. Objectif : ${se.objectif}`:'.'}`);
@@ -4772,7 +4777,7 @@ function img8(se,a){
   const p=se.prochaine,maj=s=>s.charAt(0).toUpperCase()+s.slice(1);
   const cons=carte('',h('span',{class:'ico-t'},ico(I_FL,16)),'Pour la prochaine séance',C.conseil?maj(C.conseil)
     :(p?`${p.titre}, ${leJour(p.date)} : ${[p.distance,p.allure,p.fc?'FC '+p.fc:null].filter(Boolean).join(', ')}. (Séance suivante au plan : la revue ne donne pas de conseil.)`:'La revue ne donne pas de conseil.'));
-  const btns=h('div',{class:'rs-rangee'},se.revue_html?h('button',{class:'rs-btn second',type:'button',onclick:()=>REVUE.ouvre(se)},'Lire la revue complète'):null,h('button',{class:'rs-btn',type:'button',onclick:()=>LECT.suivante()},'Continuer',ico(I_FL,16)));
+  const btns=h('div',{class:'rs-rangee'},h('button',{class:'rs-btn second',type:'button',onclick:()=>LECT.precedente()},'Précédent'),se.revue_html?h('button',{class:'rs-btn second',type:'button',onclick:()=>REVUE.ouvre(se)},'Lire la revue complète'):null,h('button',{class:'rs-btn',type:'button',onclick:()=>LECT.suivante()},'Continuer',ico(I_FL,16)));
   return {el:h('div',{class:'rs-coach'},kick,ti,tab,note,v,ctx,bien,corr,cons,btns),titre:'L\'analyse du coach terrain',manuel:true,defile:true,joue(){
     apparait([kick,ti,tab,note,v,ctx,bien,corr,cons,btns]);
     if(!RM())icones.forEach((ic,i)=>{const path=ic.querySelector('path');if(!path)return;const L=path.getTotalLength();path.style.strokeDasharray=L;
@@ -4815,7 +4820,7 @@ function img9(se,a){
   const fin=h('div',{class:'rs-rangee'},h('button',{class:'rs-btn',type:'button',onclick:()=>{LECT.ferme();OU.ouvre();}},'Où j\'en suis',ico(I_FL,16)),h('button',{class:'rs-btn second',type:'button',onclick:()=>LECT.va(0)},'Revoir'));
   return {el:h('div',null,kick,ti,g,legT,cap,fin),titre:'Ta progression',joue(){apparait([kick,ti]);anim();apparait([cap,fin],5*D_ECRAN);}};
 }
-const IMAGES=[img1,img2,img3,img4,img5,img6,img7,img8,img9];
+const IMAGES=[img1,img2,img3,img4,img5,img6,img7,img8,img9];let IMG=IMAGES;
 
 /* ---------- lecteur ---------- */
 const X_SVG='<path d="M6 6l12 12M18 6 6 18"/>';
@@ -4830,20 +4835,21 @@ LECT=(function(){
       if(Math.hypot(e.clientX-x0,e.clientY-y0)>12)return;const r=scene.getBoundingClientRect();(e.clientX-r.left<r.width*.3)?precedente():suivante();});
     scene.addEventListener('pointercancel',()=>{clearTimeout(pressT);if(long){long=false;pause(false);}});
     scene.addEventListener('contextmenu',e=>e.preventDefault());
+    box.addEventListener('touchmove',e=>{if(!e.target.closest('.defile'))e.preventDefault();},{passive:false});
     document.addEventListener('keydown',e=>{if(!box||box.hidden||(REVUE.ouverte()))return;
-      if(e.key==='Escape')ferme();else if(e.key==='ArrowRight')suivante();else if(e.key==='ArrowLeft')precedente();
+      if(e.key==='Escape'){e.stopPropagation();ferme();}else if(e.key==='ArrowRight')suivante();else if(e.key==='ArrowLeft')precedente();
       else if(e.key==='Tab'){const f=[...box.querySelectorAll('button')].filter(b=>b.offsetParent);if(!f.length)return;const a=f[0],z=f[f.length-1];
         if(e.shiftKey&&document.activeElement===a){e.preventDefault();z.focus();}else if(!e.shiftKey&&document.activeElement===z){e.preventDefault();a.focus();}}});}
   function ouvre(depuis,ouvreur){if(!box)cree();retour=ouvreur||document.activeElement;dateEl.textContent=`Rewind · ${leJourCourt(SE.debut)} · ${SE.debut.slice(11,16)}`;
-    prog.innerHTML='';IMAGES.forEach(()=>prog.append(h('div',{class:'rs-seg'},h('i'))));box.hidden=false;ovf=document.body.style.overflow;document.body.style.overflow='hidden';
+    prog.innerHTML='';IMG.forEach(()=>prog.append(h('div',{class:'rs-seg'},h('i'))));if(box.hidden)verrouille();box.hidden=false;
     if(!RM())box.animate([{opacity:0,transform:'scale(.98)'},{opacity:1,transform:'none'}],{duration:D_ECRAN,easing:EASE});
     cour=null;scene.innerHTML='';va(depuis||0);box.querySelector('.rs-x').focus({preventScroll:true});}
-  function ferme(){if(!box||box.hidden)return;box.hidden=true;box.classList.remove('pause');scene.innerHTML='';cour=null;document.body.style.overflow=ovf;vu(SE&&SE.cle);
+  function ferme(){if(!box||box.hidden)return;box.hidden=true;box.classList.remove('pause');scene.innerHTML='';cour=null;deverrouille();vu(SE&&SE.cle);
     if(retour&&retour.isConnected&&retour.focus)retour.focus({preventScroll:true});}
-  function va(k){if(!box)return;if(k<0)k=0;if(k>=IMAGES.length){ferme();return;}
+  function va(k){if(!box)return;if(k<0)k=0;if(k>=IMG.length){ferme();return;}
     const avant=cour,sens=k>=i?1:-1;i=k;box.classList.remove('pause');
-    let im;try{im=IMAGES[k](SE,AN);}catch(err){console.warn('Rewind',k+1,err);im={el:h('p',{class:'rs-cap'},'Cette image n\'a pas pu être calculée.'),titre:'Image indisponible',joue(){}};}
-    const el=h('div',{class:'rs-sl'+(im.defile?' defile':''),role:'group','aria-roledescription':'image','aria-label':`${k+1} sur ${IMAGES.length} : ${im.titre}`},im.el);
+    let im;try{im=IMG[k](SE,AN);}catch(err){console.warn('Rewind',k+1,err);im={el:h('p',{class:'rs-cap'},'Cette image n\'a pas pu être calculée.'),titre:'Image indisponible',joue(){}};}
+    const el=h('div',{class:'rs-sl'+(im.defile?' defile':''),role:'group','aria-roledescription':'image','aria-label':`${k+1} sur ${IMG.length} : ${im.titre}`},im.el);
     if(im.defile)el.dataset.notap='1';scene.append(el);cour=el;
     if(avant){if(RM())avant.remove();else{avant.style.pointerEvents='none';avant.animate([{opacity:1,transform:'none'},{opacity:0,transform:`translateX(${-8*sens}px)`}],{duration:D_ETAT,easing:EASE,fill:'forwards'}).onfinish=()=>avant.remove();}}
     if(!RM())el.animate([{opacity:0,transform:`translateX(${8*sens}px)`},{opacity:1,transform:'none'}],{duration:D_ECRAN,easing:EASE,fill:'backwards'});
@@ -4854,8 +4860,8 @@ LECT=(function(){
     else{sg.style.setProperty('--dur',dur+'ms');sg.classList.add('en-cours');sg.firstChild.onanimationend=()=>{if(cour===el&&!box.hidden)suivante();};}
     pied.textContent=im.manuel?'Prends ton temps : « Continuer » quand tu as lu':(RM()||!AUTO)?'Touche à droite pour avancer, à gauche pour revenir':'Touche à droite pour avancer, à gauche pour revenir · maintiens pour mettre en pause';}
   const suivante=()=>va(i+1),precedente=()=>va(i-1);
-  function pause(on){box.classList.toggle('pause',on);document.getAnimations().forEach(an=>{const t=an.effect&&an.effect.target;if(t&&box.contains(t))on?an.pause():an.play();});}
-  return {ouvre,ferme,va,suivante,ouvert:()=>!!box&&!box.hidden};
+  let enPause=[];function pause(on){box.classList.toggle('pause',on);if(on){enPause=document.getAnimations().filter(an=>{const t=an.effect&&an.effect.target;return an.playState==='running'&&t&&box.contains(t);});enPause.forEach(an=>an.pause());}else{enPause.forEach(an=>{try{an.play();}catch(e){}});enPause=[];}}
+  return {ouvre,ferme,va,suivante,precedente,ouvert:()=>!!box&&!box.hidden};
 })();
 
 /* ---------- feuilles claires : revue complète, Où j'en suis ---------- */
@@ -4863,17 +4869,16 @@ function feuille(titreTxt){let box=null,corps,sous,retour=null,ovf='';
   function cree(){corps=h('div');sous=h('p',{class:'rs-eyebrow'});const x=h('button',{class:'rs-fx',type:'button','aria-label':'Fermer','onclick':ferme},ico(X_SVG,18));
     const t=h('h2',null,titreTxt);box=h('div',{class:'rs-feuille',role:'dialog','aria-modal':'true','aria-label':titreTxt,hidden:true},h('div',{class:'rs-feuille-in'},h('header',{class:'rs-feuille-tete'},h('div',null,sous,t),x),corps));
     document.body.append(box);document.addEventListener('keydown',e=>{if(box&&!box.hidden&&e.key==='Escape'){e.stopPropagation();ferme();}},true);}
-  function ouvre(sousTxt,remplir){if(!box)cree();retour=document.activeElement;sous.textContent=sousTxt;corps.innerHTML='';remplir(corps);box.hidden=false;box.scrollTop=0;
-    ovf=document.body.style.overflow;document.body.style.overflow='hidden';
+  function ouvre(sousTxt,remplir){if(!box)cree();retour=document.activeElement;sous.textContent=sousTxt;corps.innerHTML='';remplir(corps);if(box.hidden)verrouille();box.hidden=false;box.scrollTop=0;
     if(!RM())box.animate([{transform:'translateY(24px)',opacity:0},{transform:'none',opacity:1}],{duration:D_ECRAN,easing:EASE});box.querySelector('.rs-fx').focus({preventScroll:true});}
-  function ferme(){if(!box||box.hidden)return;box.hidden=true;document.body.style.overflow=ovf;if(retour&&retour.isConnected&&retour.focus)retour.focus({preventScroll:true});}
+  function ferme(){if(!box||box.hidden)return;box.hidden=true;deverrouille();if(retour&&retour.isConnected&&retour.focus)retour.focus({preventScroll:true});}
   return {ouvre,ferme,ouverte:()=>!!box&&!box.hidden};}
 const REVUE=(function(){const f=feuille('Revue du coach');
   return {ouvre:se=>f.ouvre(`${titreSeance(se)} · ${leJour(se.debut)}`,c=>{c.className='rs-revue';c.innerHTML=se.revue_html;}),ouverte:f.ouverte};})();
 
 function verdict(delta,seuil,sens){if(delta==null||isNaN(delta))return {cle:'attente',txt:'À confirmer'};if(Math.abs(delta)<seuil)return {cle:'stable',txt:'Stable'};return delta*sens>0?{cle:'progresse',txt:'Progresse'}:{cle:'recule',txt:'Recule'};}
-const I_V={progresse:'<path d="M5 17 17 5M9 5h8v8"/>',stable:'<path d="M5 12h14M13 6l6 6-6 6"/>',recule:'<path d="M5 7l12 12M17 11v8H9"/>',attente:'<path d="M6 12h.01M12 12h.01M18 12h.01"/>'};
-function carteOu(titre,v,lecture,svg,regle,note,replie){const lect=h('p',{class:'rs-ou-lect','aria-live':'polite'});lect.innerHTML=lecture;
+const I_V={progresse:'<path d="M5 17 17 5M9 5h8v8"/>',stable:'<path d="M5 12h14M13 6l6 6-6 6"/>',recule:'<path d="M5 7l12 12M17 11v8H9"/>',attente:'<path d="M6 12h.01M12 12h.01M18 12h.01"/>',hausse:'<path d="M5 17 17 5M9 5h8v8"/>',baisse:'<path d="M5 7l12 12M17 11v8H9"/>'};
+function carteOu(titre,v,lecture,svg,regle,note,replie){const lect=h('p',{class:'rs-ou-lect'});lect.innerHTML=lecture;
   const el=h('section',{class:'rs-ou-carte'},h('header',null,h('h3',null,titre),h('span',{class:'rs-verd '+v.cle},ico(I_V[v.cle],14),v.txt)),lect,svg,h('p',{class:'rs-ou-regle'},regle),
     note?(replie?h('details',{class:'rs-ou-note'},h('summary',null,'Note du calcul'),h('p',null,note)):h('p',{class:'rs-ou-note'},note)):null);el._lect=lect;return el;}
 function lecteur(svg,xs,textes,lect,W,T,Hb){const cur=sv('line',{class:'rs-curseur',x1:0,x2:0,y1:T,y2:Hb,visibility:'hidden'});svg.append(cur);const defaut=lect.innerHTML;
@@ -4934,14 +4939,14 @@ function construitOu(liste){
       `Part des km dans leur cible, à 5 s près, sur les séances dont la cible d'allure est lisible (plage « a-b/km » du plan ou cible appliquée au log).${a3.length?` 3 dernières semaines face aux 3 précédentes (${Math.round(pool(a3))} %) : ${dd>0?'+':''}${Math.round(dd)} points.`:''}`);
     lecteur(b.g,b.xs,ds.map(o=>`<b>S${o.w}</b> : ${o.inn} km sur ${o.tot} dans la cible (${Math.round(o.inn/o.tot*100)} %)`),k._lect,b.W,b.T,b.Hh-b.B);anims.push(()=>monte(b.bs));cartes.push(k);}
   // 5. Volume et charge
-  const hs=(window.HIST||[]).slice(-12);
+  const hs0=(window.HIST||[]).slice(-14),hs=[];hs0.forEach((w,i)=>{if(i){const a=+String(hs0[i-1].sem).slice(1),b=+String(w.sem).slice(1);for(let s=a+1;s<b&&b-a<6;s++)hs.push({sem:'S'+s,km:0,re:0});}hs.push(w);});hs.splice(0,Math.max(0,hs.length-12));
   if(hs.length>=2){const courante=hs[hs.length-1],enCours=courante.sem==='S'+isoWeek(auj)&&auj.getDay()!==0,completes=enCours?hs.slice(0,-1):hs;
-    const dv=completes.length>=6?moy(completes.slice(-3).map(w=>w.km))/moy(completes.slice(-6,-3).map(w=>w.km))-1:null,v=verdict(dv==null?null:dv*100,10,1);
+    const dv=completes.length>=6?moy(completes.slice(-3).map(w=>w.km))/moy(completes.slice(-6,-3).map(w=>w.km))-1:null,v=dv==null||!isFinite(dv)?verdict(null):Math.abs(dv)<.1?{cle:'stable',txt:'Stable'}:{cle:dv>0?'hausse':'baisse',txt:dv>0?'En hausse':'En baisse'};
     const b5=barres({vals:hs.map(w=>w.km),labs:hs.map(w=>w.sem),pas:20,fmt:v=>String(v),pale:enCours?[hs.length-1]:[]}),b6=barres({vals:hs.map(w=>w.re),labs:hs.map(w=>w.sem),Hh:96,pas:500,fmt:v=>String(v),pale:enCours?[hs.length-1]:[]});
     const semN=+String(courante.sem).slice(1),ph=(SEMAINES.find(s=>s.num===semN)||{}).phase,phNom=((window.PHASES||[]).find(p=>p.id===ph)||{}).nom||'',ac=window.ACWR_DATA||{},dern=completes[completes.length-1];
     const vol=h('div',{class:'rs-ou-vol'},h('p',{class:'rs-ou-regle rs-ou-sous'},'Kilomètres par semaine'),b5.g,h('p',{class:'rs-ou-regle rs-ou-sous'},'Charge : effort relatif Strava par semaine'),b6.g);
     const k=carteOu('Volume et charge',v,`<b>${fN(dern.km,1)} km</b> en ${dern.sem}${enCours?` · ${courante.sem} en cours : ${fN(courante.km,1)} km`:''}${ac.acwr!=null?` · ACWR ${fN(ac.acwr,2)}`:''}`,vol,
-      `3 dernières semaines complètes face aux 3 précédentes : ${dv==null?'—':(dv>0?'+':'')+Math.round(dv*100)+' %'} de km (stable sous 10 %).${enCours?' Barre pâle : semaine en cours, hors verdict.':''}${phNom?` Phase actuelle : ${phNom}.`:''}`,
+      `3 dernières semaines complètes face aux 3 précédentes, semaines sans sortie comptées à 0 : ${dv==null||!isFinite(dv)?'—':(dv>0?'+':'')+Math.round(dv*100)+' %'} de km (stable sous 10 %). Une hausse ou une baisse se lit avec la phase du plan.${enCours?' Barre pâle : semaine en cours, hors verdict.':''}${phNom?` Phase actuelle : ${phNom}.`:''}`,
       ac.interpretation?String(ac.interpretation).split('. ')[0]+'.':null);
     lecteur(b5.g,b5.xs,hs.map(w=>`<b>${w.sem}</b> : ${fN(w.km,1)} km, effort relatif ${w.re}`),k._lect,b5.W,b5.T,b5.Hh-b5.B);anims.push(()=>{monte(b5.bs);monte(b6.bs,4*D_PRESS);});cartes.push(k);}
   cartes.forEach(c=>liste.append(c));apparait(cartes,D_ETAT,D_PRESS);anims.forEach((f,i)=>setTimeout(f,D_ETAT+i*D_PRESS));
@@ -4953,9 +4958,12 @@ const OU=(function(){const f=feuille('Où j\'en suis');
 const CACHE={};
 function charge(cle){if(!CACHE[cle]){const v=(window.CHANGELOG&&CHANGELOG[0]&&CHANGELOG[0].build)||'';
   CACHE[cle]=fetch(`data/rewind-${cle}.json?v=${v}`).then(r=>{if(!r.ok)throw new Error(r.status);return r.json();}).catch(e=>{delete CACHE[cle];throw e;});}return CACHE[cle];}
-function ouvrir(cle,depuis,ouvreur){
-  return Promise.all([textesPrets(),charge(cle)]).then(([,rw])=>{H=histo();SE=seanceDe(cle,rw);AN=analyse(SE);LECT.ouvre(depuis||0,ouvreur);})
-    .catch(e=>{console.warn('Rewind',e);alert('Le Rewind de cette séance n\'a pas pu se charger. Vérifie ta connexion puis réessaie.');});}
+let ouverture=false;
+function ouvrir(cle,depuis,ouvreur){if(ouverture||LECT.ouvert())return;ouverture=true;
+  return Promise.all([textesPrets(),charge(cle)]).then(([,rw])=>{H=histo();SE=seanceDe(cle,rw);AN=analyse(SE);
+    IMG=IMAGES.filter(f=>!(f===img2&&!(SE.trace&&SE.trace.length>1))&&!(f===img5&&!(SE.flux.fc&&SE.flux.fc.length)));
+    LECT.ouvre(depuis===7?IMG.indexOf(img8):(depuis||0),ouvreur);})
+    .catch(e=>{console.warn('Rewind',e);alert('Le Rewind de cette séance n\'a pas pu se charger. Vérifie ta connexion puis réessaie.');}).finally(()=>{ouverture=false;});}
 function dispo(cle){return (window.REWIND_SEANCE||[]).indexOf(cle)>=0;}
 function bouton(num,id){const cle=`${num}-${id}`;if(!dispo(cle))return '';
   return `<div class="rs-fiche"><button class="rp-launch rs-launch" type="button" onclick="rsOuvrir('${cle}',0,this)"><span class="rpl-ico" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">${I_RW}<path d="M10 9.5v5l4-2.5z" fill="currentColor"/></svg></span><span class="rpl-txt"><span class="rpl-t1">Revoir ma séance</span><span class="rpl-t2">Rewind animé · tracé, allure, cœur, analyse du coach</span></span><span class="rpl-go" aria-hidden="true">▶</span></button><button class="rs-lien" type="button" onclick="rsOuvrir('${cle}',7,this)">Aller directement à l'analyse du coach</button></div>`;}
