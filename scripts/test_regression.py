@@ -667,7 +667,9 @@ def run():
         def rewind_parcours(pm):
             pm.evaluate("var o=document.getElementById('rwoverlay');if(o)o.classList.remove('on');")
             ann = pm.evaluate("!!document.getElementById('rs-annonce')")
-            pm.evaluate("ouvrirSeance('44',2)")
+            der = pm.evaluate("REWIND_SEANCE.map(c=>{const [w,i]=c.split('-');const s=SEANCES_BY_WEEK[w].find(x=>String(x.id)===i);return [s.date+'|'+c,c];}).sort().pop()[1]")
+            w, i = der.split("-")
+            pm.evaluate(f"ouvrirSeance('{w}',{i})")
             pm.wait_for_selector("#contenu .rs-launch", timeout=5000)
             pm.click("#contenu .rs-launch")
             pm.wait_for_selector(".rs:not([hidden]) .rs-sl", timeout=5000)
@@ -679,13 +681,13 @@ def run():
                 pm.wait_for_timeout(150)
             ferme = pm.evaluate("document.querySelector('.rs').hidden")
             vu = pm.evaluate("localStorage.getItem('rs_vu')")
-            return ann, labels, ko, ferme, vu
+            return ann, labels, ko, ferme, vu == der
 
         try:
             ctx, pm, errs = page_mvt()
             ann, labels, ko, ferme, vu = rewind_parcours(pm)
             check("T23 Rewind de séance : annonce, bouton de la fiche, 9 images calculées, fermeture, annonce vue",
-                  ann and len(set(labels)) == 9 and ko == 0 and ferme and vu == "44-2" and not pm.evaluate("!!document.getElementById('rs-annonce')") and not errs,
+                  ann and len(set(labels)) == 9 and ko == 0 and ferme and vu and not pm.evaluate("!!document.getElementById('rs-annonce')") and not errs,
                   f"annonce={ann} images={len(set(labels))} ko={ko} ferme={ferme} vu={vu} {errs[:1]}")
             pm.evaluate("rsOuvrir('44-2',0)")
             pm.wait_for_timeout(5300)
