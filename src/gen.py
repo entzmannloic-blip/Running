@@ -2727,6 +2727,9 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":270,"date":"28 octobre 2026","sha":"","tag":"Rewind de séance : correctifs","items":[
+    "FICHE : le bouton « Revoir ma séance » est en haut de la fiche.",
+    "ANALYSE DU COACH : tout le contenu s'affiche d'emblée et défile sur iPhone (plus rien de coupé sous le prévu face au réalisé)."]},
   {"build":269,"date":"28 octobre 2026","sha":"","tag":"P4 Rewind de séance","items":[
     "REWIND DE SÉANCE : bouton « Revoir ma séance » dans la fiche ; 9 images plein écran (chiffres, tracé et relief colorés par l'allure, allure km par km, cœur sur tes zones, discipline d'allure et série en cours, moment fort, analyse du coach terrain, progression), défilement automatique, l'analyse du coach attend « Continuer ».",
     "ANALYSE DU COACH : prévu face au réalisé calculé (distance, allure, FC), verdict, ce qui est bien, à corriger et conseil repris de la revue, revue complète à un toucher.",
