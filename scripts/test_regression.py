@@ -663,6 +663,76 @@ def run():
         except Exception as e:
             check("T22 réduire les animations", False, str(e)[:160])
 
+        # ── T23 : Rewind de séance (P4 lot 1) — annonce, bouton de la fiche, 9 images, Où j'en suis ──
+        def rewind_parcours(pm):
+            pm.evaluate("var o=document.getElementById('rwoverlay');if(o)o.classList.remove('on');")
+            ann = pm.evaluate("!!document.getElementById('rs-annonce')")
+            pm.evaluate("ouvrirSeance('44',2)")
+            pm.wait_for_selector("#contenu .rs-launch", timeout=5000)
+            pm.click("#contenu .rs-launch")
+            pm.wait_for_selector(".rs:not([hidden]) .rs-sl", timeout=5000)
+            labels, ko = [], 0
+            for _ in range(9):
+                labels.append(pm.evaluate("document.querySelector('.rs-sl:last-child').getAttribute('aria-label')"))
+                ko += pm.evaluate("document.querySelector('.rs-sl:last-child').innerText.includes('pas pu être calculée')")
+                pm.keyboard.press("ArrowRight")
+                pm.wait_for_timeout(150)
+            ferme = pm.evaluate("document.querySelector('.rs').hidden")
+            vu = pm.evaluate("localStorage.getItem('rs_vu')")
+            return ann, labels, ko, ferme, vu
+
+        try:
+            ctx, pm, errs = page_mvt()
+            ann, labels, ko, ferme, vu = rewind_parcours(pm)
+            check("T23 Rewind de séance : annonce, bouton de la fiche, 9 images calculées, fermeture, annonce vue",
+                  ann and len(set(labels)) == 9 and ko == 0 and ferme and vu == "44-2" and not pm.evaluate("!!document.getElementById('rs-annonce')") and not errs,
+                  f"annonce={ann} images={len(set(labels))} ko={ko} ferme={ferme} vu={vu} {errs[:1]}")
+            pm.evaluate("rsOuvrir('44-2',0)")
+            pm.wait_for_timeout(5300)
+            img = pm.evaluate("document.querySelector('.rs-sl:last-child').getAttribute('aria-label')")
+            pm.evaluate("rsOuvrir('44-2',7)")
+            pm.wait_for_timeout(6000)
+            coach = pm.evaluate("document.querySelector('.rs-sl:last-child').getAttribute('aria-label')")
+            check("T23 défilement automatique ; l'analyse du coach attend « Continuer »",
+                  img.startswith("2 sur 9") and coach.startswith("8 sur 9"), f"{img} / {coach}")
+            pm.keyboard.press("Escape")
+            pm.evaluate("showTab('cockpit')")
+            pm.wait_for_selector("#cockpit-contenu .rs-ou-entree", timeout=5000)
+            pm.click("#cockpit-contenu .rs-ou-entree")
+            pm.wait_for_timeout(900)
+            ou = pm.evaluate("[...document.querySelectorAll('.rs-ou-carte .rs-verd')].map(v=>v.innerText.trim())")
+            check("T23 Où j'en suis : 5 courbes, chacune avec un verdict",
+                  len(ou) == 5 and all(v in ("Progresse", "Stable", "Recule", "À confirmer") for v in ou) and not errs, f"{ou} {errs[:1]}")
+            ctx.close()
+        except Exception as e:
+            check("T23 Rewind de séance", False, str(e)[:160])
+
+        try:
+            ctx, pm, errs = page_mvt(sans_vt=True)
+            ann, labels, ko, ferme, vu = rewind_parcours(pm)
+            check("T23 Rewind sans transitions de vue (iOS < 18)", len(set(labels)) == 9 and ko == 0 and ferme and not errs,
+                  f"images={len(set(labels))} ko={ko} ferme={ferme} {errs[:1]}")
+            ctx.close()
+        except Exception as e:
+            check("T23 Rewind sans transitions de vue", False, str(e)[:160])
+
+        try:
+            ctx, pm, errs = page_mvt(reduce=True)
+            pm.evaluate("rsOuvrir('44-2',0)")
+            pm.wait_for_selector(".rs:not([hidden]) .rs-sl", timeout=5000)
+            pm.wait_for_timeout(5600)
+            r = pm.evaluate("""({img:document.querySelector('.rs-sl:last-child').getAttribute('aria-label'),
+                anims:document.getAnimations().filter(a=>a.playState==='running'&&a.effect&&a.effect.target&&document.querySelector('.rs').contains(a.effect.target)).length,
+                cachee:[...document.querySelectorAll('.rs-sl:last-child *')].filter(e=>getComputedStyle(e).opacity==='0').length})""")
+            pm.keyboard.press("Escape")
+            ann, labels, ko, ferme, vu = rewind_parcours(pm)
+            check("T23 Rewind sous réduire les animations : pas de défilement ni d'animation, rien de masqué",
+                  r["img"].startswith("1 sur 9") and r["anims"] == 0 and r["cachee"] == 0 and len(set(labels)) == 9 and ko == 0 and not errs,
+                  f"{r} images={len(set(labels))} {errs[:1]}")
+            ctx.close()
+        except Exception as e:
+            check("T23 Rewind sous réduire les animations", False, str(e)[:160])
+
         # ── T13 : pas d'erreur JS accumulee sur tout le parcours ──
         check("T13 zero erreur JS sur tout le parcours", len(js_errors) == 0,
               "; ".join(js_errors[:3]))

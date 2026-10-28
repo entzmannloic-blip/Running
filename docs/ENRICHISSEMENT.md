@@ -1,6 +1,6 @@
 # Enrichir l'app après une séance — contrat pour Claude
 
-> Document de référence pour le projet Claude. Mis à jour : octobre 2026 (build 265, chantier P2 « pipeline de log »).
+> Document de référence pour le projet Claude. Mis à jour : 28 octobre 2026 (build 269, P4 « Rewind de séance »).
 
 ## Le circuit
 
@@ -18,7 +18,8 @@ Une séance enrichie = **une petite PR de données**. Ne plus ouvrir `src/gen.py
 1. `Strava:list_activities(range_start, range_end)` sur la journée de la séance (une seule activité en retour).
 2. `Strava:get_activity_performance(activity_id)` : FC moyenne et max, tours (laps).
 3. `Strava:get_gear(gear_types=["Shoe"])` : kilométrage de la paire utilisée.
-4. **Seulement pour un footing, une sortie longue ou une récupération sur route** (D+ < ~15 m/km, 40 min ou plus) : `Strava:get_activity_streams(activity_id, resolution=1000, streams=["time","heart_rate","velocity_smooth"])`, pour le découplage. Jamais pour une séance d'intensité ni un trail : c'est le poste le plus coûteux du log.
+4. **Pour le Rewind de séance, à chaque séance** : `Strava:list_activities` avec `include_polyline=true` (le tracé), et `Strava:get_activity_streams(activity_id, resolution=150, streams=["time","distance","altitude","velocity_smooth","heart_rate"])`. Recopier ces réponses et celle de `get_activity_performance` (trophées, segments, meilleurs efforts, tours) dans `strava/<id>-rewind.json`, au format décrit en tête de `scripts/rewind_seance.py`.
+5. **Seulement pour un footing, une sortie longue ou une récupération sur route** (D+ < ~15 m/km, 40 min ou plus) : `Strava:get_activity_streams(activity_id, resolution=1000, streams=["time","heart_rate","velocity_smooth"])`, pour le découplage. Jamais pour une séance d'intensité ni un trail : c'est le poste le plus coûteux du log.
 
 ## 2. Recopier l'essentiel dans `strava/<id>.json` (dossier ignoré par Git)
 
@@ -39,19 +40,21 @@ Champs Strava recopiés tels quels, et les tours sous forme compacte `[moving_ti
 ```bash
 python scripts/log_seance.py S44-2 strava/20753555995.json [--streams strava/20753555995-streams.json]
        [--blocs "1-8:Footing facile:vert,9-10:Fin:orange"] [--titre "…" --sous "…"] [--rpe 5] [--statut partiel]
+       --rewind strava/20753555995-rewind.json [--cible-allure 6:10- --cible-fc 145 --cible-source "…"]
 ```
 
 Il écrit, sans rien inventer :
 - `src/logs/S44-2.json` : le bloc `realise` (km, temps, allure, FC, effort relatif, cadence, D+, kcal, température, splits par km, terrain route ou trail, découplage, identifiant Strava) et les champs de la séance (chaussure, date si elle diffère du plan, titre et sous-titre si `--titre`/`--sous`, segments si `--blocs`) ;
 - `src/strava_reference.json` : l'activité du jour (additionnée s'il y a déjà une sortie ce jour-là) et le kilométrage de la chaussure ;
 - `GEAR` dans `src/gen.py` : le kilométrage de la chaussure ;
-- une entrée de `CHANGELOG` (build + 1). `--sans-changelog` pour plusieurs séances dans un même build.
+- une entrée de `CHANGELOG` (build + 1). `--sans-changelog` pour plusieurs séances dans un même build ;
+- avec `--rewind` : `src/rewind/44-2.json` (flux réduit à 160 points, tracé, tours, trophées). `--cible-*` seulement si la séance a été remplacée (ex. seuil remplacé par un footing) : la cible appliquée est gardée et sert au prévu face au réalisé. Rattrapage d'une séance déjà loguée : `python scripts/rewind_seance.py S44-2 strava/<id>-rewind.json`.
 
 Il refuse de réécrire un log existant (`--force`) et de logger deux fois la même activité Strava. Le commentaire factuel est produit automatiquement ; `--commentaire` le remplace. Le découplage suit `src/decouplage.py` (seuls les `fiable` servent dans l'app).
 
 ## 4. Écrire les textes
 
-- **La revue de la séance** : `src/textes/seances/S44-2.html` (HTML court : verdict, point à corriger, suite). C'est le seul texte à rédiger pour une séance.
+- **La revue de la séance** : `src/textes/seances/S44-2.html` (HTML court). C'est le seul texte à rédiger pour une séance. Le Rewind en tire l'analyse du coach : écrire quatre paragraphes marqués `<p data-coach="verdict">`, `<p data-coach="bien">`, `<p data-coach="corriger">`, `<p data-coach="conseil">` (un intertitre en gras est permis au début). `validate_data.py` échoue si une séance qui a un Rewind n'a pas de verdict.
 - **La revue de la semaine**, quand elle est terminée : `src/textes/semaines/S44.html`.
 - **Le Rewind de la semaine** (s'il y a eu au moins une course) : `src/textes/rewinds/S44.json`, 6 à 8 slides sur les chiffres mesurés (copier la structure d'un Rewind existant). Ils sont rangés par numéro de semaine : le plus récent est ouvert le lundi.
 - Une séance non faite (`skipped`) ou une modification du plan se fait encore dans le bloc de la semaine de `src/gen.py` (voir les semaines précédentes).
@@ -68,7 +71,7 @@ python scripts/release.py           # porte complète — ne JAMAIS utiliser --p
 
 ## 6. Branche, commit, pull request, fusion
 
-- Branche depuis `main` à jour : `data/S{sem}-{n}`. Fichiers : `src/logs/`, `src/textes/`, `src/gen.py`, `src/strava_reference.json`, `index.html`, `sw.js`, `data/*.json`. Ne pas committer `strava/`.
+- Branche depuis `main` à jour : `data/S{sem}-{n}`. Fichiers : `src/logs/`, `src/rewind/`, `src/textes/`, `src/gen.py`, `src/strava_reference.json`, `index.html`, `sw.js`, `data/*.json`. Ne pas committer `strava/`.
 - Message et titre de PR : `data: log S44 seance 2 footing 27/10 (Strava) (build 263)` ; corps : date, km, durée, chaussure, identifiant Strava.
 - `python scripts/pr_scope.py origin/main...HEAD` doit répondre `DATA_ONLY`, puis contrôle GitHub `verify` vert : fusion sans relecture (`gh pr merge --squash --delete-branch`). Sinon c'est une PR de code : l'annoncer à Loïc.
 - Vérifier la publication : `data/meta.json` publié porte le build attendu.

@@ -175,6 +175,7 @@ Trois durées et une seule courbe : **120 ms** pour une pression (`--d-press`), 
 - **Graphes** : courbes tracées et barres qui montent à la première apparition, une fois par graphe (`_trace`) ; le profil d'une course se dessine au fil du scroll.
 - **Chiffres clés** (forme et sa jauge, ACWR, J-N) : ils comptent jusqu'à leur valeur à leur première apparition, une fois par session (`_compte`).
 - **Célébrations** rares et sobres : une coche ou un trait qui se dessine, jamais de confettis.
+- **Rewind de séance** : récit plein écran sur ardoise (`--rs-fond`), teal seul accent, ambre pour le dépassement de cible. Les tracés de données durent des multiples de 360 ms (1,4 à 3,2 s) ; le point du relief rejoue la sortie au rythme réel. Défilement automatique (environ 38 s), sauf l'analyse du coach qui attend « Continuer ». Sous réduire les animations : chaque image s'affiche finie et on avance au toucher.
 - **Toucher** : retour visuel seul (léger enfoncement). Pas d'haptique : l'iPhone ne vibre pas pour une web app.
 
 ### Named Rules

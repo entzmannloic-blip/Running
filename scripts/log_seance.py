@@ -28,6 +28,9 @@ Options :
   --sans-changelog    ne pas ajouter d'entree de CHANGELOG (plusieurs seances dans un meme build)
   --force             reecrire un log existant (la reference Strava n'est alors pas modifiee)
   --sec               affiche ce qui serait ecrit, sans rien ecrire
+  --rewind FICHIER    donnees du Rewind de seance (format : scripts/rewind_seance.py) -> src/rewind/44-2.json
+  --cible-allure A --cible-fc F --cible-source S
+                      cible appliquee si la seance a ete remplacee (ex. 6:10- et 145), gardee dans le Rewind
 
 Fichier d'entree (champs Strava recopies tels quels ; laps = un tableau par tour de get_activity_performance) :
 {"id":"20753555995","start_local":"2026-10-27T17:04:11","sport_type":"Run","gear_id":"28498174",
@@ -260,6 +263,10 @@ def main(argv=None):
     p.add_argument("--sans-changelog", action="store_true")
     p.add_argument("--force", action="store_true")
     p.add_argument("--sec", action="store_true")
+    p.add_argument("--rewind")
+    p.add_argument("--cible-allure")
+    p.add_argument("--cible-fc")
+    p.add_argument("--cible-source")
     a = p.parse_args(argv)
     if not re.fullmatch(r"S\d+-\w+", a.seance):
         raise SystemExit("Seance attendue au format S44-2")
@@ -304,6 +311,10 @@ def main(argv=None):
           + (f" | build {build}" if build else ""))
     if "date" in log["seance"]:
         print(f"Date differente du plan : {prevue.get('date')} -> {date}")
+    if a.rewind:
+        sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+        import rewind_seance
+        rewind_seance.ecrire(a.seance, a.rewind, rewind_seance.cible(a.cible_allure, a.cible_fc, a.cible_source))
     if not os.path.exists(os.path.join(SRC, "textes", "seances", f"{a.seance}.html")):
         print(f"A FAIRE : ecrire la revue dans src/textes/seances/{a.seance}.html")
     return 0

@@ -40,6 +40,64 @@ for rw in data['REWINDS']:
         textes['REWINDS'][rw['id']] = rw.pop('slides')
 write('site/data/textes.json', dump(textes))
 
+# Rewind de seance (P4) : un fichier par seance (src/rewind/44-2.json, ecrit par scripts/rewind_seance.py),
+# publie en data/rewind-44-2.json et charge a l'ouverture du Rewind. On y ajoute les elements du coach tires de
+# la revue (rien n'est reformule) ; la cible appliquee (seance remplacee) va aussi dans realise.cible.
+import glob
+import html as _html
+import re
+
+
+def _texte(h):
+    return _html.unescape(re.sub(r'<[^>]+>', '', h or '')).strip()
+
+
+def coach_de(revue):
+    """Verdict, ce qui est bien, a corriger, conseil. Convention : <p data-coach="verdict|bien|corriger|conseil">.
+    Revues plus anciennes : decoupage par intertitres en gras (« Le point a corriger », « Ce qui est bon », « Suite »,
+    « Verdict : A »), le premier paragraphe portant le verdict."""
+    out = {}
+    for cle, corps in re.findall(r'<p[^>]*data-coach="(verdict|bien|corriger|conseil)"[^>]*>(.*?)</p>', revue, re.S):
+        m = re.match(r'\s*<strong>(.*?)</strong>(.*)', corps, re.S)
+        out[cle] = _texte(m.group(2)) if (m and cle != 'verdict' and _texte(m.group(2))) else _texte(corps)
+    if out:
+        return out
+    for i, p in enumerate(re.findall(r'<p>(.*?)</p>', revue, re.S)):
+        m = re.match(r'\s*<strong>(.*?)</strong>(.*)', p, re.S)
+        tete, reste = (_texte(m.group(1)), _texte(m.group(2))) if m else ('', _texte(p))
+        bas = tete.lower()
+        mv = re.match(r'verdict\s*:\s*([A-E][+-]?)\.?', bas, re.I)
+        if i == 0:
+            out['verdict'] = tete or reste
+            if tete and reste:
+                out['bien_implicite'] = reste
+        elif mv:
+            out['note'], out['note_texte'] = mv.group(1).upper(), reste
+        elif re.search(r'corriger|à revoir|point faible', bas):
+            out['corriger'] = reste
+        elif re.search(r'ce qui est bon|ce qui est bien|le bon', bas):
+            out['bien'] = reste
+        elif re.search(r'^suite|prochaine|conseil', bas):
+            out['conseil'] = reste
+    if 'bien' not in out and 'bien_implicite' in out:
+        out['bien'] = out['bien_implicite']
+    out.pop('bien_implicite', None)
+    return out
+
+
+rewinds = []
+for chemin in sorted(glob.glob(os.path.join('rewind', '*.json'))):
+    cle = os.path.basename(chemin)[:-5]
+    w, n = cle.split('-')
+    pleine = next((s for s in full['SBW'].get(w, []) if str(s['id']) == n), None)
+    if not pleine or (pleine.get('realise') or {}).get('statut') not in ('fait', 'partiel'):
+        raise SystemExit(f'Rewind {cle} : seance absente ou non realisee')
+    rw = json.load(open(chemin, encoding='utf-8'))
+    rw['coach'] = coach_de(pleine['realise'].get('revue') or '')
+    write(f'site/data/rewind-{cle}.json', dump(rw))
+    rewinds.append(cle)
+assert rewinds == data['REWIND_SEANCE'], 'index des Rewinds (gen.py) different des fichiers publies'
+
 # data/*.json : un objet {NOM_GLOBAL: valeur} par fichier (voir datamap.py)
 for fname, pairs in GROUPS.items():
     write(f'site/data/{fname}.json', dump({name: data[key] for name, key in pairs}))

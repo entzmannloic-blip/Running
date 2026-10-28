@@ -4,4 +4,4 @@ __pycache__/
 .superpowers/
 
 # Reponses Strava recopiees pour scripts/log_seance.py (temporaires)
-strava/
+/strava/
