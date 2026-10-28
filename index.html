@@ -402,7 +402,7 @@ button.hm-cell{cursor:pointer;-webkit-tap-highlight-color:rgba(59,130,246,.4)}
 .dgrp-arr{font-size:1rem;color:var(--texte-trois);transition:transform .22s}
 .dgrp.open .dgrp-arr{transform:rotate(180deg)}
 .dgrp-body{display:none}
-.dgrp.open .dgrp-body{display:block;animation:dgrpIn .22s ease}
+.dgrp.open .dgrp-body{display:block;animation:dgrpIn var(--d-etat) var(--ease)}
 @keyframes dgrpIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
 /* à l'intérieur d'un groupe ouvert : les cartes .kpi s'enchaînent, coins du haut adoucis */
 .dgrp.open .dgrp-body>.kpi:first-child{border-top-left-radius:0;border-top-right-radius:0;border-top:none;margin-top:0}
@@ -475,7 +475,7 @@ button.hm-cell{cursor:pointer;-webkit-tap-highlight-color:rgba(59,130,246,.4)}
 .lf-wrap{margin-top:20px;padding-top:18px;border-top:1px dashed var(--gris-clair)}
 .lf-toggle{width:100%;background:transparent;border:1px solid var(--bleu);border-radius:10px;color:var(--bleu);font-weight:700;font-size:.8125rem;padding:10px 14px;cursor:pointer;transition:background .18s,color .18s;text-align:center}
 .lf-toggle:hover,.lf-toggle:focus-visible{background:var(--bleu);color:#fff}
-.logform{margin-top:12px;animation:dgrpIn .2s ease}
+.logform{margin-top:12px;animation:dgrpIn var(--d-etat) var(--ease)}
 .lf-statut{display:flex;gap:6px;margin-bottom:14px}
 .lf-st{flex:1;padding:8px 4px;border-radius:9px;border:1px solid var(--gris-clair);background:var(--blanc);font-size:.75rem;font-weight:700;color:var(--texte-deux);cursor:pointer;transition:all .15s;text-align:center}
 .lf-st.actif[data-st="fait"]{background:var(--ok-fond);border-color:var(--ok-clair);color:var(--ok-deux)}
@@ -503,7 +503,7 @@ button.hm-cell{cursor:pointer;-webkit-tap-highlight-color:rgba(59,130,246,.4)}
 .cc-txt{font-size:.875rem;line-height:1.6;color:var(--texte-deux)}
 .theo-btn{width:100%;background:var(--primary-deux);color:#fff;border:none;border-radius:10px;font-weight:700;font-size:.8125rem;padding:12px;cursor:pointer;transition:opacity .15s;margin-top:2px}
 .theo-btn:active{opacity:.85}
-.theo-panel{margin-top:12px;padding:14px 15px;background:var(--blanc);border:1px solid var(--gris-clair);border-radius:11px;animation:dgrpIn .22s ease}
+.theo-panel{margin-top:12px;padding:14px 15px;background:var(--blanc);border:1px solid var(--gris-clair);border-radius:11px;animation:dgrpIn var(--d-etat) var(--ease)}
 .theo-tag{font-size:var(--t-data);font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--texte-trois);margin-bottom:10px}
 .theo-panel p{font-size:.875rem;line-height:1.65;color:var(--texte-deux);margin:0 0 12px}
 .theo-panel p:last-child{margin-bottom:0}
@@ -989,7 +989,7 @@ button.hm-cell{cursor:pointer;-webkit-tap-highlight-color:rgba(59,130,246,.4)}
 /* ===== Moment de célébration au log d'une séance (Sprint 3) ===== */
 .log-celeb{position:fixed;inset:0;z-index:400;display:flex;align-items:center;justify-content:center;pointer-events:none;background:rgba(15,23,42,0);transition:background .2s}
 .log-celeb.show{background:rgba(15,23,42,.18)}
-.lc-card{display:flex;flex-direction:column;align-items:center;gap:var(--sp-2);background:var(--blanc);border-radius:var(--rayon-lg);padding:var(--sp-6) var(--sp-8);box-shadow:0 20px 60px -20px rgba(15,23,42,.5);transform:scale(.7);opacity:0;transition:transform .34s cubic-bezier(.25,1,.5,1),opacity .2s}
+.lc-card{display:flex;flex-direction:column;align-items:center;gap:var(--sp-2);background:var(--blanc);border-radius:var(--rayon-lg);padding:var(--sp-6) var(--sp-8);box-shadow:0 20px 60px -20px rgba(15,23,42,.5);transform:scale(.7);opacity:0;transition:transform var(--d-ecran) var(--ease),opacity var(--d-etat) var(--ease)}
 .log-celeb.show .lc-card{transform:scale(1);opacity:1}
 .lc-check{width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#16a34a,#0d9488);color:#fff;font-size:30px;font-weight:800;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 18px rgba(22,163,74,.45)}
 .lc-txt{font-size:15px;font-weight:700;color:var(--texte)}
@@ -1017,7 +1017,7 @@ button.hm-cell{cursor:pointer;-webkit-tap-highlight-color:rgba(59,130,246,.4)}
 .lc-medal{font-size:52px;line-height:1;filter:drop-shadow(0 4px 12px rgba(245,158,11,.45))}
 .log-celeb.lc-pr .lc-txt{font-size:17px;background:linear-gradient(90deg,#b45309,#f59e0b);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;font-weight:800}
 .log-celeb.lc-pr .lc-sub{color:var(--warn-deux)}
-.log-celeb.lc-pr.show .lc-card{animation:lcPrPop .5s cubic-bezier(.25,1,.5,1)}
+.log-celeb.lc-pr.show .lc-card{animation:lcPrPop var(--d-ecran) var(--ease)}
 @keyframes lcPrPop{from{transform:scale(.92)}to{transform:scale(1)}}
 @media (prefers-reduced-motion:reduce){.log-celeb.lc-pr.show .lc-card{animation:none}}
 /* ===== Brief du matin : chaussure + créneau dans la carte séance (UX moment 1) ===== */
@@ -1212,7 +1212,7 @@ body,.accueil{background:var(--bg-page)}
 .heat-count{font-size:var(--t-data);color:var(--texte-trois);font-weight:600;margin-bottom:8px}
 .heat-msg{font-size:12.5px;color:var(--texte-deux);line-height:1.5}
 /* ===== Forme du jour : preuve de fraîcheur (horodatage + replay) ===== */
-.ck-hero-num{display:inline-block;animation:ckHeroPop .5s cubic-bezier(.25,1,.5,1)}
+.ck-hero-num{display:inline-block}
 @keyframes ckHeroPop{0%{opacity:0;transform:scale(.85) translateY(4px)}100%{opacity:1;transform:scale(1) translateY(0)}}
 .ck-hero-fresh{display:flex;align-items:center;gap:6px;font-size:var(--t-data);color:var(--texte-trois);margin-top:8px;font-weight:600}
 .ck-fresh-dot{width:6px;height:6px;border-radius:50%;background:#4ade80;flex:0 0 auto;animation:ckFreshPulse 2.2s ease-in-out infinite}
@@ -1733,7 +1733,7 @@ body,.accueil{background:var(--bg-page)}
 
 :root{
   --mat-lift:5px;                                   /* hauteur de repos */
-  --mat-spring:cubic-bezier(.25,1,.5,1);        /* rebond */
+  --mat-spring:cubic-bezier(.25,1,.5,1);        /* deceleration, sans rebond */
   --mat-press:cubic-bezier(.2,.8,.4,1);             /* enfoncement */
   --mat-base:rgba(15,23,42,.10);                    /* ombre d'assise */
 }
@@ -1747,7 +1747,7 @@ body,.accueil{background:var(--bg-page)}
 .cap-c-btn{
   transform:translateY(0);
   will-change:transform;
-  transition:transform .42s var(--mat-spring), box-shadow .42s var(--mat-spring);
+  transition:transform var(--d-press) var(--ease), box-shadow var(--d-press) var(--ease);
 }
 /* NOTE DE CASCADE : les cartes portent aussi .rv-show (animation de
    reveal) qui declare transform:none. Sans specificite superieure, la
@@ -1764,7 +1764,7 @@ body,.accueil{background:var(--bg-page)}
 .vdj.rv-show:active{
   transform:translateY(var(--mat-lift));
   box-shadow:0 1px 3px var(--mat-base);
-  transition:transform .09s var(--mat-press), box-shadow .09s var(--mat-press);
+  transition:transform var(--d-press) var(--ease), box-shadow var(--d-press) var(--ease);
 }
 
 /* La tuile Capital avait deja un scale : on le remplace par
@@ -1772,39 +1772,39 @@ body,.accueil{background:var(--bg-page)}
 .cap-c-btn:active{
   transform:translateY(var(--mat-lift));
   box-shadow:0 1px 3px var(--mat-base);
-  transition:transform .09s var(--mat-press), box-shadow .09s var(--mat-press);
+  transition:transform var(--d-press) var(--ease), box-shadow var(--d-press) var(--ease);
 }
 
 /* ── Petits controles : bascule laterale a l'appui ──────────────── */
 .ck-tg, .dnav-chip, .cal-nav, .ck-z, .vo2-help{
-  transform:translateY(0) rotate(0deg);
-  transition:transform .42s var(--mat-spring), box-shadow .42s var(--mat-spring);
+  transform:translateY(0);
+  transition:transform var(--d-press) var(--ease), box-shadow var(--d-press) var(--ease);
 }
 .ck-tg:active, .dnav-chip:active, .ck-z:active{
-  transform:translateY(2px) rotate(-2deg);
-  transition:transform .09s var(--mat-press);
+  transform:translateY(2px);
+  transition:transform var(--d-press) var(--ease);
 }
 .cal-nav:active, .vo2-help:active{
   transform:translateY(2px) scale(.94);
-  transition:transform .09s var(--mat-press);
+  transition:transform var(--d-press) var(--ease);
 }
 
 /* ── Cellules de calendrier : enfoncement discret ───────────────── */
 .cal-cell{
-  transition:transform .38s var(--mat-spring), box-shadow .38s var(--mat-spring);
+  transition:transform var(--d-press) var(--ease), box-shadow var(--d-press) var(--ease);
 }
 .cal-cell:active{
   transform:translateY(2px);
-  transition:transform .08s var(--mat-press);
+  transition:transform var(--d-press) var(--ease);
 }
 
 /* ── Barre de navigation : l'onglet touche s'enfonce ────────────── */
 .bi{
-  transition:transform .40s var(--mat-spring);
+  transition:transform var(--d-press) var(--ease);
 }
 .bi:active{
   transform:translateY(2px) scale(.96);
-  transition:transform .08s var(--mat-press);
+  transition:transform var(--d-press) var(--ease);
 }
 
 /* ── Accessibilite : mouvement reduit respecte ──────────────────── */
@@ -1879,9 +1879,9 @@ main:focus{outline:none}
   :root[data-vt="back"]::view-transition-new(root){animation:vtEntreG var(--d-ecran) var(--ease) both}
   :root[data-vt="fiche"]::view-transition-old(root),:root[data-vt="fiche"]::view-transition-new(root){animation-duration:var(--d-etat);animation-timing-function:var(--ease)}
   ::view-transition-group(fiche){animation-duration:var(--d-ecran);animation-timing-function:var(--ease)}
-  ::view-transition-old(fiche),::view-transition-new(fiche){height:100%;object-fit:cover;object-position:50% 0}
+  ::view-transition-group(fiche){overflow:clip;border-radius:22px}
   ::view-transition-old(fiche){animation-duration:var(--d-etat)}
-  ::view-transition-group(botbar),::view-transition-group(appbar){animation-duration:var(--d-etat)}
+  ::view-transition-group(botbar),::view-transition-group(appbar){animation-duration:var(--d-etat);animation-timing-function:var(--ease)}
 }
 :root[data-vt="fwd"] .botbar,:root[data-vt="back"] .botbar{view-transition-name:botbar}
 :root[data-vt="fwd"] .appbar,:root[data-vt="back"] .appbar{view-transition-name:appbar}
@@ -1895,17 +1895,19 @@ main:focus{outline:none}
 /* Apparition au scroll, en CSS (Safari 26) : sans support, les cartes sont simplement visibles */
 @supports (animation-timeline:view()){
   @media (prefers-reduced-motion:no-preference){
-    .sem-carte,.ck-card,.statut-carte,.pal-carte,.dash-card{animation:rvIn linear both;animation-timeline:view();animation-range:entry 0% entry 120px}
+    .sem-carte,.ck-card,.statut-carte,.pal-carte,.dash-card{animation:rvIn linear both;animation-timeline:view();animation-range:entry 0% entry 48px}
   }
 }
-@keyframes rvIn{from{opacity:0;translate:0 16px}to{opacity:1;translate:0 0}}
+@keyframes rvIn{from{opacity:0;translate:0 8px}to{opacity:1;translate:0 0}}
+.sem-carte.wk-flash{animation:wkFlash 1.7s var(--ease);animation-timeline:auto}
 
 /* Barre d'onglets qui se rétracte (le bouton « En cours » la suit) */
 .botbar{transition:transform var(--d-etat) var(--ease)}
 .botbar.bb-cache{transform:translateY(calc(100% + 2px))}
 .fab-jump-week{transition:opacity var(--d-etat) var(--ease),transform var(--d-etat) var(--ease),translate var(--d-etat) var(--ease)}
-.botbar.bb-cache~.fab-jump-week{translate:0 calc(64px + env(safe-area-inset-bottom))}
-@media (prefers-reduced-motion:reduce){.botbar.bb-cache{transform:none}.botbar.bb-cache~.fab-jump-week{translate:none}}
+.upd-banner{transition:translate var(--d-etat) var(--ease)}
+:root.bb-off .fab-jump-week,:root.bb-off .upd-banner{translate:0 calc(64px + env(safe-area-inset-bottom))}
+@media (prefers-reduced-motion:reduce){.botbar.bb-cache{transform:none}:root.bb-off .fab-jump-week,:root.bb-off .upd-banner{translate:none}}
 
 /* Graphes qui se tracent une fois (Cockpit) */
 svg.tr-wait .tr-l,svg.tr-wait .tr-a{opacity:0}
@@ -1929,7 +1931,7 @@ svg.tr-go .tr-b{animation:trBarre var(--d-ecran) var(--ease) both;animation-dela
 @keyframes dpAire{from{opacity:0}to{opacity:.13}}
 
 /* Chiffres qui comptent : chasse fixe pour que rien ne bouge */
-.cnt,.vdj-fv,#ck-hero-num,#ck-acwr-val{font-variant-numeric:tabular-nums}
+.cnt-on{font-variant-numeric:tabular-nums}
 /* Jauge de forme : elle se remplit avec le chiffre (cercle de rayon 27 : 169,6) */
 @media (prefers-reduced-motion:no-preference){.vr-fg.vr-anim{animation:vrRemplit var(--d-ecran) var(--ease) both}}
 @keyframes vrRemplit{from{stroke-dashoffset:169.6px}}

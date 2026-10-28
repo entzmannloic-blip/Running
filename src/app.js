@@ -99,7 +99,9 @@ function showTab(t){
      defiler vers le haut, l'historique n'est donc pas perdu. */
   if(t==='plan'){
     window.scrollTo(0,0);
-    setTimeout(function(){
+    /* Pendant une transition de vue, on arrive directement sur la semaine en cours (pas de long defilement apres). */
+    if(document.documentElement.dataset.vt){var _cw=isoWeek(new Date());if(document.getElementById('wk-'+_cw))jumpToWeek(_cw,true);}
+    else setTimeout(function(){
       var cur=isoWeek(new Date());
       if(document.getElementById('wk-'+cur))jumpToWeek(cur);
     },60);
@@ -108,6 +110,7 @@ function showTab(t){
   }
   const _vw=document.getElementById('vue-'+t);
   if(_vw&&!document.documentElement.dataset.vt){_vw.style.setProperty('--vt-dx',(_dir*8)+'px');_vw.classList.remove('vue-in');void _vw.offsetWidth;_vw.classList.add('vue-in');}
+  else if(_vw)_vw.classList.remove('vue-in');
   const _fab=document.getElementById('fab-jump-week');
   if(_fab)_fab.classList.toggle('tab-plan-active',t==='plan');
   if(t==='plan'&&typeof _initJumpFabWatch==='function')_initJumpFabWatch();
@@ -1323,10 +1326,10 @@ function dashJump(id){const s=document.getElementById('grp-'+id);if(!s)return;if
   const y=s.getBoundingClientRect().top+window.scrollY-(abh+(nav?nav.offsetHeight:0)+10);window.scrollTo({top:y,behavior:_reduceMotion()?'auto':'smooth'});}
 function dgrpHead(id,ic,t){return `<section class="dgrp" id="grp-${id}"><button class="dgrp-head" onclick="dashToggle('${id}')"><span class="dgrp-ic">${ic}</span><span class="dgrp-t">${t}</span><span class="dgrp-arr">▾</span></button><div class="dgrp-body">`;}
 function _reduceMotion(){return window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;}
-function jumpToWeek(num){if(typeof _bbHold==='function')_bbHold(1400);if(document.getElementById('vue-plan').style.display==='none')showTab('plan');
+function jumpToWeek(num,instant){if(typeof _bbHold==='function')_bbHold(1400);if(document.getElementById('vue-plan').style.display==='none')showTab('plan');
   const el=document.getElementById('wk-'+num);if(!el)return;
   const ab=document.getElementById('appbar');const abh=ab?ab.offsetHeight:0;
-  const y=el.getBoundingClientRect().top+window.scrollY-(abh+14);window.scrollTo({top:y,behavior:_reduceMotion()?'auto':'smooth'});
+  const y=el.getBoundingClientRect().top+window.scrollY-(abh+14);window.scrollTo({top:y,behavior:(instant||_reduceMotion())?'auto':'smooth'});
   el.classList.add('wk-flash');setTimeout(()=>el.classList.remove('wk-flash'),1700);}
 let _jumpFabIO=null;
 function _initJumpFabWatch(){
@@ -1599,7 +1602,7 @@ let _scrollLockY=0;
 let _viderTimer=null;
 const overlay=document.getElementById('overlay'),boite=document.getElementById('boite'),topbar=document.getElementById('topbar'),contenu=document.getElementById('contenu');
 let segActif=null;
-function ouvrir(){if(_viderTimer){clearTimeout(_viderTimer);_viderTimer=null;}overlay.classList.add('ouverte');_scrollLockY=window.scrollY||document.documentElement.scrollTop||0;document.documentElement.style.overflow='hidden';document.body.style.overflow='hidden';document.body.style.position='fixed';document.body.style.top=(-_scrollLockY)+'px';document.body.style.left='0';document.body.style.right='0';overlay.scrollTop=0;boite.scrollTop=0;}
+function ouvrir(){if(_viderTimer){clearTimeout(_viderTimer);_viderTimer=null;}var _dejaOuv=overlay.classList.contains('ouverte');overlay.classList.add('ouverte');if(!_dejaOuv)_scrollLockY=window.scrollY||document.documentElement.scrollTop||0;document.documentElement.style.overflow='hidden';document.body.style.overflow='hidden';document.body.style.position='fixed';document.body.style.top=(-_scrollLockY)+'px';document.body.style.left='0';document.body.style.right='0';overlay.scrollTop=0;boite.scrollTop=0;}
 function fermer(){if(typeof _bbHold==='function')_bbHold(600);if(typeof ttsStop==='function')ttsStop();overlay.classList.remove('ouverte');document.documentElement.style.overflow='';document.body.style.overflow='';document.body.style.position='';document.body.style.top='';document.body.style.left='';document.body.style.right='';window.scrollTo(0,_scrollLockY||0);if(_viderTimer)clearTimeout(_viderTimer);_viderTimer=setTimeout(()=>{contenu.innerHTML='';topbar.innerHTML='';_viderTimer=null;},300);}
 overlay.addEventListener('click',e=>{if(e.target===overlay)fermerAnime()});
 (function(){const to=document.getElementById('theoOverlay');if(to)to.addEventListener('click',e=>{if(e.target===to)closeTheory();});})();
@@ -1999,7 +2002,7 @@ function _celebrateLog(realise){
   }else{
     ov.innerHTML='<div class="lc-card"><div class="lc-check"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" pathLength="1"/></svg></div><div class="lc-txt">S\u00e9ance enregistr\u00e9e</div>'+(km?'<div class="lc-sub">'+km+'</div>':'')+'</div>';
   }
-  document.body.appendChild(ov);
+  document.body.appendChild(ov);void ov.offsetWidth;
   const dur=_reduceMotion()?400:(isPr?1900:1300);
   requestAnimationFrame(()=>ov.classList.add('show'));
   setTimeout(()=>{ov.classList.remove('show');setTimeout(()=>ov.remove(),260);},dur);
@@ -4339,8 +4342,8 @@ function fermerAnime(){
 }
 /* Barre d'onglets : se rétracte quand on descend, revient quand on remonte, en haut et en bas de page,
    et dès qu'elle reçoit le focus. Les défilements commandés par l'app (onglet, semaine, fiche) ne la cachent pas. */
-function _bbShow(){if(_bb&&_bb.cache){_bb.cache=false;_bb.el.classList.remove('bb-cache');}}
-function _bbHide(){if(_bb&&!_bb.cache){_bb.cache=true;_bb.el.classList.add('bb-cache');}}
+function _bbShow(){if(_bb&&_bb.cache){_bb.cache=false;_bb.el.classList.remove('bb-cache');document.documentElement.classList.remove('bb-off');}}
+function _bbHide(){if(_bb&&!_bb.cache){_bb.cache=true;_bb.el.classList.add('bb-cache');document.documentElement.classList.add('bb-off');}}
 function _bbHold(ms){if(!_bb)return;_bb.hold=performance.now()+(ms||600);_bb.acc=0;_bbShow();}
 function _bbTick(){
   if(!_bb)return;
@@ -4391,13 +4394,13 @@ function _compte(el,cle){
     io.disconnect();
     if(el.textContent!==fin)return;
     var t0=performance.now(),D=360,dernier=ecrit(0);
-    el.textContent=dernier;
+    el.textContent=dernier;el.classList.add('cnt-on');
     function pas(now){
-      if(!el.isConnected||el.textContent!==dernier)return;
-      var k=Math.min(1,(now-t0)/D);
+      if(!el.isConnected||el.textContent!==dernier){el.classList.remove('cnt-on');return;}
+      var k=Math.max(0,Math.min(1,(now-t0)/D));
       dernier=k>=1?fin:ecrit(cible*(1-Math.pow(2,-10*k)));
       el.textContent=dernier;
-      if(k<1)requestAnimationFrame(pas);
+      if(k<1)requestAnimationFrame(pas);else el.classList.remove('cnt-on');
     }
     requestAnimationFrame(pas);
   },{threshold:.5});
