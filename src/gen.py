@@ -2727,6 +2727,10 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":275,"date":"29 octobre 2026","sha":"","tag":"Blanc et orange (4/4) : Rewind de séance sur fond blanc","items":[
+    "REWIND DE SÉANCE : fond blanc, encre noire, orange seul accent, ocre pour le dépassement de cible ; barre de progression orange.",
+    "IMAGE 1 : le titre et sa note séparés, la distance en très grand, les six chiffres en deux colonnes sans cadres, « Aller à l'analyse du coach » en bouton.",
+    "TRACÉ : plus le trait est foncé, plus tu allais vite ; départ en rond creux, arrivée en point plein. L'ancien replay des sorties d'avant le Rewind passe aussi au blanc."]},
   {"build":274,"date":"28 octobre 2026","sha":"","tag":"Blanc et orange (3/4) : fiche de séance","items":[
     "FICHE D'UNE SÉANCE FAITE : le réalisé d'abord (chiffres en grille, chaussure, « Revoir ma séance »), puis l'analyse du coach : prévu face au réalisé calculé, verdict, ce qui est bien, à corriger, pour la suite, revue complète à un toucher.",
     "FICHE : le tracé coloré selon l'allure (plus foncé, plus rapide), l'allure km par km sur la bande grise de la cible, le cœur avec le temps par zone et la dérive, puis la séance prévue.",
