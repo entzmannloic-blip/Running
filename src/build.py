@@ -43,7 +43,7 @@ def prepare():
         if os.path.isfile(p):
             shutil.copy2(p, os.path.join(WORK, name))
     # Textes (revues, Rewinds) et logs de seance lus par gen.py : copie fraiche, sans fichier perime
-    for sous in ("textes", "logs"):
+    for sous in ("textes", "logs", "rewind"):
         cible = os.path.join(WORK, sous)
         if os.path.isdir(cible):
             shutil.rmtree(cible)

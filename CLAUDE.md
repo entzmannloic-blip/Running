@@ -50,6 +50,7 @@ python scripts/release.py      # porte complète (audits Strava, Cockpit…) —
 - `src/app.js` — toute la logique JS (servi tel quel à `src/app.js`)
 - `src/css.txt` (tokens `:root` + base), `src/css_extra.txt` (CSS features), `src/body.html` (vues + barre de navigation)
 - `src/sw.js` — **modèle** du service worker (`__BUILD__`, `__SHELL__` remplacés par le build)
+- `src/rewind/<sem>-<n>.json` — données du Rewind de séance (écrites par `scripts/rewind_seance.py` ou `log_seance.py --rewind`) ; publiées en `data/rewind-<sem>-<n>.json` avec l'analyse du coach tirée de la revue ; index `REWIND_SEANCE` dans `data/seances.json`
 - `src/build.py`, `src/paths.py` — build et chemins ; `src/strava_reference.json` — référentiel Strava lu par les audits
 - `scripts/` — preflight, release, tests, audits ; `.github/workflows/verify.yml` — vérification automatique
 - `tests/reference/` — captures de référence des 4 vues (390 px)
@@ -71,6 +72,7 @@ Accueil · Séances · Cockpit · Courses
 
 ## Chargement des données et PWA
 - `index.html` charge `data/{plan,seances,historique,meta}.json` en parallèle puis `src/app.js` ; chaque fichier est un objet `{NOM: valeur}` copié sur `window` (les constantes gardent leurs noms : `SEMAINES`, `SEANCES_BY_WEEK`, `CHANGELOG`…). Échec réseau : message « Données indisponibles » + bouton Réessayer (`#boot-err`).
+- Rewind de séance (P4, build 269) : `rsOuvrir(cle, image)` charge `data/rewind-<cle>.json` et les textes à l'ouverture ; bouton « Revoir ma séance » dans la fiche (`rsBouton`), annonce une fois sur l'Accueil, « Où j'en suis » (`ouJenSuis()`) depuis la fin du Rewind et le Cockpit. Réglages en tête du module (`AUTO`, `DUREES`).
 - `CHANGELOG` au démarrage = la dernière entrée seulement ; `loadChangelog()` charge la liste complète à l'ouverture du panneau de versions.
 - Revues de séance et de semaine, splits et slides des Rewinds : retirés des fichiers de démarrage par `assemble.py`, dans `data/textes.json`, chargé par `loadTextes()` à la première ouverture d'une fiche ou d'un Rewind (`ouvrirSeance`, `ouvrirSemaine`, `rwOpen` enveloppées par `_avecTextes`). `build/data.json` reste complet pour les audits.
 - `sw.js` (généré) : cache `plan-<build>`, pré-cache de tout le site, réseau d'abord avec repli cache après 3 s ou hors-ligne. `_checkNewVersion()` affiche le bandeau « Nouvelle version prête » au retour au premier plan.
@@ -109,6 +111,7 @@ ck_{course}        → checklists de course
 meteo_cache, eff_temp_cache → caches (météo Lyon TTL 30 min, efficience)
 dash_grp_{id}, rw_mon, rw_seen, wn_seen → préférences d'affichage (groupes repliés, rewinds, nouveautés)
 install_dismissed  → bannière iOS
+rs_vu              → dernière séance dont l'annonce du Rewind a été vue
 ```
 Sur iPhone, Safari et l'app de l'écran d'accueil ont des stockages séparés.
 

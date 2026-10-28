@@ -15,7 +15,7 @@ GROUPS = {
         ("PROJ", "PROJ"), ("MAJ", "MAJ"), ("JOURNAL", "JOURNAL"), ("REWINDS", "REWINDS"),
         ("DOSSIERS", "DOSSIERS"), ("PALMARES", "PALMARES"),
     ],
-    "seances": [("SEANCES_BY_WEEK", "SBW")],
+    "seances": [("SEANCES_BY_WEEK", "SBW"), ("REWIND_SEANCE", "REWIND_SEANCE")],
     "historique": [
         ("RECORDS", "RECORDS"), ("HIST", "HIST"), ("POLAR", "POLAR"), ("ALLURES", "ALLURES"),
         ("ALLURES_COURSE", "ALLURES_COURSE"), ("MONTHLY", "MONTHLY"), ("SAISON2026", "SAISON2026"),

@@ -92,6 +92,26 @@ def validate(d):
                 errs.append(f"meta.json : build {meta} different de la derniere entree du changelog ({builds[0]})")
     if "meta" in files and not _iso(files["meta"].get("BUILT_ON")):
         errs.append("meta.json : BUILT_ON absent ou invalide")
+    # Rewind de seance (P4) : chaque seance indexee a son fichier, flux coherents, verdict du coach present
+    for cle in (files.get("seances") or {}).get("REWIND_SEANCE", []):
+        p = os.path.join(d, f"rewind-{cle}.json")
+        if not os.path.exists(p):
+            errs.append(f"rewind-{cle}.json absent")
+            continue
+        try:
+            rw = json.load(open(p, encoding="utf-8"))
+        except Exception as e:
+            errs.append(f"rewind-{cle}.json illisible : {e}")
+            continue
+        fl = rw.get("flux") or {}
+        n = len(fl.get("t") or [])
+        if n < 20 or any(len(fl.get(k) or []) != n for k in ("d", "alt", "v")) or (fl.get("fc") and len(fl["fc"]) != n):
+            errs.append(f"rewind-{cle}.json : flux absents ou de longueurs differentes")
+        mauvais = [k for k, s in fl.items() for x in s if not isinstance(x, (int, float)) or x != x]
+        if mauvais or any(x < 40 for x in fl.get("fc") or []):
+            errs.append(f"rewind-{cle}.json : valeurs nulles ou aberrantes dans les flux ({', '.join(sorted(set(mauvais))) or 'fc < 40'})")
+        if not (rw.get("coach") or {}).get("verdict"):
+            errs.append(f"rewind-{cle}.json : pas de verdict tire de la revue (src/textes/seances/S{cle}.html)")
     for name, content in files.items():
         if name == "changelog":   # prose de developpement : parle legitimement de NaN / undefined
             continue

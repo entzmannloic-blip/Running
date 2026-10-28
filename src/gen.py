@@ -2727,6 +2727,11 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":269,"date":"28 octobre 2026","sha":"","tag":"P4 Rewind de séance","items":[
+    "REWIND DE SÉANCE : bouton « Revoir ma séance » dans la fiche ; 9 images plein écran (chiffres, tracé et relief colorés par l'allure, allure km par km, cœur sur tes zones, discipline d'allure et série en cours, moment fort, analyse du coach terrain, progression), défilement automatique, l'analyse du coach attend « Continuer ».",
+    "ANALYSE DU COACH : prévu face au réalisé calculé (distance, allure, FC), verdict, ce qui est bien, à corriger et conseil repris de la revue, revue complète à un toucher.",
+    "OÙ J'EN SUIS : 5 courbes à verdict calculé (allure facile, efficacité à 145 bpm, dérive des sorties longues, discipline d'allure, volume et charge), depuis la fin du Rewind et le Cockpit.",
+    "ACCUEIL : annonce « Le coach a analysé ta séance », une fois par séance. Rewind disponible pour S44-2 et S43-8 ; les prochaines séances l'auront à chaque log."]},
   {"build":268,"date":"27 octobre 2026","sha":"","tag":"P3 Système de mouvement","items":[
     "ONGLETS : transition de vue depuis la barre (fondu et glissement de 8 px dans le sens de la barre, barre et en-tête immobiles) ; sans transition de vue (iOS < 18), même mouvement en CSS.",
     "FICHES : la carte de séance ou de semaine s'agrandit jusqu'à devenir sa fiche et s'y referme au retour.",
@@ -4315,7 +4320,19 @@ PALMARES=[
   {"nom":"Harmonie Mutuelle Semi de Paris","alias":"Semi de Paris","date":"2022-03-06","lieu":"Paris · France","type":"semi","distance":21.1,"dplus":None,"dminus":None,"temps":"1:53:21","allure":"5:22","classement_gen":27259,"classement_cat":None,"total_finishers":None,"cat":None,"fc_moy":None,"fc_max":None,"cal":None,"chaussures":None,"meteo":None,"statut":"termine","strava_id":None,"accent":"#0d9488","bilan":"Premier grand semi-marathon officiel. 1:53:21 chrono réel · 5:22/km. #27259 au général dans l'une des plus grandes courses de France. <strong>Référence de départ :</strong> objectif 1:44 au Semi de Lyon du 4 oct. 2026 — réalisé en 1:52:30, couru malade (voir la fiche de la course)."}
 ]
 _charge_revues_seances(SEANCES_BY_WEEK)
-_j.dump({"PHASES":PHASES,"COUL":COUL,"SEMAINES":SEMAINES,"SBW":SEANCES_BY_WEEK,"GEAR":GEAR,"RACES":RACES,
+# Rewind de seance (P4) : index des seances qui ont un Rewind (src/rewind/<sem>-<n>.json, scripts/rewind_seance.py)
+# et cible appliquee quand la seance a ete remplacee (realise.cible). assemble.py publie les fichiers.
+import glob as _glob, os as _os
+REWIND_SEANCE=[]
+for _p in sorted(_glob.glob(_os.path.join('rewind','*.json'))):
+  _k=_os.path.basename(_p)[:-5];_w,_n=_k.split('-')
+  _s=next((x for x in SEANCES_BY_WEEK.get(_w,SEANCES_BY_WEEK.get(int(_w),[])) if str(x.get('id'))==_n),None)
+  if not _s or (_s.get('realise') or {}).get('statut') not in ('fait','partiel'):
+    raise SystemExit(f"Rewind {_k} : seance absente ou non realisee")
+  _c=_j.load(open(_p,encoding='utf-8')).get('cible')
+  if _c:_s['realise']['cible']=_c
+  REWIND_SEANCE.append(_k)
+_j.dump({"PHASES":PHASES,"COUL":COUL,"SEMAINES":SEMAINES,"SBW":SEANCES_BY_WEEK,"REWIND_SEANCE":REWIND_SEANCE,"GEAR":GEAR,"RACES":RACES,
   "PROFIL":PROFIL,"PROJ":PROJ,"RECORDS":RECORDS,"VIGILANCE":VIGILANCE,"S24R":S24_REALISE,
   "HIST":_hist["HIST"],"POLAR":_hist["POLAR"],"ALLURES":ALLURES,"ALLURES_COURSE":ALLURES_COURSE,"ZONES_FC":ZONES_FC,"MONTHLY":MONTHLY,"SAISON2026":SAISON2026,"SAISON_EFF":SAISON_EFF,"COCKPIT_SOURCES":COCKPIT_SOURCES,"ACWR_DATA":ACWR_DATA,"RECORDS_PERF":RECORDS_PERF,"JOURNAL":JOURNAL,"REWINDS":REWINDS,"MAJ":CHANGELOG[0]["date"],"HEATMAP":HEATMAP,"DOSSIERS":DOSSIERS,"PALMARES":PALMARES,"CHANGELOG":CHANGELOG},open('data.json','w',encoding='utf-8'),ensure_ascii=False)
 print("OK")
