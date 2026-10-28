@@ -48,7 +48,7 @@ python scripts/release.py      # porte complète (audits Strava, Cockpit…) —
 - `src/datamap.py` — quelles données vont dans quel fichier `data/*.json` (chargés au démarrage : plan, seances, historique, meta ; changelog à la demande)
 - `src/assemble.py` — produit `site/index.html` (page + CSS + script de démarrage) et `site/data/*.json`
 - `src/app.js` — toute la logique JS (servi tel quel à `src/app.js`)
-- `src/css.txt` (tokens `:root` + base), `src/css_extra.txt` (CSS features), `src/body.html` (vues + barre de navigation)
+- `src/css.txt` (tokens `:root` + `@font-face` + base), `src/fonts/` (Barlow Semi Condensed 700 et 800, copiées dans le site et le pré-cache par `build.py`), `src/css_extra.txt` (CSS features), `src/body.html` (vues + barre de navigation)
 - `src/sw.js` — **modèle** du service worker (`__BUILD__`, `__SHELL__` remplacés par le build)
 - `src/rewind/<sem>-<n>.json` — données du Rewind de séance (écrites par `scripts/rewind_seance.py` ou `log_seance.py --rewind`) ; publiées en `data/rewind-<sem>-<n>.json` avec l'analyse du coach tirée de la revue ; index `REWIND_SEANCE` dans `data/seances.json`
 - `src/build.py`, `src/paths.py` — build et chemins ; `src/strava_reference.json` — référentiel Strava lu par les audits
@@ -78,7 +78,7 @@ Accueil · Séances · Cockpit · Courses
 - `sw.js` (généré) : cache `plan-<build>`, pré-cache de tout le site, réseau d'abord avec repli cache après 3 s ou hors-ligne. `_checkNewVersion()` affiche le bandeau « Nouvelle version prête » au retour au premier plan.
 
 ## Design system
-Voir **DESIGN.md** (« Le carnet de l'entraîneur ») et `src/css.txt :root`. **1 primaire** `--primary:#0d9488` (teal) ; états `--ok` `--warn` `--danger` ; neutres slate ; échelle typo `--t-display…--t-data`. Ne pas réintroduire de couleurs ad hoc. Dégradés par course (dossiers) préservés exprès. Mouvement (P3, build 268) : 120/240/360 ms, transitions de vue (onglets par `goTab`, carte → fiche par `ouvrirCarte`/`fermerAnime`), apparitions au scroll en CSS, barre d'onglets rétractable, graphes tracés, chiffres qui comptent, célébrations par tracé, pas d'haptique ; tout sous `prefers-reduced-motion` (détail dans DESIGN.md « Mouvement »).
+Voir **DESIGN.md** (« Blanc et orange », lot 5) et `src/css.txt :root`. **1 primaire** `--primary:#F4561D` (orange vif ; `--primary-deux:#C2410C` orange encre pour le petit texte) ; états `--ok` `--warn` (ocre) `--danger` ; neutres zinc ; chiffres en Barlow Semi Condensed (`--f-num`, `src/fonts/`, licence OFL, pré-cachée) ; aucun emoji dans l'interface (icônes au trait) ; échelle typo `--t-display…--t-data`. Ne pas réintroduire de couleurs ad hoc. Dégradés par course (dossiers) préservés exprès. Mouvement (P3, build 268) : 120/240/360 ms, transitions de vue (onglets par `goTab`, carte → fiche par `ouvrirCarte`/`fermerAnime`), apparitions au scroll en CSS, barre d'onglets rétractable, graphes tracés, chiffres qui comptent, célébrations par tracé, pas d'haptique ; tout sous `prefers-reduced-motion` (détail dans DESIGN.md « Mouvement »).
 
 ## Données clés gen.py
 - Plan : S25→S53 (30 semaines, 141 séances)

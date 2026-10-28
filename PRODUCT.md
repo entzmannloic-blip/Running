@@ -19,14 +19,15 @@ Un plan écrit sur mesure avec Claude à partir des sorties réelles (pas un pla
 Après chaque séance, Loïc l'envoie à Claude (projet Claude relié à Strava via MCP). Claude relit l'activité, enrichit les données de l'app (réalisé, revue, chaussures) puis ouvre une pull request sur le dépôt GitHub `entzmannloic-blip/Running`. L'app est publiée en statique sur GitHub Pages. Les données sont aujourd'hui générées par `src/gen.py` puis assemblées dans `index.html` ; l'app ne lit pas Strava en direct.
 
 ## Capabilities and Constraints
-- Quatre vues : Accueil (séance du jour, forme, météo, progression, capital), Séances (plan par phase et par semaine), Cockpit (aujourd'hui, progression, analyse), Courses (à venir et passées, dossiers).
+- Quatre vues : Accueil (analyse du coach sur la dernière séance, prochaine séance, météo, forme, semaine en cours, courses, année), Séances (plan par phase et par semaine), Cockpit (aujourd'hui, progression, analyse), Courses (à venir et passées, dossiers).
+- Après chaque séance : la fiche (chiffres, analyse du coach, tracé, allure km par km, zones cardiaques) et le Rewind de séance animé (9 images).
 - Le chat « coach IA » intégré a été retiré (décision de Loïc, octobre 2026) : le coaching se fait dans Claude. Les conseils calculés localement restent.
 - Hébergement statique uniquement (GitHub Pages), PWA iOS ; données personnelles locales en `localStorage`.
 - Terminologie : séance, sortie, semaine du plan (S24…S53), ACWR (rapport charge aiguë/chronique), forme du jour (0-100), polarisation, J-X avant course.
-- Décision ouverte : vocabulaire exact des compteurs de sorties (semaine, depuis S24, saison), à fixer dans DESIGN.md.
+- Compteurs de sorties : toujours avec leur portée (de la semaine, depuis S24, de la saison 2026).
 
 ## Brand Commitments
-Une seule couleur primaire (teal `#0d9488`), des états sémantiques (ok, avertissement, danger) à un sens chacun, une échelle typographique à 7 niveaux. Les dégradés propres à chaque course (dossiers) sont préservés volontairement.
+Direction « blanc et orange » (lot 5, validée le 28 octobre 2026), dans l'esprit de Strava : une seule couleur primaire (orange `#F4561D`, orange encre `#C2410C` pour le petit texte), des états à un sens chacun (vert réalisé, ocre vigilance, rouge danger), des chiffres en Barlow Semi Condensed embarquée, des icônes au trait et aucun emoji dans l'interface, pas de mode sombre. Les dégradés propres à chaque course (dossiers) sont préservés volontairement. Détail dans DESIGN.md.
 
 ## Evidence on Hand
 Données réelles de Loïc dans `src/gen.py` et `src/hist.json` (plan, séances réalisées, records, palmarès, chaussures) et fichiers `fit/` des séances planifiées. Il n'existe ni témoignage, ni autre utilisateur : ne rien inventer de tel.

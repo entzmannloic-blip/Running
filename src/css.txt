@@ -1,27 +1,36 @@
 
 :root{
-  /* ===== PRIMAIRE — teal, unique ===== */
-  --primary:#0d9488;--primary-deux:#0f766e;--primary-clair:#99f6e4;--primary-fond:#f0fdfa;
-  /* ===== ÉTATS sémantiques (un sens chacun) ===== */
-  --ok:#16a34a;--ok-deux:#166534;--ok-clair:#bbf7d0;--ok-fond:#dcfce7;
-  --warn:#f59e0b;--warn-deux:#b45309;--warn-clair:#fde68a;--warn-fond:#fef3c7;
-  --danger:#ef4444;--danger-deux:#b91c1c;--danger-clair:#fecaca;--danger-fond:#fee2e2;
-  /* ===== NEUTRES — slate (conservés) ===== */
-  --gris:#94a3b8;--gris-clair:#e2e8f0;--gris-fond:#f8fafc;
-  --texte:#1e293b;--texte-deux:#475569;--texte-trois:#5b6b80;--blanc:#fff;
+  /* ===== PRIMAIRE — orange, unique (lot 5, maquette validee le 28/10/2026) =====
+     --primary : orange vif, pour les aplats, les graphes, les gros chiffres (texte blanc dessus : 19 px gras minimum, 3,4:1).
+     --primary-deux : orange encre, pour les liens et le petit texte orange (5,2:1 sur blanc). */
+  --primary:#F4561D;--primary-deux:#C2410C;--primary-clair:#FCCDB0;--primary-fond:#FFF1EA;
+  --primary-sombre:#7C2D12;--primary-survol:#9A3412;
+  /* Rampe d'allure (du plus lent au plus rapide) et zones cardiaques Z1 a Z5 */
+  --allure-1:#FCCDB0;--allure-2:#F9A070;--allure-3:#F4561D;--allure-4:#C2410C;--allure-5:#7C2D12;
+  --z1:#FDE3D3;--z2:#FBB089;--z3:#F4561D;--z4:#C2410C;--z5:#7C2D12;
+  /* ===== ÉTATS sémantiques (un sens chacun) : aplat · texte · bordure · fond =====
+     L'ocre remplace l'ambre (trop proche de l'orange). */
+  --ok:#16A34A;--ok-deux:#15703A;--ok-clair:#BBF7D0;--ok-fond:#E8F6ED;
+  --warn:#CA8A04;--warn-deux:#8F5A07;--warn-clair:#F1DFA6;--warn-fond:#FDF5DB;
+  --danger:#DC2626;--danger-deux:#B91C1C;--danger-clair:#FECACA;--danger-fond:#FDECEC;
+  /* ===== NEUTRES — zinc (sans bleu) ===== */
+  --gris:#A1A1AA;--gris-clair:#E7E7EA;--gris-fond:#F4F4F6;--ligne-forte:#D4D4D8;
+  --texte:#18181B;--texte-deux:#52525B;--texte-trois:#6B6B74;--blanc:#fff;
+  /* ===== POLICES : systeme pour le texte, Barlow Semi Condensed (embarquee) pour les chiffres ===== */
+  --f-texte:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,system-ui,sans-serif;
+  --f-num:"Barlow Semi Condensed",-apple-system,BlinkMacSystemFont,system-ui,sans-serif;
   /* ===== ÉCHELLE TYPO — 7 niveaux ===== */
   --t-display:2rem;--t-title:1.375rem;--t-headline:1.0625rem;--t-body:1rem;--t-callout:.875rem;--t-caption:.8125rem;--t-data:.75rem;
   --fw-reg:400;--fw-med:500;--fw-semi:600;--fw-bold:700;--fw-black:800;
-  /* ===== RAYONS / PROFONDEUR iOS 27 ===== */
-  /* ===== SURFACES ===== */
-  --bg-page:#f2f2f7;--bg-card:#fff;--bord-card:#e2e8f0;
-  --gris-pale:#f1f5f9;
-  /* Rewind de séance (P4) : ardoise profonde, encre claire, ambre de dépassement */
-  --rs-fond:#0b1424;--rs-fond-2:#14293f;--rs-encre:#f8fafc;--rs-ambre:#fbbf24;      /* fond de tableau / puce legere */
-  --primary-fill:#0f766e;   /* fond de bouton a texte blanc (5,5:1), identique en sombre */
+  /* ===== SURFACES : cartes blanches sans ombre sur fond gris ===== */
+  --bg-page:#F4F4F6;--bg-card:#fff;--bord-card:#E7E7EA;
+  --gris-pale:#F4F4F5;
+  /* Rewind de séance (P4) : ardoise profonde, encre claire, ambre de dépassement (passe au blanc dans la PR 4 du lot 5) */
+  --rs-fond:#0b1424;--rs-fond-2:#14293f;--rs-encre:#f8fafc;--rs-ambre:#fbbf24;
+  --primary-fill:#C2410C;   /* fond de bouton a petit texte blanc (5,2:1) */
   --rayon:12px;--rayon-lg:18px;
-  --ombre:0 1px 2px rgba(15,23,42,.06),0 4px 12px -6px rgba(15,23,42,.10);
-  --ombre-lg:0 2px 6px rgba(15,23,42,.07),0 18px 36px -14px rgba(15,23,42,.22);
+  --ombre:0 1px 2px rgba(24,24,27,.05),0 4px 12px -6px rgba(24,24,27,.08);
+  --ombre-lg:0 2px 6px rgba(24,24,27,.06),0 18px 36px -14px rgba(24,24,27,.20);
   /* ===== ALIAS rétro-compat → mappés sur le système (migration douce) ===== */
   --vert:var(--ok);--vert-clair:var(--ok-clair);--vert-fond:var(--ok-fond);
   --orange:var(--warn);--orange-clair:var(--warn-clair);--orange-fond:var(--warn-fond);
@@ -35,14 +44,17 @@
   /* Rayons complémentaires */
   --rayon-sm:8px;--rayon-pill:99px;
 }
+/* Chiffres : Barlow Semi Condensed (licence OFL, src/fonts/OFL.txt), embarquee et pre-cachee pour rester disponible hors ligne */
+@font-face{font-family:"Barlow Semi Condensed";font-style:normal;font-weight:700;font-display:swap;src:url(src/fonts/barlow-semi-condensed-latin-700-normal.woff2) format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:"Barlow Semi Condensed";font-style:normal;font-weight:800;font-display:swap;src:url(src/fonts/barlow-semi-condensed-latin-800-normal.woff2) format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{font-family:system-ui,-apple-system,'Segoe UI',sans-serif;background:var(--gris-fond);color:var(--texte);line-height:1.55;-webkit-font-smoothing:antialiased;min-height:100vh}
+body{font-family:var(--f-texte);background:var(--bg-page);color:var(--texte);line-height:1.55;-webkit-font-smoothing:antialiased;min-height:100vh}
 
 /* ACCUEIL */
 .accueil{max-width:1000px;margin:0 auto;padding:var(--sp-10) var(--sp-4) 90px}
 .accueil-header{text-align:center;margin-bottom:30px}
-.accueil-tag{display:inline-block;font-size:var(--t-data);font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--bleu);background:var(--bleu-fond);border:1px solid var(--bleu-clair);padding:4px 12px;border-radius:99px;margin-bottom:16px}
-.accueil-titre{font-family:Georgia,'Times New Roman',serif;font-size:clamp(1.8rem,5vw,2.7rem);font-weight:700;letter-spacing:-.02em;line-height:1.12;margin-bottom:10px}
+.accueil-tag{display:inline-block;font-size:var(--t-data);font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--primary-deux);background:var(--bleu-fond);border:1px solid var(--bleu-clair);padding:4px 12px;border-radius:99px;margin-bottom:16px}
+.accueil-titre{font-family:inherit;font-size:clamp(1.8rem,5vw,2.7rem);font-weight:700;letter-spacing:-.02em;line-height:1.12;margin-bottom:10px}
 .accueil-sous-titre{font-size:1rem;color:var(--texte-trois);max-width:520px;margin:0 auto}
 
 /* PANNEAU STATUT */
@@ -51,14 +63,14 @@ body{font-family:system-ui,-apple-system,'Segoe UI',sans-serif;background:var(--
 .statut-carte::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px}
 .statut-carte.c1::before{background:var(--vert)}.statut-carte.c2::before{background:var(--orange)}.statut-carte.c3::before{background:var(--bleu)}
 .statut-label{font-size:var(--t-data);font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--texte-trois);margin-bottom:8px}
-.statut-val{font-family:Georgia,serif;font-size:1.18rem;font-weight:700;color:var(--texte);line-height:1.2}
+.statut-val{font-family:var(--f-num);font-size:1.18rem;font-weight:700;color:var(--texte);line-height:1.2}
 .statut-sub{font-size:.75rem;color:var(--texte-trois);margin-top:4px}
 
 /* PHASES */
 .phase-bloc{margin-bottom:var(--sp-8)}
 .phase-entete{display:flex;align-items:center;gap:12px;margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid var(--gris-clair)}
 .phase-puce{width:13px;height:13px;border-radius:4px;flex-shrink:0}
-.phase-nom{font-family:Georgia,serif;font-size:1.12rem;font-weight:700;color:var(--texte)}
+.phase-nom{font-family:inherit;font-size:1.12rem;font-weight:700;color:var(--texte)}
 .phase-sem{font-size:var(--t-data);font-weight:700;color:var(--texte-trois);background:var(--gris-fond);border:1px solid var(--gris-clair);padding:2px 8px;border-radius:99px;margin-left:auto;white-space:nowrap}
 .phase-role{font-size:.8125rem;color:var(--texte-trois);margin:-6px 0 14px;max-width:760px}
 .sem-grille{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:12px}
@@ -68,7 +80,7 @@ body{font-family:system-ui,-apple-system,'Segoe UI',sans-serif;background:var(--
 .sem-carte.cliquable{cursor:pointer}
 .sem-carte.cliquable:hover{box-shadow:var(--ombre-lg);transform:translateY(-3px)}
 .sem-num{font-size:var(--t-data);font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--texte-trois);margin-bottom:6px;display:flex;align-items:center;gap:8px}
-.sem-theme{font-family:Georgia,serif;font-size:1rem;font-weight:700;color:var(--texte);line-height:1.22;margin-bottom:8px;flex:1}
+.sem-theme{font-family:inherit;font-size:1rem;font-weight:700;color:var(--texte);line-height:1.22;margin-bottom:8px;flex:1}
 .sem-km{font-size:.8125rem;font-weight:700;color:var(--texte-deux)}
 .sem-km span{font-size:var(--t-data);font-weight:600;color:var(--texte-trois)}
 .sem-statut{position:absolute;top:14px;right:14px;font-size:var(--t-data);font-weight:800;letter-spacing:.07em;text-transform:uppercase;padding:4px 8px;border-radius:99px}
@@ -81,7 +93,7 @@ body{font-family:system-ui,-apple-system,'Segoe UI',sans-serif;background:var(--
 .sem-barre-fill{height:100%}
 
 /* MODALE */
-.modale-overlay{position:fixed;inset:0;background:rgba(15,23,42,.55);backdrop-filter:blur(5px);z-index:100;display:flex;align-items:flex-start;justify-content:center;padding:18px 12px 40px;opacity:0;pointer-events:none;transition:opacity .25s}
+.modale-overlay{position:fixed;inset:0;background:rgba(24,24,27,.55);backdrop-filter:blur(5px);z-index:100;display:flex;align-items:flex-start;justify-content:center;padding:18px 12px 40px;opacity:0;pointer-events:none;transition:opacity .25s}
 .modale-overlay.ouverte{opacity:1;pointer-events:all}
 .modale-boite{background:var(--gris-fond);border-radius:22px;width:100%;max-width:880px;max-height:calc(100dvh - 58px);overflow-x:hidden;overflow-y:auto;-webkit-overflow-scrolling:touch;box-shadow:0 24px 64px rgba(0,0,0,.22);transform:translateY(24px);transition:transform .3s cubic-bezier(.25,1,.5,1);margin:0 auto}
 .modale-overlay.ouverte .modale-boite{transform:translateY(0)}
@@ -92,7 +104,7 @@ body{font-family:system-ui,-apple-system,'Segoe UI',sans-serif;background:var(--
 /* EN-TÊTE SEMAINE (dans modale) */
 .sw-hero{background:var(--blanc);border-bottom:1px solid var(--gris-clair);padding:22px 24px 20px}
 .sw-tag{display:inline-block;font-size:var(--t-data);font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:4px 12px;border-radius:99px;margin-bottom:12px}
-.sw-titre{font-family:Georgia,serif;font-size:clamp(1.4rem,4vw,2rem);font-weight:700;line-height:1.15;margin-bottom:6px}
+.sw-titre{font-family:inherit;font-size:clamp(1.4rem,4vw,2rem);font-weight:700;line-height:1.15;margin-bottom:6px}
 .sw-sous{font-size:.875rem;color:var(--texte-trois);margin-bottom:16px}
 .sw-meta{display:flex;flex-wrap:wrap;gap:8px}
 .sw-pill{background:var(--gris-fond);border:1px solid var(--gris-clair);border-radius:var(--rayon);padding:8px 14px}
@@ -108,18 +120,18 @@ body{font-family:system-ui,-apple-system,'Segoe UI',sans-serif;background:var(--
 .seance-bande{position:absolute;left:0;top:0;bottom:0;width:5px}
 .seance-idx{font-size:var(--t-data);font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--texte-trois);min-width:62px}
 .seance-info{flex:1}
-.seance-nom{font-family:Georgia,serif;font-size:1.0625rem;font-weight:700;line-height:1.2;margin-bottom:4px}
+.seance-nom{font-family:inherit;font-size:1.0625rem;font-weight:700;line-height:1.2;margin-bottom:4px}
 .seance-desc{font-size:.75rem;color:var(--texte-trois)}
 .seance-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
 .seance-tag{font-size:var(--t-data);font-weight:600;padding:2px 8px;border-radius:99px;background:var(--gris-fond);border:1px solid var(--gris-clair);color:var(--texte-deux)}
-.tag-opt{background:var(--jaune-fond);border-color:var(--jaune-clair);color:#854d0e}
+.tag-opt{background:var(--jaune-fond);border-color:var(--jaune-clair);color:var(--warn-deux)}
 .seance-fleche{color:var(--gris);font-size:1.0625rem;transition:.2s}
 .seance-carte:hover .seance-fleche{transform:translateX(3px)}
 
 /* DÉTAIL SÉANCE */
 .sd-hero{background:var(--blanc);border-bottom:1px solid var(--gris-clair);padding:22px 24px 20px}
 .sd-badge{display:inline-flex;align-items:center;gap:6px;font-size:var(--t-data);font-weight:700;letter-spacing:.07em;text-transform:uppercase;padding:4px 12px;border-radius:99px;margin-bottom:12px}
-.sd-titre{font-family:Georgia,serif;font-size:clamp(1.4rem,4vw,2rem);font-weight:700;line-height:1.15;margin-bottom:4px}
+.sd-titre{font-family:inherit;font-size:clamp(1.4rem,4vw,2rem);font-weight:700;line-height:1.15;margin-bottom:4px}
 .sd-sous{font-size:.875rem;color:var(--texte-trois);margin-bottom:18px}
 .sd-metriques{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:8px}
 .metrique{background:var(--gris-fond);border:1px solid var(--gris-clair);border-radius:var(--rayon);padding:8px 12px}
@@ -149,7 +161,7 @@ body{font-family:system-ui,-apple-system,'Segoe UI',sans-serif;background:var(--
 .barre-piste{display:flex;align-items:flex-end;gap:2px;height:90px;min-width:100%}
 .seg{border-radius:4px 4px 0 0;min-width:5px;cursor:pointer;transition:opacity .15s;align-self:flex-end}
 .seg:hover{opacity:.8}.seg.actif{outline:2px solid var(--texte);outline-offset:1px}
-.seg-vert{background:var(--ok)}.seg-bleu{background:var(--primary)}.seg-orange{background:var(--warn)}.seg-violet{background:#64748b}.seg-jaune{background:var(--gris)}
+.seg-vert{background:var(--ok)}.seg-bleu{background:var(--primary)}.seg-orange{background:var(--warn)}.seg-violet{background:#6B6B74}.seg-jaune{background:var(--gris)}
 .detail-panneau{margin-top:14px;padding:12px 15px;background:var(--gris-fond);border:1px solid var(--gris-clair);border-radius:var(--rayon);display:none}
 .detail-panneau.visible{display:block}
 .detail-nom{font-weight:800;font-size:.875rem;margin-bottom:4px}

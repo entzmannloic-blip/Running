@@ -59,11 +59,17 @@ def stage_site():
         p = os.path.join(ROOT, name)
         if os.path.exists(p):
             shutil.copyfile(p, os.path.join(SITE, name))
+    # Police des chiffres (Barlow Semi Condensed, licence OFL) : servie depuis src/fonts/, pre-cachee
+    polices = sorted(n for n in os.listdir(os.path.join(SRC, "fonts")) if n.endswith(".woff2"))
+    os.makedirs(os.path.join(SITE, "src", "fonts"), exist_ok=True)
+    for n in polices:
+        shutil.copyfile(os.path.join(SRC, "fonts", n), os.path.join(SITE, "src", "fonts", n))
     # sw.js : modele src/sw.js dont le nom de cache suit le numero de build
     meta = json.load(open(os.path.join(SITE, "data", "meta.json"), encoding="utf-8"))
     build = meta["CHANGELOG"][0]["build"]
     shell = ["./", "./index.html", "./manifest.json", "./icon-180.png", "./icon-192.png", "./icon-512.png",
-             "./src/app.js"] + ["./data/" + n for n in sorted(os.listdir(os.path.join(SITE, "data")))]
+             "./src/app.js"] + ["./src/fonts/" + n for n in polices] \
+        + ["./data/" + n for n in sorted(os.listdir(os.path.join(SITE, "data")))]
     sw = open(os.path.join(WORK, "sw.js"), encoding="utf-8").read().replace("\r\n", "\n")
     sw = sw.replace("__BUILD__", str(build)).replace("__SHELL__", json.dumps(shell, indent=1))
     open(os.path.join(SITE, "sw.js"), "w", encoding="utf-8", newline="\n").write(sw)
