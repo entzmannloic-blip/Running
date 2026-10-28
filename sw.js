@@ -1,4 +1,4 @@
-/* Service worker — genere par src/build.py (ne pas copier a la main : 271 et [
+/* Service worker — genere par src/build.py (ne pas copier a la main : 272 et [
  "./",
  "./index.html",
  "./manifest.json",
@@ -6,6 +6,8 @@
  "./icon-192.png",
  "./icon-512.png",
  "./src/app.js",
+ "./src/fonts/barlow-semi-condensed-latin-700-normal.woff2",
+ "./src/fonts/barlow-semi-condensed-latin-800-normal.woff2",
  "./data/changelog.json",
  "./data/historique.json",
  "./data/meta.json",
@@ -18,7 +20,7 @@
 ]
    sont remplaces). Le nom du cache suit le numero de build : un nouveau build = nouveau cache,
    les anciens (dont plan-v34) sont supprimes a l'activation. */
-const BUILD='271';
+const BUILD='272';
 const CACHE='plan-'+BUILD;
 const SHELL=[
  "./",
@@ -28,6 +30,8 @@ const SHELL=[
  "./icon-192.png",
  "./icon-512.png",
  "./src/app.js",
+ "./src/fonts/barlow-semi-condensed-latin-700-normal.woff2",
+ "./src/fonts/barlow-semi-condensed-latin-800-normal.woff2",
  "./data/changelog.json",
  "./data/historique.json",
  "./data/meta.json",

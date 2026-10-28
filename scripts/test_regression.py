@@ -38,6 +38,10 @@ def check(name, cond, detail=""):
         PASS.append(name)
     else:
         FAIL.append(f"{name}" + (f" — {detail}" if detail else ""))
+        # dans GitHub Actions, chaque echec devient une annotation lisible sans ouvrir les journaux
+        if os.environ.get("GITHUB_ACTIONS"):
+            msg = (f"{name} — {detail}" if detail else name).replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A")
+            print(f"::error title=Regression::{msg[:900]}", flush=True)
 
 
 def run():
@@ -254,7 +258,11 @@ def run():
                 if(Array.isArray(a)!==Array.isArray(b)) return false;
                 var ka=Object.keys(a), kb=Object.keys(b); if(ka.length!==kb.length) return false;
                 return ka.every(function(k){return eq(a[k],b[k]);}); }
-              return Object.keys(exp).filter(function(n){return !eq(window[n], exp[n]);});
+              /* ACWR_DATA.acwr, charge7j et charge28j sont recalcules en direct par l'app (fenetre glissante
+                 7/28 jours a la date du telephone) : ils ne valent les chiffres du build que le jour du build. */
+              function vif(n,o){if(n!=='ACWR_DATA'||!o||typeof o!=='object')return o;var c=Object.assign({},o);
+                delete c.acwr;delete c.charge7j;delete c.charge28j;return c;}
+              return Object.keys(exp).filter(function(n){return !eq(vif(n,window[n]), vif(n,exp[n]));});
             }""", expected)
         check("T15 donnees JSON identiques a data.json (toutes les constantes)", bad == [], f"differentes : {bad[:6]}")
         check("T15 CHANGELOG de depart = derniere entree",
@@ -441,7 +449,7 @@ def run():
             has = pd.evaluate("document.body.classList.contains('nuit')")
             bg = pd.evaluate("getComputedStyle(document.body).backgroundColor")
             check("T18 telephone en sombre : l'app reste blanche (pas de classe nuit)", not has, f"nuit={has}")
-            check("T18 telephone en sombre : fond de page clair", bg == "rgb(242, 242, 247)", bg)
+            check("T18 telephone en sombre : fond de page clair", bg == "rgb(244, 244, 246)", bg)
             ctxd.close()
             idx_t18 = open(os.path.join(SITE, "index.html"), encoding="utf-8").read()
             check("T18 une seule balise theme-color, sans variante sombre",
@@ -735,6 +743,25 @@ def run():
             ctx.close()
         except Exception as e:
             check("T23 Rewind sous réduire les animations", False, str(e)[:160])
+
+        # ── T24 : direction blanc et orange (lot 5) : police des chiffres embarquee, jetons orange ──
+        try:
+            ctxf = b.new_context(viewport={"width": 390, "height": 844}, service_workers="block")
+            ctxf.route("**/*open-meteo.com/**", lambda r: r.abort())
+            pf = ctxf.new_page()
+            pf.goto(HTML, wait_until="load", timeout=20000)
+            pf.wait_for_function("typeof showTab==='function'&&!document.getElementById('boot-load')", timeout=10000)
+            pf.evaluate("document.fonts.load('700 28px \"Barlow Semi Condensed\"')")
+            pf.wait_for_function("document.fonts.check('700 28px \"Barlow Semi Condensed\"')", timeout=5000)
+            prim = pf.evaluate("getComputedStyle(document.documentElement).getPropertyValue('--primary').trim().toLowerCase()")
+            check("T24 police des chiffres chargee depuis l'app (hors ligne) et orange primaire",
+                  prim == "#f4561d", f"--primary={prim}")
+            sw = open(os.path.join(SITE, "sw.js"), encoding="utf-8").read()
+            check("T24 polices dans le pre-cache du service worker",
+                  all(f"./src/fonts/barlow-semi-condensed-latin-{w}-normal.woff2" in sw for w in (700, 800)))
+            ctxf.close()
+        except Exception as e:
+            check("T24 police des chiffres embarquee", False, str(e)[:160])
 
         # ── T13 : pas d'erreur JS accumulee sur tout le parcours ──
         check("T13 zero erreur JS sur tout le parcours", len(js_errors) == 0,

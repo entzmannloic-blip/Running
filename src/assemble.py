@@ -142,7 +142,8 @@ HTML = f"""<!DOCTYPE html>
 <html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta http-equiv="Cache-Control" content="no-cache, must-revalidate"><meta http-equiv="Pragma" content="no-cache">
 <title>Plan d'entraînement — {data['PROFIL']['prenom']} · Saison 2026</title>
-<meta name="theme-color" content="#0f172a">
+<meta name="theme-color" content="#F4F4F6">
+<link rel="preload" href="src/fonts/barlow-semi-condensed-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="manifest" href="manifest.json">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">

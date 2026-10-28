@@ -24,7 +24,7 @@ function _lsSet(k,v){try{localStorage.setItem(k,v);return true;}catch(e){return 
 function _lsDel(k){try{localStorage.removeItem(k);return true;}catch(e){return false;}}
 /* Compteur global assurant l'unicite des id de degrade SVG (voir sparkline). */
 let _gradSeq=0;
-function rpeColor(r){return r<=3?'#16a34a':r<=5?'#0d9488':r<=6.9?'#f59e0b':r<=8?'#f59e0b':'#ef4444';}
+function rpeColor(r){return r<=3?'#16a34a':r<=5?'#F4561D':r<=6.9?'#CA8A04':r<=8?'#CA8A04':'#DC2626';}
 function rpeScale(r){let h='';for(let i=1;i<=10;i++){const on=i<=Math.round(r);h+=`<div class="rpe-seg" style="background:${on?rpeColor(r):''}"></div>`;}return h;}
 function catBadge(c){return c==='specifique'?'<span class="cat-badge cat-specifique">Spécifique</span>':'<span class="cat-badge cat-classique">Classique</span>';}
 function stChip(st){const m={a_faire:['st-afaire','À faire'],fait:['st-fait','Fait ✓'],partiel:['st-partiel','Partiel'],manque:['st-manque','Manqué'],skipped:['st-manque','Sautée']};const x=m[st]||m.a_faire;return `<span class="st-chip ${x[0]}">${x[1]}</span>`;}
@@ -38,49 +38,49 @@ function paceFmt(s){const m=Math.floor(s/60),x=Math.round(s%60);return `${m}:${S
 function isoWeek(d){d=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()));const day=d.getUTCDay()||7;d.setUTCDate(d.getUTCDate()+4-day);const ys=new Date(Date.UTC(d.getUTCFullYear(),0,1));return Math.ceil((((d-ys)/86400000)+1)/7);}
 
 /* ===== graphes SVG ===== */
-function chartLine(vals,o){o=o||{};const color=o.color||'#0d9488',h=o.h||150,fmtY=o.fmtY||(v=>v),baseline=o.baseline,todayIdx=o.todayIdx,labels=o.labels;
+function chartLine(vals,o){o=o||{};const color=o.color||'#F4561D',h=o.h||150,fmtY=o.fmtY||(v=>v),baseline=o.baseline,todayIdx=o.todayIdx,labels=o.labels;
   const W=720,pad=30,padB=22,padT=12;const idx=vals.map((v,i)=>[i,v]).filter(p=>p[1]!=null);if(!idx.length)return'';
   const ys=idx.map(p=>p[1]);let max=Math.max(...ys),min=Math.min(...ys);if(baseline!=null){max=Math.max(max,baseline);min=Math.min(min,baseline);}
   const rng=(max-min)||1;max+=rng*0.12;min-=rng*0.12;if(min<0&&Math.min(...ys)>=0)min=0;max=Math.ceil(max);min=Math.floor(min);const n=vals.length;
   const X=i=>pad+(W-pad-12)*i/(n-1);const Y=v=>padT+(h-padT-padB)*(1-(v-min)/(max-min));
   let line='',area='',lastX=0;idx.forEach((p,k)=>{const cx=X(p[0]),cy=Y(p[1]);if(k===0){line=`M ${cx.toFixed(1)} ${cy.toFixed(1)}`;area=`M ${cx.toFixed(1)} ${(h-padB).toFixed(1)} L ${cx.toFixed(1)} ${cy.toFixed(1)}`;}else{line+=` L ${cx.toFixed(1)} ${cy.toFixed(1)}`;area+=` L ${cx.toFixed(1)} ${cy.toFixed(1)}`;}lastX=cx;});
   area+=` L ${lastX.toFixed(1)} ${(h-padB).toFixed(1)} Z`;
-  let bl='';if(baseline!=null){const by=Y(baseline);bl=`<line x1="${pad}" y1="${by.toFixed(1)}" x2="${W-12}" y2="${by.toFixed(1)}" stroke="#ef4444" stroke-dasharray="4 4" stroke-width="1.2"/><text x="${W-14}" y="${(by-4).toFixed(1)}" font-size="9" fill="#ef4444" text-anchor="end">seuil 1.5</text>`;}
-  let td='';if(todayIdx!=null){const tx=X(todayIdx);td=`<line x1="${tx.toFixed(1)}" y1="${padT}" x2="${tx.toFixed(1)}" y2="${h-padB}" stroke="#94a3b8" stroke-dasharray="3 3"/><text x="${tx.toFixed(1)}" y="9" font-size="8.5" fill="#94a3b8" text-anchor="middle">aujourd'hui</text>`;}
+  let bl='';if(baseline!=null){const by=Y(baseline);bl=`<line x1="${pad}" y1="${by.toFixed(1)}" x2="${W-12}" y2="${by.toFixed(1)}" stroke="#DC2626" stroke-dasharray="4 4" stroke-width="1.2"/><text x="${W-14}" y="${(by-4).toFixed(1)}" font-size="9" fill="#DC2626" text-anchor="end">seuil 1.5</text>`;}
+  let td='';if(todayIdx!=null){const tx=X(todayIdx);td=`<line x1="${tx.toFixed(1)}" y1="${padT}" x2="${tx.toFixed(1)}" y2="${h-padB}" stroke="#A1A1AA" stroke-dasharray="3 3"/><text x="${tx.toFixed(1)}" y="9" font-size="8.5" fill="#A1A1AA" text-anchor="middle">aujourd'hui</text>`;}
   /* L'id du degrade etait derive de la seule couleur : deux graphiques de
      meme teinte produisaient deux <linearGradient> avec le MEME id, et
      url(#id) resolvait alors toujours vers le premier — remplissage errone
      sur le second. Un compteur global garantit l'unicite. */
   _gradSeq=(_gradSeq||0)+1;
   const gid='g'+color.replace('#','')+'_'+_gradSeq;
-  const yl=`<text x="2" y="${(Y(max)+8).toFixed(1)}" font-size="9" fill="#94a3b8">${fmtY(max)}</text><text x="2" y="${(Y(min)+2).toFixed(1)}" font-size="9" fill="#94a3b8">${fmtY(min)}</text>`;
-  let xl='';if(labels){xl=idx.filter((_,k)=>k%Math.ceil(idx.length/6)===0).map(p=>`<text x="${X(p[0]).toFixed(1)}" y="${h-6}" font-size="8" fill="#94a3b8" text-anchor="middle">${labels[p[0]]||''}</text>`).join('');}
-  let ann='';if(o.annotate){const pp=[];for(let i=0;i<vals.length;i++){if(vals[i]==null)continue;const a=(i>0?vals[i-1]:null),b=(i<vals.length-1?vals[i+1]:null);let lab=false,up=true;if(a==null||b==null){lab=true;up=(b!=null?vals[i]>=b:(a!=null?vals[i]>=a:true));}else if(vals[i]>a&&vals[i]>=b){lab=true;up=true;}else if(vals[i]<a&&vals[i]<=b){lab=true;up=false;}if(lab)pp.push({i,up});}ann=pp.map(p=>`<text x="${X(p.i).toFixed(1)}" y="${(p.up?Y(vals[p.i])-6:Y(vals[p.i])+13).toFixed(1)}" font-size="9" font-weight="700" fill="#94a3b8" text-anchor="middle">${fmtY(vals[p.i])}</text>`).join('');}
+  const yl=`<text x="2" y="${(Y(max)+8).toFixed(1)}" font-size="9" fill="#A1A1AA">${fmtY(max)}</text><text x="2" y="${(Y(min)+2).toFixed(1)}" font-size="9" fill="#A1A1AA">${fmtY(min)}</text>`;
+  let xl='';if(labels){xl=idx.filter((_,k)=>k%Math.ceil(idx.length/6)===0).map(p=>`<text x="${X(p[0]).toFixed(1)}" y="${h-6}" font-size="8" fill="#A1A1AA" text-anchor="middle">${labels[p[0]]||''}</text>`).join('');}
+  let ann='';if(o.annotate){const pp=[];for(let i=0;i<vals.length;i++){if(vals[i]==null)continue;const a=(i>0?vals[i-1]:null),b=(i<vals.length-1?vals[i+1]:null);let lab=false,up=true;if(a==null||b==null){lab=true;up=(b!=null?vals[i]>=b:(a!=null?vals[i]>=a:true));}else if(vals[i]>a&&vals[i]>=b){lab=true;up=true;}else if(vals[i]<a&&vals[i]<=b){lab=true;up=false;}if(lab)pp.push({i,up});}ann=pp.map(p=>`<text x="${X(p.i).toFixed(1)}" y="${(p.up?Y(vals[p.i])-6:Y(vals[p.i])+13).toFixed(1)}" font-size="9" font-weight="700" fill="#A1A1AA" text-anchor="middle">${fmtY(vals[p.i])}</text>`).join('');}
   return `<svg viewBox="0 0 ${W} ${h}" class="chart-svg"><defs><linearGradient id="${gid}" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="${color}" stop-opacity=".32"/><stop offset="1" stop-color="${color}" stop-opacity="0"/></linearGradient></defs>${bl}<path d="${area}" fill="url(#${gid})"/><path d="${line}" fill="none" stroke="${color}" stroke-width="2.5" stroke-linejoin="round"/>${td}${ann}${yl}${xl}</svg>`;
 }
 function svgMountain(){const wks=SEMAINES.filter(s=>s.num>=25);const W=760,h=195,padT=24,padB=26,padX=10,n=wks.length,maxKm=92;
   const X=i=>padX+(W-2*padX)*i/(n-1);const Y=km=>padT+(h-padT-padB)*(1-km/maxKm);
   const line='M '+wks.map((w,i)=>`${X(i).toFixed(1)} ${Y(w.km).toFixed(1)}`).join(' L ');
   const area=`M ${X(0).toFixed(1)} ${h-padB} `+wks.map((w,i)=>`L ${X(i).toFixed(1)} ${Y(w.km).toFixed(1)} `).join('')+`L ${X(n-1).toFixed(1)} ${h-padB} Z`;
-  const mk=(num,emoji,lab,up)=>{const i=wks.findIndex(w=>w.num===num);if(i<0)return'';const cx=X(i),cy=Y(wks[i].km);return `<circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="3.5" fill="#fff" stroke="#475569" stroke-width="2"/><text x="${cx.toFixed(1)}" y="${(up?cy-8:cy+15).toFixed(1)}" font-size="12" text-anchor="middle">${emoji}</text><text x="${cx.toFixed(1)}" y="${up?(cy-21).toFixed(1):(h-7)}" font-size="8.5" fill="#64748b" text-anchor="middle" font-weight="700">${lab}</text>`;};
+  const mk=(num,emoji,lab,up)=>{const i=wks.findIndex(w=>w.num===num);if(i<0)return'';const cx=X(i),cy=Y(wks[i].km);return `<circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="3.5" fill="#fff" stroke="#52525B" stroke-width="2"/><text x="${cx.toFixed(1)}" y="${(up?cy-8:cy+15).toFixed(1)}" font-size="12" text-anchor="middle">${emoji}</text><text x="${cx.toFixed(1)}" y="${up?(cy-21).toFixed(1):(h-7)}" font-size="8.5" fill="#6B6B74" text-anchor="middle" font-weight="700">${lab}</text>`;};
   const tpidx=[];wks.forEach((w,i)=>{const a=i>0?wks[i-1].km:null,b=i<n-1?wks[i+1].km:null;let lab=false;if(a==null||b==null)lab=true;else if((w.km>a&&w.km>=b)||(w.km<a&&w.km<=b))lab=true;if(lab&&![42,37,45,48].includes(w.num))tpidx.push(i);});
-  const kmlab=tpidx.map(i=>{const w=wks[i];const up=(i>0)?(w.km>=wks[i-1].km):true;return `<text x="${X(i).toFixed(1)}" y="${(up?Y(w.km)-6:Y(w.km)+13).toFixed(1)}" font-size="8.5" font-weight="700" fill="#94a3b8" text-anchor="middle">${w.km}</text>`;}).join('');
+  const kmlab=tpidx.map(i=>{const w=wks[i];const up=(i>0)?(w.km>=wks[i-1].km):true;return `<text x="${X(i).toFixed(1)}" y="${(up?Y(w.km)-6:Y(w.km)+13).toFixed(1)}" font-size="8.5" font-weight="700" fill="#A1A1AA" text-anchor="middle">${w.km}</text>`;}).join('');
   const cur=`<circle cx="${X(0).toFixed(1)}" cy="${Y(wks[0].km).toFixed(1)}" r="7" fill="#16a34a" opacity=".25"/><circle cx="${X(0).toFixed(1)}" cy="${Y(wks[0].km).toFixed(1)}" r="3.5" fill="#16a34a"/>`;
   const cols=wks.map((w,i)=>`<rect x="${(X(i)-(W-2*padX)/n/2).toFixed(1)}" y="0" width="${((W-2*padX)/n).toFixed(1)}" height="${h}" fill="transparent" style="cursor:pointer" onclick="ouvrirSemaine(${w.num})"><title>S${w.num} · ${w.theme} · ${w.km} km</title></rect>`).join('');
-  return `<svg viewBox="0 0 ${W} ${h}" class="chart-svg"><defs><linearGradient id="mtn" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#f59e0b" stop-opacity=".45"/><stop offset=".55" stop-color="#0d9488" stop-opacity=".2"/><stop offset="1" stop-color="#16a34a" stop-opacity="0"/></linearGradient></defs><path d="${area}" fill="url(#mtn)"/><path d="${line}" fill="none" stroke="#475569" stroke-width="2"/>${mk(42,'⛰️','Pic 88',true)}${mk(37,'🏕️','USA',false)}${mk(45,'🏁','Nice',true)}${mk(48,'🌙','SaintExpress',false)}${cur}${kmlab}${cols}</svg>`;
+  return `<svg viewBox="0 0 ${W} ${h}" class="chart-svg"><defs><linearGradient id="mtn" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#CA8A04" stop-opacity=".45"/><stop offset=".55" stop-color="#F4561D" stop-opacity=".2"/><stop offset="1" stop-color="#16a34a" stop-opacity="0"/></linearGradient></defs><path d="${area}" fill="url(#mtn)"/><path d="${line}" fill="none" stroke="#52525B" stroke-width="2"/>${mk(42,'⛰️','Pic 88',true)}${mk(37,'🏕️','USA',false)}${mk(45,'🏁','Nice',true)}${mk(48,'🌙','SaintExpress',false)}${cur}${kmlab}${cols}</svg>`;
 }
 function svgDonut(segs){const tot=segs.reduce((a,s)=>a+s.val,0)||1;let a=-90,paths='';const R=54,r=31,cx=64,cy=64;
   segs.forEach(s=>{const ang=s.val/tot*360,a2=a+ang;const P=(deg,rad)=>[cx+rad*Math.cos(Math.PI*deg/180),cy+rad*Math.sin(Math.PI*deg/180)];const large=ang>180?1:0;const[x1,y1]=P(a,R),[x2,y2]=P(a2,R),[x3,y3]=P(a2,r),[x4,y4]=P(a,r);paths+=`<path d="M ${x1.toFixed(1)} ${y1.toFixed(1)} A ${R} ${R} 0 ${large} 1 ${x2.toFixed(1)} ${y2.toFixed(1)} L ${x3.toFixed(1)} ${y3.toFixed(1)} A ${r} ${r} 0 ${large} 0 ${x4.toFixed(1)} ${y4.toFixed(1)} Z" fill="${s.color}"/>`;a=a2;});
   return `<svg viewBox="0 0 128 128" width="120" height="120">${paths}</svg>`;
 }
 
-function delta(series,good){const v=series.filter(x=>x!=null);if(v.length<2)return'';const d=v[v.length-1]-v[v.length-2];if(Math.abs(d)<0.5&&good!=='down')return '<span class="delta" style="color:var(--texte-trois)">\u25aa stable</span>';const up=d>0;const isGood=good?((good==='up'&&up)||(good==='down'&&!up)):null;const col=isGood===null?'#64748b':(isGood?'#16a34a':'#ef4444');const a=up?'\u25b2':'\u25bc';const val=Math.abs(d)>=1?Math.round(Math.abs(d)):Math.abs(d).toFixed(1);return `<span class="delta" style="color:${col}">${a} ${val} vs S-1</span>`;}
+function delta(series,good){const v=series.filter(x=>x!=null);if(v.length<2)return'';const d=v[v.length-1]-v[v.length-2];if(Math.abs(d)<0.5&&good!=='down')return '<span class="delta" style="color:var(--texte-trois)">\u25aa stable</span>';const up=d>0;const isGood=good?((good==='up'&&up)||(good==='down'&&!up)):null;const col=isGood===null?'#6B6B74':(isGood?'#16a34a':'#DC2626');const a=up?'\u25b2':'\u25bc';const val=Math.abs(d)>=1?Math.round(Math.abs(d)):Math.abs(d).toFixed(1);return `<span class="delta" style="color:${col}">${a} ${val} vs S-1</span>`;}
 
 /* ===== thème ===== */
 
 /* ===== onglets ===== */
 /* Couleurs de TEXTE : les teintes de marque nues (graphiques) sont remplacees par leurs variantes profondes (contraste AA). */
-function _tc(c){return({'#ef4444':'var(--danger-deux)','#16a34a':'var(--ok-deux)','#0d9488':'var(--primary-deux)','#f59e0b':'var(--warn-deux)','#94a3b8':'var(--texte-trois)','#65a30d':'var(--ok-deux)','#b45309':'var(--warn-deux)','#b91c1c':'var(--danger-deux)'})[String(c).toLowerCase()]||c;}
+function _tc(c){return({'#dc2626':'var(--danger-deux)','#16a34a':'var(--ok-deux)','#f4561d':'var(--primary-deux)','#ca8a04':'var(--warn-deux)','#a1a1aa':'var(--texte-trois)','#65a30d':'var(--ok-deux)','#8f5a07':'var(--warn-deux)','#b91c1c':'var(--danger-deux)'})[String(c).toLowerCase()]||c;}
 function showTab(t){
   const _dir=Math.sign(['accueil','plan','cockpit','palmares'].indexOf(t)-['accueil','plan','cockpit','palmares'].indexOf(typeof _ongletActif==='function'?_ongletActif():t));
   if(typeof _bbHold==='function')_bbHold(1400);
@@ -307,7 +307,7 @@ function _ckRebuild(){
       var Z={Z1:0,Z2:0,Z3:0,'Z4+':0},tot=0;
       ws.forEach(function(w){var zm=(agg[w]&&agg[w].zoneMin)||{};['Z1','Z2','Z3','Z4+'].forEach(function(k){Z[k]+=(zm[k]||0);tot+=(zm[k]||0);});});
       if(tot>0)_CK.FCZ[N]=[['Z1','#86efac',Math.round(Z.Z1/tot*100)],['Z2','#16a34a',Math.round(Z.Z2/tot*100)],
-                           ['Z3','#f59e0b',Math.round(Z.Z3/tot*100)],['Z4+','#ef4444',Math.round(Z['Z4+']/tot*100)]];
+                           ['Z3','#CA8A04',Math.round(Z.Z3/tot*100)],['Z4+','#DC2626',Math.round(Z['Z4+']/tot*100)]];
     }
     if(_CK.CAD)_CK.CAD[N]={w:lbl,v:ws.map(function(w){return _val('CAD','v',w,agg[w]&&agg[w].cad);})};
     if(_CK.PACE){var _pp=(_CK._PACE_ORIG&&_CK._PACE_ORIG[N])||{};var _L=lbl.length;var _tail=function(a){return Array.isArray(a)?a.slice(-_L):a;};_CK.PACE[N]={w:lbl,v:ws.map(function(w){return agg[w]?agg[w].pace:null;}),ef:ws.map(function(w){return agg[w]?agg[w].z2:null;}),am:ws.map(function(w){return agg[w]?agg[w].am:null;}),se:ws.map(function(w){return agg[w]?agg[w].se:null;})};}
@@ -353,7 +353,7 @@ function _ckRebuild(){
         if(!r||(r.statut!=='fait'&&r.statut!=='partiel')||!r.km||!s.date)return;
         var dt=new Date(s.date+'T12:00:00');
         var dateStr=isNaN(dt)?s.date:(joursFR[dt.getDay()]+' '+dt.getDate()+' '+moisFR[dt.getMonth()]);
-        var accent=(s.accent)||'#0d9488';
+        var accent=(s.accent)||'#F4561D';
         var rid=r.activity_id||('w'+wn+'s'+s.id);
         allRuns.push({id:rid,title:s.titre||s.type,date:dateStr,_sortDate:s.date,type:accent,
           km:r.km,al:r.allure?(r.allure.match(/(\d+:\d+)/)||[,r.allure])[1]:'—',
@@ -582,7 +582,7 @@ function computeFormeScore(){
   }
 
   const score=Math.round(freshScore*.35+acwrScore*.25+adherScore*.20+z2Score*.20);
-  const color=score>=82?'#0d9488':score>=68?'#16a34a':score>=52?'#f59e0b':'#ef4444';
+  const color=score>=82?'#F4561D':score>=68?'#16a34a':score>=52?'#CA8A04':'#DC2626';
   const trend=freshScore>=80&&acwrVal<=1.3?'↑':(freshScore<40||acwrVal>1.4?'↓':'→');
   let signal='';
   if(freshScore<25)signal='Fatigue importante · repos ou très facile uniquement';
@@ -763,7 +763,7 @@ function renderHeader(){
   }
   const _forme=_FORME_;
   const _formeTile=`<button class="htile htile-forme" onclick="document.getElementById('forme-detail').classList.toggle('fd-open')"><span class="ht-k">Forme du jour <span class="ht-help" role="button" tabindex="0" onclick="event.stopPropagation();openFormeHelp()">\u24d8</span></span><span class="ht-v" style="color:${_forme.color}">${_forme.score}<span class="ht-trend">${_forme.trend}</span></span><span class="ht-s">${_forme.signal}</span></button>`;
-  const _formeDetail=`<div class="forme-detail" id="forme-detail">${_forme.components.map(c=>`<div class="fd-row"><div class="fd-lbl">${c.label}</div><div class="fd-track"><div class="fd-fill" style="width:${c.score}%;background:${c.score>=80?'#0d9488':c.score>=65?'#16a34a':c.score>=50?'#f59e0b':'#ef4444'}"></div></div><div class="fd-val">${c.detail}</div></div>`).join('')}</div>`;
+  const _formeDetail=`<div class="forme-detail" id="forme-detail">${_forme.components.map(c=>`<div class="fd-row"><div class="fd-lbl">${c.label}</div><div class="fd-track"><div class="fd-fill" style="width:${c.score}%;background:${c.score>=80?'#F4561D':c.score>=65?'#16a34a':c.score>=50?'#CA8A04':'#DC2626'}"></div></div><div class="fd-val">${c.detail}</div></div>`).join('')}</div>`;
   // Sprint 1 — courses : la plus proche en tuile, les autres repliees
   let _nearTile='',_mini='',_COURSES_=[];
   /* Courses a venir uniquement, compteur via _joursAvant (meme chiffre que
@@ -1401,7 +1401,7 @@ function renderCrystalBall(){
   if(P.n===0)clarte=`<div class="cb-clarte">🌫️ <strong>Boule encore voilée.</strong> La projection part de ta forme actuelle (${PROJ.base_label}). Elle s'affinera à chaque séance qualité loguée — le <strong>test 10 km de la S31</strong> sera le premier gros recalibrage, puis chaque seuil et chaque séance d'allure marathon.</div>`;
   else clarte=`<div class="cb-clarte">🔮 <strong>${P.n} séance${P.n>1?'s':''} qualité intégrée${P.n>1?'s':''}.</strong> Plus tu logues de qualité, plus la projection se précise.</div>`;
   const sources=P.n?`<div class="cb-src"><div class="cb-src-t">Ce qui nourrit la projection</div>${P.sources.map(s=>`<div class="cb-src-l"><span>${s.label}${s.sub?` · ${s.sub}`:''}</span><span class="cb-src-v">${_s2hm(s.sec)}</span></div>`).join('')}<div class="cb-src-l cb-src-base"><span>Forme de départ (référence)</span><span class="cb-src-v">${_s2hm(PROJ.base)}</span></div></div>`:'';
-  const trend=P.trend.length>=2?`<div class="cb-trend"><div class="cb-src-t">Affinage de la projection séance après séance</div>${chartLine(P.trend.map(v=>v/60),{color:'#0d9488',h:120,fmtY:v=>_s2hm(v*60),baseline:goal/60,annotate:true})}</div>`:'';
+  const trend=P.trend.length>=2?`<div class="cb-trend"><div class="cb-src-t">Affinage de la projection séance après séance</div>${chartLine(P.trend.map(v=>v/60),{color:'#F4561D',h:120,fmtY:v=>_s2hm(v*60),baseline:goal/60,annotate:true})}</div>`:'';
   return `<div class="kpi cb">
     <div class="cb-head"><span class="cb-orb">🔮</span><div><div class="kpi-t" style="margin:0">Projection marathon — boule de cristal</div><div class="kpi-r" style="margin:2px 0 0">Temps projeté sur Nice, recalculé à chaque séance qualité loguée.</div></div></div>
     <div class="cb-big"><div class="cb-time">${_s2hm(P.sec)}</div><div class="cb-delta">${deltaTxt}</div></div>
@@ -1429,23 +1429,23 @@ function renderDash(){const el=document.getElementById('dash-contenu');const _SP
     const W=700,h=110,padL=36,padB=28,bw=60,gap=14;
     const bars=MONTHLY.map((m,i)=>{const x=padL+i*(bw+gap);const bh=(m[key]/max)*(h-padB-10);const y=h-padB-bh;
       return `<rect x="${x}" y="${y.toFixed(1)}" width="${bw}" height="${bh.toFixed(1)}" rx="5" fill="${col}" opacity=".85"/>
-        <text x="${(x+bw/2).toFixed(1)}" y="${(y-4).toFixed(1)}" font-size="9.5" font-weight="700" fill="#94a3b8" text-anchor="middle">${fmtV(m[key])}</text>
-        <text x="${(x+bw/2).toFixed(1)}" y="${h-10}" font-size="9" fill="#94a3b8" text-anchor="middle">${m.m}</text>`;}).join('');
+        <text x="${(x+bw/2).toFixed(1)}" y="${(y-4).toFixed(1)}" font-size="9.5" font-weight="700" fill="#A1A1AA" text-anchor="middle">${fmtV(m[key])}</text>
+        <text x="${(x+bw/2).toFixed(1)}" y="${h-10}" font-size="9" fill="#A1A1AA" text-anchor="middle">${m.m}</text>`;}).join('');
     return `<svg viewBox="0 0 ${W} ${h}" class="chart-svg">${bars}</svg>`;
   }
 
   // Donut polarisation
-  const pol=[{label:'Très facile',val:POLAR.tres_facile,color:'#bbf7d0'},{label:'EF facile',val:POLAR.ef,color:'#16a34a'},{label:'Zone grise',val:POLAR.gris,color:'#f59e0b'},{label:'Qualité',val:POLAR.qualite,color:'#ef4444'}];
+  const pol=[{label:'Très facile',val:POLAR.tres_facile,color:'#bbf7d0'},{label:'EF facile',val:POLAR.ef,color:'#16a34a'},{label:'Zone grise',val:POLAR.gris,color:'#CA8A04'},{label:'Qualité',val:POLAR.qualite,color:'#DC2626'}];
   const histKm=HIST.map(h=>h.km);const histRe=HIST.map(h=>h.re);const histLab=HIST.map(h=>h.sem);
 
   // Couleur ACWR
-  const acwr=ACWR_DATA.acwr;const acwrCol=acwr>1.5?'#ef4444':acwr<0.8?'#0d9488':'#16a34a';
+  const acwr=ACWR_DATA.acwr;const acwrCol=acwr>1.5?'#DC2626':acwr<0.8?'#F4561D':'#16a34a';
   const acwrLabel=acwr>1.5?'Attention — charge élevée':acwr<0.8?'Frais / allègement':'Charge maîtrisée';
 
   // Chaussures
   const maxShKm=Math.max(...GEAR.map(g=>g.km));
   const shoes=GEAR.slice().sort((a,b)=>b.km-a.km).map(g=>{
-    const col=g.km>900?'#ef4444':g.km>700?'#f59e0b':'#16a34a';
+    const col=g.km>900?'#DC2626':g.km>700?'#CA8A04':'#16a34a';
     const al=g.km>900?`<div class="shoe-alert">⚠ ${g.km} km — remplacement à envisager</div>`:'';
     return `<div><div class="shoe-row"><div class="shoe-name">${g.marque} ${g.modele}</div><div class="shoe-track"><div class="shoe-fill" style="width:${g.km/maxShKm*100}%;background:${col}"></div></div><div class="shoe-km">${g.km} km</div></div>${al}</div>`;}).join('');
 
@@ -1493,19 +1493,19 @@ function renderDash(){const el=document.getElementById('dash-contenu');const _SP
     <div class="kpi-t">📅 Ta saison 2026 en chiffres</div>
     <div class="kpi-r">Depuis le 1er janvier 2026 · <strong>Run + Trail uniquement</strong>, aligné sur Strava (${SAISON2026.sorties} activités). Hikes et raquettes non inclus dans le compteur Strava running.</div>
     <div class="dash-stats" style="margin-bottom:18px">
-      <div class="dstat" style="--accent:#0d9488"><div class="dstat-l">Sorties</div><div class="dstat-v">${SAISON2026.sorties}</div><div class="dstat-s">en ${SAISON2026.mois} mois</div></div>
+      <div class="dstat" style="--accent:#F4561D"><div class="dstat-l">Sorties</div><div class="dstat-v">${SAISON2026.sorties}</div><div class="dstat-s">en ${SAISON2026.mois} mois</div></div>
       <div class="dstat" style="--accent:#16a34a"><div class="dstat-l">Kilométrage</div><div class="dstat-v">${SAISON2026.km}</div><div class="dstat-s">km parcourus</div></div>
-      <div class="dstat" style="--accent:#f59e0b"><div class="dstat-l">Dénivelé +</div><div class="dstat-v">${SAISON2026.elev.toLocaleString()}</div><div class="dstat-s">mètres</div></div>
-      <div class="dstat" style="--accent:#0d9488"><div class="dstat-l">Prépa plan</div><div class="dstat-v">${faites}/${total}</div><div class="dstat-s">séances réalisées</div></div>
+      <div class="dstat" style="--accent:#CA8A04"><div class="dstat-l">Dénivelé +</div><div class="dstat-v">${SAISON2026.elev.toLocaleString()}</div><div class="dstat-s">mètres</div></div>
+      <div class="dstat" style="--accent:#F4561D"><div class="dstat-l">Prépa plan</div><div class="dstat-v">${faites}/${total}</div><div class="dstat-s">séances réalisées</div></div>
     </div>
     <div class="kpi-t" style="font-size:.88rem;margin-bottom:8px">Volume mensuel (km)</div>
-    ${svgMonthly('km','#0d9488',v=>Math.round(v))}
+    ${svgMonthly('km','#F4561D',v=>Math.round(v))}
     <div style="margin-top:14px">
     <div class="kpi-t" style="font-size:.88rem;margin-bottom:8px">Dénivelé mensuel (m)</div>
-    ${svgMonthly('elev','#f59e0b',v=>v>=1000?(v/1000).toFixed(1)+'k':v)}</div>
+    ${svgMonthly('elev','#CA8A04',v=>v>=1000?(v/1000).toFixed(1)+'k':v)}</div>
     <div style="margin-top:14px">
     <div class="kpi-t" style="font-size:.88rem;margin-bottom:8px">Sorties par mois</div>
-    ${svgMonthly('sorties','#0d9488',v=>v)}</div>
+    ${svgMonthly('sorties','#F4561D',v=>v)}</div>
   </div>
 
   </div></section>`+dgrpHead('charge','❤️','Charge & physiologie')+`
@@ -1523,15 +1523,15 @@ function renderDash(){const el=document.getElementById('dash-contenu');const _SP
     <div class="kpi-r">Ratio aigu/chronique calculé en <strong>fenêtres glissantes réelles</strong> (charge 7 jours vs moyenne sur 28 jours). Au-dessus de 1,5 : risque de blessure. En-dessous de 0,8 : allègement.</div>
     <div class="dash-stats">
       <div class="dstat" style="--accent:${acwrCol}"><div class="dstat-l">Charge 7 jours</div><div class="dstat-v">${ACWR_DATA.charge7j}</div><div class="dstat-s">RE (Relative Effort)</div></div>
-      <div class="dstat" style="--accent:#64748b"><div class="dstat-l">Charge 28 jours / sem.</div><div class="dstat-v">${Math.round(ACWR_DATA.charge28j/4)}</div><div class="dstat-s">RE moyen / semaine</div></div>
+      <div class="dstat" style="--accent:#6B6B74"><div class="dstat-l">Charge 28 jours / sem.</div><div class="dstat-v">${Math.round(ACWR_DATA.charge28j/4)}</div><div class="dstat-s">RE moyen / semaine</div></div>
       <div class="dstat" style="--accent:${acwrCol}"><div class="dstat-l">Ratio ACWR</div><div class="dstat-v" style="color:${acwrCol}">${acwr.toFixed(2)}</div><div class="dstat-s">${acwrLabel}</div></div>
     </div>
     <div class="rev-coach">${ACWR_DATA.interpretation}</div>
-    <div style="margin-top:14px">${delta(histRe)} ${chartLine(histRe,{color:'#0d9488',labels:histLab,annotate:true,h:140})}</div>
+    <div style="margin-top:14px">${delta(histRe)} ${chartLine(histRe,{color:'#F4561D',labels:histLab,annotate:true,h:140})}</div>
   </div>
 
   <!-- 5. Volume hebdo -->
-  <div class="kpi"><div class="kpi-t">📈 Ton volume — historique 28 semaines</div><div class="kpi-r">Tes vraies semaines Strava. Le plan prend le relais à la S25.</div>${delta(histKm)} ${chartLine(histKm,{color:'#0d9488',labels:histLab,fmtY:v=>Math.round(v)+'km',annotate:true,h:150})}</div>
+  <div class="kpi"><div class="kpi-t">📈 Ton volume — historique 28 semaines</div><div class="kpi-r">Tes vraies semaines Strava. Le plan prend le relais à la S25.</div>${delta(histKm)} ${chartLine(histKm,{color:'#F4561D',labels:histLab,fmtY:v=>Math.round(v)+'km',annotate:true,h:150})}</div>
 
   </div></section>`+dgrpHead('perf','🏆','Performances & objectifs')+renderCrystalBall()+`
   <!-- 7. Allures d'entraînement -->
@@ -1564,9 +1564,9 @@ function renderDash(){const el=document.getElementById('dash-contenu');const _SP
     <div class="kpi-t">🎯 Objectifs course</div>
     <div class="kpi-r">Trois objectifs, trois logiques différentes.</div>
     <div class="dash-stats">
-      <div class="dstat" style="--accent:#0d9488"><div class="dstat-l">Run In Lyon</div><div class="dstat-v">Fait ✓</div><div class="dstat-s">Semi 21,1 km · 4 oct. · test de discipline d'allure</div></div>
-      <div class="dstat" style="--accent:#f59e0b"><div class="dstat-l">J avant Nice</div><div class="dstat-v">J-${cd[1]}</div><div class="dstat-s">Marathon 8 nov. · objectif 3h45</div></div>
-      <div class="dstat" style="--accent:#0d9488"><div class="dstat-l">J avant SaintExpress</div><div class="dstat-v">J-${cd[2]}</div><div class="dstat-s">45 km night trail 28 nov.</div></div>
+      <div class="dstat" style="--accent:#F4561D"><div class="dstat-l">Run In Lyon</div><div class="dstat-v">Fait ✓</div><div class="dstat-s">Semi 21,1 km · 4 oct. · test de discipline d'allure</div></div>
+      <div class="dstat" style="--accent:#CA8A04"><div class="dstat-l">J avant Nice</div><div class="dstat-v">J-${cd[1]}</div><div class="dstat-s">Marathon 8 nov. · objectif 3h45</div></div>
+      <div class="dstat" style="--accent:#F4561D"><div class="dstat-l">J avant SaintExpress</div><div class="dstat-v">J-${cd[2]}</div><div class="dstat-s">45 km night trail 28 nov.</div></div>
     </div>
     <div class="rec-grid" style="margin-top:12px">
       <div class="rec"><div class="rec-v">3h45</div><div class="rec-l">Marathon objectif</div><div class="rec-s">Nice · 8 nov.</div></div>
@@ -1628,14 +1628,14 @@ function s24Chart(splits){const n=splits.length,W=720,h=190,padL=8,padR=8,padT=2
   const bw=(W-padL-padR)/n;
   const bars=splits.map((s,i)=>{const sp=1000/s[0];const bh=(sp-sMin)/(sMax-sMin)*(h-padT-padB);const x=padL+i*bw,y=h-padB-bh;
     const pm=Math.floor(s[0]/60),ps=Math.round(s[0]%60);
-    return `<rect x="${(x+2).toFixed(1)}" y="${y.toFixed(1)}" width="${(bw-4).toFixed(1)}" height="${bh.toFixed(1)}" rx="3" fill="#0d9488" opacity=".55"/>
-      <text x="${(x+bw/2).toFixed(1)}" y="${(h-padB+11).toFixed(1)}" font-size="7.6" fill="#94a3b8" text-anchor="middle">${pm}:${String(ps).padStart(2,'0')}</text>
-      <text x="${(x+bw/2).toFixed(1)}" y="${(h-padB+21).toFixed(1)}" font-size="6.8" fill="#cbd5e1" text-anchor="middle">km${i+1}</text>`;}).join('');
+    return `<rect x="${(x+2).toFixed(1)}" y="${y.toFixed(1)}" width="${(bw-4).toFixed(1)}" height="${bh.toFixed(1)}" rx="3" fill="#F4561D" opacity=".55"/>
+      <text x="${(x+bw/2).toFixed(1)}" y="${(h-padB+11).toFixed(1)}" font-size="7.6" fill="#A1A1AA" text-anchor="middle">${pm}:${String(ps).padStart(2,'0')}</text>
+      <text x="${(x+bw/2).toFixed(1)}" y="${(h-padB+21).toFixed(1)}" font-size="6.8" fill="#D4D4D8" text-anchor="middle">km${i+1}</text>`;}).join('');
   const HY=v=>padT+(h-padT-padB)*(1-(v-hMin)/(hMax-hMin));
   const line='M '+hrs.map((v,i)=>`${(padL+i*bw+bw/2).toFixed(1)} ${HY(v).toFixed(1)}`).join(' L ');
-  const hrlab=hrs.map((v,i)=>{if(i===0||i===n-1||v===Math.max(...hrs))return `<text x="${(padL+i*bw+bw/2).toFixed(1)}" y="${(HY(v)-6).toFixed(1)}" font-size="8" font-weight="700" fill="#ef4444" text-anchor="middle">${v}</text>`;return '';}).join('');
-  return `<svg viewBox="0 0 ${W} ${h}" class="chart-svg">${bars}<path d="${line}" fill="none" stroke="#ef4444" stroke-width="2" stroke-linejoin="round"/>${hrlab}
-    <text x="${padL}" y="11" font-size="8.5" fill="#0d9488" font-weight="700">▮ Allure /km</text><text x="${padL+74}" y="11" font-size="8.5" fill="#ef4444" font-weight="700">— FC moyenne /km</text></svg>`;
+  const hrlab=hrs.map((v,i)=>{if(i===0||i===n-1||v===Math.max(...hrs))return `<text x="${(padL+i*bw+bw/2).toFixed(1)}" y="${(HY(v)-6).toFixed(1)}" font-size="8" font-weight="700" fill="#DC2626" text-anchor="middle">${v}</text>`;return '';}).join('');
+  return `<svg viewBox="0 0 ${W} ${h}" class="chart-svg">${bars}<path d="${line}" fill="none" stroke="#DC2626" stroke-width="2" stroke-linejoin="round"/>${hrlab}
+    <text x="${padL}" y="11" font-size="8.5" fill="#C2410C" font-weight="700">▮ Allure /km</text><text x="${padL+74}" y="11" font-size="8.5" fill="#DC2626" font-weight="700">— FC moyenne /km</text></svg>`;
 }
 
 /* ===== REWIND hebdo ===== */
@@ -1669,7 +1669,7 @@ function dosProfilSVG(D,ac){
   let mi=0;for(let i=0;i<n;i++)if(pts[i]>pts[mi])mi=i;
   const sx=X(mi),sy=Y(pts[mi]);
   const sum=`<circle cx="${sx.toFixed(1)}" cy="${sy.toFixed(1)}" r="3.4" fill="${ac}"/><text x="${sx.toFixed(1)}" y="${(sy-7).toFixed(1)}" class="dp-mk" text-anchor="middle">${pts[mi]} m</text>`;
-  return `<svg class="dos-prof" viewBox="0 0 ${W} ${H}" role="img" aria-label="Profil réel du parcours"><style>.dp-ax{font:600 9px system-ui;fill:#94a3b8}.dp-grid{stroke:#e2e8f0;stroke-width:1}.dp-mk{font:700 9.5px system-ui;fill:${ac}}</style>${yl}<path class="dp-area" d="${area}" fill="${ac}" opacity="0.13"/><path class="dp-line" pathLength="1" d="${d}" fill="none" stroke="${ac}" stroke-width="2.4" stroke-linejoin="round"/>${sum}${xl}</svg><div class="dos-prof-cap">Profil réel (trace GPX officielle) · altitude (m) en ordonnée, distance (km) en abscisse · point le plus haut ${pts[mi]} m vers le km ${Math.round(mi/(n-1)*dist)}</div>`;
+  return `<svg class="dos-prof" viewBox="0 0 ${W} ${H}" role="img" aria-label="Profil réel du parcours"><style>.dp-ax{font:600 9px system-ui;fill:#A1A1AA}.dp-grid{stroke:#E7E7EA;stroke-width:1}.dp-mk{font:700 9.5px system-ui;fill:${ac}}</style>${yl}<path class="dp-area" d="${area}" fill="${ac}" opacity="0.13"/><path class="dp-line" pathLength="1" d="${d}" fill="none" stroke="${ac}" stroke-width="2.4" stroke-linejoin="round"/>${sum}${xl}</svg><div class="dos-prof-cap">Profil réel (trace GPX officielle) · altitude (m) en ordonnée, distance (km) en abscisse · point le plus haut ${pts[mi]} m vers le km ${Math.round(mi/(n-1)*dist)}</div>`;
 }
 /* ===== Checklist J-7 par course ===== */
 const CK_SECS={deraille:[
@@ -1809,7 +1809,7 @@ function renderChecklistHTML(race){
 
 function ouvrirDossier(id){
   const D=(typeof DOSSIERS!=='undefined')?DOSSIERS[id]:null; if(!D)return;
-  const ac=D.accent||'#0d9488';
+  const ac=D.accent||'#F4561D';
   const stats=D.stats.map(s=>`<div class="dos-stat"><div class="dos-stat-v">${s[0]}</div><div class="dos-stat-l">${s[1]}</div></div>`).join('');
   const segs=D.segments.map(s=>`<div class="dos-seg"><div class="dos-seg-h"><span class="dos-seg-t">${s.t}</span><span class="dos-seg-km">${s.km}</span></div><div class="dos-seg-f">${s.faire}</div></div>`).join('');
   const plan=D.plan.map(p=>`<div class="dos-plan" style="--pc:${p.c}"><div class="dos-plan-h"><span class="dos-plan-n">${p.n}</span><span class="dos-plan-titre">${p.titre}</span><span class="dos-plan-tag">${p.tag}</span></div><div class="dos-plan-txt">${p.txt}</div><div class="dos-plan-fuel">⛽ ${p.fuel}</div></div>`).join('');
@@ -1899,7 +1899,7 @@ function ouvrirSemaine(num){const s=SEMAINES.find(x=>x.num===num);const ph=PHASE
     if(se.chaussure)tags.push(`<span class="seance-shoe">👟 ${se.chaussure.replace("ASICS ","").replace("HOKA ","").replace("Brooks ","")}</span>`);
     if(se.fit)tags.push('<span class="seance-fit">⌚ .fit</span>');
     if(se.opt)tags.push('<span class="seance-tag tag-opt">Optionnelle</span>');
-    if(isSkipped&&r.reason)tags.push(`<span class="seance-tag" style="color:#92400e;background:#fef9c3">⏭ ${r.reason}</span>`);
+    if(isSkipped&&r.reason)tags.push(`<span class="seance-tag" style="color:var(--warn-deux);background:var(--warn-fond)">⏭ ${r.reason}</span>`);
     const rs=r.km?`<div class="seance-desc" style="color:var(--ok-deux);font-weight:700;margin-top:4px">✓ ${r.km} km${r.allure?' · '+r.allure:''}</div>`:'';
     const menuBtn=(!isDone&&!isSkipped)?`<button class="sm-btn" onclick="event.stopPropagation();openSM(${num},'${se.id}')">···</button>`:'';
     const rightEl=isDone
@@ -1918,9 +1918,9 @@ function ouvrirSemaine(num){const s=SEMAINES.find(x=>x.num===num);const ph=PHASE
 /* ===== Créneaux météo — popup horaire ===== */
 function _wxStatus(t){
   if(t<22)return{cls:'wx-ideal',lbl:'🟢 Idéal',c:'#16a34a'};
-  if(t<27)return{cls:'wx-ok',lbl:'🟡 OK',c:'#f59e0b'};
-  if(t<32)return{cls:'wx-dur',lbl:'🟠 Difficile',c:'#f59e0b'};
-  return{cls:'wx-evit',lbl:'🔴 Éviter',c:'#ef4444'};
+  if(t<27)return{cls:'wx-ok',lbl:'🟡 OK',c:'#CA8A04'};
+  if(t<32)return{cls:'wx-dur',lbl:'🟠 Difficile',c:'#CA8A04'};
+  return{cls:'wx-evit',lbl:'🔴 Éviter',c:'#DC2626'};
 }
 function _wxReco(hrs){
   const ideal=hrs.filter(([h,t])=>t<22);
@@ -2048,11 +2048,11 @@ function openReplay(key){
     <div class="rp-head"><div class="rp-title">${d.titre}</div><div class="rp-date">${d.date} \u00b7 ${d.dist} km \u00b7 D+ ${d.dplus} m</div></div>
     <div class="rp-chart">
       <svg viewBox="0 0 ${W} ${H}" class="rp-svg" preserveAspectRatio="none">
-        <defs><linearGradient id="rpg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0d9488" stop-opacity=".45"/><stop offset="1" stop-color="#0d9488" stop-opacity="0"/></linearGradient></defs>
+        <defs><linearGradient id="rpg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F4561D" stop-opacity=".45"/><stop offset="1" stop-color="#F4561D" stop-opacity="0"/></linearGradient></defs>
         <path d="${areaPath}" fill="url(#rpg)" opacity=".5"/>
-        <path d="${path}" fill="none" stroke="#334155" stroke-width="1.5" opacity=".35"/>
-        <path id="rp-trace" d="${path}" fill="none" stroke="#0d9488" stroke-width="2.5" stroke-linecap="round"/>
-        <circle id="rp-dot" r="5" fill="#0d9488" stroke="#fff" stroke-width="2"/>
+        <path d="${path}" fill="none" stroke="#3F3F46" stroke-width="1.5" opacity=".35"/>
+        <path id="rp-trace" d="${path}" fill="none" stroke="#F4561D" stroke-width="2.5" stroke-linecap="round"/>
+        <circle id="rp-dot" r="5" fill="#F4561D" stroke="#fff" stroke-width="2"/>
       </svg>
     </div>
     <div class="rp-stats">
@@ -2105,7 +2105,7 @@ function _replayRun(key){
     else if(slope<-8)phaseEl.textContent='\u{1F3C3} Descente engag\u00e9e \u2014 on d\u00e9roule';
     else phaseEl.textContent='\u{1F33F} Terrain roulant';
     // couleur FC selon zone
-    hrEl.style.color=_tc(hr>165?'#dc2626':hr>145?'#f59e0b':'#16a34a');
+    hrEl.style.color=_tc(hr>165?'#dc2626':hr>145?'#CA8A04':'#16a34a');
     if(p<1)_replayRAF=requestAnimationFrame(frame);
     else{phaseEl.textContent='\u{1F3C1} Sortie termin\u00e9e \u2014 belle grimpette !';btn.style.opacity='1';btn.style.pointerEvents='auto';}
   }
@@ -2113,7 +2113,7 @@ function _replayRun(key){
 }
 function _replayClose(){if(_replayRAF)cancelAnimationFrame(_replayRAF);const ov=document.getElementById('replay-ov');if(!ov)return;ov.classList.remove('show');setTimeout(()=>ov.remove(),300);}
 const _CK_HELP={
-  profil:{t:'Profil de coureur',c:'#0d9488',body:`<p style="font-size:12px;color:var(--texte-trois)">Huit qualités notées sur 99, calculées uniquement sur tes séances réelles.</p>
+  profil:{t:'Profil de coureur',c:'#F4561D',body:`<p style="font-size:12px;color:var(--texte-trois)">Huit qualités notées sur 99, calculées uniquement sur tes séances réelles.</p>
     <p><strong>Comment lire.</strong> Plus une pointe s'éloigne du centre, plus tu es fort sur cette qualité. La forme du polygone raconte ton profil : un coureur complet a une forme régulière, un spécialiste a une forme allongée dans une direction.</p>
     <p><strong>Les sept axes :</strong><br>
     <strong>Vitesse</strong> — ta meilleure pointe sur 30 secondes, mesurée sur tes séances de VMA.<br>
@@ -2127,7 +2127,7 @@ const _CK_HELP={
     <p><strong>Deux lectures du même radar.</strong> Le <strong>profil général</strong> est la moyenne simple des sept axes. L'<strong>indice Nice</strong> les pondère selon leur importance pour le marathon : allure marathon 25 %, endurance 25 %, durabilité 20 %, seuil 15 %, constance 10 %, vitesse 5 % — et la montagne compte pour zéro, puisqu'elle n'aidera pas le 8 novembre.</p>
     <p><strong>L'échelle.</strong> Les bornes sont celles d'un coureur amateur : <strong>1 correspond à un débutant, 99 à un très bon amateur</strong>. Ce n'est volontairement pas une échelle élite — l'objectif est que la note bouge visiblement quand tu progresses, pas de te comparer à des professionnels.</p>
     <p><strong>Ce que ça n'est pas.</strong> Ni une prédiction de performance, ni une note de valeur. C'est une photo de tes qualités relatives à un instant donné, utile pour voir où concentrer le travail. Les axes reposant sur peu de séances (seuil, montagne) bougeront plus brutalement : regarde la tendance sur plusieurs semaines, pas la variation d'un jour à l'autre.</p>`},
-  decoup:{t:'D\u00e9couplage cardiaque',c:'#0d9488',body:`<p style="font-size:12px;color:var(--texte-trois)">Est-ce que ta sortie t'a co\u00fbt\u00e9 plus cher \u00e0 la fin qu'au d\u00e9but ?</p>
+  decoup:{t:'D\u00e9couplage cardiaque',c:'#F4561D',body:`<p style="font-size:12px;color:var(--texte-trois)">Est-ce que ta sortie t'a co\u00fbt\u00e9 plus cher \u00e0 la fin qu'au d\u00e9but ?</p>
     <p><strong>L'id\u00e9e en une image.</strong> Imagine un long trajet en voiture : au d\u00e9but tu consommes 5 L/100 km, \u00e0 la fin il t'en faut 6 pour rouler \u00e0 la <strong>m\u00eame vitesse</strong>. Le moteur fatigue. En course, ton <strong>allure</strong> c'est la vitesse produite, ta <strong>FC</strong> c'est ce que \u00e7a te co\u00fbte. Le d\u00e9couplage mesure de combien ce co\u00fbt a augment\u00e9 entre la premi\u00e8re et la seconde moiti\u00e9. Le nom vient de l\u00e0 : au d\u00e9part allure et cardio sont <em>coupl\u00e9s</em> ; quand la fatigue arrive, ils se <em>d\u00e9couplent</em>.</p>
     <p><strong>Pourquoi pas juste les bpm ?</strong> Parce que les bpm seuls peuvent mentir : si tu ralentis beaucoup en fin de sortie, ta FC reste stable et tout semble parfait, alors que tu t'es d\u00e9grad\u00e9 \u2014 tu l'as juste masqu\u00e9 en levant le pied. Le d\u00e9couplage regarde les deux ensemble, donc impossible de tricher. Les bpm restent affich\u00e9s parce que c'est ce que tu lis sur ta montre, et quand les deux divergent, c'est justement l\u00e0 qu'est l'info.</p>
     <p><strong>L'\u00e9chelle</strong> \u2014 calibr\u00e9e sur tes propres sorties, pas sur une table g\u00e9n\u00e9rique :<br>
@@ -2139,63 +2139,63 @@ const _CK_HELP={
     <p><strong>Comment c'est calcul\u00e9.</strong> \u00c0 partir des donn\u00e9es seconde par seconde de la sortie : on \u00e9carte les 3 premi\u00e8res minutes (mont\u00e9e cardiaque), on d\u00e9tecte et on retire les lignes droites ou acc\u00e9l\u00e9rations finales, on nettoie les arr\u00eats et les d\u00e9crochages du capteur, puis on trace la pente du rapport allure/FC sur toute la fen\u00eatre restante. Quatre contr\u00f4les automatiques valident ensuite le chiffre : stabilit\u00e9 au d\u00e9calage de la fen\u00eatre, concordance entre deux m\u00e9thodes de calcul, taux de points conserv\u00e9s, plausibilit\u00e9 physiologique. <strong>Si un seul \u00e9choue, aucun chiffre n'est affich\u00e9</strong> \u2014 mieux vaut se taire que raconter n'importe quoi.</p>
     <p><strong>Sur quelles sorties ?</strong> Uniquement les footings et sorties longues sur route, d'au moins 40 minutes exploitables. Les s\u00e9ances de qualit\u00e9 (seuil, VMA, c\u00f4tes) et les trails sont exclus : leur allure varie par construction, le d\u00e9couplage n'y voudrait rien dire.</p>
     <p><strong>Ce qu'il faut regarder.</strong> Une valeur isol\u00e9e est du bruit ; c'est la <strong>tendance</strong> qui est le signal. Voir ton d\u00e9couplage baisser \u00e0 conditions comparables, c'est la preuve chiffr\u00e9e que ton endurance progresse \u2014 bien plus fiable que l'allure brute, qui d\u00e9pend de la m\u00e9t\u00e9o et de la forme du jour.</p>`},
-  saison:{t:'Progression par saison',c:'#0d9488',body:`<p>Cette carte compare ton <strong>efficience aérobie d'une saison à l'autre</strong> : l'allure que tu produis à un effort cardiaque de référence (145 bpm). Plus l'allure est rapide à FC égale, plus ton moteur est efficient.</p>
+  saison:{t:'Progression par saison',c:'#F4561D',body:`<p>Cette carte compare ton <strong>efficience aérobie d'une saison à l'autre</strong> : l'allure que tu produis à un effort cardiaque de référence (145 bpm). Plus l'allure est rapide à FC égale, plus ton moteur est efficient.</p>
     <p><strong>Pourquoi la correction chaleur est cruciale :</strong> comparer les allures brutes entre l'hiver et l'été serait trompeur — la chaleur fait grimper ton cardio de ~1 bpm par °C au-dessus de 15°C. Sans correction, tes sorties estivales paraîtraient plus lentes alors qu'elles sont en réalité tes meilleures. Chaque point été est donc corrigé de sa dérive thermique via la température réelle de la séance.</p>
     <p><strong>Comment c'est calculé :</strong> pour chaque saison, on prend plusieurs footings EF sur route (trails et séances de qualité exclus), avec leur vraie FC issue de Strava, et on ramène l'allure à 145 bpm. La médiane par saison lisse les variations d'une sortie à l'autre.</p>
     <p><strong>À savoir :</strong> les points hiver et printemps sont figés (données historiques réelles). L'été s'enrichit à mesure que de nouvelles séances sont enregistrées avec leur température. L'échantillon est de 2-3 sorties par saison : la tendance est fiable, les valeurs exactes sont à ±quelques secondes.</p>`},
-  heat:{t:'Acclimatation chaleur',c:'#f59e0b',body:`<p>S'entraîner dans la chaleur déclenche de vraies adaptations : <strong>volume plasmatique augmenté, sudation plus précoce et efficace, dérive cardiaque réduite</strong>. C'est un entraînement dans l'entraînement.</p>
+  heat:{t:'Acclimatation chaleur',c:'#CA8A04',body:`<p>S'entraîner dans la chaleur déclenche de vraies adaptations : <strong>volume plasmatique augmenté, sudation plus précoce et efficace, dérive cardiaque réduite</strong>. C'est un entraînement dans l'entraînement.</p>
     <p><strong>Le modèle :</strong> la science situe l'acclimatation quasi complète autour de <strong>8-10 expositions sur 2-3 semaines</strong>. Ce score compte tes séances courues à plus de 25°C (météo réelle de Lyon) sur les 21 derniers jours : 8 expositions = 100 %.</p>
     <p><strong>Le bénéfice chiffré :</strong> bien acclimaté, ta dérive cardiaque thermique diminue d'environ un tiers — à 30°C, ton cœur compense ~10 bpm au lieu de ~15. Concrètement : les sorties chaudes qui te frustraient te coûtent de moins en moins.</p>
     <p><strong>À savoir :</strong> l'adaptation se perd en 2-3 semaines sans exposition (le score redescend naturellement). Et elle a un bonus caché : une partie des gains (volume plasmatique) persiste à la fraîche — l'été te prépare aussi pour novembre.</p>`},
-  eff:{t:'Efficience aérobie',c:'#0d9488',body:`<p>L'<strong>efficience aérobie</strong> mesure la vitesse que tu produis <strong>par battement de cœur</strong>. C'est l'indicateur le plus fiable de la construction de ton moteur : quand elle monte, tu cours plus vite au même effort — même si les chronos bruts ne le montrent pas.</p>
+  eff:{t:'Efficience aérobie',c:'#F4561D',body:`<p>L'<strong>efficience aérobie</strong> mesure la vitesse que tu produis <strong>par battement de cœur</strong>. C'est l'indicateur le plus fiable de la construction de ton moteur : quand elle monte, tu cours plus vite au même effort — même si les chronos bruts ne le montrent pas.</p>
     <p>Ici on l'exprime en <strong>allure équivalente à 145 bpm</strong> (le cœur de ta zone d'endurance), moyennée par semaine sur tes footings et sorties route (les trails et le seuil sont exclus, non comparables).</p>
     <p><strong>La correction température :</strong> ta FC de chaque séance est corrigée de la dérive thermique (~1 bpm par °C au-dessus de 15°C) grâce à la météo historique réelle de Lyon au jour et à l'heure de tes sorties (18h par défaut). Sans cette correction, la canicule ferait croire à une régression alors que ton moteur progresse.</p>
     <p><strong>Comment la lire :</strong> la tendance sur 4-8 semaines compte, pas les variations d'une semaine (sommeil, parcours, vent...). Une amélioration de 5-15 s/km par mois en phase de développement est un excellent rythme.</p>`},
-  vo2:{t:'VO\u2082max estimé',c:'#0d9488',body:`<p>Le <strong>VO\u2082max</strong> est le débit maximal d'oxygène que ton corps peut consommer à l'effort, exprimé en <strong>ml/kg/min</strong>. C'est une mesure de ta <strong>cylindrée aérobie</strong> : plus il est élevé, plus ton moteur peut fournir d'énergie longtemps.</p>
+  vo2:{t:'VO\u2082max estimé',c:'#F4561D',body:`<p>Le <strong>VO\u2082max</strong> est le débit maximal d'oxygène que ton corps peut consommer à l'effort, exprimé en <strong>ml/kg/min</strong>. C'est une mesure de ta <strong>cylindrée aérobie</strong> : plus il est élevé, plus ton moteur peut fournir d'énergie longtemps.</p>
     <p>Ici il est <strong>estimé</strong> (pas mesuré en labo) à partir de tes vrais chronos, via la méthode <strong>VDOT de Jack Daniels</strong> — la référence en physiologie de la course. Les trois distances sont combinées, le 10 km pesant le plus (l'effort le plus fiable).</p>
     <div class="ch-rule"><div class="ch-dot" style="background:var(--gris)"></div><div><strong>35-42</strong> : coureur loisir régulier</div></div>
     <div class="ch-rule"><div class="ch-dot" style="background:var(--primary)"></div><div><strong>42-48</strong> : bon niveau amateur confirmé \u2014 <em>tu es ici</em></div></div>
     <div class="ch-rule"><div class="ch-dot" style="background:var(--ok)"></div><div><strong>48-55</strong> : coureur performant (clubs, bons classements)</div></div>
     <div class="ch-rule"><div class="ch-dot" style="background:var(--warn)"></div><div><strong>55-65+</strong> : niveau régional à élite</div></div>
     <p style="margin-top:12px"><strong>À retenir :</strong> le VO\u2082max est en partie génétique et bouge lentement. Pour ton marathon, ce qui compte le plus au quotidien c'est ton <strong>seuil</strong> et ta <strong>durabilité</strong>, qui progressent bien plus vite. Ton VO\u2082max ici sert de repère de potentiel \u2014 il montera si tu bats un chrono.</p>`},
-  forme:{t:'Forme du jour',c:'#0d9488',body:`<p>La <strong>Forme du jour</strong> est un score de synthèse sur 100 qui résume ton état de préparation actuel, recalculé à chaque ouverture à partir de tes vraies séances loggées.</p>
+  forme:{t:'Forme du jour',c:'#F4561D',body:`<p>La <strong>Forme du jour</strong> est un score de synthèse sur 100 qui résume ton état de préparation actuel, recalculé à chaque ouverture à partir de tes vraies séances loggées.</p>
     <div class="ch-rule"><div class="ch-dot" style="background:var(--primary)"></div><div><strong>ACWR (30%)</strong> : équilibre entre ta charge récente et ta charge de fond. Le cœur du score.</div></div>
     <div class="ch-rule"><div class="ch-dot" style="background:var(--ok)"></div><div><strong>Adhérence (25%)</strong> : régularité sur les 2 dernières semaines — as-tu fait ce qui était prévu ?</div></div>
-    <div class="ch-rule"><div class="ch-dot" style="background:#0891b2"></div><div><strong>Allure Z2 (25%)</strong> : progression de ton allure en endurance fondamentale, l'indicateur n°1 du moteur aérobie.</div></div>
+    <div class="ch-rule"><div class="ch-dot" style="background:var(--primary-deux)"></div><div><strong>Allure Z2 (25%)</strong> : progression de ton allure en endurance fondamentale, l'indicateur n°1 du moteur aérobie.</div></div>
     <div class="ch-rule"><div class="ch-dot" style="background:var(--warn)"></div><div><strong>Fraîcheur (20%)</strong> : ta charge du moment, pour capter la fatigue accumulée.</div></div>
     <div class="ch-tip">💡 Un score élevé = bon moment pour une séance qualité. Un score bas = privilégie la récup ou l'endurance facile.</div>`},
-  pmc:{t:'PMC — Fitness · Fatigue · Forme',c:'#0d9488',body:`<p>Le <strong>Performance Management Chart</strong> (PMC) est le graphe fondamental du coaching de haut niveau — c'est ce qu'utilisent les entraîneurs TrainingPeaks. Il montre l'équilibre entre ta construction de forme et ta fatigue.</p>
+  pmc:{t:'PMC — Fitness · Fatigue · Forme',c:'#F4561D',body:`<p>Le <strong>Performance Management Chart</strong> (PMC) est le graphe fondamental du coaching de haut niveau — c'est ce qu'utilisent les entraîneurs TrainingPeaks. Il montre l'équilibre entre ta construction de forme et ta fatigue.</p>
     <div class="ch-rule"><div class="ch-dot" style="background:var(--primary)"></div><div><strong>CTL — Fitness (teal)</strong> : Charge chronique sur 42 jours. Représente ta forme physique accumulée. Monte lentement avec l'entraînement, descend lentement avec le repos.</div></div>
     <div class="ch-rule"><div class="ch-dot" style="background:var(--warn)"></div><div><strong>ATL — Fatigue (orange tirets)</strong> : Charge aiguë sur 7 jours. Réagit vite aux variations de charge. Monte rapidement après une grosse semaine, descend vite avec le repos.</div></div>
     <div class="ch-rule"><div class="ch-dot" style="background:var(--ok)"></div><div><strong>TSB — Forme (barres)</strong> : CTL − ATL. Positif (vert) = tu es frais, reposé. Négatif (rouge) = tu accumules de la fatigue.</div></div>
     <div class="ch-tip">💡 <strong>Comment lire ce graphe pour Nice :</strong> La CTL doit monter progressivement jusqu'à octobre (pic prévu ~65-70), puis la TSB doit remonter en positif grâce au tapering J-21/J-14/J-7. Le jour de Nice, visée : CTL élevée + TSB entre +5 et +20 = pic de forme.</div>`},
-  vol:{t:'Volume hebdomadaire',c:'#f59e0b',body:`<p>Kilomètres courus chaque semaine (barres colorées) comparés au volume planifié (barres grises en arrière-plan).</p>
+  vol:{t:'Volume hebdomadaire',c:'#CA8A04',body:`<p>Kilomètres courus chaque semaine (barres colorées) comparés au volume planifié (barres grises en arrière-plan).</p>
     <div class="ch-rule"><div class="ch-dot" style="background:var(--warn)"></div><div><strong>Barre au-dessus du gris</strong> → tu as sur-performé. Vérifie que ce n'était pas au détriment de la qualité des séances.</div></div>
     <div class="ch-rule"><div class="ch-dot" style="background:var(--gris)"></div><div><strong>Barre en dessous du gris</strong> → semaine incomplète. Normal pendant les allègements ou après une course.</div></div>
     <div class="ch-tip">💡 Tendance à surveiller : une progression de +5–10% max par semaine. Au-delà, tu accumules une dette de récupération même sans le ressentir.</div>`},
-  re:{t:'Relative Effort (RE)',c:'#f59e0b',body:`<p>Score de charge calculé par Strava à partir de la fréquence cardiaque. Il intègre à la fois la durée et l'intensité de chaque sortie.</p>
+  re:{t:'Relative Effort (RE)',c:'#CA8A04',body:`<p>Score de charge calculé par Strava à partir de la fréquence cardiaque. Il intègre à la fois la durée et l'intensité de chaque sortie.</p>
     <div class="ch-rule"><div class="ch-dot" style="background:var(--ok)"></div><div><strong>EF 10 km facile</strong> ≈ 40–70 RE</div></div>
     <div class="ch-rule"><div class="ch-dot" style="background:var(--warn)"></div><div><strong>Sortie longue 16 km</strong> ≈ 150–180 RE</div></div>
     <div class="ch-rule"><div class="ch-dot" style="background:var(--danger)"></div><div><strong>Circaète 30 km trail</strong> ≈ 696 RE</div></div>
     <div class="ch-tip">💡 Glisse le doigt sur le graphe pour voir la valeur semaine par semaine. La tendance sur 8 semaines est plus parlante que la valeur isolée.</div>`},
-  acwr:{t:'ACWR — Risque de blessure',c:'#f59e0b',body:`<p>Ratio Charge Aiguë / Charge Chronique (Acute:Chronic Workload Ratio). Compare la charge des 7 derniers jours à la moyenne des 28 derniers jours.</p>
+  acwr:{t:'ACWR — Risque de blessure',c:'#CA8A04',body:`<p>Ratio Charge Aiguë / Charge Chronique (Acute:Chronic Workload Ratio). Compare la charge des 7 derniers jours à la moyenne des 28 derniers jours.</p>
     <div class="ch-rule"><div class="ch-dot" style="background:var(--primary)"></div><div><strong>ACWR &lt; 0.8 (bleu)</strong> → Sous-entraîné. Semaine légère ou récup prolongée. Faible risque mais perte de forme.</div></div>
     <div class="ch-rule"><div class="ch-dot" style="background:var(--ok)"></div><div><strong>ACWR 0.8–1.3 (vert)</strong> → Zone optimale. Continue sur cette lancée.</div></div>
     <div class="ch-rule"><div class="ch-dot" style="background:var(--warn)"></div><div><strong>ACWR 1.3–1.5 (orange)</strong> → Charge élevée. Pas dangereux si ponctuel, mais surveille.</div></div>
     <div class="ch-rule"><div class="ch-dot" style="background:var(--danger)"></div><div><strong>ACWR &gt; 1.5 (rouge)</strong> → Surcharge. Risque de blessure ×5. Réduire l'intensité immédiatement.</div></div>
     <div class="ch-tip">💡 Objectif : rester dans la zone verte 80% du temps. Dépasser 1.3 ponctuellement (semaine de pic avant compétition) est acceptable si les semaines suivantes permettent de récupérer.</div>`},
-  dp:{t:'Dénivelé positif (D+)',c:'#0d9488',body:`<p>Mètres de dénivelé positif cumulés par semaine. Indicateur clé pour la préparation aux courses de trail.</p>
+  dp:{t:'Dénivelé positif (D+)',c:'#F4561D',body:`<p>Mètres de dénivelé positif cumulés par semaine. Indicateur clé pour la préparation aux courses de trail.</p>
     <div class="ch-rule"><div class="ch-dot" style="background:var(--primary)"></div><div><strong>Semaine route pure</strong> → D+ ≈ 30–80 m (variation naturelle du terrain)</div></div>
     <div class="ch-rule"><div class="ch-dot" style="background:var(--primary)"></div><div><strong>Semaine trail légère</strong> → D+ 200–500 m</div></div>
     <div class="ch-rule"><div class="ch-dot" style="background:var(--warn)"></div><div><strong>Semaine spécifique trail</strong> → D+ 600–1000 m</div></div>
     <div class="ch-tip">💡 Pour la Déraille (+901m) et SaintExpress, le D+ hebdo doit idéalement atteindre 500–800m dans les 4 semaines précédentes. Ce graphe permet de vérifier que la spécificité trail est bien intégrée.</div>`},
-  z2:{t:'Z2 pace — Allure EF',c:'#0d9488',body:`<p>Allure moyenne de tes footings faciles semaine par semaine. C'est <strong>l'indicateur fondamental</strong> du développement aérobie.</p>
+  z2:{t:'Z2 pace — Allure EF',c:'#F4561D',body:`<p>Allure moyenne de tes footings faciles semaine par semaine. C'est <strong>l'indicateur fondamental</strong> du développement aérobie.</p>
     <p>La Zone 2 = effort où tu peux tenir une conversation. FC entre 134 et 154 bpm pour toi (zone Z2) ; sur un footing, vise 150 maximum.</p>
     <div class="ch-rule"><div class="ch-dot" style="background:var(--primary)"></div><div><strong>Courbe descendante</strong> (allure plus rapide) = ta forme aérobie progresse. Tu vas plus vite sans travailler plus fort.</div></div>
     <div class="ch-rule"><div class="ch-dot" style="background:var(--warn)"></div><div><strong>Courbe plate</strong> = stagnation. Normal en période de maintien ou de volume élevé.</div></div>
     <div class="ch-rule"><div class="ch-dot" style="background:var(--danger)"></div><div><strong>Courbe montante</strong> = régression. Souvent liée à la fatigue, la chaleur, ou un ACWR > 1.3.</div></div>
     <div class="ch-tip">💡 Ton objectif saison : passer de 5:56/km à ~5:40/km en Z2 d’ici octobre. Chaque dixième de seconde gagné reflète une adaptation mitochondriale réelle.</div>`},
-  dc:{t:'Découplage cardiaque',c:'#0d9488',body:`<p>Mesure l'écart entre ton allure et ta FC sur une sortie longue. Un faible découplage = ton cœur reste stable alors que tu te fatigues.</p>
+  dc:{t:'Découplage cardiaque',c:'#F4561D',body:`<p>Mesure l'écart entre ton allure et ta FC sur une sortie longue. Un faible découplage = ton cœur reste stable alors que tu te fatigues.</p>
     <div class="ch-rule"><div class="ch-dot" style="background:var(--ok)"></div><div><strong>&lt; 5% (vert)</strong> → Excellent. Ton système aérobie est solide et stable sur la durée.</div></div>
     <div class="ch-rule"><div class="ch-dot" style="background:var(--warn)"></div><div><strong>5–8% (orange)</strong> → Acceptable. Léger décrochage en fin de sortie, souvent dû à la chaleur ou à la fatigue.</div></div>
     <div class="ch-rule"><div class="ch-dot" style="background:var(--danger)"></div><div><strong>&gt; 8% (rouge)</strong> → Problème. Sortie trop longue, trop chaude, ou nutrition insuffisante.</div></div>
@@ -2205,7 +2205,7 @@ const _CK_HELP={
     <div class="ch-rule"><div class="ch-dot" style="background:var(--primary)"></div><div><strong>AM (bleu)</strong> → Allure marathon cible. Doit converger vers 5:20/km pour Nice (objectif 3h45).</div></div>
     <div class="ch-rule"><div class="ch-dot" style="background:var(--warn)"></div><div><strong>Seuil (orange)</strong> → Allure séance AM ou tempo. Reflète ta capacité lactique.</div></div>
     <div class="ch-tip">💡 Glisse le doigt sur le graphe pour voir les 3 valeurs simultanément. L'écart entre EF et seuil = ton amplitude de vitesse. Plus il est grand, meilleur est ton profil de coureur.</div>`},
-  fc:{t:'Répartition par intensité',c:'#ef4444',body:`<p>Part de ton <strong>temps de course</strong> passée dans chaque zone d'intensité, sur la fenêtre sélectionnée. C'est la photo de la structure de ton entraînement.</p>
+  fc:{t:'Répartition par intensité',c:'#DC2626',body:`<p>Part de ton <strong>temps de course</strong> passée dans chaque zone d'intensité, sur la fenêtre sélectionnée. C'est la photo de la structure de ton entraînement.</p>
     <div class="ch-rule"><div class="ch-dot" style="background:#86efac"></div><div><strong>Z1 Récupération (&lt; 134 bpm)</strong> → échauffement, footing très facile.</div></div>
     <div class="ch-rule"><div class="ch-dot" style="background:var(--ok)"></div><div><strong>Z2 Endurance fondamentale (134–154)</strong> → ton moteur aérobie. Doit représenter 70–80 % du total.</div></div>
     <div class="ch-rule"><div class="ch-dot" style="background:var(--warn)"></div><div><strong>Z3 Tempo / marathon (154–167)</strong> → allure spécifique marathon.</div></div>
@@ -2235,7 +2235,7 @@ function _ckCtxBlock(key){
       if(!pmc||!pmc.length)return '';
       var last=pmc[pmc.length-1];
       var ctl=last.ctl.toFixed(0),atl=last.atl.toFixed(0),tsb=(last.tsb>=0?'+':'')+last.tsb.toFixed(0);
-      var tsbCol=last.tsb>5?'#16a34a':last.tsb>-10?'#f59e0b':'#ef4444';
+      var tsbCol=last.tsb>5?'#16a34a':last.tsb>-10?'#CA8A04':'#DC2626';
       var lec='';
       if(jrace<=14){
         lec='J-'+jrace+' avant '+rname+' \u2014 ton TSB \u00e0 <strong>'+tsb+'</strong> est '+(last.tsb>5?'positif\u00a0: tu arrives frais, exactement comme voulu.':'encore l\u00e9g\u00e8rement n\u00e9gatif. Normal en aff\u00fbtage \u2014 il remontera d\u2019ici le d\u00e9part si tu restes easy.');
@@ -2252,7 +2252,7 @@ function _ckCtxBlock(key){
     }
     if(key==='acwr'){
       if(acwr===null)return '';
-      var col=acwr>1.3?'#ef4444':acwr<0.8?'#0d9488':'#16a34a';
+      var col=acwr>1.3?'#DC2626':acwr<0.8?'#F4561D':'#16a34a';
       var label=acwr>1.5?'en surcharge':acwr>1.3?'charge \u00e9lev\u00e9e':acwr<0.8?'sous-entra\u00een\u00e9':'dans la zone optimale';
       var txt='Ton ACWR est \u00e0 <strong style="color:'+col+'">'+acwr.toFixed(2)+'</strong> \u2014 tu es <strong>'+label+'</strong>.';
       if(acwr>1.3&&jrace<=21)txt+=' J-'+jrace+' avant '+rname+'\u00a0: c\u2019est le moment de lever le pied. R\u00e9duis le volume de 20\u201330\u00a0% cette semaine, garde 2\u20133 acc\u00e9l\u00e9rations courtes, dors bien. Tu arriveras plus frais que si tu pushs.';
@@ -2465,13 +2465,13 @@ function openWrapped(){
   const paris=Math.round(d.km/2.4); // longueur approx d'un tour du périph parisien ~35km... on prend un repère parlant: distance Lyon->? Simplifions: équiv. en % d'un marathon
   const marathons=(d.km/42.195).toFixed(1);
   const cards=[
-    {bg:'linear-gradient(160deg,#0f172a,#1e3a5f)',ico:'\u{1F3C3}',big:d.n,unit:'sorties',sub:'C\u2019est parti pour ta saison en chiffres, depuis la S24'},
-    {bg:'linear-gradient(160deg,#0d9488,#0891b2)',ico:'\u{1F4CF}',big:d.km,unit:'km parcourus',sub:'Soit '+marathons+' marathons bout \u00e0 bout'},
-    {bg:'linear-gradient(160deg,#b45309,#f59e0b)',ico:'\u26F0\uFE0F',big:d.dplus,unit:'m\u00e8tres de D+',sub:eiffel+'\u00d7 la Tour Eiffel, grimp\u00e9s avec les jambes'},
+    {bg:'linear-gradient(160deg,#18181B,#1e3a5f)',ico:'\u{1F3C3}',big:d.n,unit:'sorties',sub:'C\u2019est parti pour ta saison en chiffres, depuis la S24'},
+    {bg:'linear-gradient(160deg,#F4561D,#C2410C)',ico:'\u{1F4CF}',big:d.km,unit:'km parcourus',sub:'Soit '+marathons+' marathons bout \u00e0 bout'},
+    {bg:'linear-gradient(160deg,#8F5A07,#CA8A04)',ico:'\u26F0\uFE0F',big:d.dplus,unit:'m\u00e8tres de D+',sub:eiffel+'\u00d7 la Tour Eiffel, grimp\u00e9s avec les jambes'},
     {bg:'linear-gradient(160deg,#7c3aed,#a78bfa)',ico:'\u23F1\uFE0F',big:d.heures,unit:'heures d\u2019effort',sub:'De transpiration bien plac\u00e9e'},
     {bg:'linear-gradient(160deg,#be123c,#fb7185)',ico:'\u{1F3C5}',big:d.pr,unit:'records battus',sub:'Des segments et des perfos qui tombent'},
-    {bg:'linear-gradient(160deg,#0f766e,#5eead4)',ico:'\u{1F525}',big:d.streak,unit:'semaines d\u2019affil\u00e9e',sub:'La r\u00e9gularit\u00e9, ton vrai super-pouvoir'},
-    {bg:'linear-gradient(160deg,#1e293b,#475569)',ico:'\u{1F3AF}',big:'Nice',unit:'',sub:'Prochain chapitre : 3h45 au Marathon de Nice. On y va.',isFinal:true}
+    {bg:'linear-gradient(160deg,#C2410C,#F9A070)',ico:'\u{1F525}',big:d.streak,unit:'semaines d\u2019affil\u00e9e',sub:'La r\u00e9gularit\u00e9, ton vrai super-pouvoir'},
+    {bg:'linear-gradient(160deg,#18181B,#52525B)',ico:'\u{1F3AF}',big:'Nice',unit:'',sub:'Prochain chapitre : 3h45 au Marathon de Nice. On y va.',isFinal:true}
   ];
   let idx=0;
   const old=document.getElementById('wrapped-ov');if(old)old.remove();
@@ -2544,14 +2544,14 @@ ${P.slice().sort((a,b)=>b.date.localeCompare(a.date)).map((p,i)=>{
           </div>
         </div>
         <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px">
-          <span style="font-size:var(--t-data);font-weight:600;padding:2px 8px;border-radius:99px;background:var(--gris-fond,#f1f5f9);color:var(--texte-deux)">${p.distance} km</span>
-          <span style="font-size:var(--t-data);font-weight:600;padding:2px 8px;border-radius:99px;background:var(--gris-fond,#f1f5f9);color:var(--texte-deux)">D+ ${p.dplus} m</span>
+          <span style="font-size:var(--t-data);font-weight:600;padding:2px 8px;border-radius:99px;background:var(--gris-fond,#F4F4F5);color:var(--texte-deux)">${p.distance} km</span>
+          <span style="font-size:var(--t-data);font-weight:600;padding:2px 8px;border-radius:99px;background:var(--gris-fond,#F4F4F5);color:var(--texte-deux)">D+ ${p.dplus} m</span>
           ${p.fc_moy?`<span style="font-size:var(--t-data);font-weight:600;padding:2px 8px;border-radius:99px;background:var(--danger-fond);color:var(--danger-deux)">❤️ ${p.fc_moy}/${p.fc_max}</span>`:''}
-          ${p.meteo?`<span style="font-size:var(--t-data);padding:2px 8px;border-radius:99px;background:var(--gris-fond,#f1f5f9);color:var(--texte-deux)">🌡️ ${p.meteo}</span>`:''}
+          ${p.meteo?`<span style="font-size:var(--t-data);padding:2px 8px;border-radius:99px;background:var(--gris-fond,#F4F4F5);color:var(--texte-deux)">🌡️ ${p.meteo}</span>`:''}
           ${classGen}${classCat}
         </div>
         ${p.chaussures?`<div style="font-size:var(--t-data);color:var(--texte-deux);margin-bottom:6px">👟 ${p.chaussures}</div>`:''}
-        <div style="font-size:var(--t-caption);color:var(--texte-deux);line-height:1.55;background:var(--gris-fond,#f8fafc);border-radius:8px;padding:8px 10px">${p.bilan}</div>
+        <div style="font-size:var(--t-caption);color:var(--texte-deux);line-height:1.55;background:var(--gris-fond,#F7F7F8);border-radius:8px;padding:8px 10px">${p.bilan}</div>
       </div>
     </div>
   </div>`;
@@ -2607,10 +2607,10 @@ const _CK={
   12:{w:["S15","S16","S17","S18","S19","S20","S21","S22","S23","S24","S25","S26"],ef:[381,346,339,340,326,null,583,441,352,359,346,353],am:[331,318,null,364,811,359,409,326,343,322,321,null],se:[null,null,null,null,null,null,283,null,590,null,null,null]}
 },
   FCZ:{
-  2:[["Z1","#16a34a",10],["Z2","#16a34a",58],["Z3","#f59e0b",22],["Z4+","#ef4444",10]],
-  4:[["Z1","#16a34a",10],["Z2","#16a34a",58],["Z3","#f59e0b",22],["Z4+","#ef4444",10]],
-  8:[["Z1","#16a34a",10],["Z2","#16a34a",58],["Z3","#f59e0b",22],["Z4+","#ef4444",10]],
-  12:[["Z1","#16a34a",10],["Z2","#16a34a",58],["Z3","#f59e0b",22],["Z4+","#ef4444",10]]
+  2:[["Z1","#16a34a",10],["Z2","#16a34a",58],["Z3","#CA8A04",22],["Z4+","#DC2626",10]],
+  4:[["Z1","#16a34a",10],["Z2","#16a34a",58],["Z3","#CA8A04",22],["Z4+","#DC2626",10]],
+  8:[["Z1","#16a34a",10],["Z2","#16a34a",58],["Z3","#CA8A04",22],["Z4+","#DC2626",10]],
+  12:[["Z1","#16a34a",10],["Z2","#16a34a",58],["Z3","#CA8A04",22],["Z4+","#DC2626",10]]
 },
   CAD:{
   2:{w:["S25","S26"],v:[172,172]},
@@ -2619,11 +2619,11 @@ const _CK={
   12:{w:["S15","S16","S17","S18","S19","S20","S21","S22","S23","S24","S25","S26"],v:[167,171,172,171,152,168,156,166,162,172,172,172]}
 },
   RUNS:[
-    {id:"18967988695",title:"Sortie longue Saône-Rhône",date:"Jeu 18 juin",type:"#f59e0b",km:16.0,al:"5:32",re:156,fcm:151,fcx:171,cad:173,dp:52,cal:1249,hasStreams:true},
-    {id:"18955432704",title:"AM marathon 10km",date:"Mar 17 juin",type:"#0d9488",km:10.1,al:"5:21",re:169,fcm:165,fcx:181,cad:169,dp:35,cal:816,hasStreams:true},
+    {id:"18967988695",title:"Sortie longue Saône-Rhône",date:"Jeu 18 juin",type:"#CA8A04",km:16.0,al:"5:32",re:156,fcm:151,fcx:171,cad:173,dp:52,cal:1249,hasStreams:true},
+    {id:"18955432704",title:"AM marathon 10km",date:"Mar 17 juin",type:"#F4561D",km:10.1,al:"5:21",re:169,fcm:165,fcx:181,cad:169,dp:35,cal:816,hasStreams:true},
     {id:"18939731283",title:"Footing facile",date:"Lun 16 juin",type:"#16a34a",km:10.1,al:"5:56",re:58,fcm:140,fcx:167,cad:173,dp:40,cal:788,hasStreams:false},
     {id:"19018847549",title:"Footing facile + lignes droites",date:"Lun 22 juin",type:"#16a34a",km:11.3,al:"5:53",re:105,fcm:148,fcx:169,cad:172,dp:43,cal:885,hasStreams:true},
-    {id:"18810734775",title:"Trail des Gypaètes (Circaète 29km)",date:"Sam 6 juin",type:"#0d9488",km:29.8,al:"9:50",re:696,fcm:152,fcx:178,cad:146,dp:1662,cal:3191,hasStreams:true}
+    {id:"18810734775",title:"Trail des Gypaètes (Circaète 29km)",date:"Sam 6 juin",type:"#F4561D",km:29.8,al:"9:50",re:696,fcm:152,fcx:178,cad:146,dp:1662,cal:3191,hasStreams:true}
   ],
   STREAMS:{
   "18967988695":{hr:[109,133,139,138,127,153,157,152,145,157,158,143,146,144,148,149,145,146,150,147,144,142,143,139,142,144,147,141,151,153,150,151,146,149,154,155,150,153,152,149,160,153,154,148,150,153,150,153,154,148,152,166,166,162,166,164,162,169,170,169]},
@@ -2653,14 +2653,14 @@ function _pmcRender(win){
   const tMax=Math.max(10,...data.map(d=>Math.abs(d.tsb)))*1.5;
   const n=data.length;
   const xS=i=>pl+i/(n-1)*cw,yS=v=>pt+ch-(v-yMin)/(yMax-yMin)*ch,tS=v=>pt+ch/2-v/tMax*(ch/2);
-  const bars=data.map((d,i)=>{const x=xS(i)-cw/(n*2.2),w=Math.max(1,cw/n*0.75);const h=Math.abs(d.tsb)/tMax*(ch/2);const y=d.tsb>=0?tS(d.tsb):pt+ch/2;return`<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${w.toFixed(1)}" height="${h.toFixed(1)}" fill="${d.tsb>=0?'rgba(34,197,94,.3)':'rgba(239,68,68,.2)'}" rx="1"/>`;}).join('');
+  const bars=data.map((d,i)=>{const x=xS(i)-cw/(n*2.2),w=Math.max(1,cw/n*0.75);const h=Math.abs(d.tsb)/tMax*(ch/2);const y=d.tsb>=0?tS(d.tsb):pt+ch/2;return`<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${w.toFixed(1)}" height="${h.toFixed(1)}" fill="${d.tsb>=0?'rgba(34,197,94,.3)':'rgba(220,38,38,.2)'}" rx="1"/>`;}).join('');
   const zy=(pt+ch/2).toFixed(1);
   const cP='M'+data.map((d,i)=>`${xS(i).toFixed(1)},${yS(d.ctl).toFixed(1)}`).join('L');
   const aP='M'+data.map((d,i)=>`${xS(i).toFixed(1)},${yS(d.atl).toFixed(1)}`).join('L');
-  const lbls=data.map((d,i)=>(i===0||i===n-1||i===Math.floor(n/2))?`<text x="${xS(i).toFixed(1)}" y="${H-2}" text-anchor="middle" font-size="9" fill="#64748b">${d.wk}</text>`:'').join('');
+  const lbls=data.map((d,i)=>(i===0||i===n-1||i===Math.floor(n/2))?`<text x="${xS(i).toFixed(1)}" y="${H-2}" text-anchor="middle" font-size="9" fill="#6B6B74">${d.wk}</text>`:'').join('');
   const last=data[n-1];
-  const endLbls=`<text x="${(pl+cw+3).toFixed(1)}" y="${yS(last.ctl).toFixed(1)}" font-size="9" fill="#0d9488">${last.ctl.toFixed(0)}</text><text x="${(pl+cw+3).toFixed(1)}" y="${yS(last.atl).toFixed(1)}" font-size="9" fill="#f59e0b">${last.atl.toFixed(0)}</text><text x="${(pl+cw+3).toFixed(1)}" y="${tS(last.tsb).toFixed(1)}" font-size="9" fill="${last.tsb>=0?'#16a34a':'#ef4444'}">${last.tsb>=0?'+':''}${last.tsb.toFixed(0)}</text>`;
-  svg.innerHTML=`${bars}<line x1="${pl}" y1="${zy}" x2="${pl+cw}" y2="${zy}" stroke="rgba(100,116,139,.3)" stroke-dasharray="3,3" stroke-width="1"/><path d="${cP}" stroke="#0d9488" stroke-width="2" fill="none" stroke-linejoin="round"/><path d="${aP}" stroke="#f59e0b" stroke-width="1.5" fill="none" stroke-linejoin="round" stroke-dasharray="4,2"/>${lbls}${endLbls}`;
+  const endLbls=`<text x="${(pl+cw+3).toFixed(1)}" y="${yS(last.ctl).toFixed(1)}" font-size="9" fill="#C2410C">${last.ctl.toFixed(0)}</text><text x="${(pl+cw+3).toFixed(1)}" y="${yS(last.atl).toFixed(1)}" font-size="9" fill="#CA8A04">${last.atl.toFixed(0)}</text><text x="${(pl+cw+3).toFixed(1)}" y="${tS(last.tsb).toFixed(1)}" font-size="9" fill="${last.tsb>=0?'#16a34a':'#DC2626'}">${last.tsb>=0?'+':''}${last.tsb.toFixed(0)}</text>`;
+  svg.innerHTML=`${bars}<line x1="${pl}" y1="${zy}" x2="${pl+cw}" y2="${zy}" stroke="rgba(107,107,116,.3)" stroke-dasharray="3,3" stroke-width="1"/><path d="${cP}" stroke="#F4561D" stroke-width="2" fill="none" stroke-linejoin="round"/><path d="${aP}" stroke="#CA8A04" stroke-width="1.5" fill="none" stroke-linejoin="round" stroke-dasharray="4,2"/>${lbls}${endLbls}`;
   const wrap=document.getElementById('ckPMCW');if(!wrap)return;
   wrap.onpointermove=ev=>{const r=wrap.getBoundingClientRect(),idx=Math.max(0,Math.min(n-1,Math.round((ev.clientX-r.left-pl)/cw*(n-1))));const d=data[idx];const tt=document.getElementById('ckPMCT');if(tt)tt.textContent=`${d.wk} · Fitness ${d.ctl.toFixed(0)} · Fatigue ${d.atl.toFixed(0)} · Forme ${d.tsb>=0?'+':''}${d.tsb.toFixed(0)}`;};
   wrap.onpointerleave=()=>{const tt=document.getElementById('ckPMCT');if(tt)tt.textContent='glisse pour voir les valeurs';};
@@ -2672,11 +2672,11 @@ function _ckBar(svgId,wrapId,ttId,xlId,data,opt){
   opt=opt||{};const H=opt.h||90,n=data.w.length,gap=300/n,bw=gap*0.6;
   const vals=data.v||data.a;const mx=Math.max(...vals.filter(x=>x!=null),(data.p?Math.max(...data.p):0));
   let s='';data.w.forEach((wk,i)=>{const x=i*gap+gap*0.2;
-    if(opt.ref&&data.p){const ph=data.p[i]/mx*(H-12);s+=`<rect class="tr-b" style="--i:${i}" x="${x}" y="${H-ph}" width="${bw}" height="${ph}" rx="2" fill="${opt.col||'#0d9488'}" opacity="0.2"/>`;}
+    if(opt.ref&&data.p){const ph=data.p[i]/mx*(H-12);s+=`<rect class="tr-b" style="--i:${i}" x="${x}" y="${H-ph}" width="${bw}" height="${ph}" rx="2" fill="${opt.col||'#F4561D'}" opacity="0.2"/>`;}
     const v=vals[i];if(v==null)return;const h=v/mx*(H-12);
-    let c=opt.col||'#0d9488';
-    if(opt.thr)c=v>opt.thr[1]?'#ef4444':v>opt.thr[0]?'#f59e0b':'#16a34a';
-    if(opt.ref&&data.p)c=v>=data.p[i]?'#0d9488':'#ef4444';
+    let c=opt.col||'#F4561D';
+    if(opt.thr)c=v>opt.thr[1]?'#DC2626':v>opt.thr[0]?'#CA8A04':'#16a34a';
+    if(opt.ref&&data.p)c=v>=data.p[i]?'#F4561D':'#DC2626';
     s+=`<rect class="ck-bar-${svgId} tr-b" style="--i:${i}" data-i="${i}" x="${x}" y="${H-h}" width="${bw}" height="${h}" rx="2" fill="${c}"/>`;});
   const svg=document.getElementById(svgId);if(!svg)return;svg.setAttribute('viewBox',`0 0 300 ${H}`);svg.innerHTML=s;
   if(typeof _trace==='function')_trace(svg);
@@ -2704,7 +2704,7 @@ function _ckLine(svgId,wrapId,ttId,xlId,weeks,series,fmt,opt){
   if(!series.length||!allV.length){
     const svg=document.getElementById(svgId);
     if(svg){svg.setAttribute('viewBox',`0 0 300 ${H}`);
-      svg.innerHTML=`<text x="150" y="${H/2}" text-anchor="middle" dominant-baseline="middle" font-size="11" fill="#94a3b8">Pas de donnée fiable sur cette période</text>`;}
+      svg.innerHTML=`<text x="150" y="${H/2}" text-anchor="middle" dominant-baseline="middle" font-size="11" fill="#A1A1AA">Pas de donnée fiable sur cette période</text>`;}
     _ckXL(xlId,weeks);
     return;
   }
@@ -2721,7 +2721,7 @@ function _ckLine(svgId,wrapId,ttId,xlId,weeks,series,fmt,opt){
     paths+=`<path class="tr-l" d="${line}" fill="none" stroke="${s.color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>`;
   });
   let dots='';series.forEach((s,si)=>{dots+=`<circle id="${svgId}dt${si}" r="4" fill="${s.color}" opacity="0" stroke="#fff" stroke-width="1.5"/>`;});
-  const scrub=`<line id="${svgId}sc" x1="0" y1="0" x2="0" y2="${H}" stroke="#94a3b8" stroke-width="1" stroke-dasharray="3 3" opacity="0"/>`;
+  const scrub=`<line id="${svgId}sc" x1="0" y1="0" x2="0" y2="${H}" stroke="#A1A1AA" stroke-width="1" stroke-dasharray="3 3" opacity="0"/>`;
   const svg=document.getElementById(svgId);if(!svg)return;svg.setAttribute('viewBox',`0 0 300 ${H}`);svg.innerHTML=`<defs>${defs}</defs><g clip-path="url(#${clipId})">${zones}${paths}</g>${scrub}${dots}`;
   if(typeof _trace==='function')_trace(svg);
   _ckXL(xlId,weeks);
@@ -2766,14 +2766,14 @@ function _ckOpenRun(i){
     const path=(arr,ym)=>arr.map((v,i)=>(i?'L':'M')+xs[i].toFixed(1)+' '+ym(v).toFixed(1)).join(' ');
     const altL=path(st.alt,yAlt),hrL=path(st.hr,yHR),pL=path(pace,yP);
     const svg=el.querySelector('#ck-m-svg');svg.setAttribute('viewBox',`0 0 300 ${H}`);
-    svg.innerHTML=`<defs><linearGradient id="ckAltG" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#94a3b8" stop-opacity="0.2"/><stop offset="100%" stop-color="#94a3b8" stop-opacity="0"/></linearGradient></defs>
+    svg.innerHTML=`<defs><linearGradient id="ckAltG" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#A1A1AA" stop-opacity="0.2"/><stop offset="100%" stop-color="#A1A1AA" stop-opacity="0"/></linearGradient></defs>
       <path d="${altL} L${xs[n-1]} ${H-12} L${xs[0]} ${H-12} Z" fill="url(#ckAltG)"/>
-      <path d="${altL}" fill="none" stroke="#94a3b8" stroke-width="1" opacity="0.5"/>
-      <path d="${pL}" fill="none" stroke="#0d9488" stroke-width="1.5"/>
-      <path d="${hrL}" fill="none" stroke="#ef4444" stroke-width="2"/>
-      <line id="ck-msc" x1="-10" y1="0" x2="-10" y2="${H}" stroke="#475569" stroke-width="1" stroke-dasharray="3 3"/>
-      <circle id="ck-mdHR" r="4" fill="#ef4444" opacity="0" stroke="#fff" stroke-width="1.5"/>
-      <circle id="ck-mdP" r="4" fill="#0d9488" opacity="0" stroke="#fff" stroke-width="1.5"/>`;
+      <path d="${altL}" fill="none" stroke="#A1A1AA" stroke-width="1" opacity="0.5"/>
+      <path d="${pL}" fill="none" stroke="#F4561D" stroke-width="1.5"/>
+      <path d="${hrL}" fill="none" stroke="#DC2626" stroke-width="2"/>
+      <line id="ck-msc" x1="-10" y1="0" x2="-10" y2="${H}" stroke="#52525B" stroke-width="1" stroke-dasharray="3 3"/>
+      <circle id="ck-mdHR" r="4" fill="#DC2626" opacity="0" stroke="#fff" stroke-width="1.5"/>
+      <circle id="ck-mdP" r="4" fill="#F4561D" opacity="0" stroke="#fff" stroke-width="1.5"/>`;
     const wrap=el.querySelector('#ck-m-wrap'),tt=el.querySelector('#ck-m-tt');
     function scrubM(cx){try{
       const rect=svg.getBoundingClientRect();const rel=(cx-rect.left)/rect.width*300;
@@ -2793,7 +2793,7 @@ function _ckOpenRun(i){
     wrap.onmouseleave=()=>{wrap.onmousemove=null;endM();};
   } else {
     const svg=el.querySelector('#ck-m-svg');svg.setAttribute('viewBox','0 0 300 140');
-    svg.innerHTML='<text x="150" y="62" text-anchor="middle" fill="#94a3b8" font-size="11.5">Graphique détaillé non disponible</text><text x="150" y="82" text-anchor="middle" fill="#cbd5e1" font-size="10">pour cette sortie — les chiffres ci-dessus sont fiables</text>';
+    svg.innerHTML='<text x="150" y="62" text-anchor="middle" fill="#A1A1AA" font-size="11.5">Graphique détaillé non disponible</text><text x="150" y="82" text-anchor="middle" fill="#D4D4D8" font-size="10">pour cette sortie — les chiffres ci-dessus sont fiables</text>';
   }
 }
 function _ckRenderAll(win){
@@ -2842,48 +2842,48 @@ function _ckRenderAll(win){
       var fl=Math.abs(d)<2?'\u2192':(d>0?'\u2191':'\u2193');
       el.textContent=fl+' '+(d>0?'+':'')+d.toFixed(0)+'%';
       el.title='vs les '+W+' semaines pr\u00e9c\u00e9dentes';
-      el.style.color=_tc(Math.abs(d)<2?'var(--texte-trois)':(bon?'#16a34a':'#f59e0b'));
+      el.style.color=_tc(Math.abs(d)<2?'var(--texte-trois)':(bon?'#16a34a':'#CA8A04'));
     }
     pose('ck-km-trend',fen('VOL','somme'),false);
     pose('ck-re-trend',fen('RE','somme'),false);
     pose('ck-cad-trend',fen('CAD','moy'),false);
   })();
-  (function(){var se=document.getElementById('ck-summary');if(!se)return;try{var pts=_ckSummary();if(!pts.length){se.style.display='none';return;}se.style.display='';se.innerHTML=pts.map(function(p){var c=p.t==='warn'?'#ef4444':p.t==='ok'?'#16a34a':'#0891b2';return '<div class="cks-row"><span class="cks-dot" style="background:'+c+'"></span><span>'+p.x+'</span></div>';}).join('');}catch(e){se.style.display='none';}})();
+  (function(){var se=document.getElementById('ck-summary');if(!se)return;try{var pts=_ckSummary();if(!pts.length){se.style.display='none';return;}se.style.display='';se.innerHTML=pts.map(function(p){var c=p.t==='warn'?'#DC2626':p.t==='ok'?'#16a34a':'#C2410C';return '<div class="cks-row"><span class="cks-dot" style="background:'+c+'"></span><span>'+p.x+'</span></div>';}).join('');}catch(e){se.style.display='none';}})();
   (function(){var cv=document.getElementById('ck-cad-kpi');if(!cv)return;try{var cs=(_CK&&_CK.CAD&&_CK.CAD[W]&&Array.isArray(_CK.CAD[W].v))?_CK.CAD[W].v.filter(x=>x!=null):[];if(cs.length){var srt=cs.slice().sort((a,b)=>a-b);var med=srt[Math.floor(srt.length/2)];cv.innerHTML=Math.round(med)+'<span class="ck-ku">spm</span>';}else{cv.innerHTML='—<span class="ck-ku">spm</span>';}}catch(e){}})();
   _pmcRender(W);
-  _ckBar('ckVol','ckVolW','ckVolT','ckVolX',D.VOL[W],{ref:true,col:'#0d9488',unit:' km',h:90});
+  _ckBar('ckVol','ckVolW','ckVolT','ckVolX',D.VOL[W],{ref:true,col:'#F4561D',unit:' km',h:90});
   document.getElementById('ck-vol-sub').textContent=totalKm.toFixed(0)+' km · '+W+' sem.';
-  _ckBar('ckRE','ckREW','ckRET','ckREX',D.RE[W],{col:'#0d9488',h:80});
-  _ckLine('ckACWR','ckACWRW','ckACWRT','ckACWRX',D.ACWR[W].w,[{v:D.ACWR[W].v,color:'#f59e0b',lbl:''}],v=>v.toFixed(2),{h:65,fill:false,zones:[[0,0.8,'#0d9488'],[0.8,1.3,'#16a34a'],[1.3,2,'#ef4444']]});
+  _ckBar('ckRE','ckREW','ckRET','ckREX',D.RE[W],{col:'#F4561D',h:80});
+  _ckLine('ckACWR','ckACWRW','ckACWRT','ckACWRX',D.ACWR[W].w,[{v:D.ACWR[W].v,color:'#CA8A04',lbl:''}],v=>v.toFixed(2),{h:65,fill:false,zones:[[0,0.8,'#F4561D'],[0.8,1.3,'#16a34a'],[1.3,2,'#DC2626']]});
   var _av0=D.ACWR[W].v.filter(function(x){return x!=null;});/* La tuile affiche l'ACWR DU JOUR (meme source que le resume et la carte Charge) ; la serie hebdomadaire ne sert qu'au graphe. */var _alive=null;try{_alive=_acwrCompute();}catch(e){_alive=null;}const al=(_alive&&typeof _alive.acwr==='number')?_alive.acwr:(_av0.length?_av0[_av0.length-1]:1.0);
   var _av=document.getElementById('ck-acwr-val');_av.textContent=al.toFixed(2);if(typeof _compte==='function')_compte(_av,'ck-acwr');
-  var _acol=al>1.5?'#ef4444':al>1.3?'#f59e0b':al<0.8?'#0d9488':'#16a34a';
+  var _acol=al>1.5?'#DC2626':al>1.3?'#CA8A04':al<0.8?'#F4561D':'#16a34a';
   _av.style.color=_tc(_acol);_av.classList.remove('warn');
   var _alab=al>1.5?'\u{1F534} surcharge':al>1.3?'\u26a0 \u00e9lev\u00e9':al<0.8?'frais / all\u00e8gement':'ma\u00eetris\u00e9';
   var _akd=_av.parentElement.querySelector('.ck-kd');if(_akd){_akd.textContent=_alab;_akd.style.color=_tc(_acol);_akd.classList.remove('warn');}
   var _av2=document.getElementById('ck-acwr-val2');if(_av2){_av2.textContent=al.toFixed(2);_av2.style.color=_tc(_acol);}
-  _ckBar('ckDP','ckDPW','ckDPT','ckDPX',D.DPLUS[W],{col:'#94a3b8',unit:' m',h:75});
-  _ckLine('ckZ2','ckZ2W','ckZ2T','ckZ2X',D.Z2[W].w,[{v:D.Z2[W].v,color:'#0d9488',lbl:'/km'}],_ckSmin,{h:85});
+  _ckBar('ckDP','ckDPW','ckDPT','ckDPX',D.DPLUS[W],{col:'#A1A1AA',unit:' m',h:75});
+  _ckLine('ckZ2','ckZ2W','ckZ2T','ckZ2X',D.Z2[W].w,[{v:D.Z2[W].v,color:'#F4561D',lbl:'/km'}],_ckSmin,{h:85});
   var _z2v=D.Z2[W].v.filter(function(x){return x!=null;});
   document.getElementById('ck-z2-val').textContent=_z2v.length?_ckSmin(_z2v[_z2v.length-1]):'\u2014';
   // Delta calcule sur les 1re et derniere valeurs NON NULLES : les semaines sans
   // seance facile laissent des trous, et v[0] pouvait etre null (delta = NaN).
   var _z2d=(_z2v.length>=2)?(_z2v[0]-_z2v[_z2v.length-1]):null;
   var _z2e=document.getElementById('ck-z2-delta');
-  if(_z2d===null){_z2e.textContent='pas assez de donn\u00e9es';_z2e.style.color=_tc('#94a3b8');}
+  if(_z2d===null){_z2e.textContent='pas assez de donn\u00e9es';_z2e.style.color=_tc('#A1A1AA');}
   else if(_z2d>2){_z2e.textContent='\u2193 \u2212'+_ckSmin(_z2d)+'/km \u00b7 le moteur grossit 💪';_z2e.style.color=_tc('#16a34a');}
-  else if(_z2d>=-2){_z2e.textContent='stable';_z2e.style.color=_tc('#64748b');}
-  else {_z2e.textContent='\u2191 +'+_ckSmin(-_z2d)+'/km \u00b7 \u00e0 surveiller';_z2e.style.color=_tc('#ef4444');}
-  const dcLast=D.DC[W].v.filter(x=>x!=null).pop();_ckLine('ckDC','ckDCW','ckDCT','ckDCX',D.DC[W].w,[{v:D.DC[W].v,color:'#16a34a',lbl:'%'}],v=>v.toFixed(1)+'%',{h:75,zones:[[0,5,'#16a34a'],[5,8,'#f59e0b'],[8,15,'#ef4444']]});
-  document.getElementById('ck-dc-val').textContent=dcLast?dcLast.toFixed(1)+'%':'—';document.getElementById('ck-dc-val').style.color=_tc(dcLast<5?'#16a34a':dcLast<8?'#f59e0b':'#ef4444');
-  _ckLine('ckPACE','ckPACEW','ckPACET','ckPACEX',D.PACE[W].w,[{v:D.PACE[W].ef,color:'#16a34a',lbl:'EF'},{v:D.PACE[W].am,color:'#0d9488',lbl:'AM'},{v:D.PACE[W].se,color:'#f59e0b',lbl:'Seuil'}],_ckSmin,{h:95,fill:false});
+  else if(_z2d>=-2){_z2e.textContent='stable';_z2e.style.color=_tc('#6B6B74');}
+  else {_z2e.textContent='\u2191 +'+_ckSmin(-_z2d)+'/km \u00b7 \u00e0 surveiller';_z2e.style.color=_tc('#DC2626');}
+  const dcLast=D.DC[W].v.filter(x=>x!=null).pop();_ckLine('ckDC','ckDCW','ckDCT','ckDCX',D.DC[W].w,[{v:D.DC[W].v,color:'#16a34a',lbl:'%'}],v=>v.toFixed(1)+'%',{h:75,zones:[[0,5,'#16a34a'],[5,8,'#CA8A04'],[8,15,'#DC2626']]});
+  document.getElementById('ck-dc-val').textContent=dcLast?dcLast.toFixed(1)+'%':'—';document.getElementById('ck-dc-val').style.color=_tc(dcLast<5?'#16a34a':dcLast<8?'#CA8A04':'#DC2626');
+  _ckLine('ckPACE','ckPACEW','ckPACET','ckPACEX',D.PACE[W].w,[{v:D.PACE[W].ef,color:'#16a34a',lbl:'EF'},{v:D.PACE[W].am,color:'#F4561D',lbl:'AM'},{v:D.PACE[W].se,color:'#CA8A04',lbl:'Seuil'}],_ckSmin,{h:95,fill:false});
   // Zones FC
   const z=D.FCZ[W],H=100,n=z.length,gap=300/n,bw=gap*0.5,mxz=Math.max(...z.map(x=>x[2]));
-  let fcs='';z.forEach((zone,i)=>{const x=i*gap+gap*0.25,h=zone[2]/mxz*(H-22);fcs+=`<rect class="ck-fcb" data-i="${i}" x="${x}" y="${H-h-10}" width="${bw}" height="${h}" rx="3" fill="${zone[1]}"/><text x="${x+bw/2}" y="${H-h-14}" text-anchor="middle" font-size="11" font-weight="700" fill="${zone[1]}">${zone[2]}%</text><text x="${x+bw/2}" y="${H-1}" text-anchor="middle" font-size="9" fill="#94a3b8">${zone[0]}</text>`;});
+  let fcs='';z.forEach((zone,i)=>{const x=i*gap+gap*0.25,h=zone[2]/mxz*(H-22);fcs+=`<rect class="ck-fcb" data-i="${i}" x="${x}" y="${H-h-10}" width="${bw}" height="${h}" rx="3" fill="${zone[1]}"/><text x="${x+bw/2}" y="${H-h-14}" text-anchor="middle" font-size="11" font-weight="700" fill="${zone[1]}">${zone[2]}%</text><text x="${x+bw/2}" y="${H-1}" text-anchor="middle" font-size="9" fill="#A1A1AA">${zone[0]}</text>`;});
   const fcSvg=document.getElementById('ckFC');fcSvg.setAttribute('viewBox',`0 0 300 ${H}`);fcSvg.innerHTML=fcs;
   document.getElementById('ck-fc-sub').textContent=z[1][2]+'% en Z2 · '+W+' sem.';
   fcSvg.querySelectorAll('.ck-fcb').forEach(b=>b.addEventListener('click',()=>{const zone=z[+b.dataset.i];const ranges={'Z1':'<134 bpm','Z2':'134-154','Z3':'154-167','Z4+':'>167 bpm'};document.getElementById('ck-fc-info').innerHTML=`<strong style="color:${zone[1]}">${zone[0]}</strong> · ${ranges[zone[0]]} · ${zone[2]}%`;}));
-  _ckLine('ckCAD','ckCADW','ckCADT','ckCADX',D.CAD[W].w,[{v:D.CAD[W].v,color:'#06b6d4',lbl:'spm'}],v=>v.toFixed(0)+' spm',{h:70});
+  _ckLine('ckCAD','ckCADW','ckCADT','ckCADX',D.CAD[W].w,[{v:D.CAD[W].v,color:'#F4561D',lbl:'spm'}],v=>v.toFixed(0)+' spm',{h:70});
   const cadLast=D.CAD[W].v.filter(x=>x!=null).pop();document.getElementById('ck-cad-val').textContent=cadLast?cadLast.toFixed(0):'—';
   // Run list
   document.getElementById('ck-runs').innerHTML=D.RUNS.map((r,i)=>`<div onclick="_ckOpenRun(${i})" style="background:var(--gris-fond);border-radius:10px;padding:10px 12px;display:flex;align-items:center;gap:10px;cursor:pointer;margin-bottom:6px"><div style="width:7px;height:7px;border-radius:50%;background:${r.type};flex:0 0 7px"></div><div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:600;color:var(--texte)">${r.title}${r.hasStreams?' <span style="font-size:var(--t-data);color:var(--primary-deux)">⊙ live</span>':''}</div><div style="font-size:var(--t-data);color:var(--texte-deux);margin-top:1px">${r.date} · RE ${r.re} · FC ${r.fcm}/${r.fcx}</div></div><div style="text-align:right"><div style="font-size:14px;font-weight:700;color:var(--texte)">${r.km}</div><div style="font-size:var(--t-data);color:var(--texte-deux)">${r.al}/km</div></div></div>`).join('');
@@ -3020,7 +3020,7 @@ function debugCockpit(opt){
   var nb=faites.length;var elS=document.querySelector('.acc-stat .av');
   if(typeof SAISON2026!=='undefined')alerte('Info : SAISON2026 = '+SAISON2026.sorties+' sorties / '+SAISON2026.km+' km (source Strava, instantane du build) ; plan = '+nb+' sorties logguees.');
   if(typeof console!=='undefined'){
-    console.log('%cdebugCockpit : '+(out.ok?'OK':out.ecarts.length+' ECART(S)')+' · '+out.controles.length+' controles · '+out.alertes.length+' alerte(s)','font-weight:bold;color:'+(out.ok?'#16a34a':'#ef4444'));
+    console.log('%cdebugCockpit : '+(out.ok?'OK':out.ecarts.length+' ECART(S)')+' · '+out.controles.length+' controles · '+out.alertes.length+' alerte(s)','font-weight:bold;color:'+(out.ok?'#16a34a':'#DC2626'));
     if(out.ecarts.length&&console.table)console.table(out.ecarts);
     else if(opt.verbose&&console.table)console.table(out.controles);
     out.alertes.forEach(function(a){console.warn('• '+a);});}
@@ -3134,7 +3134,7 @@ async function _effRender(){
   function pace145(ef){const p=1000/(ef*145);return Math.floor(p)+':'+String(Math.round((p%1)*60)).padStart(2,'0');}
   const deltaSec=Math.round((1000/(ref.ef*145)-1000/(cur.ef*145))*60);
   const deltaTxt=deltaSec>3?`▲ ${deltaSec} s/km gagnées à effort égal depuis S${ref.wk}`:deltaSec<-3?`▼ ${-deltaSec} s/km perdues depuis S${ref.wk} (fatigue ou données bruitées)`:`stable depuis S${ref.wk}`;
-  const deltaCol=deltaSec>3?'#16a34a':deltaSec<-3?'#f59e0b':'var(--texte-trois)';
+  const deltaCol=deltaSec>3?'#16a34a':deltaSec<-3?'#CA8A04':'var(--texte-trois)';
   // sparkline
   const efs=series.map(s=>s.ef),mn=Math.min(...efs),mx=Math.max(...efs),rg=(mx-mn)||1;
   const W=280,H=44;
@@ -3195,10 +3195,10 @@ function _saisonRender(){
   const gainPct=((cur.eff/base.eff)-1)*100;
   // barres : plus l'allure est basse (rapide), plus la barre est haute → on inverse
   const paces=pts.map(p=>p.pace_s),mn=Math.min(...paces),mx=Math.max(...paces),rg=(mx-mn)||1;
-  const cols=['#94a3b8','#38bdf8','#0d9488','#0f766e'];
+  const cols=['#A1A1AA','#38bdf8','#F4561D','#C2410C'];
   const bars=pts.map((p,i)=>{
     const h=30+((mx-p.pace_s)/rg)*70; // 30-100%
-    return `<div class="sais-col"><div class="sais-bar-wrap"><div class="sais-pace">${paceStr(p.pace_s)}</div><div class="sais-bar" style="height:${h}%;background:${cols[i]||'#0d9488'}"></div></div><div class="sais-lbl">${p.saison}</div><div class="sais-mois">${p.mois}${p.corr?' 🌡️':''}</div></div>`;
+    return `<div class="sais-col"><div class="sais-bar-wrap"><div class="sais-pace">${paceStr(p.pace_s)}</div><div class="sais-bar" style="height:${h}%;background:${cols[i]||'#F4561D'}"></div></div><div class="sais-lbl">${p.saison}</div><div class="sais-mois">${p.mois}${p.corr?' 🌡️':''}</div></div>`;
   }).join('');
   el.innerHTML=`
     <div class="sais-head"><span class="sais-gain">${gainSec>=3?'▲ '+gainSec+' s/km':gainSec<=-3?'▼ '+Math.abs(gainSec)+' s/km':'→ stable'}</span><span class="sais-gain-sub">${gainSec>=3?"plus rapide à effort égal depuis l'hiver (+"+gainPct.toFixed(1)+"%)":gainSec<=-3?"plus lent à effort égal qu'en hiver ("+gainPct.toFixed(1)+"%)":"à effort égal, comparable à l'hiver ("+(gainPct>0?'+':'')+gainPct.toFixed(1)+"%)"}</span></div>
@@ -3222,7 +3222,7 @@ function _decoupVerdict(d){
   if(d.pct<3)                return {t:"Footing ma\u00eetris\u00e9",c:"#16a34a",f:"var(--ok-fond)"};
   if(ecart<=-2)              return {t:"Bien tenu",c:"#16a34a",f:"var(--ok-fond)"};
   if(d.pct<6||ecart<=0)      return {t:"Conforme",c:"#65a30d",f:"var(--ok-fond)"};
-  if(d.pct<9||ecart<=1.5)    return {t:"Sous tension",c:"#b45309",f:"var(--warn-fond)"};
+  if(d.pct<9||ecart<=1.5)    return {t:"Sous tension",c:"#8F5A07",f:"var(--warn-fond)"};
   return {t:"S\u00e9ance subie",c:"#b91c1c",f:"var(--danger-fond)"};
 }
 function _decoupRender(){
@@ -3406,7 +3406,7 @@ function _profilAxes(){
           general:Math.round(moy(axes.map(function(a){return a.v;}))),
           nice:Math.round(axes.reduce(function(a,x){return a+x.v*(POIDS[x.k]||0);},0))};
 }
-function _profilCouleur(v){return v>=85?'#0d9488':v>=70?'#16a34a':v>=55?'#84cc16':v>=40?'#f59e0b':'#ef4444';}
+function _profilCouleur(v){return v>=85?'#F4561D':v>=70?'#16a34a':v>=55?'#84cc16':v>=40?'#CA8A04':'#DC2626';}
 /* Ouverture facon pack : l'enveloppe se dechire le long d'un trace cardiaque,
    puis le radar s'ecrit comme une trace GPS qui s'enregistre.
    Ne se declenche qu'a la PREMIERE decouverte (memorisee en localStorage),
@@ -3564,7 +3564,7 @@ function renderCockpit(){
     return`<div class="ck-card"><div class="ck-ch"><div><div class="ck-ct">${title}${hb}</div><div class="ck-cs" id="${id}-sub">${sub}</div></div>${valId?`<div style="text-align:right"><div class="ck-big" id="${valId}">—</div>${valSuffix?'<div class="ck-cs">'+valSuffix+'</div>':''}</div>`:''}</div><div class="ck-cw" id="${id}W"><svg id="${id}" height="${chartH}" style="display:block;width:100%"></svg><div class="ck-tt" id="${id}T"></div></div><div class="ck-xl" id="${id}X"></div>${extra||''}</div>`;
   }
   const _f=computeFormeScore();
-  const _fcol=_f.color||'#0d9488';
+  const _fcol=_f.color||'#F4561D';
   const _ftrend=_f.trend||'→';
   const _now=new Date();
   const _hh=String(_now.getHours()).padStart(2,'0'),_mm=String(_now.getMinutes()).padStart(2,'0');
@@ -3584,7 +3584,7 @@ function renderCockpit(){
 </div>
 ${(function(){const v=_estimVO2();if(!v)return '';return `<div class="vo2-card">
   <div class="vo2-top"><span class="vo2-lbl">VO\u2082max estimé <button class="vo2-help" onclick="event.stopPropagation();openCkHelp('vo2')" aria-label="Qu'est-ce que le VO2max ?">?</button></span><span class="vo2-src">d'après tes 3 records (5/10/semi)</span></div>
-  <div class="vo2-gauge" onclick="_vo2Reveal(true)" role="button" tabindex="0"><svg viewBox="0 0 200 110" class="vo2-svg"><path d="M20,100 A80,80 0 0,1 180,100" fill="none" stroke="#e2e8f0" stroke-width="12" stroke-linecap="round"/><path id="vo2-arc" d="M20,100 A80,80 0 0,1 180,100" fill="none" stroke="#0d9488" stroke-width="12" stroke-linecap="round" stroke-dasharray="251" stroke-dashoffset="251"/></svg>
+  <div class="vo2-gauge" onclick="_vo2Reveal(true)" role="button" tabindex="0"><svg viewBox="0 0 200 110" class="vo2-svg"><path d="M20,100 A80,80 0 0,1 180,100" fill="none" stroke="#E7E7EA" stroke-width="12" stroke-linecap="round"/><path id="vo2-arc" d="M20,100 A80,80 0 0,1 180,100" fill="none" stroke="#F4561D" stroke-width="12" stroke-linecap="round" stroke-dasharray="251" stroke-dashoffset="251"/></svg>
     <div class="vo2-num"><span id="vo2-val">${v.vo2}</span><span class="vo2-unit">ml/kg/min</span></div></div>
   <div class="vo2-foot" id="vo2-foot"></div>
 </div>`;})()}
@@ -3670,10 +3670,10 @@ ${card('ckDP','⛰ Dénivelé D+','',null,'m',75,'','dp')}
 <div id="ck-runs"></div>
 </div>
 </div>
-<div id="ck-modal" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,.6);z-index:200;align-items:flex-end">
+<div id="ck-modal" style="display:none;position:fixed;inset:0;background:rgba(24,24,27,.6);z-index:200;align-items:flex-end">
   <div style="background:var(--bg-card);border-radius:18px 18px 0 0;width:100%;max-height:90vh;overflow-y:auto">
     <div style="position:sticky;top:0;background:var(--bg-card);padding:14px 14px 10px;border-bottom:.5px solid var(--bord-card)">
-      <div style="width:36px;height:4px;background:#cbd5e1;border-radius:99px;margin:0 auto 12px"></div>
+      <div style="width:36px;height:4px;background:var(--ligne-forte);border-radius:99px;margin:0 auto 12px"></div>
       <button onclick="document.getElementById('ck-modal').style.display='none'" style="position:absolute;top:14px;right:14px;width:28px;height:28px;border-radius:50%;background:var(--gris-fond);border:none;color:var(--texte-deux);font-size:15px;cursor:pointer">✕</button>
       <div style="font-size:16px;font-weight:700;color:var(--texte)" id="ck-m-title"></div>
       <div style="font-size:var(--t-data);color:var(--texte-deux);margin-top:2px" id="ck-m-sub"></div>
@@ -3871,7 +3871,7 @@ function soumettreQuickLog(){
     card.classList.add('sc-fait');
     const b=card.querySelector('.ql-btn');
     if(b)b.outerHTML='<div class="seance-fleche sc-check">✓</div>';
-    const nom=card.querySelector('.seance-nom');if(nom)nom.style.color=_tc('#15803d');
+    const nom=card.querySelector('.seance-nom');if(nom)nom.style.color=_tc('#15703A');
     const info=card.querySelector('.seance-info');
     if(info&&!info.querySelector('.ql-real'))
       info.querySelector('.seance-desc').insertAdjacentHTML('afterend',
@@ -3915,7 +3915,7 @@ function _decoupBloc(r){
   // Decouplage cardiaque dans la fiche de seance (calcule au log, jamais recalcule ici).
   var d=r&&r.decouplage;
   if(!d||d.qualite!=='fiable'||typeof d.pct!=='number')return '';
-  var v=(typeof _decoupVerdict==='function')?_decoupVerdict(d):{t:'',c:'#0d9488',f:'#f0fdfa'};
+  var v=(typeof _decoupVerdict==='function')?_decoupVerdict(d):{t:'',c:'#F4561D',f:'#FFF1EA'};
   var num=function(n){return n.toFixed(1).replace('.',',');};
   var MAXG=14;
   var posC=Math.max(0,Math.min(100,d.pct/MAXG*100)),posA=Math.max(0,Math.min(100,d.attendu/MAXG*100));
@@ -4047,59 +4047,59 @@ function coachDebrief(num,se){
 }
 /* ===== Schémas théoriques SVG (FCmax 192) ===== */
 function svgZonesFC(hi){
-  const Z=[['Z1','Récup / EF','<134','#16a34a'],['Z2','Endurance','134-154','#84cc16'],['Z3','Tempo / AM','154-167','#f59e0b'],['Z4','Seuil','167-177','#f59e0b'],['Z5','VO2max','>177','#ef4444']];
+  const Z=[['Z1','Récup / EF','<134','#16a34a'],['Z2','Endurance','134-154','#84cc16'],['Z3','Tempo / AM','154-167','#CA8A04'],['Z4','Seuil','167-177','#CA8A04'],['Z5','VO2max','>177','#DC2626']];
   const w=300,bh=34,gap=4,x0=8;let bars='',labs='';const bw=(w-x0*2-gap*4)/5;
-  Z.forEach((z,i)=>{const x=x0+i*(bw+gap);const on=hi===i;bars+=`<rect x="${x}" y="14" width="${bw}" height="${bh}" rx="5" fill="${z[3]}" opacity="${on?1:.3}"/>${on?`<rect x="${x}" y="14" width="${bw}" height="${bh}" rx="5" fill="none" stroke="${z[3]}" stroke-width="2.5"/>`:''}`;labs+=`<text x="${x+bw/2}" y="62" text-anchor="middle" font-size="9" font-weight="700" fill="${on?z[3]:'#94a3b8'}">${z[0]}</text><text x="${x+bw/2}" y="73" text-anchor="middle" font-size="7.5" fill="#94a3b8">${z[2]}</text>`;});
+  Z.forEach((z,i)=>{const x=x0+i*(bw+gap);const on=hi===i;bars+=`<rect x="${x}" y="14" width="${bw}" height="${bh}" rx="5" fill="${z[3]}" opacity="${on?1:.3}"/>${on?`<rect x="${x}" y="14" width="${bw}" height="${bh}" rx="5" fill="none" stroke="${z[3]}" stroke-width="2.5"/>`:''}`;labs+=`<text x="${x+bw/2}" y="62" text-anchor="middle" font-size="9" font-weight="700" fill="${on?z[3]:'#A1A1AA'}">${z[0]}</text><text x="${x+bw/2}" y="73" text-anchor="middle" font-size="7.5" fill="#A1A1AA">${z[2]}</text>`;});
   return `<svg viewBox="0 0 ${w} 82" class="theo-svg" role="img" aria-label="Zones de fréquence cardiaque">${bars}${labs}</svg>`;
 }
 function svg8020(){
   return `<svg viewBox="0 0 300 96" class="theo-svg" role="img" aria-label="Répartition polarisée 80/20">
     <rect x="8" y="14" width="200" height="30" rx="5" fill="#16a34a"/><text x="108" y="33" text-anchor="middle" font-size="11" font-weight="800" fill="#fff">80 % FACILE</text>
-    <rect x="212" y="14" width="34" height="30" rx="5" fill="#f59e0b" opacity=".35"/>
-    <rect x="250" y="14" width="42" height="30" rx="5" fill="#ef4444"/><text x="271" y="33" text-anchor="middle" font-size="10" font-weight="800" fill="#fff">20 %</text>
-    <text x="229" y="58" text-anchor="middle" font-size="8" font-weight="700" fill="#f59e0b">zone grise</text>
-    <text x="229" y="68" text-anchor="middle" font-size="7.5" fill="#94a3b8">le piège</text>
-    <path d="M229 44 L229 50" stroke="#f59e0b" stroke-width="1.5"/>
-    <text x="108" y="86" text-anchor="middle" font-size="8" fill="#94a3b8">récupération + construction du moteur</text>
-    <text x="271" y="86" text-anchor="middle" font-size="8" fill="#94a3b8">stimulus</text>
+    <rect x="212" y="14" width="34" height="30" rx="5" fill="#CA8A04" opacity=".35"/>
+    <rect x="250" y="14" width="42" height="30" rx="5" fill="#DC2626"/><text x="271" y="33" text-anchor="middle" font-size="10" font-weight="800" fill="#fff">20 %</text>
+    <text x="229" y="58" text-anchor="middle" font-size="8" font-weight="700" fill="#CA8A04">zone grise</text>
+    <text x="229" y="68" text-anchor="middle" font-size="7.5" fill="#A1A1AA">le piège</text>
+    <path d="M229 44 L229 50" stroke="#CA8A04" stroke-width="1.5"/>
+    <text x="108" y="86" text-anchor="middle" font-size="8" fill="#A1A1AA">récupération + construction du moteur</text>
+    <text x="271" y="86" text-anchor="middle" font-size="8" fill="#A1A1AA">stimulus</text>
   </svg>`;
 }
 function svgGlycogen(){
   return `<svg viewBox="0 0 300 130" class="theo-svg" role="img" aria-label="Glycogène et le mur">
-    <line x1="34" y1="10" x2="34" y2="100" stroke="#cbd5e1" stroke-width="1"/><line x1="34" y1="100" x2="292" y2="100" stroke="#cbd5e1" stroke-width="1"/>
-    <text x="6" y="20" font-size="8" fill="#94a3b8">100%</text><text x="14" y="103" font-size="8" fill="#94a3b8">0</text>
-    <text x="150" y="122" text-anchor="middle" font-size="8.5" fill="#94a3b8">distance (km) →</text>
-    <text x="18" y="60" font-size="8" fill="#94a3b8" transform="rotate(-90 18 60)">glycogène</text>
-    <rect x="210" y="10" width="82" height="90" fill="#ef4444" opacity=".08"/>
-    <text x="251" y="48" text-anchor="middle" font-size="9" font-weight="800" fill="#ef4444">LE MUR</text>
-    <path d="M34 14 C120 30, 180 78, 215 100" fill="none" stroke="#ef4444" stroke-width="2.5"/>
-    <text x="120" y="78" font-size="8" font-weight="700" fill="#ef4444">sans fueling</text>
+    <line x1="34" y1="10" x2="34" y2="100" stroke="#D4D4D8" stroke-width="1"/><line x1="34" y1="100" x2="292" y2="100" stroke="#D4D4D8" stroke-width="1"/>
+    <text x="6" y="20" font-size="8" fill="#A1A1AA">100%</text><text x="14" y="103" font-size="8" fill="#A1A1AA">0</text>
+    <text x="150" y="122" text-anchor="middle" font-size="8.5" fill="#A1A1AA">distance (km) →</text>
+    <text x="18" y="60" font-size="8" fill="#A1A1AA" transform="rotate(-90 18 60)">glycogène</text>
+    <rect x="210" y="10" width="82" height="90" fill="#DC2626" opacity=".08"/>
+    <text x="251" y="48" text-anchor="middle" font-size="9" font-weight="800" fill="#DC2626">LE MUR</text>
+    <path d="M34 14 C120 30, 180 78, 215 100" fill="none" stroke="#DC2626" stroke-width="2.5"/>
+    <text x="120" y="78" font-size="8" font-weight="700" fill="#DC2626">sans fueling</text>
     <path d="M34 14 C140 28, 240 52, 292 64" fill="none" stroke="#16a34a" stroke-width="2.5"/>
     <text x="200" y="44" font-size="8" font-weight="700" fill="#16a34a">avec fueling</text>
-    <text x="206" y="113" font-size="7.5" fill="#94a3b8">~30-32 km</text>
+    <text x="206" y="113" font-size="7.5" fill="#A1A1AA">~30-32 km</text>
   </svg>`;
 }
 function svgDerive(){
   return `<svg viewBox="0 0 300 120" class="theo-svg" role="img" aria-label="Dérive cardiaque">
-    <line x1="30" y1="10" x2="30" y2="92" stroke="#cbd5e1" stroke-width="1"/><line x1="30" y1="92" x2="292" y2="92" stroke="#cbd5e1" stroke-width="1"/>
-    <text x="150" y="112" text-anchor="middle" font-size="8.5" fill="#94a3b8">temps →</text>
-    <line x1="30" y1="60" x2="292" y2="60" stroke="#0d9488" stroke-width="2.5" stroke-dasharray="0"/>
-    <text x="200" y="54" font-size="8" font-weight="700" fill="#0d9488">allure (constante)</text>
-    <path d="M30 50 C120 48, 200 38, 292 22" fill="none" stroke="#ef4444" stroke-width="2.5"/>
-    <text x="120" y="36" font-size="8" font-weight="700" fill="#ef4444">FC (qui monte)</text>
-    <text x="60" y="84" font-size="7.5" fill="#94a3b8">→ découplage = fatigue / chaleur / déshydratation</text>
+    <line x1="30" y1="10" x2="30" y2="92" stroke="#D4D4D8" stroke-width="1"/><line x1="30" y1="92" x2="292" y2="92" stroke="#D4D4D8" stroke-width="1"/>
+    <text x="150" y="112" text-anchor="middle" font-size="8.5" fill="#A1A1AA">temps →</text>
+    <line x1="30" y1="60" x2="292" y2="60" stroke="#F4561D" stroke-width="2.5" stroke-dasharray="0"/>
+    <text x="200" y="54" font-size="8" font-weight="700" fill="#C2410C">allure (constante)</text>
+    <path d="M30 50 C120 48, 200 38, 292 22" fill="none" stroke="#DC2626" stroke-width="2.5"/>
+    <text x="120" y="36" font-size="8" font-weight="700" fill="#DC2626">FC (qui monte)</text>
+    <text x="60" y="84" font-size="7.5" fill="#A1A1AA">→ découplage = fatigue / chaleur / déshydratation</text>
   </svg>`;
 }
 function svgLactate(){
   return `<svg viewBox="0 0 300 120" class="theo-svg" role="img" aria-label="Courbe du lactate">
-    <line x1="30" y1="10" x2="30" y2="92" stroke="#cbd5e1" stroke-width="1"/><line x1="30" y1="92" x2="292" y2="92" stroke="#cbd5e1" stroke-width="1"/>
-    <text x="150" y="112" text-anchor="middle" font-size="8.5" fill="#94a3b8">intensité / allure →</text>
-    <text x="12" y="50" font-size="8" fill="#94a3b8" transform="rotate(-90 12 50)">lactate</text>
-    <path d="M30 86 C120 84, 170 78, 200 64 C225 52, 250 26, 285 14" fill="none" stroke="#0d9488" stroke-width="2.5"/>
-    <line x1="200" y1="14" x2="200" y2="92" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="4 3"/>
-    <text x="200" y="106" text-anchor="middle" font-size="8" font-weight="700" fill="#f59e0b">SEUIL</text>
+    <line x1="30" y1="10" x2="30" y2="92" stroke="#D4D4D8" stroke-width="1"/><line x1="30" y1="92" x2="292" y2="92" stroke="#D4D4D8" stroke-width="1"/>
+    <text x="150" y="112" text-anchor="middle" font-size="8.5" fill="#A1A1AA">intensité / allure →</text>
+    <text x="12" y="50" font-size="8" fill="#A1A1AA" transform="rotate(-90 12 50)">lactate</text>
+    <path d="M30 86 C120 84, 170 78, 200 64 C225 52, 250 26, 285 14" fill="none" stroke="#F4561D" stroke-width="2.5"/>
+    <line x1="200" y1="14" x2="200" y2="92" stroke="#CA8A04" stroke-width="1.5" stroke-dasharray="4 3"/>
+    <text x="200" y="106" text-anchor="middle" font-size="8" font-weight="700" fill="#CA8A04">SEUIL</text>
     <text x="95" y="78" font-size="7.5" fill="#16a34a">éliminé = tu tiens</text>
-    <text x="232" y="34" font-size="7.5" fill="#ef4444">s'accumule</text>
+    <text x="232" y="34" font-size="7.5" fill="#DC2626">s'accumule</text>
   </svg>`;
 }
 /* ===== Panneau théorie & coaching approfondi (pilote S25) ===== */
@@ -4229,29 +4229,29 @@ function ttsResume(){_ttsPaused=false;_ttsBar('playing');try{speechSynthesis.res
 function ttsStop(){_ttsOn=false;_ttsPaused=false;if(_ttsKeep){clearInterval(_ttsKeep);_ttsKeep=null;}try{speechSynthesis.cancel();}catch(e){}_ttsHi(null);_ttsBar('idle');}
 function svgCote(){
   return `<svg viewBox="0 0 300 120" class="theo-svg" role="img" aria-label="Course en côte : force et économie">
-    <line x1="20" y1="100" x2="280" y2="100" stroke="#cbd5e1" stroke-width="1"/>
+    <line x1="20" y1="100" x2="280" y2="100" stroke="#D4D4D8" stroke-width="1"/>
     <path d="M40 100 L210 30 L210 100 Z" fill="#16a34a" opacity=".12"/>
     <path d="M40 100 L210 30" stroke="#16a34a" stroke-width="2.5"/>
-    <circle cx="120" cy="62" r="6" fill="#1e293b"/>
-    <path d="M120 62 L132 56" stroke="#1e293b" stroke-width="3" stroke-linecap="round"/>
-    <path d="M120 62 L112 72" stroke="#1e293b" stroke-width="3" stroke-linecap="round"/>
-    <path d="M126 50 L140 40" stroke="#f59e0b" stroke-width="2.5" marker-end="url(#ar)"/>
-    <defs><marker id="ar" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto"><path d="M0 0 L6 3.5 L0 7 Z" fill="#f59e0b"/></marker></defs>
-    <text x="158" y="44" font-size="8" font-weight="700" fill="#f59e0b">pousse contre</text>
-    <text x="158" y="54" font-size="8" font-weight="700" fill="#f59e0b">la gravité</text>
-    <text x="60" y="115" font-size="8" fill="#94a3b8">+ de fibres recrutées · tendons = ressort · 0 stress vitesse</text>
+    <circle cx="120" cy="62" r="6" fill="#18181B"/>
+    <path d="M120 62 L132 56" stroke="#18181B" stroke-width="3" stroke-linecap="round"/>
+    <path d="M120 62 L112 72" stroke="#18181B" stroke-width="3" stroke-linecap="round"/>
+    <path d="M126 50 L140 40" stroke="#CA8A04" stroke-width="2.5" marker-end="url(#ar)"/>
+    <defs><marker id="ar" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto"><path d="M0 0 L6 3.5 L0 7 Z" fill="#CA8A04"/></marker></defs>
+    <text x="158" y="44" font-size="8" font-weight="700" fill="#CA8A04">pousse contre</text>
+    <text x="158" y="54" font-size="8" font-weight="700" fill="#CA8A04">la gravité</text>
+    <text x="60" y="115" font-size="8" fill="#A1A1AA">+ de fibres recrutées · tendons = ressort · 0 stress vitesse</text>
   </svg>`;
 }
 function svgRiegel(){
   return `<svg viewBox="0 0 300 124" class="theo-svg" role="img" aria-label="Prédiction de performance">
-    <line x1="34" y1="12" x2="34" y2="96" stroke="#cbd5e1" stroke-width="1"/><line x1="34" y1="96" x2="288" y2="96" stroke="#cbd5e1" stroke-width="1"/>
-    <text x="14" y="26" font-size="8" fill="#94a3b8">temps</text>
-    <path d="M50 84 C120 78, 200 60, 278 22" fill="none" stroke="#0d9488" stroke-width="2.5"/>
+    <line x1="34" y1="12" x2="34" y2="96" stroke="#D4D4D8" stroke-width="1"/><line x1="34" y1="96" x2="288" y2="96" stroke="#D4D4D8" stroke-width="1"/>
+    <text x="14" y="26" font-size="8" fill="#A1A1AA">temps</text>
+    <path d="M50 84 C120 78, 200 60, 278 22" fill="none" stroke="#F4561D" stroke-width="2.5"/>
     <circle cx="92" cy="74" r="4.5" fill="#16a34a"/><text x="78" y="66" font-size="8" font-weight="700" fill="#16a34a">10 km</text>
-    <line x1="92" y1="74" x2="250" y2="34" stroke="#94a3b8" stroke-width="1" stroke-dasharray="3 3"/>
-    <circle cx="250" cy="34" r="4.5" fill="#ef4444"/><text x="214" y="30" font-size="8" font-weight="700" fill="#ef4444">marathon prédit</text>
-    <text x="58" y="110" font-size="8" fill="#94a3b8">10 km</text><text x="135" y="110" font-size="8" fill="#94a3b8">semi</text><text x="240" y="110" font-size="8" fill="#94a3b8">marathon</text>
-    <text x="150" y="122" text-anchor="middle" font-size="7.5" fill="#94a3b8">un 10 km bien couru prédit ton marathon (Riegel, exp. 1,07)</text>
+    <line x1="92" y1="74" x2="250" y2="34" stroke="#A1A1AA" stroke-width="1" stroke-dasharray="3 3"/>
+    <circle cx="250" cy="34" r="4.5" fill="#DC2626"/><text x="214" y="30" font-size="8" font-weight="700" fill="#DC2626">marathon prédit</text>
+    <text x="58" y="110" font-size="8" fill="#A1A1AA">10 km</text><text x="135" y="110" font-size="8" fill="#A1A1AA">semi</text><text x="240" y="110" font-size="8" fill="#A1A1AA">marathon</text>
+    <text x="150" y="122" text-anchor="middle" font-size="7.5" fill="#A1A1AA">un 10 km bien couru prédit ton marathon (Riegel, exp. 1,07)</text>
   </svg>`;
 }
 function ouvrirSeance(num,id){const se=(SEANCES_BY_WEEK[num]||[]).find(x=>x.id===id);if(!se)return;segActif=null;if(typeof ttsStop==='function')ttsStop();
@@ -4259,8 +4259,8 @@ function ouvrirSeance(num,id){const se=(SEANCES_BY_WEEK[num]||[]).find(x=>x.id==
   topbar.innerHTML=`<button class="btn-nav" onclick="ouvrirSemaine(${num})">‹ Retour semaine ${num}</button>${btnFermer}`;
   const metr=Object.entries(se.metriques).map(([k,v])=>`<div class="metrique"><div class="metrique-l">${k}</div><div class="metrique-v">${v}</div></div>`).join('');
   const struct=se.struct.map((b,i)=>{const c=(i===0||i===se.struct.length-1)?'#16a34a':se.accent;return `<div class="struct-ligne"><div class="struct-puce" style="background:${c}"></div><div class="struct-nom">${b.nom}</div><div class="struct-txt">${b.txt}</div></div>`;}).join('');
-  const LEGMAP={vert:['#16a34a','Endurance / échauffement / retour au calme'],bleu:['#0d9488','Travail qualitatif / spécifique'],orange:['#f59e0b','Récupération'],violet:['#64748b','Nutrition / rappel'],jaune:['#94a3b8','Descente active'],rouge:['#ef4444','Effort chrono']};
-  const leg=(se.segments?[...new Set(se.segments.map(s=>s.couleur))].map(c=>LEGMAP[c]||['#94a3b8',c]).map(x=>`<div class="legende-item"><div class="legende-puce" style="background:${x[0]}"></div>${x[1]}</div>`).join(''):se.legende.map(l=>`<div class="legende-item"><div class="legende-puce" style="background:${l.c}"></div>${l.l}</div>`).join(''));
+  const LEGMAP={vert:['#16a34a','Endurance / échauffement / retour au calme'],bleu:['#F4561D','Travail qualitatif / spécifique'],orange:['#CA8A04','Récupération'],violet:['#6B6B74','Nutrition / rappel'],jaune:['#A1A1AA','Descente active'],rouge:['#DC2626','Effort chrono']};
+  const leg=(se.segments?[...new Set(se.segments.map(s=>s.couleur))].map(c=>LEGMAP[c]||['#A1A1AA',c]).map(x=>`<div class="legende-item"><div class="legende-puce" style="background:${x[0]}"></div>${x[1]}</div>`).join(''):se.legende.map(l=>`<div class="legende-item"><div class="legende-puce" style="background:${l.c}"></div>${l.l}</div>`).join(''));
   const coach=se.coach.map(c=>`<div class="coach-carte"><div class="coach-titre">${c.titre}</div><p class="coach-texte">${c.texte}</p></div>`).join('');
   const viz=se.segments?`<div class="sd-section">Visualisation chronologique</div><div class="viz-wrap"><div class="viz-entete"><span class="viz-label">Structure de la séance</span><span class="viz-hint">Clique un segment</span></div><div class="barre-scroll"><div class="barre-piste" id="piste"></div></div><div class="detail-panneau" id="dpan"><div class="detail-nom" id="dnom"></div><div class="detail-role" id="drole"></div><div class="detail-grille" id="dgr"></div></div></div>`:'';
   contenu.innerHTML=`${rsBouton(num,se.id)}<div class="sd-hero"><div class="hero-badges"><span class="sd-badge" style="background:${se.accent}22;color:${_tc(se.accent)}">${se.sport}</span>${catBadge(se.cat)}${stChip((se.realise||{}).statut||'a_faire')}</div><h2 class="sd-titre">${se.titre}</h2><p class="sd-sous">${se.sous}</p><div class="sd-metriques">${metr}</div>${se.chaussure?`<div class="shoe-chip">Chaussure conseillée — ${se.chaussure}</div>`:''}${se.fit?`<a class="fit-btn" href="${se.fit}" download>⌚ Télécharger la séance</a>`:''}</div><div class="sd-corps">${ttsBarSeance}${!rsBouton(num,se.id)&&_REPLAY_DATA[num+'_'+se.id]?`<button class="rp-launch" onclick="openReplay('${num}_${se.id}')"><span class="rpl-ico">🎬</span><span class="rpl-txt"><span class="rpl-t1">Revoir cette sortie</span><span class="rpl-t2">Replay animé du profil · altitude, FC, distance</span></span><span class="rpl-go">▶</span></button>`:''}<div class="sd-section">Intensité ressentie (RPE)</div><div class="rpe-wrap"><div class="rpe-info"><div class="rpe-label">RPE</div><div class="rpe-val" style="color:${rpeColor(se.rpe)}">${se.rpe}<span style="font-size:.8rem;color:var(--texte-trois);font-weight:600">/10</span></div></div><div class="rpe-scale">${rpeScale(se.rpe)}</div></div><div class="sd-section">Objectif</div><div class="callout callout-obj">${se.objectif}</div>${coachAvant(num,se)}<div class="sd-section">Légende</div><div class="legende">${leg}</div><div class="sd-section">Déroulé</div><div class="struct">${struct}</div>${viz}<div class="sd-section">Bénéfices recherchés</div><div class="callout callout-ben">${se.benefices}</div><div class="sd-section">Conseil du coach</div><div class="coach-grille">${coach}</div>${se.nutrition?`<div class="sd-section">Nutrition de séance</div><div class="nutri"><div class="nutri-t">🍌 ${se.nutrition.titre}</div>${se.nutrition.items.map(i=>`<div class="nutri-l"><b>${i[0]}</b><span>${i[1]}</span></div>`).join('')}</div>`:''}<div class="sd-section">Points de vigilance</div><div class="callout callout-vig">${se.vigilance}</div>${realiseBloc(num,se)}</div>`;
@@ -4520,7 +4520,7 @@ const texte=x=>String(x||'').replace(/<[^>]+>/g,'').replace(/\s+/g,' ').trim();
 const METEO={Clear:'ciel dégagé',Cloudy:'nuageux',Wind:'venteux',Rain:'pluie',PartlyCloudy:'éclaircies',Fog:'brouillard',Snow:'neige'};
 let uid=0;const nid=p=>`${p}${++uid}`;
 /* rampe d'allure : une seule teinte (teal), plus clair = plus rapide */
-const RAMPE=['#0f766e','#0d9488','#99f6e4','#f0fdfa'].map(x=>[1,3,5].map(i=>parseInt(x.slice(i,i+2),16)));
+const RAMPE=['#C2410C','#F4561D','#FCCDB0','#FFF1EA'].map(x=>[1,3,5].map(i=>parseInt(x.slice(i,i+2),16)));
 function teinte(t){t=Math.max(0,Math.min(1,t));const x=t*(RAMPE.length-1),i=Math.min(RAMPE.length-2,Math.floor(x)),f=x-i;
   return 'rgb('+RAMPE[i].map((v,j)=>Math.round(v+(RAMPE[i+1][j]-v)*f)).join(',')+')';}
 
@@ -4643,7 +4643,7 @@ function img2(se,a){
   for(let i=1;i<pt.length;i++){const p=a.pl[a.idxD((cum[i]+cum[i-1])/2/tot*dTot)];
     segs.append(sv('line',{x1:pt[i-1][0].toFixed(1),y1:pt[i-1][1].toFixed(1),x2:pt[i][0].toFixed(1),y2:pt[i][1].toFixed(1),stroke:a.couleurDe(p)}));}
   const[x0,y0]=pt[0],[x1,y1]=pt[pt.length-1],boucle=Math.hypot(x1-x0,y1-y0)<14;
-  const dep=sv('circle',{cx:x0,cy:y0,r:6,fill:'#0b1424',stroke:'#f8fafc','stroke-width':2.5}),arr=sv('circle',{cx:x1,cy:y1,r:boucle?3:6,fill:'#f8fafc'});
+  const dep=sv('circle',{cx:x0,cy:y0,r:6,fill:'#0b1424',stroke:'#F7F7F8','stroke-width':2.5}),arr=sv('circle',{cx:x1,cy:y1,r:boucle?3:6,fill:'#F7F7F8'});
   const g=sv('svg',{viewBox:`0 0 ${W} ${Hh}`,class:'rs-g rs-g-trace',role:'img','aria-label':`Tracé de la sortie (${fN(se.realise.km,2)} km), coloré selon l'allure`},
     sv('defs',null,sv('mask',{id,maskUnits:'userSpaceOnUse',x:0,y:0,width:W,height:Hh},mk)),
     sv('path',{d:dPath,fill:'none',stroke:'rgba(255,255,255,.1)','stroke-width':9,'stroke-linecap':'round','stroke-linejoin':'round'}),segs,dep,arr);
@@ -4663,10 +4663,10 @@ function img3(se,a){
   const kmLab=[0,Math.round(dTot/2000),dTot/1000];
   const axes=sv('g',null,[amin,amax].map(v=>[sv('line',{x1:L,x2:W-R,y1:y(v),y2:y(v),class:'rs-grille'}),sv('text',{x:L-6,y:y(v)+4,class:'rs-ax','text-anchor':'end'},Math.round(v)+' m')]),
     kmLab.map((k,i)=>sv('text',{x:x(k*1000),y:Hh-6,class:'rs-ax','text-anchor':i===0?'start':i===2?'end':'middle'},i===2?fN(k,2)+' km':k+' km')));
-  let aireP;const point=sv('g',null,sv('circle',{r:11,fill:'rgba(153,246,228,.22)'}),sv('circle',{r:5.5,fill:'#f8fafc'}));
+  let aireP;const point=sv('g',null,sv('circle',{r:11,fill:'rgba(153,246,228,.22)'}),sv('circle',{r:5.5,fill:'#F7F7F8'}));
   point.setAttribute('transform',`translate(${pts[n-1][0].toFixed(1)},${pts[n-1][1].toFixed(1)})`);
   const g=sv('svg',{viewBox:`0 0 ${W} ${Hh}`,class:'rs-g',role:'img','aria-label':`Profil d'altitude de ${Math.round(amin)} à ${Math.round(amax)} mètres`},
-    sv('defs',null,sv('mask',{id,maskUnits:'userSpaceOnUse',x:0,y:0,width:W,height:Hh},rect)),axes,sv('g',null,aireP=sv('path',{d:aire,fill:'rgba(13,148,136,.2)'}),lignes),point);
+    sv('defs',null,sv('mask',{id,maskUnits:'userSpaceOnUse',x:0,y:0,width:W,height:Hh},rect)),axes,sv('g',null,aireP=sv('path',{d:aire,fill:'rgba(244,86,29,.2)'}),lignes),point);
   const dp=se.realise.elevation_gain!=null?se.realise.elevation_gain:se.resume.elevation_gain;
   const kick=h('p',{class:'rs-kick'},'Le relief'),ti=h('h2',{class:'rs-titre'},`+${dp} m de dénivelé`);
   const cap=h('p',{class:'rs-cap'},`Entre ${Math.round(amin)} et ${Math.round(amax)} m d'altitude. Le point rejoue ta sortie à ton rythme, pauses comprises, et le profil prend la couleur de ton allure.`);
@@ -4710,9 +4710,9 @@ function img5(se,a){
     if(z.lo>lo&&z.lo<hi)bandes.append(sv('text',{x:L-6,y:y(z.lo)+4,class:'rs-ax','text-anchor':'end'},z.lo));});
   const sm=f.fc.map((v,i)=>(f.fc[Math.max(0,i-1)]+v+f.fc[Math.min(n-1,i+1)])/3),d='M'+sm.map((v,i)=>x(f.t[i]).toFixed(1)+','+y(v).toFixed(1)).join('L');
   const id=nid('rsmc'),rect=sv('rect',{x:L,y:0,width:W-L-R,height:Hh,fill:'#fff',style:'transform-box:fill-box;transform-origin:0 50%'});
-  const fcP=sv('path',{d,fill:'none',stroke:'#f8fafc','stroke-width':2,'stroke-linejoin':'round',pathLength:1,'stroke-dasharray':1,'stroke-dashoffset':0}),trace=sv('g',null,fcP);let cl=null,fcA=null;
+  const fcP=sv('path',{d,fill:'none',stroke:'#F7F7F8','stroke-width':2,'stroke-linejoin':'round',pathLength:1,'stroke-dasharray':1,'stroke-dashoffset':0}),trace=sv('g',null,fcP);let cl=null,fcA=null;
   if(c&&c.fc_max!=null&&c.fc_max>lo&&c.fc_max<hi){const idc=nid('rscc');
-    trace.append(sv('clipPath',{id:idc},sv('rect',{x:L,y:0,width:W-L-R,height:y(c.fc_max)})),fcA=sv('path',{d,fill:'none',stroke:'#fbbf24','stroke-width':2.5,'stroke-linejoin':'round','clip-path':`url(#${idc})`,pathLength:1,'stroke-dasharray':1,'stroke-dashoffset':0}));
+    trace.append(sv('clipPath',{id:idc},sv('rect',{x:L,y:0,width:W-L-R,height:y(c.fc_max)})),fcA=sv('path',{d,fill:'none',stroke:'#E3B94C','stroke-width':2.5,'stroke-linejoin':'round','clip-path':`url(#${idc})`,pathLength:1,'stroke-dasharray':1,'stroke-dashoffset':0}));
     cl=sv('line',{x1:L,x2:W-R,y1:y(c.fc_max),y2:y(c.fc_max),class:'rs-cible'});}
   const legF=cl?h('p',{class:'rs-leg'},h('i'),`Cible ≤ ${c.fc_max} bpm`,h('i',{class:'rs-ambre'}),'au-dessus'):null;
   const mi=Math.round((tN-t0)/60);
@@ -4792,9 +4792,9 @@ function img9(se,a){
     const x=i=>L+i/((pts.length-1)||1)*(W-L-R),y=p=>T+(p-lo)/(hi-lo)*(Hh-T-B),k=pts.length-1;
     const grille=sv('g',null);for(let p=lo;p<=hi;p+=10)grille.append(sv('line',{x1:L,x2:W-R,y1:y(p),y2:y(p),class:'rs-grille'}),sv('text',{x:L-6,y:y(p)+4,class:'rs-ax','text-anchor':'end'},fA(p)));
     const ligne=sv('path',{d:prev.length?'M'+prev.map((o,i)=>x(i).toFixed(1)+','+y(o.p).toFixed(1)).join('L'):'M0,0',fill:'none',stroke:'rgba(153,246,228,.55)','stroke-width':2,pathLength:1,'stroke-dasharray':1,'stroke-dashoffset':0});
-    const dots=prev.map((o,i)=>sv('circle',{cx:x(i),cy:y(o.p),r:4,fill:'#99f6e4'})),tl=sv('line',{x1:L,x2:W-R,y1:y(tend),y2:y(tend),class:'rs-cible'});
+    const dots=prev.map((o,i)=>sv('circle',{cx:x(i),cy:y(o.p),r:4,fill:'#FCCDB0'})),tl=sv('line',{x1:L,x2:W-R,y1:y(tend),y2:y(tend),class:'rs-cible'});
     legT=h('p',{class:'rs-leg'},h('i'),`Ta tendance : ${fA(tend)}/km, moyenne de tes ${Math.min(5,prev.length)} sorties comparables précédentes`);
-    const nouveau=sv('g',null,sv('circle',{cx:x(k),cy:y(cur.p),r:11,fill:'rgba(248,250,252,.16)'}),sv('circle',{cx:x(k),cy:y(cur.p),r:6.5,fill:'#f8fafc'}),sv('text',{x:x(k),y:y(cur.p)+(dlt<0?-14:24),class:'rs-ax rs-ax-fort','text-anchor':'end'},fA(cur.p)));
+    const nouveau=sv('g',null,sv('circle',{cx:x(k),cy:y(cur.p),r:11,fill:'rgba(248,250,252,.16)'}),sv('circle',{cx:x(k),cy:y(cur.p),r:6.5,fill:'#F7F7F8'}),sv('text',{x:x(k),y:y(cur.p)+(dlt<0?-14:24),class:'rs-ax rs-ax-fort','text-anchor':'end'},fA(cur.p)));
     const xl=sv('g',null,sv('text',{x:x(0),y:Hh-6,class:'rs-ax'},court(pts[0].x.date)),sv('text',{x:x(k),y:Hh-6,class:'rs-ax','text-anchor':'end'},court(cur.x.date)));
     g=sv('svg',{viewBox:`0 0 ${W} ${Hh}`,class:'rs-g',role:'img','aria-label':`Allure à 145 bpm de tes ${pts.length} dernières sorties faciles comparables`},grille,tl,ligne,...dots,nouveau,xl);
     const verdict=Math.abs(dlt)<=5?'dans ta tendance':dlt<0?`${Math.round(-dlt)} s/km plus efficace que ta tendance`:`${Math.round(dlt)} s/km moins efficace que ta tendance`;
@@ -4810,7 +4810,7 @@ function img9(se,a){
     const bar=(x,top,bot,fill,rond)=>{const r=rond?Math.min(4,Math.max(0,(bot-top)/2)):0;return sv('path',{d:`M${x},${bot}V${top+r}Q${x},${top} ${x+r},${top}H${x+bw-r}Q${x+bw},${top} ${x+bw},${top+r}V${bot}Z`,fill,style:'transform-box:fill-box;transform-origin:50% 100%'});};
     const barres=[],labs=sv('g',null);
     ws.forEach((w,i)=>{const x=L+xw*i+(xw-bw)/2;if(i<ws.length-1)barres.push(bar(x,y(w.km),base,'rgba(153,246,228,.35)',true));labs.append(sv('text',{x:x+bw/2,y:Hh-6,class:'rs-ax','text-anchor':'middle'},w.sem));});
-    const x=L+xw*(ws.length-1)+(xw-bw)/2,avant=Math.max(0,cur.km-k),b1=bar(x,y(avant),base,'#0d9488',false),b2=bar(x,y(cur.km),y(avant)-2,'#f0fdfa',true);
+    const x=L+xw*(ws.length-1)+(xw-bw)/2,avant=Math.max(0,cur.km-k),b1=bar(x,y(avant),base,'#F4561D',false),b2=bar(x,y(cur.km),y(avant)-2,'#FFF1EA',true);
     const lab=sv('text',{x:x+bw/2,y:y(cur.km)-8,class:'rs-ax rs-ax-fort','text-anchor':'middle'},fN(cur.km,1));
     g=sv('svg',{viewBox:`0 0 ${W} ${Hh}`,class:'rs-g',role:'img','aria-label':`Volume par semaine, ${cur.sem} : ${fN(cur.km,1)} km dont ${fN(k,2)} km pour cette sortie`},grille,...barres,b1,b2,labs,lab);
     ti=h('h2',{class:'rs-titre'},`Semaine ${se.sem} : ${fN(cur.km,1)} km`);
