@@ -2236,6 +2236,98 @@ svg.tr-go .tr-b{animation:trBarre var(--d-ecran) var(--ease) both;animation-dela
 .ac-tete-l{display:flex;align-items:center;justify-content:space-between;gap:12px}
 .ac-puce.or{margin-bottom:0}
 .appbar{box-shadow:none;padding-bottom:0;margin-bottom:0}
+
+/* ===== LOT 5 — FICHE D'UNE SÉANCE FAITE (maquette validée le 28/10/2026) =====
+   Sections blanches séparées par une bande de 8 px du fond gris ; chiffres en Barlow ; aucun emoji. */
+.fs{display:flex;flex-direction:column;gap:8px;color:var(--texte)}
+.fs p,.fs h2,.fs h3,.fs ol{margin:0}
+.fs-sec{background:var(--bg-card);padding:22px 20px}
+.fs-tete{padding-bottom:6px}
+.fs-tete+.fs-chif{margin-top:-8px;padding-top:8px}
+.fs-quand{font-size:13px}
+.fs-titre{margin:6px 0 12px!important;font-size:28px;font-weight:800;letter-spacing:-.015em;line-height:1.15;color:var(--texte)}
+.fs-puces{display:flex;flex-wrap:wrap;gap:6px}
+.ac-puce.ne{background:var(--gris-fond);color:var(--texte-deux)}
+.fs-grille{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));column-gap:12px}
+.fs-st{padding:14px 0}
+.fs-st .ac-n{margin-top:5px;font-size:28px}
+.fs-st2{border-top:1px solid var(--gris-clair)}
+.fs-plus{font-size:14px;color:var(--texte-deux)}
+.fs-plus:empty{display:none}
+.fs-shoe{display:flex;align-items:center;gap:12px;margin-top:14px;padding:12px 14px;border-radius:14px;background:var(--gris-fond);color:var(--texte-deux)}
+.fs-shoe p{flex:1;font-size:15px;font-weight:650;color:var(--texte)}
+.fs-shoe p.ac-n{flex:none;font-size:20px}
+.fs-revoir{width:100%;min-height:54px;margin-top:16px}
+.fs-revoir-l{margin-top:8px!important;text-align:center}
+.fs-coach-t{display:flex;align-items:center;gap:10px}
+.fs-coach-ico{width:34px;height:34px;border-radius:11px;background:var(--primary);color:#fff;display:grid;place-items:center;flex:none}
+.fs-pvr{margin-top:18px;border:1px solid var(--gris-clair);border-radius:16px;overflow:hidden}
+.fs-pvr-r{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;align-items:baseline;padding:12px 14px;border-top:1px solid var(--gris-clair)}
+.fs-pvr-h{padding:10px 14px;background:var(--gris-fond);border-top:0}
+.fs-pvr-n{font-size:15px;font-weight:650}
+.fs-pvr .ac-n{font-size:20px}
+.fs-pvr-p{color:var(--texte-deux)}
+.fs-pvr-e{display:block;margin-top:3px;font-size:12px;font-weight:650;color:var(--warn-deux)}
+.fs-pvr-e.ok{color:var(--ok-deux)}
+.fs-kick{display:flex;align-items:center;gap:8px;margin-top:20px!important;font-size:13px;font-weight:700;letter-spacing:.02em;color:var(--texte)}
+.fs-kick.ok{color:var(--ok-deux)}.fs-kick.wa{color:var(--warn-deux)}.fs-kick.or{margin-top:0!important;color:var(--primary-deux)}
+.fs-verdict{margin-top:6px!important;font-size:17px;font-weight:600;line-height:1.5}
+.fs-para{margin-top:6px!important;font-size:16px;line-height:1.55}
+.fs-gris{color:var(--texte-deux)}
+.fs-suite{margin-top:20px;padding:16px;border-radius:16px;background:var(--primary-fond)}
+.fs-revue{margin-top:8px}
+.fs-revue>summary{display:inline-flex;align-items:center;gap:2px;min-height:44px;font-size:16px;font-weight:650;color:var(--primary-deux);cursor:pointer;list-style:none}
+.fs-revue>summary::-webkit-details-marker{display:none}
+.fs-revue[open]>summary svg{transform:rotate(90deg)}
+.fs-revue .rev-coach{margin-top:4px}
+.fs-revue-seule{margin-top:16px}
+.fs-sec-t{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.fs-trace-z{display:flex;align-items:center;gap:16px;margin-top:14px}
+.fs-trace-svg{flex:1;min-width:0;height:300px}
+.fs-leg{width:112px;flex:none;display:flex;flex-direction:column;gap:16px}
+.fs-leg-r{display:flex;gap:8px;margin-top:8px}
+.fs-leg-b{width:8px;height:112px;border-radius:99px;background:linear-gradient(var(--allure-5),var(--allure-4),var(--allure-3),var(--allure-2),var(--allure-1))}
+.fs-leg-v{display:flex;flex-direction:column;justify-content:space-between}
+.fs-leg-v .ac-n{font-size:16px}
+.fs-leg-v .ac-lb{font-weight:500}
+.fs-leg-p{display:flex;flex-direction:column;gap:6px}
+.fs-leg-p p{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--texte-deux)}
+.fs-pt{width:12px;height:12px;border-radius:50%;flex:none}
+.fs-pt.dep{border:2.5px solid var(--texte)}.fs-pt.arr{background:var(--texte)}
+.fs-km-r{display:grid;grid-template-columns:30px minmax(0,1fr) 44px 34px;align-items:center;gap:10px;min-height:30px}
+.fs-km-h{margin:16px 0 6px;min-height:0}
+.fs-d{text-align:right}
+.fs-km-l{display:flex;flex-direction:column;gap:4px}
+.fs-km-n{font-size:16px;color:var(--texte-deux)}
+.fs-km-p{font-size:17px;text-align:right}
+.fs-km-fc{font-size:15px;text-align:right;color:var(--texte-deux)}
+.fs-km-b{position:relative;height:12px}
+.fs-bande{position:absolute;top:-4px;bottom:-4px;background:var(--gris-fond);border-radius:4px}
+.fs-km-b b{position:relative;display:block;height:12px;border-radius:99px;background:var(--primary);transform-origin:left center}
+.fs-km-b b.vite{background:var(--primary-sombre)}.fs-km-b b.lent{background:var(--allure-2)}
+.fs-km-leg{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:14px}
+.fs-km-leg p{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--texte-deux)}
+.fs-km-sw{width:14px;height:8px;border-radius:99px;background:var(--primary)}
+.fs-km-sw.vite{background:var(--primary-sombre)}.fs-km-sw.lent{background:var(--allure-2)}
+.fs-note{margin-top:14px!important;font-size:14px;line-height:1.5;color:var(--texte-trois)}
+.fs-note-2{margin-top:12px!important;font-size:15px;color:var(--texte-deux)}
+.fs-zbar{display:flex;gap:2px;height:14px;margin-top:4px;border-radius:99px;overflow:hidden}
+.fs-zbar span{display:block;height:100%}
+.fs-zl{display:flex;flex-direction:column;gap:8px;margin-top:14px}
+.fs-zr{display:grid;grid-template-columns:14px minmax(0,1fr) auto;gap:10px;align-items:center}
+.fs-zr p{font-size:15px}.fs-zr p.ac-n{font-size:17px}
+.fs-zc{width:12px;height:12px;border-radius:3px}
+.fs-zb{color:var(--texte-trois)}
+.fs-struct{list-style:none;margin-top:16px!important;padding:0;display:flex;flex-direction:column}
+.fs-struct li{display:grid;grid-template-columns:110px minmax(0,1fr);gap:12px;padding:12px 0;border-top:1px solid var(--gris-clair)}
+.fs-struct li:last-child{border-bottom:1px solid var(--gris-clair)}
+.fs-struct li p{font-size:15px}
+.fs-struct li p.ac-lb{padding-top:2px;font-size:12px}
+.fs-pm{margin:16px 0 0}
+.fs-modif{margin-top:18px}
+.fs-modif .lf-toggle{display:flex;align-items:center;justify-content:center;width:100%;min-height:48px;border:0;border-radius:14px;background:var(--bg-card);box-shadow:inset 0 0 0 1.5px var(--gris-clair);color:var(--texte);font:inherit;font-size:16px;font-weight:650;cursor:pointer}
+@media (prefers-reduced-motion:no-preference){.fs-km-b b{animation:fsMonte var(--d-ecran) var(--ease) both}}
+@keyframes fsMonte{from{transform:scaleX(0)}}
 #boot-load,#boot-err{position:fixed;inset:0;z-index:500;display:flex;flex-direction:column;gap:14px;align-items:center;justify-content:center;padding:24px;text-align:center;background:var(--gris-fond);color:var(--texte-trois);font-size:var(--t-callout)}
 #boot-err{color:var(--texte)}#boot-load[hidden],#boot-err[hidden]{display:none}</style></head>
 <body>
@@ -2265,7 +2357,7 @@ svg.tr-go .tr-b{animation:trBarre var(--d-ecran) var(--ease) both;animation-dela
 <div id="boot-err" role="alert" hidden><p>Données indisponibles. Vérifie ta connexion puis réessaie.</p><button type="button" class="btn-nav" onclick="location.reload()">Réessayer</button></div>
 <script>
 (function(){
-var V="273",EAGER=["plan", "seances", "historique", "meta"];
+var V="274",EAGER=["plan", "seances", "historique", "meta"];
 function get(f){return fetch("data/"+f+".json?v="+V).then(function(r){if(!r.ok)throw new Error(f+" "+r.status);return r.json();});}
 function fail(){var l=document.getElementById("boot-load");if(l)l.hidden=true;var e=document.getElementById("boot-err");if(e)e.hidden=false;}
 var cl=null;

@@ -743,7 +743,11 @@ var _AC_I={
   chaud:'<path d="M12 4v10"/><circle cx="12" cy="17.5" r="3.2"/><path d="M15.5 6H18M15.5 9.5H18"/>',
   alerte:'<path d="M12 3.5 2.8 19.5h18.4z"/><path d="M12 10v4M12 16.8v.2"/>',
   montre:'<rect x="6.5" y="6.5" width="11" height="11" rx="3"/><path d="M9 6.5V3h6v3.5M9 17.5V21h6v-3.5M12 9.5V12l1.5 1.5"/>',
-  fleche:'<path d="m9 6 6 6-6 6"/>'
+  fleche:'<path d="m9 6 6 6-6 6"/>',
+  attention:'<circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.5v.5"/>',
+  suite:'<path d="M5 12h14M13 6l6 6-6 6"/>',
+  coach:'<path d="M4 18v-5a8 8 0 0 1 16 0v5"/><path d="M4 15h3v5H4zM17 15h3v5h-3z"/>',
+  chaussure:'<path d="M3 16.5h15.5a2.5 2.5 0 0 0 2.5-2.5c0-1.2-.9-2-2-2.3l-4.5-1.2L11 6H8.5L8 8.5 5 8 3 13z"/><path d="M3 19h18"/>'
 };
 function _acIco(n,t){return '<svg width="'+(t||20)+'" height="'+(t||20)+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+_AC_I[n]+'</svg>';}
 function _acEsc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
@@ -2117,7 +2121,7 @@ function _parseTime(t){if(!t)return null;const p=String(t).trim().split(':').map
 function computeAllure(km,temps){const s=_parseTime(temps);if(!s||!km)return '';const sk=s/km;const m=Math.floor(sk/60),x=Math.round(sk%60);return (x===60?(m+1)+':00':m+':'+String(x).padStart(2,'0'))+'/km';}
 let _pendingStatut='fait';
 function lfPickStatut(st){_pendingStatut=st;document.querySelectorAll('.lf-st').forEach(b=>b.classList.toggle('actif',b.dataset.st===st));}
-function lfToggle(wk,id){const f=document.getElementById('logform');if(!f)return;const open=f.style.display==='none';f.style.display=open?'block':'none';const b=document.getElementById('lf-toggle');if(b)b.textContent=open?'Masquer le formulaire':'✎ Logger / modifier le réalisé';if(open)f.scrollIntoView({behavior:_reduceMotion()?'auto':'smooth',block:'center'});}
+function lfToggle(wk,id){const f=document.getElementById('logform');if(!f)return;const open=f.style.display==='none';f.style.display=open?'block':'none';const b=document.getElementById('lf-toggle');if(b)b.textContent=open?'Masquer le formulaire':'Logger / modifier le réalisé';if(open)f.scrollIntoView({behavior:_reduceMotion()?'auto':'smooth',block:'center'});}
 function _v(id){const e=document.getElementById(id);return e?e.value.trim():'';}
 function _celebrateLog(realise){
   // Moment gratifiant quand une séance est loggée "faite". Respecte reduced-motion.
@@ -3940,7 +3944,7 @@ function logForm(wk,se){
   const st=[['fait','Fait ✓'],['partiel','Partiel'],['manque','Manqué']].map(s=>`<button type="button" class="lf-st${_pendingStatut===s[0]?' actif':''}" data-st="${s[0]}" onclick="lfPickStatut('${s[0]}')">${s[1]}</button>`).join('');
   const f=(id,lbl,val,ph,extra='')=>`<label class="lf-f"><span>${lbl}</span><input id="${id}" value="${val!=null&&val!==''?String(val).replace(/"/g,'&quot;'):''}" placeholder="${ph}" ${extra}></label>`;
   return `<div class="lf-wrap">
-    <button type="button" class="lf-toggle" id="lf-toggle" onclick="lfToggle(${wk},${se.id})">${logged?'✎ Modifier le réalisé':'✎ Logger cette séance'}</button>
+    <button type="button" class="lf-toggle" id="lf-toggle" onclick="lfToggle(${wk},${se.id})">${logged?'Modifier le réalisé':'Logger cette séance'}</button>
     <div class="logform" id="logform" style="display:none">
       <div class="lf-statut">${st}</div>
       <div class="lf-grid">
@@ -4385,9 +4389,96 @@ function svgRiegel(){
     <text x="150" y="122" text-anchor="middle" font-size="7.5" fill="#A1A1AA">un 10 km bien couru prédit ton marathon (Riegel, exp. 1,07)</text>
   </svg>`;
 }
+/* ===== FICHE D'UNE SÉANCE FAITE — lot 5 « blanc et orange » (maquette validée le 28/10/2026) =====
+   Le réalisé d'abord (chiffres en grille, chaussure, Rewind), l'analyse du coach (prévu face au réalisé,
+   verdict, bien, à corriger, pour la suite, revue complète), le tracé coloré selon l'allure et les zones
+   (chargés avec les données du Rewind, RS.ficheDetail), l'allure km par km sur la bande de cible, le cœur,
+   puis la séance prévue. Les séances à faire gardent la fiche du plan. */
+function _fsSec(m){var p=String(m||'').match(/(\d+):(\d\d)/);return p?(+p[1])*60+(+p[2]):null;}
+function _fsAll(s){s=Math.round(s);return Math.floor(s/60)+':'+String(s%60).padStart(2,'0');}
+function _fsCoach(rev){var t=document.createElement('div'),o={};t.innerHTML=rev||'';
+  t.querySelectorAll('[data-coach]').forEach(function(e){var h=e.innerHTML.trim();
+    h=e.dataset.coach==='verdict'?h.replace(/<\/?strong>/g,''):h.replace(/^\s*<(strong|b)>[^<]*<\/\1>\s*:?\s*/,'');
+    o[e.dataset.coach]=h.replace(/^([a-zà-ÿ])/,function(c){return c.toUpperCase();});});return o;}
+function _fsKm(sp,c,src){
+  if(!sp.length)return '';
+  var T=5,ps=sp.map(function(x){return x.p;}),cr=c&&c.rapide!=null,cl=c&&c.lent!=null;
+  var lo=Math.min.apply(null,ps.concat(cr?[c.rapide]:[])),hi=Math.max.apply(null,ps.concat(cl?[c.lent]:[]));
+  var P0=hi+15,P1=lo-15,w=function(p){return Math.max(4,(P0-p)/(P0-P1)*100);};
+  var etat=function(p){return !cr?'ok':p<c.rapide-T?'vite':(cl&&p>c.lent+T)?'lent':'ok';};
+  var bande=cr&&cl?'<i class="fs-bande" style="left:'+((P0-c.lent)/(P0-P1)*100).toFixed(1)+'%;width:'+((c.lent-c.rapide)/(P0-P1)*100).toFixed(1)+'%"></i>':'';
+  var rows=sp.map(function(x){var e=etat(x.p);
+    return '<div class="fs-km-r" role="listitem" aria-label="Km '+x.n+' : '+_fsAll(x.p)+' par km'+(x.fc?', FC '+x.fc:'')+(e==='vite'?', trop rapide':e==='lent'?', trop lent':'')+'">'
+      +'<span class="ac-n fs-km-n" aria-hidden="true">'+x.n+'</span><span class="fs-km-b" aria-hidden="true">'+bande+'<b class="'+e+'" style="width:'+w(x.p).toFixed(1)+'%"></b></span>'
+      +'<span class="ac-n fs-km-p" aria-hidden="true">'+_fsAll(x.p)+'</span><span class="ac-n fs-km-fc" aria-hidden="true">'+(x.fc||'')+'</span></div>';}).join('');
+  var rap=sp.reduce(function(a,b){return b.p<a.p?b:a;}),len=sp.reduce(function(a,b){return b.p>a.p?b:a;});
+  var vite=sp.some(function(x){return etat(x.p)==='vite';}),lent=sp.some(function(x){return etat(x.p)==='lent';});
+  return '<div class="fs-sec-t"><h3 class="ac-h2" id="fs-km-h">Allure km par km</h3><p class="ac-lb">'+src+'</p></div>'
+    +'<div class="fs-km-r fs-km-h" aria-hidden="true"><span class="ac-lb">Km</span><span class="ac-lb">'+(cr&&cl?'Bande grise : cible '+_fsAll(c.rapide)+'–'+_fsAll(c.lent):'Allure de chaque kilomètre')+'</span><span class="ac-lb fs-d">Allure</span><span class="ac-lb fs-d">FC</span></div>'
+    +'<div class="fs-km-l" role="list" aria-labelledby="fs-km-h">'+rows+'</div>'
+    +(cr?'<div class="fs-km-leg"><p><span class="fs-km-sw ok"></span>Dans la cible</p>'+(vite?'<p><span class="fs-km-sw vite"></span>Trop rapide</p>':'')+(lent?'<p><span class="fs-km-sw lent"></span>Trop lent</p>':'')+'</div>':'')
+    +'<p class="fs-note fs-note-2">Le plus rapide : km '+rap.n+' en '+_fsAll(rap.p)+'. Le plus lent : km '+len.n+' en '+_fsAll(len.p)+'. Écart de '+Math.round(len.p-rap.p)+' s/km.</p>';
+}
+function ficheFaite(num,se){
+  var r=se.realise||{},cle=num+'-'+se.id,rw=typeof RS!=='undefined'&&RS.dispo(cle),c=(typeof RS!=='undefined'&&RS.cibleFiche)?RS.cibleFiche(cle):null;
+  var t0=String(se.titre||'').replace(/\s*\((non planifie|non planifié)\)\s*/i,'').trim(),mt=t0.match(/^(.*?)\s*\(([^)]+)\)\s*$/);
+  var titre=mt?mt[1]:t0,note=mt?_acCap(mt[2]):'',d=se.date?new Date(se.date+'T12:00:00'):null;
+  var km=+r.km,al=String(r.allure||'').match(/^(\d+:\d\d)/);
+  var C=[['Distance',km>0?_acNb(km,2):null,'km'],['Allure moyenne',al?al[1]:null,'/km'],['Temps',r.temps||null,''],
+    ['FC moyenne',r.fc_moy||null,'bpm'],['Dénivelé',r.elevation_gain!=null&&r.elevation_gain!==''?r.elevation_gain:null,'m'],['Météo',r.temp!=null&&r.temp!==''?r.temp:null,'°C']]
+    .filter(function(x){return x[1]!=null;});
+  var chif=C.map(function(x,i){return '<div class="fs-st'+(i>=3?' fs-st2':'')+'"><p class="ac-lb">'+x[0]+'</p><p class="ac-n">'+_acEsc(x[1])+(x[2]?'<span class="ac-u">'+x[2]+'</span>':'')+'</p></div>';}).join('');
+  var sh=se.chaussure_realise||'',g=(window.GEAR||[]).filter(function(x){return (x.marque+' '+x.modele)===sh;})[0];
+  var shoe=sh?'<div class="fs-shoe">'+_acIco('chaussure',26)+'<p>'+_acEsc(sh)+'</p>'+(g&&g.km!=null?'<p class="ac-n">'+_acNb(g.km)+'<span class="ac-u">km</span></p>':'')+'</div>':'';
+  var rev=rw?'<button type="button" class="ac-btn ac-btn-o fs-revoir" onclick="rsOuvrir(\''+cle+'\',0,this)">'+_acIco('play',20)+'Revoir ma séance</button><p class="ac-lb fs-revoir-l">Rewind animé : tracé, allure, cœur, analyse du coach</p>'
+    :((typeof _REPLAY_DATA!=='undefined'&&_REPLAY_DATA[num+'_'+se.id])?'<button type="button" class="ac-btn ac-btn-2 fs-revoir" onclick="openReplay(\''+num+'_'+se.id+'\')">'+_acIco('play',20)+'Revoir cette sortie</button>':'');
+  var P=(typeof RS!=='undefined'&&RS.prevuDe)?RS.prevuDe(cle).filter(function(x){return !/NaN|undefined/.test(String(x.reel)+String(x.ecart));}):[];
+  var tab=P.length?'<div class="fs-pvr" role="table" aria-label="Prévu face au réalisé"><div class="fs-pvr-r fs-pvr-h" role="row"><span role="columnheader"><span class="sr-only">Mesure</span></span><span class="ac-lb" role="columnheader">Prévu</span><span class="ac-lb" role="columnheader">Réalisé</span></div>'
+    +P.map(function(x){return '<div class="fs-pvr-r" role="row"><span role="rowheader" class="fs-pvr-n">'+x.nom+'</span><span role="cell" class="ac-n fs-pvr-p">'+_acEsc(x.prevu)+'</span><span role="cell"><span class="ac-n">'+_acEsc(x.reel)+'</span>'
+      +(x.etat?'<span class="fs-pvr-e '+x.etat+'">'+(x.etat==='ok'?'Dans la cible':_acEsc(x.ecart||''))+'</span>':'')+'</span></div>';}).join('')+'</div>':'';
+  var K=_fsCoach(r.revue),aK=K.verdict||K.bien||K.corriger||K.conseil;
+  var ana=aK?(K.verdict?'<p class="fs-kick">Le verdict</p><p class="fs-verdict">'+K.verdict+'</p>':'')
+      +(K.bien?'<p class="fs-kick ok">'+_acIco('check',16)+'Ce qui est bien</p><p class="fs-para">'+K.bien+'</p>':'')
+      +(K.corriger?'<p class="fs-kick wa">'+_acIco('attention',16)+'À corriger</p><p class="fs-para">'+K.corriger+'</p>':'')
+      +(K.conseil?'<div class="fs-suite"><p class="fs-kick or">'+_acIco('suite',16)+'Pour la suite</p><p class="fs-para">'+K.conseil+'</p></div>':'')
+      +'<details class="fs-revue"><summary>Lire la revue complète'+_acIco('fleche',18)+'</summary><div class="rev-coach">'+(r.revue||'')+'</div></details>'
+    :'<div class="rev-coach fs-revue-seule">'+(r.revue||'Pas encore de revue du coach pour cette séance.')+'</div>';
+  if(r.commentaire&&!/^\s*R[ée]alis[ée]\s*:/i.test(r.commentaire))ana+='<p class="fs-kick">Ton commentaire</p><p class="fs-para fs-gris">« '+_acEsc(r.commentaire)+' »</p>';
+  var sp=(r.splits||[]).filter(function(x){return /^\d+:\d\d$/.test(x.allure||'');}).map(function(x){return {n:x.km,p:_fsSec(x.allure),fc:x.fc};});
+  var cf=c&&c.fc_max!=null?(c.fc_min!=null?c.fc_min+'–'+c.fc_max:'≤ '+c.fc_max):null;
+  var H=[['Moyenne',r.fc_moy,'bpm'],['Pic',r.fc_max,'bpm'],['Cible',cf,'']].filter(function(x){return x[1];});
+  var dc=r.decouplage,der=dc&&typeof dc.pct==='number'?(dc.qualite==='fiable'?'Dérive cardiaque : '+(dc.pct>0?'+':'')+_acNb(dc.pct,1)+' % (fiable, sur '+dc.fen_min+' min).'
+      :'Dérive cardiaque non retenue : mesure incertaine'+(dc.fen_min?' (fenêtre de '+dc.fen_min+' min)':'')+'.'):'';
+  var m=se.metriques||{},PM=[['Distance',m.Distance],['Durée',m['Durée']||m['Durée totale']],['RPE',m.RPE]].filter(function(x){return x[1];});
+  var st=(se.struct||[]).map(function(b){return '<li><p class="ac-lb">'+_acEsc(b.nom)+'</p><p>'+b.txt+'</p></li>';}).join('');
+  var cc=(se.coach||[])[0],bv=[se.benefices?'<p class="fs-para"><b>Bénéfices :</b> '+se.benefices+'</p>':'',se.vigilance?'<p class="fs-para"><b>Vigilance :</b> '+se.vigilance+'</p>':''].join('');
+  return '<div class="fs" data-cle="'+cle+'">'
+    +'<header class="fs-sec fs-tete"><p class="ac-lb fs-quand" id="fs-quand">'+(d?_acCap(_acJour(d,true))+' '+d.getFullYear():'')+'</p>'
+    +'<h2 class="fs-titre">'+_acEsc(titre)+'</h2><div class="fs-puces">'
+    +(r.statut==='partiel'?'<span class="ac-puce wa">Partielle</span>':'<span class="ac-puce ok">'+_acIco('check',13)+'Faite</span>')
+    +(se.type?'<span class="ac-puce ne">'+_acEsc(se.type)+'</span>':'')+(note?'<span class="ac-puce wa">'+_acEsc(note)+'</span>':'')+'</div></header>'
+    +'<section class="fs-sec fs-chif" aria-label="La séance en chiffres"><div class="fs-grille">'+chif+'</div>'
+    +'<p class="fs-plus" id="fs-plus">'+(r.fc_max?'FC max '+r.fc_max:'')+'</p>'+shoe+rev+'</section>'
+    +'<section class="fs-sec" aria-labelledby="fs-coach-h"><div class="fs-coach-t"><span class="fs-coach-ico" aria-hidden="true">'+_acIco('coach',18)+'</span><h3 class="ac-h2" id="fs-coach-h">L’analyse du coach</h3></div>'+tab+ana+'</section>'
+    +(rw?'<section class="fs-sec" id="fs-trace" aria-labelledby="fs-trace-h" hidden><h3 class="ac-h2" id="fs-trace-h">Le tracé</h3><div class="fs-trace-z"></div></section>':'')
+    +'<section class="fs-sec" id="fs-km" aria-labelledby="fs-km-h"'+(sp.length?' data-ok="1">'+_fsKm(sp,c,'Tours de la montre'):' hidden>')+'</section>'
+    +(H.length?'<section class="fs-sec" aria-labelledby="fs-coeur-h"><h3 class="ac-h2" id="fs-coeur-h">Le cœur</h3><div class="fs-grille">'
+      +H.map(function(x){return '<div class="fs-st"><p class="ac-lb">'+x[0]+'</p><p class="ac-n">'+_acEsc(x[1])+(x[2]?'<span class="ac-u">'+x[2]+'</span>':'')+'</p></div>';}).join('')+'</div>'
+      +'<div id="fs-zones" hidden></div>'+(der?'<p class="fs-note">'+der+'</p>':'')+'</section>':'')
+    +'<section class="fs-sec" aria-labelledby="fs-prevu-h"><h3 class="ac-h2" id="fs-prevu-h">La séance prévue</h3>'
+    +(se.objectif?'<p class="fs-para fs-gris">'+se.objectif+'</p>':'')+(st?'<ol class="fs-struct">'+st+'</ol>':'')
+    +(PM.length?'<div class="ac-chiffres fs-pm">'+PM.map(function(x){return _acChiffre(x[0],x[1]);}).join('')+'</div>':'')
+    +(cc?'<p class="fs-kick">Conseil : '+_acEsc(String(cc.titre||'').replace(/^./,function(x){return x.toLowerCase();}))+'</p><p class="fs-para fs-gris">'+cc.texte+'</p>':'')
+    +(bv?'<details class="fs-revue"><summary>Bénéfices et vigilance'+_acIco('fleche',18)+'</summary>'+bv+'</details>':'')
+    +(se.chaussure?'<p class="fs-note">Chaussure conseillée : '+_acEsc(se.chaussure)+'</p>':'')
+    +'<div class="fs-modif" id="modifier">'+logForm(num,se)+'</div></section>'
+    +'</div>';
+}
 function ouvrirSeance(num,id){const se=(SEANCES_BY_WEEK[num]||[]).find(x=>x.id===id);if(!se)return;segActif=null;if(typeof ttsStop==='function')ttsStop();
   const ttsBarSeance=(typeof window!=='undefined'&&'speechSynthesis' in window)?`<div class="tts-bar tts-bar-seance" id="ttsBarSeance"><button class="tts-btn tts-play" onclick="ttsPlaySeance(${num},${se.id})">🔊 Lecture de la séance</button><span class="tts-hint">lecture vocale de la fiche, de haut en bas</span></div>`:'';
   topbar.innerHTML=`<button class="btn-nav" onclick="ouvrirSemaine(${num})">‹ Retour semaine ${num}</button>${btnFermer}`;
+  {const _r=se.realise||{};if(_r.statut==='fait'||_r.statut==='partiel'){contenu.innerHTML=ficheFaite(num,se);ouvrir();
+    try{if(typeof RS!=='undefined'&&RS.dispo(num+'-'+se.id))RS.ficheDetail(num+'-'+se.id);}catch(e){console.warn('fiche',e);}return;}}
   const metr=Object.entries(se.metriques).map(([k,v])=>`<div class="metrique"><div class="metrique-l">${k}</div><div class="metrique-v">${v}</div></div>`).join('');
   const struct=se.struct.map((b,i)=>{const c=(i===0||i===se.struct.length-1)?'#16a34a':se.accent;return `<div class="struct-ligne"><div class="struct-puce" style="background:${c}"></div><div class="struct-nom">${b.nom}</div><div class="struct-txt">${b.txt}</div></div>`;}).join('');
   const LEGMAP={vert:['#16a34a','Endurance / échauffement / retour au calme'],bleu:['#F4561D','Travail qualitatif / spécifique'],orange:['#CA8A04','Récupération'],violet:['#6B6B74','Nutrition / rappel'],jaune:['#A1A1AA','Descente active'],rouge:['#DC2626','Effort chrono']};
@@ -4650,8 +4741,8 @@ const moy=a=>a.reduce((s,x)=>s+x,0)/a.length;
 const texte=x=>String(x||'').replace(/<[^>]+>/g,'').replace(/\s+/g,' ').trim();
 const METEO={Clear:'ciel dégagé',Cloudy:'nuageux',Wind:'venteux',Rain:'pluie',PartlyCloudy:'éclaircies',Fog:'brouillard',Snow:'neige'};
 let uid=0;const nid=p=>`${p}${++uid}`;
-/* rampe d'allure : une seule teinte (teal), plus clair = plus rapide */
-const RAMPE=['#C2410C','#F4561D','#FCCDB0','#FFF1EA'].map(x=>[1,3,5].map(i=>parseInt(x.slice(i,i+2),16)));
+/* rampe d'allure (lot 5) : une seule teinte (orange), du plus lent (clair) au plus rapide (foncé) */
+const RAMPE=['#FCCDB0','#F9A070','#F4561D','#C2410C','#7C2D12'].map(x=>[1,3,5].map(i=>parseInt(x.slice(i,i+2),16)));
 function teinte(t){t=Math.max(0,Math.min(1,t));const x=t*(RAMPE.length-1),i=Math.min(RAMPE.length-2,Math.floor(x)),f=x-i;
   return 'rgb('+RAMPE[i].map((v,j)=>Math.round(v+(RAMPE[i+1][j]-v)*f)).join(',')+')';}
 
@@ -5098,6 +5189,42 @@ function dispo(cle){return (window.REWIND_SEANCE||[]).indexOf(cle)>=0;}
 function bouton(num,id){const cle=`${num}-${id}`;if(!dispo(cle))return '';
   return `<div class="rs-fiche"><button class="rp-launch rs-launch" type="button" onclick="rsOuvrir('${cle}',0,this)"><span class="rpl-ico" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">${I_RW}<path d="M10 9.5v5l4-2.5z" fill="currentColor"/></svg></span><span class="rpl-txt"><span class="rpl-t1">Revoir ma séance</span><span class="rpl-t2">Rewind animé · tracé, allure, cœur, analyse du coach</span></span><span class="rpl-go" aria-hidden="true">▶</span></button><button class="rs-lien" type="button" onclick="rsOuvrir('${cle}',7,this)">Aller directement à l'analyse du coach</button></div>`;}
 function derniere(){let best=null;(window.REWIND_SEANCE||[]).forEach(cle=>{const s=trouve(cle);if(s&&(!best||(s.date||'')>(best.s.date||'')||((s.date||'')===(best.s.date||'')&&cle>best.cle)))best={cle,s};});return best;}
+/* ---------- fiche de séance (lot 5) : prévu face au réalisé et cible sans attendre, tracé et zones avec les données du Rewind ---------- */
+function prevuDe(cle){const s=trouve(cle);if(!s)return [];const m=s.metriques||{},dm=String(m.Distance||'').match(/~\s*(\d+(?:[.,]\d+)?)\s*km/);
+  return prevu({realise:s.realise||{},cible:cibleDe(s),distance_prevue:dm?{km:parseFloat(dm[1].replace(',','.')),texte:m.Distance}:null});}
+function cibleFiche(cle){const s=trouve(cle);return s?cibleDe(s):null;}
+const hms=s=>{s=Math.round(s);const hh=Math.floor(s/3600),mm=Math.floor(s%3600/60);return (hh?hh+':'+pad(mm):mm)+':'+pad(s%60);};
+function traceFiche(se,a){const P=se.trace,W=220,Hh=300,pd=12,xs=P.map(p=>p[0]),ys=P.map(p=>p[1]),f=x=>x.toFixed(1);
+  const mnx=Math.min(...xs),mxx=Math.max(...xs),mny=Math.min(...ys),mxy=Math.max(...ys);
+  const sc=Math.min((W-2*pd)/((mxx-mnx)||1),(Hh-2*pd)/((mxy-mny)||1)),ox=(W-(mxx-mnx)*sc)/2,oy=(Hh-(mxy-mny)*sc)/2;
+  const pt=P.map(([x,y])=>[ox+(x-mnx)*sc,Hh-oy-(y-mny)*sc]),cum=[0];
+  for(let i=1;i<pt.length;i++)cum.push(cum[i-1]+Math.hypot(pt[i][0]-pt[i-1][0],pt[i][1]-pt[i-1][1]));
+  const tot=cum[cum.length-1]||1,dTot=se.flux.d[se.flux.d.length-1];let segs='';
+  for(let i=1;i<pt.length;i++){const p=a.pl[a.idxD((cum[i]+cum[i-1])/2/tot*dTot)];
+    segs+=`<line x1="${f(pt[i-1][0])}" y1="${f(pt[i-1][1])}" x2="${f(pt[i][0])}" y2="${f(pt[i][1])}" stroke="${a.couleurDe(p)}"/>`;}
+  const[x0,y0]=pt[0],[x1,y1]=pt[pt.length-1],boucle=Math.hypot(x1-x0,y1-y0)<14,lieu=String(se.lieu||'').split(',')[0].trim();
+  return `<svg viewBox="0 0 ${W} ${Hh}" class="fs-trace-svg" role="img" aria-label="Tracé de la sortie${lieu?' à '+lieu:''}, coloré selon l'allure : plus le trait est foncé, plus tu allais vite">`
+    +`<path d="M${pt.map(p=>f(p[0])+','+f(p[1])).join('L')}" fill="none" stroke="#ECECEF" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>`
+    +`<g stroke-width="5.5" stroke-linecap="round">${segs}</g><circle cx="${f(x0)}" cy="${f(y0)}" r="6.5" fill="#fff" stroke="#18181B" stroke-width="3"/>`
+    +`<circle cx="${f(x1)}" cy="${f(y1)}" r="${boucle?3.5:6.5}" fill="#18181B"/></svg>`
+    +`<div class="fs-leg"><div><p class="ac-lb">Allure</p><div class="fs-leg-r"><span class="fs-leg-b" aria-hidden="true"></span><span class="fs-leg-v">`
+    +`<span class="ac-n">${fA(a.dom.rapide)}</span><span class="ac-lb">plus foncé, plus rapide</span><span class="ac-n">${fA(a.dom.lent)}</span></span></div></div>`
+    +`<div class="fs-leg-p"><p><span class="fs-pt dep" aria-hidden="true"></span>Départ</p><p><span class="fs-pt arr" aria-hidden="true"></span>Arrivée</p></div></div>`;}
+function zonesFiche(Z){const zf=window.ZONES_FC||[],col=['var(--z1)','var(--z2)','var(--z3)','var(--z4)','var(--z5)'],pc=x=>Math.round(x*100)+' %';
+  const v=Z.map((z,i)=>({z:z.z,nom:String(z.nom||'').toLowerCase(),part:z.part,c:col[i]||col[4],b:String((zf[i]||{}).bpm||'').replace(/^<\s*/,'moins de ').replace(/^>\s*/,'plus de ').replace(/\s*-\s*/,'–')})).filter(z=>z.part>=.005);
+  return `<div class="fs-zbar" role="img" aria-label="Temps par zone cardiaque : ${v.map(z=>z.z+' '+pc(z.part)).join(', ')}">${v.map(z=>`<span style="width:${(z.part*100).toFixed(1)}%;background:${z.c}"></span>`).join('')}</div>`
+    +`<div class="fs-zl">${v.map(z=>`<div class="fs-zr"><span class="fs-zc" style="background:${z.c}" aria-hidden="true"></span><p>${z.z} ${z.nom}${z.b?` <span class="fs-zb">· ${z.b}</span>`:''}</p><p class="ac-n">${pc(z.part)}</p></div>`).join('')}</div>`;}
+function ficheDetail(cle){return charge(cle).then(rw=>{if(!document.querySelector(`.fs[data-cle="${cle}"]`))return;
+  const se=seanceDe(cle,rw),a=analyse(se),$=id=>document.getElementById(id),s=trouve(cle)||{};
+  const q=$('fs-quand');if(q&&rw.debut){const dt=new Date(rw.debut),lieu=String(rw.lieu||'').split(',')[0].trim();
+    q.textContent=leJour(s.date||rw.debut).replace(/^./,c=>c.toUpperCase())+` ${dt.getFullYear()} · ${dt.getHours()}:${pad(dt.getMinutes())}`+(lieu?` · ${lieu}`:'');}
+  const pl=$('fs-plus');if(pl){const x=[],r=se.realise;if(r.fc_max)x.push(`FC max ${r.fc_max}`);if(se.resume&&se.resume.elapsed_time)x.push(`${hms(se.resume.elapsed_time)} écoulé`);
+    const mc=METEO[(se.meteo||{}).condition];if(mc)x.push(mc);pl.textContent=x.join(' · ');}
+  const tr=$('fs-trace');if(tr&&se.trace&&se.trace.length>1){tr.querySelector('.fs-trace-z').innerHTML=traceFiche(se,a);tr.hidden=false;}
+  const km=$('fs-km');if(km&&!km.dataset.ok){const sp=a.splits.filter(x=>x.dist>=.95).map(x=>({n:x.n,p:x.p,fc:x.fc}));
+    if(sp.length){km.innerHTML=_fsKm(sp,se.cible,a.src==='tours'?'Tours de la montre':'Calculé sur le tracé');km.hidden=false;km.dataset.ok='1';}}
+  const z=$('fs-zones');if(z&&a.zones.some(x=>x.part>0)){z.innerHTML=zonesFiche(a.zones);z.hidden=false;}})
+  .catch(e=>console.warn('fiche',e));}
 function vu(cle){const d=derniere();if(!cle||!d||d.cle!==cle)return;try{localStorage.setItem('rs_vu',cle);}catch(e){}}
 /* carte « Le coach a analysé ta séance » en tête de l'Accueil (lot 5) : la dernière séance qui a un Rewind,
    tant qu'elle a moins de 8 jours. Chiffres du réalisé, verdict du coach (repris de la revue), prévu face
@@ -5127,7 +5254,7 @@ function carte(){const el=document.getElementById('ac-coach');if(!el)return;cons
 /* entrée « Où j'en suis » en tête du Cockpit */
 function cockpitEntree(){const c=document.getElementById('cockpit-contenu');if(!c||c.querySelector('.rs-ou-entree'))return;
   c.insertBefore(h('button',{class:'rs-ou-entree',type:'button',onclick:()=>OU.ouvre()},h('b',null,'Où j\'en suis'),h('span',null,'5 courbes, un verdict calculé pour chacune'),ico('<path d="m9 6 6 6-6 6"/>',20)),c.firstChild);}
-return {ouvrir,bouton,carte,cockpitEntree,ou:()=>OU.ouvre(),dispo};
+return {ouvrir,bouton,carte,prevuDe,cibleFiche,ficheDetail,cockpitEntree,ou:()=>OU.ouvre(),dispo};
 })();
 function rsOuvrir(cle,depuis,ouvreur){return RS.ouvrir(cle,depuis,ouvreur);}
 function rsBouton(num,id){return RS?RS.bouton(num,id):'';}
