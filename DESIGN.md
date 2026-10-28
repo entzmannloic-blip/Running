@@ -166,7 +166,16 @@ Hybride : surfaces à plat avec une bordure fine `slate-line`, ombres douces et 
 - **Ombre levée** (`0 2px 6px rgba(15,23,42,.07), 0 18px 36px -14px rgba(15,23,42,.22)`) : survol et éléments en avant.
 
 ### Mouvement
-Décélération exponentielle (`cubic-bezier(.25,1,.5,1)`), jamais de rebond ni d'élasticité. Tout mouvement et toute animation infinie ont une alternative sous `prefers-reduced-motion`.
+Trois durées et une seule courbe : **120 ms** pour une pression (`--d-press`), **240 ms** pour un changement d'état (`--d-etat`), **360 ms** pour un changement d'écran (`--d-ecran`), décélération exponentielle (`--ease`, `cubic-bezier(.25,1,.5,1)`), jamais de rebond ni d'élasticité. Tout mouvement et toute animation infinie ont une alternative sous `prefers-reduced-motion` (CSS et `_reduceMotion()` en JS) ; chaque effet a un repli quand le navigateur ne le gère pas, et le contenu n'est jamais masqué en attendant une animation.
+
+- **Onglets** (barre du bas, `goTab`) : transition de vue, fondu et glissement de 8 px dans le sens de la barre ; barre et en-tête immobiles. Sans l'API (iOS < 18) : la même chose en CSS (`.vue-in`). Les appels de code à `showTab` changent de vue sans transition de vue (seul le repli `.vue-in` joue).
+- **Carte → fiche** (`ouvrirCarte`, `fermerAnime`) : la carte de séance ou de semaine s'agrandit jusqu'à devenir la fiche et s'y referme. `fermer()` reste synchrone pour le code.
+- **Apparitions au scroll** : en CSS (`animation-timeline: view()`, Safari 26), sur `opacity` et `translate` pour ne pas gêner l'enfoncement au toucher. Sans support : cartes visibles d'emblée.
+- **Barre d'onglets** : se rétracte quand on descend, revient quand on remonte, en haut et en bas de page et au focus ; les défilements commandés par l'app ne la cachent pas (`_bbHold`). Fixe sous réduire les animations.
+- **Graphes** : courbes tracées et barres qui montent à la première apparition, une fois par graphe (`_trace`) ; le profil d'une course se dessine au fil du scroll.
+- **Chiffres clés** (forme et sa jauge, ACWR, J-N) : ils comptent jusqu'à leur valeur à leur première apparition, une fois par session (`_compte`).
+- **Célébrations** rares et sobres : une coche ou un trait qui se dessine, jamais de confettis.
+- **Toucher** : retour visuel seul (léger enfoncement). Pas d'haptique : l'iPhone ne vibre pas pour une web app.
 
 ### Named Rules
 **The Quiet Shadow Rule.** L'ombre est diffuse et basse en opacité ; jamais de bord noir ni d'ombre dure.

@@ -529,6 +529,140 @@ def run():
         except Exception as e:
             check("T21 textes a la demande", False, str(e)[:120])
 
+        # ── T22 : systeme de mouvement (P3) ──
+        # Avec transitions de vue, sans l'API (iOS < 18) et sous « reduire les animations » :
+        # l'app change d'onglet, ouvre et ferme une fiche, ne laisse aucun graphe masque, ne casse rien.
+        def page_mvt(reduce=False, sans_vt=False):
+            ctx = b.new_context(viewport={"width": 390, "height": 844}, service_workers="block",
+                                reduced_motion="reduce" if reduce else "no-preference")
+            if sans_vt:
+                ctx.add_init_script("delete Document.prototype.startViewTransition;")
+            ctx.add_init_script("""window.__vt=0;(function(){var o=Document.prototype.startViewTransition;
+                if(o)Document.prototype.startViewTransition=function(){window.__vt++;return o.apply(this,arguments);};})();""")
+            pg = ctx.new_page()
+            errs = []
+            pg.on("pageerror", lambda e: errs.append(str(e)[:160]))
+            pg.goto(HTML, wait_until="load", timeout=20000)
+            pg.wait_for_function("typeof showTab==='function'&&!document.getElementById('boot-load')", timeout=10000)
+            pg.wait_for_timeout(900)
+            return ctx, pg, errs
+
+        try:
+            ctx, pm, errs = page_mvt()
+            pm.click("#tab-cockpit")
+            pm.wait_for_timeout(700)
+            # les graphes du Cockpit sont dans des zones repliees : on les ouvre comme l'utilisateur
+            pm.evaluate("[1,2,3].forEach(n=>{const b=document.querySelector('[onclick=\"_ckZone('+n+',this)\"]');if(b)b.click();})")
+            pm.evaluate("document.querySelectorAll('[onclick=\"_ckToggleSec(this)\"]').forEach(b=>b.click())")
+            pm.evaluate("window.scrollTo(0,0)")
+            st = pm.evaluate("""({vt:window.__vt,vue:document.getElementById('vue-cockpit').style.display,
+                cur:document.getElementById('tab-cockpit').getAttribute('aria-current'),
+                attr:document.documentElement.dataset.vt||'',nom:getComputedStyle(document.getElementById('botbar')).viewTransitionName})""")
+            check("T22 onglet par la barre : transition de vue, puis etat propre",
+                  st["vt"] == 1 and st["vue"] == "block" and st["cur"] == "page" and st["attr"] == "" and st["nom"] in ("none", ""), str(st))
+            # graphes : on parcourt le Cockpit, aucun graphe visible ne reste masque
+            for _ in range(14):
+                pm.mouse.wheel(0, 500)
+                pm.wait_for_timeout(120)
+            pm.wait_for_timeout(1100)
+            gr = pm.evaluate("""(()=>{const v=[...document.querySelectorAll('#vue-cockpit svg')].filter(s=>{const r=s.getBoundingClientRect();return r.width>0&&r.height>0;});
+                return {traces:v.filter(s=>s.dataset.trace==='fait').length,masques:v.filter(s=>s.classList.contains('tr-wait')&&s.dataset.trace==='fait').length,
+                        lignes:[...document.querySelectorAll('#vue-cockpit svg[data-trace=fait] .tr-l')].filter(p=>getComputedStyle(p).opacity!=='1').length};})()""")
+            check("T22 graphes du Cockpit tracés puis affichés en entier", gr["traces"] >= 3 and gr["masques"] == 0 and gr["lignes"] == 0, str(gr))
+            # barre d'onglets : cachee en descendant, revient en remontant
+            pm.evaluate("window.scrollTo(0,0)")
+            pm.wait_for_timeout(1600)
+            pm.mouse.wheel(0, 700)
+            pm.wait_for_timeout(400)
+            cache = pm.evaluate("document.getElementById('botbar').classList.contains('bb-cache')")
+            pm.mouse.wheel(0, -260)
+            pm.wait_for_timeout(400)
+            revient = not pm.evaluate("document.getElementById('botbar').classList.contains('bb-cache')")
+            check("T22 barre d'onglets : se retracte en descendant, revient en remontant", cache and revient, f"cachee={cache} revient={revient}")
+            # carte -> fiche -> carte
+            pm.click("#tab-accueil")
+            pm.wait_for_timeout(800)
+            avant = pm.evaluate("window.__vt")
+            pm.click(".vdj-hero")
+            pm.wait_for_timeout(900)
+            ouv = pm.evaluate("""({o:document.getElementById('overlay').classList.contains('ouverte'),n:document.getElementById('contenu').innerHTML.length,
+                noms:[...document.querySelectorAll('[style*=view-transition-name]')].filter(e=>e.style.viewTransitionName&&e.style.viewTransitionName!=='none').length})""")
+            pm.click(".btn-close-round")
+            pm.wait_for_timeout(900)
+            fer = pm.evaluate("""({o:document.getElementById('overlay').classList.contains('ouverte'),vt:window.__vt,
+                noms:[...document.querySelectorAll('[style*=view-transition-name]')].filter(e=>e.style.viewTransitionName&&e.style.viewTransitionName!=='none').length,
+                sans:document.getElementById('overlay').classList.contains('vt-sans'),fixe:document.body.style.position})""")
+            check("T22 carte de séance -> fiche -> carte (transitions de vue)",
+                  ouv["o"] and ouv["n"] > 200 and ouv["noms"] == 0 and not fer["o"] and fer["vt"] == avant + 2
+                  and fer["noms"] == 0 and not fer["sans"] and fer["fixe"] == "", f"{ouv} {fer}")
+            # chiffres cles : la valeur finale est celle que l'app ecrit
+            pm.wait_for_timeout(300)
+            v1 = pm.evaluate("[...document.querySelectorAll('.vdj-fv,.wdg-race-j')].map(e=>e.textContent)")
+            pm.evaluate("renderHeader()")
+            v2 = pm.evaluate("[...document.querySelectorAll('.vdj-fv,.wdg-race-j')].map(e=>e.textContent)")
+            check("T22 chiffres clés : valeur finale exacte après le comptage", len(v1) >= 1 and v1 == v2, f"{v1} / {v2}")
+            # profil de Nice : se dessine au scroll, legende calculee
+            pm.evaluate("ouvrirDossier('nice')")
+            pm.wait_for_timeout(700)
+            pf = pm.evaluate("""(()=>{const l=document.querySelector('.dos-prof .dp-line'),c=document.querySelector('.dos-prof-cap');
+                return {l:!!l&&l.getAttribute('pathLength')==='1',anim:l?getComputedStyle(l).animationName:'',cap:c?c.textContent:''};})()""")
+            check("T22 profil de Nice : tracé au scroll, légende juste", pf["l"] and "dpTrace" in pf["anim"] and "897" not in pf["cap"] and "km" in pf["cap"], str(pf))
+            pm.evaluate("fermer()")
+            check("T22 aucune erreur JS (transitions de vue)", not errs, "; ".join(errs[:2]))
+            ctx.close()
+        except Exception as e:
+            check("T22 mouvement (transitions de vue)", False, str(e)[:160])
+
+        try:
+            ctx, pm, errs = page_mvt()
+            pm.click("#tab-plan")
+            pm.wait_for_timeout(150)
+            pm.mouse.click(*pm.evaluate("(()=>{const r=document.getElementById('tab-cockpit').getBoundingClientRect();return [r.x+r.width/2,r.y+r.height/2];})()"))
+            pm.wait_for_timeout(900)
+            apres_tap = pm.evaluate("_ongletActif()")
+            pm.evaluate("goTab('accueil');goTab('plan');goTab('palmares')")
+            pm.wait_for_timeout(900)
+            fin = pm.evaluate("""({v:_ongletActif(),attr:document.documentElement.dataset.vt||''})""")
+            check("T22 toucher pendant une transition : pris en compte ; trois onglets d'affilée : le dernier gagne, sans erreur",
+                  apres_tap == "cockpit" and fin["v"] == "palmares" and fin["attr"] == "" and not errs, f"tap={apres_tap} {fin} {errs[:2]}")
+            ctx.close()
+        except Exception as e:
+            check("T22 toucher pendant une transition", False, str(e)[:160])
+
+        try:
+            ctx, pm, errs = page_mvt(sans_vt=True)
+            pm.click("#tab-plan")
+            st = pm.evaluate("({vue:document.getElementById('vue-plan').style.display,vin:document.getElementById('vue-plan').classList.contains('vue-in'),vt:window.__vt})")
+            pm.click(".sem-carte")
+            pm.wait_for_timeout(500)
+            o = pm.evaluate("document.getElementById('overlay').classList.contains('ouverte')")
+            pm.click(".btn-close-round")
+            pm.wait_for_timeout(500)
+            f = pm.evaluate("document.getElementById('overlay').classList.contains('ouverte')")
+            check("T22 sans transitions de vue (iOS < 18) : onglet immédiat avec repli CSS, fiche de semaine",
+                  st["vue"] == "block" and st["vin"] and st["vt"] == 0 and o and not f and not errs, f"{st} ouverte={o} fermee={not f} {errs[:1]}")
+            ctx.close()
+        except Exception as e:
+            check("T22 sans transitions de vue", False, str(e)[:160])
+
+        try:
+            ctx, pm, errs = page_mvt(reduce=True)
+            pm.click("#tab-cockpit")
+            st = pm.evaluate("({vt:window.__vt,vue:document.getElementById('vue-cockpit').style.display})")
+            pm.wait_for_timeout(600)
+            for _ in range(6):
+                pm.mouse.wheel(0, 600)
+                pm.wait_for_timeout(120)
+            pm.wait_for_timeout(300)
+            r = pm.evaluate("""({cache:document.getElementById('botbar').classList.contains('bb-cache'),
+                masques:document.querySelectorAll('svg.tr-wait').length,
+                anims:document.getAnimations().filter(a=>a.playState==='running'&&!(a.effect&&a.effect.getComputedTiming().iterations===Infinity)).length})""")
+            check("T22 réduire les animations : aucune transition, barre fixe, graphes jamais masqués",
+                  st["vt"] == 0 and st["vue"] == "block" and not r["cache"] and r["masques"] == 0 and not errs, f"{st} {r} {errs[:1]}")
+            ctx.close()
+        except Exception as e:
+            check("T22 réduire les animations", False, str(e)[:160])
+
         # ── T13 : pas d'erreur JS accumulee sur tout le parcours ──
         check("T13 zero erreur JS sur tout le parcours", len(js_errors) == 0,
               "; ".join(js_errors[:3]))
