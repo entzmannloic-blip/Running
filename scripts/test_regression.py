@@ -378,10 +378,10 @@ def run():
 
         # ── T17 : coherence des chiffres et des libelles ──
         p.evaluate("showTab('accueil')")
-        n_home = int(p.evaluate("(document.querySelector('.wdg-st-solo b')||{}).textContent||-1"))
+        n_home = int(p.evaluate("(document.querySelector('.ac-sorties b')||{}).textContent||-1"))
         n_wrap = p.evaluate("_wrappedData().n")
         check("T17 meme nombre de sorties sur l'accueil et sur Courses", n_home == n_wrap, f"accueil={n_home} courses={n_wrap}")
-        lab_home = p.evaluate("(function(){var e=document.querySelector('.wdg-st-solo');return e?e.innerText:'';})()")
+        lab_home = p.evaluate("(function(){var e=document.querySelector('.ac-sorties');return e?e.innerText:'';})()")
         check("T17 accueil : le compteur precise sa periode (« sorties du plan »)",
               "du plan" in lab_home.lower(), repr(lab_home))
         p.evaluate("showTab('palmares')")
@@ -591,7 +591,7 @@ def run():
             pm.click("#tab-accueil")
             pm.wait_for_timeout(800)
             avant = pm.evaluate("window.__vt")
-            pm.click(".vdj-hero")
+            pm.click(".ac-pro")
             pm.wait_for_timeout(900)
             ouv = pm.evaluate("""({o:document.getElementById('overlay').classList.contains('ouverte'),n:document.getElementById('contenu').innerHTML.length,
                 noms:[...document.querySelectorAll('[style*=view-transition-name]')].filter(e=>e.style.viewTransitionName&&e.style.viewTransitionName!=='none').length})""")
@@ -605,9 +605,9 @@ def run():
                   and fer["noms"] == 0 and not fer["sans"] and fer["fixe"] == "", f"{ouv} {fer}")
             # chiffres cles : la valeur finale est celle que l'app ecrit
             pm.wait_for_timeout(300)
-            v1 = pm.evaluate("[...document.querySelectorAll('.vdj-fv,.wdg-race-j')].map(e=>e.textContent)")
+            v1 = pm.evaluate("[...document.querySelectorAll('.ac-forme-v,.ac-jn')].map(e=>e.textContent)")
             pm.evaluate("renderHeader()")
-            v2 = pm.evaluate("[...document.querySelectorAll('.vdj-fv,.wdg-race-j')].map(e=>e.textContent)")
+            v2 = pm.evaluate("[...document.querySelectorAll('.ac-forme-v,.ac-jn')].map(e=>e.textContent)")
             check("T22 chiffres clés : valeur finale exacte après le comptage", len(v1) >= 1 and v1 == v2, f"{v1} / {v2}")
             # profil de Nice : se dessine au scroll, legende calculee
             pm.evaluate("ouvrirDossier('nice')")
@@ -674,7 +674,7 @@ def run():
         # ── T23 : Rewind de séance (P4 lot 1) — annonce, bouton de la fiche, 9 images, Où j'en suis ──
         def rewind_parcours(pm):
             pm.evaluate("var o=document.getElementById('rwoverlay');if(o)o.classList.remove('on');")
-            ann = pm.evaluate("!!document.getElementById('rs-annonce')")
+            ann = pm.evaluate("(function(){var c=document.getElementById('ac-coach');return !!c&&!c.hidden&&/Le coach a analys/.test(c.innerText)&&!!c.querySelector('.ac-btn-o');})()")
             der = pm.evaluate("REWIND_SEANCE.map(c=>{const [w,i]=c.split('-');const s=SEANCES_BY_WEEK[w].find(x=>String(x.id)===i);return [s.date+'|'+c,c];}).sort().pop()[1]")
             w, i = der.split("-")
             pm.evaluate(f"ouvrirSeance('{w}',{i})")
@@ -694,8 +694,8 @@ def run():
         try:
             ctx, pm, errs = page_mvt()
             ann, labels, ko, ferme, vu = rewind_parcours(pm)
-            check("T23 Rewind de séance : annonce, bouton de la fiche, 9 images calculées, fermeture, annonce vue",
-                  ann and len(set(labels)) == 9 and ko == 0 and ferme and vu and not pm.evaluate("!!document.getElementById('rs-annonce')") and not errs,
+            check("T23 Rewind de séance : carte du coach sur l'Accueil, bouton de la fiche, 9 images calculées, fermeture, carte toujours là",
+                  ann and len(set(labels)) == 9 and ko == 0 and ferme and vu and pm.evaluate("!document.getElementById('ac-coach').hidden") and not errs,
                   f"annonce={ann} images={len(set(labels))} ko={ko} ferme={ferme} vu={vu} {errs[:1]}")
             pm.evaluate("rsOuvrir('44-2',0)")
             pm.wait_for_timeout(5300)
@@ -759,6 +759,16 @@ def run():
             sw = open(os.path.join(SITE, "sw.js"), encoding="utf-8").read()
             check("T24 polices dans le pre-cache du service worker",
                   all(f"./src/fonts/barlow-semi-condensed-latin-{w}-normal.woff2" in sw for w in (700, 800)))
+            # Accueil (lot 5, PR 2) : l'ordre de la maquette, pas de compteur de records, aucun emoji
+            pf.evaluate("showTab('accueil')")
+            pf.wait_for_timeout(300)
+            ac = pf.evaluate("""(function(){var v=document.getElementById('vue-accueil'),ids=[...v.querySelectorAll('.ac > *')].map(function(e){
+                return e.id||e.className.split(' ').filter(function(c){return /^ac-(tete|coach|pro|forme|carte)$/.test(c)||c==='forme-detail';}).pop()||e.tagName;});
+              return {ordre:ids.join(','),records:/records/i.test(v.innerText),emoji:/\\p{Extended_Pictographic}/u.test(v.innerText),
+                semaine:v.querySelectorAll('.ac-jour').length,jn:(v.querySelector('.ac-jn .cnt')||{}).textContent};})()""")
+            check("T25 Accueil : en-tête, analyse du coach, prochaine séance, météo, forme, semaine (7 jours), courses, année ; sans records ni emoji",
+                  ac["ordre"].startswith("ac-tete,ac-coach,ac-pro,wdg-meteo-slot,ac-forme,forme-detail,ac-carte,ac-carte,ac-carte")
+                  and not ac["records"] and not ac["emoji"] and ac["semaine"] == 7 and (ac["jn"] or "").isdigit(), str(ac))
             ctxf.close()
         except Exception as e:
             check("T24 police des chiffres embarquee", False, str(e)[:160])
