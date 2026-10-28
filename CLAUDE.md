@@ -60,7 +60,7 @@ Une **bottom bar fixe** `#botbar` (frostée, marge de sécurité iOS), **4 items
 ```
 Accueil · Séances · Cockpit · Courses
 ```
-- **Accueil** (`#vue-accueil`, id `accueil`) — dashboard : héros prochaine séance, forme, alerte de charge, météo, progression, capital.
+- **Accueil** (`#vue-accueil`, id `accueil`) — lot 5 (`_acProchaine`, `_acForme`, `_acSemaine`, `_acCourses`, `_acAnnee` + `RS.carte`) : en-tête (semaine, date, prochaine course), analyse du coach sur la dernière séance (moins de 8 jours), prochaine séance, météo, forme du jour, semaine jour par jour, courses, année.
 - **Séances** (`#vue-plan`, id `plan`) — le plan par phase et par semaine.
 - **Cockpit** (`#vue-cockpit`, id `cockpit`) — analytique. `showTab('cockpit')` rend `renderCockpit()` ET `renderDash()`.
 - **Courses** (`#vue-palmares`, id interne **toujours `palmares`**) — À venir (`RACES`) + Passées (`PALMARES`).
@@ -72,7 +72,7 @@ Accueil · Séances · Cockpit · Courses
 
 ## Chargement des données et PWA
 - `index.html` charge `data/{plan,seances,historique,meta}.json` en parallèle puis `src/app.js` ; chaque fichier est un objet `{NOM: valeur}` copié sur `window` (les constantes gardent leurs noms : `SEMAINES`, `SEANCES_BY_WEEK`, `CHANGELOG`…). Échec réseau : message « Données indisponibles » + bouton Réessayer (`#boot-err`).
-- Rewind de séance (P4, build 269) : `rsOuvrir(cle, image)` charge `data/rewind-<cle>.json` et les textes à l'ouverture ; bouton « Revoir ma séance » dans la fiche (`rsBouton`), annonce une fois sur l'Accueil, « Où j'en suis » (`ouJenSuis()`) depuis la fin du Rewind et le Cockpit. Réglages en tête du module (`AUTO`, `DUREES`).
+- Rewind de séance (P4, build 269) : `rsOuvrir(cle, image)` charge `data/rewind-<cle>.json` et les textes à l'ouverture ; bouton « Revoir ma séance » dans la fiche (`rsBouton`), carte « Le coach a analysé ta séance » en tête de l'Accueil (`RS.carte`, lot 5), « Où j'en suis » (`ouJenSuis()`) depuis la fin du Rewind et le Cockpit. Réglages en tête du module (`AUTO`, `DUREES`).
 - `CHANGELOG` au démarrage = la dernière entrée seulement ; `loadChangelog()` charge la liste complète à l'ouverture du panneau de versions.
 - Revues de séance et de semaine, splits et slides des Rewinds : retirés des fichiers de démarrage par `assemble.py`, dans `data/textes.json`, chargé par `loadTextes()` à la première ouverture d'une fiche ou d'un Rewind (`ouvrirSeance`, `ouvrirSemaine`, `rwOpen` enveloppées par `_avecTextes`). `build/data.json` reste complet pour les audits.
 - `sw.js` (généré) : cache `plan-<build>`, pré-cache de tout le site, réseau d'abord avec repli cache après 3 s ou hors-ligne. `_checkNewVersion()` affiche le bandeau « Nouvelle version prête » au retour au premier plan.
@@ -111,7 +111,7 @@ ck_{course}        → checklists de course
 meteo_cache, eff_temp_cache → caches (météo Lyon TTL 30 min, efficience)
 dash_grp_{id}, rw_mon, rw_seen, wn_seen → préférences d'affichage (groupes repliés, rewinds, nouveautés)
 install_dismissed  → bannière iOS
-rs_vu              → dernière séance dont l'annonce du Rewind a été vue
+rs_vu              → dernière séance dont le Rewind a été vu
 ```
 Sur iPhone, Safari et l'app de l'écran d'accueil ont des stockages séparés.
 

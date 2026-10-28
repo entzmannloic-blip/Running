@@ -726,6 +726,139 @@ function _timelineHTML(){
     </div>`;
   }catch(e){return '';}
 }
+/* ===== ACCUEIL — lot 5 « blanc et orange » (maquette validée le 28/10/2026) =====
+   En-tête (semaine, date, prochaine course) · analyse du coach sur la dernière séance (RS.carte) ·
+   prochaine séance · météo · forme du jour · semaine en cours · courses · année. Icônes au trait, aucun emoji. */
+var _AC_I={
+  rewind:'<path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/><path d="M10 9.5v5l4-2.5z" fill="currentColor"/>',
+  play:'<path d="M8 5.5v13l10.5-6.5z" fill="currentColor" stroke="none"/>',
+  check:'<path d="M5 12.5l4.5 4.5L19 7.5"/>',
+  croix:'<path d="M6 6l12 12M18 6 6 18"/>',
+  halt:'<path d="M6.5 7v10M17.5 7v10M3.5 9.5v5M20.5 9.5v5M6.5 12h11"/>',
+  course:'<path d="M6 19.5c0-4.5 4.5-4.5 6-8s6-3.5 6-7"/><circle cx="6" cy="19.5" r="1.6"/><circle cx="18" cy="4.5" r="1.6"/>',
+  trail:'<path d="m3 20 6.5-11 4 6.5 2.5-3.5L21 20z"/>',
+  soleil:'<circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M4.6 4.6 6 6M18 18l1.4 1.4M2.5 12h2M19.5 12h2M4.6 19.4 6 18M18 6l1.4-1.4"/>',
+  nuage:'<path d="M7 18h10a4 4 0 0 0 .4-8A6 6 0 0 0 6 11.6 3.3 3.3 0 0 0 7 18z"/>',
+  pluie:'<path d="M7 14h10a4 4 0 0 0 .4-8A6 6 0 0 0 6 7.6 3.3 3.3 0 0 0 7 14z"/><path d="M9 17.5l-1 3M13 17.5l-1 3M17 17.5l-1 3"/>',
+  chaud:'<path d="M12 4v10"/><circle cx="12" cy="17.5" r="3.2"/><path d="M15.5 6H18M15.5 9.5H18"/>',
+  alerte:'<path d="M12 3.5 2.8 19.5h18.4z"/><path d="M12 10v4M12 16.8v.2"/>',
+  montre:'<rect x="6.5" y="6.5" width="11" height="11" rx="3"/><path d="M9 6.5V3h6v3.5M9 17.5V21h6v-3.5M12 9.5V12l1.5 1.5"/>',
+  fleche:'<path d="m9 6 6 6-6 6"/>'
+};
+function _acIco(n,t){return '<svg width="'+(t||20)+'" height="'+(t||20)+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+_AC_I[n]+'</svg>';}
+function _acEsc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+function _acNb(v,d){return Number(v).toLocaleString('fr-FR',{minimumFractionDigits:d||0,maximumFractionDigits:d||0});}
+var _AC_J=['dimanche','lundi','mardi','mercredi','jeudi','vendredi','samedi'];
+var _AC_M=['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+function _acJour(d,mois){return _AC_J[d.getDay()]+' '+(d.getDate()===1?'1er':d.getDate())+(mois?' '+_AC_M[d.getMonth()]:'');}
+function _acCap(s){s=String(s||'');return s.charAt(0).toUpperCase()+s.slice(1);}
+/* chiffres de la prochaine seance : les trois premiers presents, dans cet ordre */
+var _AC_MET=[['Distance','Distance'],['Durée','Durée'],['Allure','Allure'],['RPE','Effort ressenti'],['Focus','Focus'],['FC','FC']];
+function _acChiffre(cle,v){v=String(v==null?'':v).trim();if(!v)return '';
+  var lib=(_AC_MET.filter(function(x){return x[0]===cle;})[0]||[cle,cle])[1];
+  var m=v.match(/^([~≈]?\s?\d[\d.,:]*(?:\s?[-–]\s?\d[\d.,:]*)?)\s*(\/km|km|min|bpm|h)?(.*)$/);
+  if(!m||(!m[2]&&m[3].trim().length>2))return '<div><p class="ac-lb">'+_acEsc(lib)+'</p><p class="ac-txt-v">'+_acEsc(v)+'</p></div>';
+  var u=m[2]||(cle==='RPE'?'/10':cle==='FC'?'bpm':'');
+  return '<div><p class="ac-lb">'+_acEsc(lib)+'</p><p class="ac-n ac-n22">'+_acEsc(m[1].replace(/\s/g,''))+(u?'<span class="ac-u">'+u+'</span>':'')+'</p></div>';}
+function _acEstPPG(se){return /PPG|renfo|mobilit|gainage|repos/i.test((se.type||'')+' '+(se.titre||'')+' '+((se.metriques||{}).Type||''));}
+function _acFait(se){var r=se.realise;return !!(r&&(r.statut==='fait'||r.statut==='partiel'));}
+function _acKmPrevu(se){var m=String((se.metriques||{}).Distance||'').match(/(\d+(?:[.,]\d+)?)/);return m?parseFloat(m[1].replace(',','.')):null;}
+/* prochaine sortie de course a pied apres une date (quand la prochaine seance est du renforcement) */
+function _acSortieApres(d){var best=null;
+  Object.keys(SEANCES_BY_WEEK).forEach(function(w){(SEANCES_BY_WEEK[w]||[]).forEach(function(se){
+    if(!se.date||_acFait(se)||_acEstPPG(se)||_acKmPrevu(se)==null)return;var x=new Date(se.date+'T00:00:00');
+    if(x>d&&(!best||x<best.d))best={d:x,se:se,wk:+w};});});return best;}
+function _acProchaine(ps){
+  if(!ps)return '';
+  var se=ps.se,t=new Date();t.setHours(0,0,0,0);var diff=Math.round((ps.d-t)/864e5);
+  var quand=diff===0?"aujourd'hui, "+_acJour(ps.d):diff===1?'demain, '+_acJour(ps.d):_acJour(ps.d,true);
+  var m=se.metriques||{},cles=_AC_MET.map(function(x){return x[0];}).filter(function(k){return m[k];}).slice(0,3);
+  var ppg=_acEstPPG(se),ico=ppg?'halt':(/trail/i.test((se.type||'')+' '+(se.titre||''))?'trail':'course');
+  var suite='';
+  if(ppg){var n=_acSortieApres(ps.d);
+    if(n){var km=_acKmPrevu(n.se);
+      suite='<div class="ac-sep"></div><div class="ac-suite"><div class="ac-min"><p class="ac-lb">Prochaine sortie · '+_acJour(n.d,true)+'</p>'
+        +'<p class="ac-suite-t">'+_acEsc(n.se.titre)+'</p></div>'
+        +(km!=null?'<p class="ac-n ac-n24">~'+_acNb(km,km%1?1:0)+'<span class="ac-u">km</span></p>':'')+'</div>';}}
+  var fit=se.fit?'<a class="ac-fit" href="'+se.fit+'" download onclick="event.stopPropagation()">'+_acIco('montre',18)+'Télécharger la séance pour la montre</a>':'';
+  return '<section class="ac-carte ac-pro" aria-labelledby="ac-pro-t" onclick="ouvrirCarte(this,'+ps.wk+','+se.id+')">'
+    +'<p class="ac-lb">Prochaine séance · '+quand+'</p>'
+    +'<div class="ac-pro-t"><span class="ac-pro-ico">'+_acIco(ico,24)+'</span><div class="ac-min"><h2 class="ac-h2" id="ac-pro-t">'+_acEsc(se.titre)+'</h2>'
+    +(se.type?'<p class="ac-pro-s">'+_acEsc(se.type)+'</p>':'')+'</div></div>'
+    +(cles.length?'<div class="ac-chiffres">'+cles.map(function(k){return _acChiffre(k,m[k]);}).join('')+'</div>':'')
+    +'<div class="vdj-depart" id="vdj-depart" style="display:none"></div>'+fit+suite+'</section>';
+}
+function _acForme(F,nudge){
+  var c=2*Math.PI*30,col=F.score<52?'var(--danger)':'var(--primary)';
+  var sig=String(F.signal||'').split(/\s+·\s+/),titre=sig[0]||'',sous=[];
+  if(sig[1])sous.push(_acCap(sig.slice(1).join(' · ')));
+  try{var v=(typeof _dynamicACWR==='function')?_dynamicACWR():null;
+    if(typeof v==='number'&&isFinite(v))sous.push('charge '+_acNb(v,2)+', '+(v<0.8?'sous-charge':v<=1.3?'zone optimale':v<=1.5?'vigilance':'surcharge'));}catch(e){}
+  return '<button type="button" class="ac-carte ac-forme" aria-expanded="false" aria-controls="forme-detail" onclick="var d=document.getElementById(\'forme-detail\');var o=d.classList.toggle(\'fd-open\');this.setAttribute(\'aria-expanded\',o)">'
+    +'<span class="ac-anneau"><svg width="72" height="72" viewBox="0 0 72 72" aria-hidden="true"><circle cx="36" cy="36" r="30" class="ac-anneau-bg"/>'
+    +'<circle cx="36" cy="36" r="30" class="ac-anneau-fg" stroke="'+col+'" transform="rotate(-90 36 36)" stroke-dasharray="'+c.toFixed(1)+'" stroke-dashoffset="'+(c*(1-F.score/100)).toFixed(1)+'"/></svg>'
+    +'<span class="ac-forme-v" aria-hidden="true">'+F.score+'</span></span>'
+    +'<span class="ac-min"><span class="ac-lb">Forme du jour <span class="sr-only">: '+F.score+' sur 100</span></span>'
+    +'<span class="ac-forme-s">'+_acEsc(titre)+'</span>'
+    +(sous.length?'<span class="ac-forme-c">'+_acEsc(sous.join(' · '))+'</span>':'')+'</span></button>';
+}
+function _acSemaine(sc){
+  var arr=(SEANCES_BY_WEEK[sc.num]||SEANCES_BY_WEEK[String(sc.num)]||[]).filter(function(s){return s.date;});
+  var t=new Date();t.setHours(0,0,0,0);
+  var lun=null;arr.forEach(function(s){var d=new Date(s.date+'T00:00:00');var l=new Date(d);l.setDate(d.getDate()-((d.getDay()+6)%7));if(!lun||l<lun)lun=l;});
+  if(!lun){lun=new Date(t);lun.setDate(t.getDate()-((t.getDay()+6)%7));}
+  var km=0,faites=0,prevues=0,jours='';
+  arr.forEach(function(s){if(!_acEstPPG(s)&&_acKmPrevu(s)!=null)prevues++;if(_acFait(s)&&s.realise.km){km+=+s.realise.km;faites++;}});
+  for(var i=0;i<7;i++){
+    var d=new Date(lun);d.setDate(lun.getDate()+i);var iso=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+    var ses=arr.filter(function(s){return s.date===iso;}),auj=+d===+t,lj='LMMJVSD'.charAt(i)+' '+d.getDate();
+    var nomJ=_acCap(_AC_J[d.getDay()]),pt='',bas='',etat='';
+    if(!ses.length){pt='<span class="ac-point repos'+(auj?' auj':'')+'"></span>';bas='<p class="ac-lb bas">repos</p>';etat='repos';}
+    else{var s=ses.filter(_acFait)[0]||ses[0],fait=_acFait(s),k=fait?(+s.realise.km||0):_acKmPrevu(s),ppg=_acEstPPG(s);
+      if(fait){pt='<span class="ac-point fait'+(auj?' auj':'')+'">'+_acIco('check',16)+'</span>';
+        bas=k?'<p class="ac-n ac-jour-v">'+_acNb(k,1)+'</p>':'<p class="ac-lb bas">'+(ppg?'PPG':'fait')+'</p>';etat=(ppg?'PPG faite':(k?_acNb(k,2)+' km faits':'séance faite'));}
+      else if(d<t){pt='<span class="ac-point manque">'+_acIco('croix',14)+'</span>';bas='<p class="ac-lb bas">manquée</p>';etat=(ppg?'PPG':'sortie')+' manquée';}
+      else{pt='<span class="ac-point prevu'+(auj?' auj':'')+'">'+(ppg||k==null?_acIco(ppg?'halt':'course',16):'<span class="ac-n">'+_acNb(k,0)+'</span>')+'</span>';
+        var mot=ppg?'PPG':/longue/i.test(s.type+' '+s.titre)?'longue':/seuil/i.test(s.type)?'seuil':/fraction|VMA|vitesse/i.test(s.type)?'qualité':/trail/i.test(s.type)?'trail':/course|marathon/i.test(s.type)?'course':'footing';
+        bas='<p class="ac-lb bas">'+mot+'</p>';etat=mot+' prévu'+(mot==='PPG'?'e':'')+(k!=null&&!ppg?', environ '+_acNb(k,0)+' km':'');}}
+    jours+='<div class="ac-jour" role="listitem" aria-label="'+nomJ+(auj?" (aujourd'hui)":'')+' : '+etat+'"><p class="ac-lb'+(auj?' auj':'')+'" aria-hidden="true">'+lj+'</p><span aria-hidden="true">'+pt+'</span><span aria-hidden="true">'+bas+'</span></div>';
+  }
+  return '<section class="ac-carte" aria-labelledby="ac-sem-t"><div class="ac-sem-t"><h2 class="ac-h2" id="ac-sem-t">Semaine '+sc.num+'</h2><p class="ac-lb">'+_acEsc(sc.theme||'')+'</p></div>'
+    +'<p class="ac-sem-km"><span class="ac-n ac-n30">'+_acNb(km,1)+'</span><span class="ac-u ac-u15">km</span> · '+faites+' sortie'+(faites>1?'s':'')+' faite'+(faites>1?'s':'')+' sur '+Math.max(prevues,faites)+'</p>'
+    +'<div class="ac-jours" role="list">'+jours+'</div></section>';
+}
+function _acCourseSous(r){
+  var d=new Date(r.date+'T00:00:00'),s=_acCap(_acJour(d,true)),D=(typeof DOSSIERS!=='undefined'&&r.dossier)?DOSSIERS[r.dossier]:null,st=(D&&D.stats)||[];
+  var obj=st.filter(function(x){return /objectif/i.test(x[1]);})[0],km=st.filter(function(x){return x[1]==='km';})[0];
+  if(obj)return s+' · objectif '+String(obj[0]).replace(/\s/g,'');
+  if(km)return s+' · '+km[0]+' km'+(/nocturne|nuit/i.test((D&&D.format)||'')?' de nuit':'');
+  return s;
+}
+function _acNomCourse(r){return /nice/i.test(r.nom)?'Marathon de Nice':(/saintex/i.test(r.nom)?'SaintExpress':r.nom);}
+function _acCourtCourse(r){return /nice/i.test(r.nom)?'Nice':(/saintex/i.test(r.nom)?'SaintExpress':r.nom);}
+function _acCourses(courses,pct,nb){
+  if(!courses.length)return '';
+  var h=courses.slice(0,3).map(function(r,i){
+    var b='<button type="button" class="ac-course"'+(r.dossier?' onclick="ouvrirDossier(\''+r.dossier+'\')"':'')+' aria-label="'+_acEsc(_acNomCourse(r))+', dans '+r.dn+' jours">'
+      +'<span class="ac-min"><span class="ac-course-n">'+_acEsc(_acNomCourse(r))+'</span><span class="ac-course-s">'+_acEsc(_acCourseSous(r))+'</span></span>'
+      +'<span class="ac-jn'+(i?'':' prem')+'" aria-hidden="true">J-<span class="cnt">'+r.dn+'</span></span></button>';
+    if(i===0)b+='<div class="ac-prog" aria-hidden="true"><i style="width:'+pct+'%"></i></div><p class="ac-lb ac-prog-l">Préparation : '+pct+' % du plan · <span class="ac-sorties"><b>'+nb+'</b> sorties du plan</span></p>';
+    return (i?'<div class="ac-sep ac-sep16"></div>':'')+b;}).join('');
+  return '<section class="ac-carte" aria-labelledby="ac-courses-t"><h2 class="ac-h2" id="ac-courses-t">Courses</h2>'+h+'</section>';
+}
+function _acAnnee(SA){
+  if(!SA)return '';
+  var rec=[],dp=SA.elev||0;
+  if(dp>=8849)rec.push(_acNb(dp/8849,1)+' fois l’Everest');else if(dp>0)rec.push(Math.round(dp/8849*100)+' % de l’Everest');
+  var j=_JALONS.filter(function(x){return SA.km>=x.km&&!x.ar;}).pop();
+  if(j)rec.push((rec.length?'et déjà ':'déjà ')+'la distance de Lyon à '+j.nom);
+  return '<section class="ac-carte" aria-labelledby="ac-annee-t"><h2 class="ac-h2" id="ac-annee-t">Ton année '+new Date().getFullYear()+'</h2>'
+    +'<div class="ac-chiffres ac-annee">'
+    +'<div><p class="ac-n ac-n28">'+_acNb(SA.km)+'</p><p class="ac-lb">km</p></div>'
+    +'<div><p class="ac-n ac-n28">'+_acNb(SA.sorties)+'</p><p class="ac-lb">sorties</p></div>'
+    +'<div><p class="ac-n ac-n28">'+_acNb(dp)+'</p><p class="ac-lb">m de dénivelé</p></div></div>'
+    +(rec.length?'<p class="ac-annee-r">'+_acCap(rec.join(', '))+'.</p>':'')+'</section>';
+}
 function renderHeader(){
   const cur=isoWeek(new Date());const sc=SEMAINES.find(s=>s.num===cur)||SEMAINES[0];
   const _t=new Date();_t.setHours(0,0,0,0);
@@ -859,26 +992,30 @@ if(_nudge){
     +'<span class="ac-tip-t">'+_court+'</span>'
     +'<span class="ac-tip-a">›</span></button>';
 }
-document.getElementById('hero-plan').innerHTML=
-  _lt+_psCard+_conseil+_wnCard+_formeDetail
-    +'<div id="wdg-meteo-slot">'+_wMeteo()+'</div>'
-  +_wPrepa(_COURSES_,_PCT_,_NB_,_KM_,_SEMOK_,sc.num)
-  /* 15/10 : « Ton capital » couvre la SAISON (depuis le 1er janvier, plusieurs courses dans l'annee) et non
-     plus la seule prepa (15 juin) : SAISON2026 pour km / sorties / D+, records = avant-plan + plan. */
-  +(function(){var SA=(typeof SAISON2026!=='undefined')?SAISON2026:null;
-     return _wCapital(SA?SA.sorties:_NB_,SA?SA.km:_KM_,SA?SA.sorties:_NB_,_PR_+((SA&&SA.pr_avant_plan)||0),SA?SA.elev:_DPLUS_);})()
-  
+var _SA_=(typeof SAISON2026!=='undefined')?SAISON2026:null,_rc0_=_COURSES_[0];
+document.getElementById('hero-plan').innerHTML='<div class="ac">'
+  +'<header class="ac-tete"><div class="ac-tete-l"><p class="ac-lb">Semaine '+sc.num+((PHASES||[]).filter(function(p){return p.id===sc.phase;})[0]?' · '+_acEsc(PHASES.filter(function(p){return p.id===sc.phase;})[0].nom):'')+'</p>'
+  +(_rc0_?'<span class="ac-puce or">'+_acEsc(_acCourtCourse(_rc0_))+' J-'+_rc0_.dn+'</span>':'')+'</div>'
+  +'<p class="ac-date">'+_acCap(_acJour(new Date(),true))+'</p></header>'
+  +'<section class="ac-carte ac-coach" id="ac-coach" aria-labelledby="ac-coach-h" hidden></section>'
+  +_acProchaine(_ps)
+  +'<div id="wdg-meteo-slot">'+_wMeteo()+'</div>'
+  +_acForme(_FORME_,_nudge)+_formeDetail
+  +_acSemaine(sc)
+  +_acCourses(_COURSES_,_PCT_,_NB_)
+  +_acAnnee(_SA_)+'</div>'
   +'<div id="canicule-banner" style="display:none!important"></div>'
   +'<div id="meteo-widget" class="meteo" style="display:none"><div class="meteo-loc">⏳</div></div>';
   renderMeteo();
+  try{if(typeof RS!=='undefined'&&RS&&RS.carte)RS.carte();}catch(e){console.warn('carte du coach',e);}
   document.getElementById('maj-foot').innerHTML=_maj;
-   try{const _aSe=Object.values(SEANCES_BY_WEEK).flat();const _aF=_aSe.filter(s=>s.realise&&(s.realise.statut==='fait'||s.realise.statut==='partiel')&&s.realise.km).length;/* on ne compte que les seances AVEC kilometrage : le bilan affichait 31 sorties quand la ligne de puces en comptait 30, les seances de PPG et de mobilite etant comptees ici mais pas la. Deux chiffres contradictoires pour la meme chose sur le meme ecran. */const _aKm=Math.round(_aSe.reduce((a,s)=>a+((s.realise&&s.realise.km)||0),0));const _aP=_aSe.length?Math.round(_aF/_aSe.length*100):0;const _ae=document.getElementById('accueil-annee');const _aStreak=_computeStreak();const _streakTile=_aStreak>=2?`<div class="acc-stat acc-streak"><div class="av">${_aStreak}<span>\u{1F525}</span></div><div class="ak">Sem. d\u2019affil\u00e9e</div></div>`:'';if(_ae)_ae.innerHTML=`<div class="acc-lab">Bilan du plan</div><div class="acc-annee ${_streakTile?'has-streak':''}"><div class="acc-stat"><div class="av">${_aF}</div><div class="ak">Sorties</div></div><div class="acc-stat"><div class="av">${_aKm}<span>km</span></div><div class="ak">R\u00e9alis\u00e9</div></div><div class="acc-stat"><div class="av">${_aP}<span>%</span></div><div class="ak">Pr\u00e9pa plan</div></div>${_streakTile}</div>`;}catch(e){}
+   {const _ae=document.getElementById('accueil-annee');if(_ae)_ae.innerHTML='';}
   const _ab=document.getElementById('appbar');if(_ab&&document.documentElement)document.documentElement.style.setProperty('--appbar-h',_ab.offsetHeight+'px');
   if(typeof _compte==='function'){
     /* Forme du jour : la jauge se remplit pendant que le chiffre compte, a la premiere apparition seulement */
-    var _fv=document.querySelector('.vdj-fv'),_rg=document.querySelector('.vr-fg');
+    var _fv=document.querySelector('.ac-forme-v'),_rg=document.querySelector('.ac-anneau-fg');
     if(_fv&&_rg&&!(_comptes&&_comptes.has('forme'))&&!_reduceMotion())_rg.classList.add('vr-anim');
-    _compte(_fv,'forme');_compte(document.querySelector('.wdg-race-j .cnt'),'jn');
+    _compte(_fv,'forme');_compte(document.querySelector('.ac-jn .cnt'),'jn');
   }
 }
 
@@ -1018,34 +1155,28 @@ function _wCapital(nb,km,sem,pr,dplus){
     +'</div>';
 }
 function _wMeteo(){
+  /* lot 5 : carte blanche, icones au trait ; creneaux = les heures les plus fraiches de la journee restante */
   var d=null;try{d=JSON.parse(localStorage.getItem('meteo_cache')||'null');}catch(e){}
   if(!d||d.temp===undefined){
-    return '<div class="wdg wdg-meteo" onclick="renderMeteo()"><div class="wdg-empty">Météo indisponible · toucher pour réessayer</div></div>';
+    return '<button type="button" class="ac-carte ac-meteo ac-meteo-vide" onclick="renderMeteo()"><span class="ac-lb">Météo · Lyon</span><span class="ac-meteo-msg">Indisponible · touche pour réessayer</span></button>';
   }
   var t=Math.round(d.temp), app=Math.round(d.app);
   var chaud=t>=30, tiede=t>=25&&t<30;
-  var ic=chaud?'🔥':(tiede?'☀️':(d.rain>50?'🌧️':'⛅'));
-  // creneaux : les heures les plus fraiches de la journee restante
+  var ic=chaud||tiede?'chaud':(d.rain>50?'pluie':(t>=18?'soleil':'nuage'));
   var h=new Date().getHours();
   var rest=(d.hourly_today||[]).filter(function(x){return x[0]>=h;});
   if(rest.length<3)rest=(d.hourly_tomorrow||[]).slice(0,8);
   var mini=rest.length?Math.min.apply(null,rest.map(function(x){return x[1];})):null;
   var cre=rest.slice(0,6).map(function(x){
-    var best=(x[1]===mini);
-    return '<div class="wdg-h'+(best?' wdg-h-best':'')+'"><span class="wdg-hh">'+x[0]+'h</span>'
-      +'<span class="wdg-ht">'+x[1]+'°</span></div>';}).join('');
-  var alerte=chaud
-    ? '<div class="wdg-alert">⚠️ Chaleur — pars avant 8h, hydrate-toi</div>'
-    : (tiede?'<div class="wdg-alert wdg-alert-soft">Temps chaud — surveille ta FC</div>':'');
-  return '<div class="wdg wdg-meteo" onclick="_ouvrirMeteo()">'
-    +'<div class="wdg-top"><div><div class="wdg-lbl">Lyon</div>'
-    +'<div class="wdg-big">'+t+'°</div></div>'
-    +'<div class="wdg-top-r"><div class="wdg-ic">'+ic+'</div>'
-    +'<div class="wdg-sub">ressenti '+app+'°</div>'
-    +(d.tomorrow_max!==undefined?'<div class="wdg-sub">demain '+d.tomorrow_max+'°</div>':'')+'</div></div>'
-    +alerte
-    +(cre?'<div class="wdg-sep"></div><div class="wdg-hours">'+cre+'</div>':'')
-    +'</div>';
+    return '<span class="ac-heure'+(x[1]===mini?' best':'')+'"><span class="ac-lb">'+x[0]+' h</span><span class="ac-n">'+x[1]+'°</span></span>';}).join('');
+  var alerte=chaud?'<span class="ac-puce wa">'+_acIco('alerte',13)+'Chaleur : pars avant 8 h, hydrate-toi</span>'
+    :(tiede?'<span class="ac-puce wa">Temps chaud : surveille ta FC</span>':'');
+  return '<button type="button" class="ac-carte ac-meteo" onclick="_ouvrirMeteo()" aria-label="Météo à Lyon : '+t+' degrés, détail par heure">'
+    +'<span class="ac-meteo-t"><span><span class="ac-lb">Météo · Lyon</span><span class="ac-n ac-n34">'+t+'°</span></span>'
+    +'<span class="ac-meteo-r"><span class="ac-meteo-ico">'+_acIco(ic,28)+'</span><span class="ac-lb">ressenti '+app+'°'+(d.tomorrow_max!==undefined?' · demain '+d.tomorrow_max+'°':'')+'</span></span></span>'
+    +(alerte?'<span class="ac-meteo-al">'+alerte+'</span>':'')
+    +(cre?'<span class="ac-sep"></span><span class="ac-heures">'+cre+'</span>':'')
+    +'</button>';
 }
 function _wPrepa(courses,pct,nb,km,sem,semNum){
   var c0=courses[0];
@@ -4966,24 +5097,40 @@ function ouvrir(cle,depuis,ouvreur){if(ouverture||LECT.ouvert())return;ouverture
 function dispo(cle){return (window.REWIND_SEANCE||[]).indexOf(cle)>=0;}
 function bouton(num,id){const cle=`${num}-${id}`;if(!dispo(cle))return '';
   return `<div class="rs-fiche"><button class="rp-launch rs-launch" type="button" onclick="rsOuvrir('${cle}',0,this)"><span class="rpl-ico" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">${I_RW}<path d="M10 9.5v5l4-2.5z" fill="currentColor"/></svg></span><span class="rpl-txt"><span class="rpl-t1">Revoir ma séance</span><span class="rpl-t2">Rewind animé · tracé, allure, cœur, analyse du coach</span></span><span class="rpl-go" aria-hidden="true">▶</span></button><button class="rs-lien" type="button" onclick="rsOuvrir('${cle}',7,this)">Aller directement à l'analyse du coach</button></div>`;}
-/* annonce « Le coach a analysé ta séance » : une fois par séance, sur l'Accueil */
 function derniere(){let best=null;(window.REWIND_SEANCE||[]).forEach(cle=>{const s=trouve(cle);if(s&&(!best||(s.date||'')>(best.s.date||'')||((s.date||'')===(best.s.date||'')&&cle>best.cle)))best={cle,s};});return best;}
-function vu(cle){const d=derniere();if(!cle||!d||d.cle!==cle)return;try{localStorage.setItem('rs_vu',cle);}catch(e){}const a=document.getElementById('rs-annonce');if(a)a.remove();}
-function annonce(){const d=derniere(),v=document.getElementById('vue-accueil');if(!d||!v)return;let lu=null;try{lu=localStorage.getItem('rs_vu');}catch(e){}
-  if(lu===d.cle||document.getElementById('rs-annonce'))return;const r=d.s.realise||{};
-  const el=h('section',{class:'rs-annonce',id:'rs-annonce','aria-label':'Nouvelle analyse du coach'},
-    h('span',{class:'rs-annonce-ico','aria-hidden':'true',html:`<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">${I_RW}<path d="M10 9.5v5l4-2.5z" fill="currentColor"/></svg>`}),
-    h('div',{class:'rs-annonce-txt'},h('strong',null,'Le coach a analysé ta séance'),h('span',null,[titreSeance(d.s),typeof r.km==='number'&&r.km>0?`${fN(r.km,2)} km`:null,d.s.date?leJour(d.s.date):null].filter(Boolean).join(' · '))),
-    h('button',{class:'rs-annonce-voir',type:'button',onclick:e=>ouvrir(d.cle,0,e.currentTarget)},'Voir'),
-    h('button',{class:'rs-annonce-x',type:'button','aria-label':'Masquer l\'annonce',onclick:()=>vu(d.cle)},ico(X_SVG,16)));
-  v.insertBefore(el,v.querySelector('#hero-plan')||v.firstChild.nextSibling);}
+function vu(cle){const d=derniere();if(!cle||!d||d.cle!==cle)return;try{localStorage.setItem('rs_vu',cle);}catch(e){}}
+/* carte « Le coach a analysé ta séance » en tête de l'Accueil (lot 5) : la dernière séance qui a un Rewind,
+   tant qu'elle a moins de 8 jours. Chiffres du réalisé, verdict du coach (repris de la revue), prévu face
+   au réalisé calculé (allure, FC, distance), « Lire l'analyse » (la fiche) et « Revoir » (le Rewind). */
+function carte(){const el=document.getElementById('ac-coach');if(!el)return;const d=derniere();
+  if(!d||!d.s.date||(Date.now()-jd(d.s.date))/864e5>7.5){el.hidden=true;el.innerHTML='';return;}
+  const s=d.s,r=s.realise||{},[w,i]=d.cle.split('-'),t0=titreSeance(s),mt=t0.match(/^(.*?)\s*\(([^)]+)\)\s*$/);
+  const titre=mt?mt[1]:t0,note=mt?mt[2].charAt(0).toUpperCase()+mt[2].slice(1):'',km=+r.km,al=String(r.allure||'').match(/^(\d+:\d\d)/);
+  const ch=[['Distance',km>0?fN(km,2):null,'km'],['Allure',al?al[1]:null,'/km'],['Temps',r.temps||null,'']].filter(x=>x[1]);
+  el.innerHTML=`<div class="ac-coach-t"><span class="ac-coach-ico" aria-hidden="true">${_acIco('rewind',20)}</span>`
+    +`<div class="ac-min"><h2 class="ac-coach-h" id="ac-coach-h">Le coach a analysé ta séance</h2><p class="ac-lb" id="ac-coach-quand">${_acEsc(leJour(s.date))}</p></div></div>`
+    +`<h3 class="ac-coach-titre">${_acEsc(titre)}</h3>${note?`<p class="ac-coach-note">${_acEsc(note)}</p>`:''}`
+    +`<div class="ac-chiffres">${ch.map(x=>`<div><p class="ac-lb">${x[0]}</p><p class="ac-n ac-n28">${_acEsc(x[1])}${x[2]?`<span class="ac-u">${x[2]}</span>`:''}</p></div>`).join('')}</div>`
+    +`<p class="ac-coach-verdict" id="ac-coach-verdict"></p><div class="ac-puces" id="ac-coach-puces"></div>`
+    +`<div class="ac-coach-btns"><button type="button" class="ac-btn ac-btn-o" onclick="ouvrirSeance('${w}',${i})">Lire l'analyse</button>`
+    +`<button type="button" class="ac-btn ac-btn-2" aria-label="Revoir ma séance en animation" onclick="rsOuvrir('${d.cle}',0,this)">${_acIco('play',18)}Revoir</button></div>`;
+  el.hidden=false;
+  charge(d.cle).then(rw=>{const se=seanceDe(d.cle,rw),q=document.getElementById('ac-coach-quand'),v=document.getElementById('ac-coach-verdict'),P=document.getElementById('ac-coach-puces');
+    if(q&&rw.debut){const dt=new Date(rw.debut),a=new Date(),hier=new Date(a);hier.setDate(a.getDate()-1);const meme=(x,y)=>x.toDateString()===y.toDateString();
+      const hm=`${dt.getHours()}:${String(dt.getMinutes()).padStart(2,'0')}`,lieu=String(rw.lieu||'').split(',')[0].trim();
+      q.textContent=(meme(dt,a)?'Aujourd’hui':meme(dt,hier)?'Hier':leJour(s.date).replace(/^./,c=>c.toUpperCase()))+` à ${hm}`+(lieu?` · ${lieu}`:'');}
+    if(v){const t=(rw.coach&&rw.coach.verdict)||'';if(t)v.innerHTML=t;else v.remove();}
+    if(P){const rows=prevu(se);P.innerHTML=['Allure','FC','Distance'].map(n=>rows.find(x=>x.nom===n)).filter(x=>x&&x.etat&&!/NaN|undefined|Infinity/.test(String(x.ecart)+x.reel)).map(x=>x.etat==='ok'
+      ?`<span class="ac-puce ok">${_acIco('check',13)}${x.nom} dans la cible</span>`
+      :`<span class="ac-puce wa">${x.nom==='FC'&&se.realise.fc_moy?`FC ${se.realise.fc_moy} · ${x.ecart}`:`${x.nom} ${x.ecart}`}</span>`).join('');}})
+  .catch(e=>{console.warn('carte du coach',e);const v=document.getElementById('ac-coach-verdict');if(v)v.remove();});}
 /* entrée « Où j'en suis » en tête du Cockpit */
 function cockpitEntree(){const c=document.getElementById('cockpit-contenu');if(!c||c.querySelector('.rs-ou-entree'))return;
   c.insertBefore(h('button',{class:'rs-ou-entree',type:'button',onclick:()=>OU.ouvre()},h('b',null,'Où j\'en suis'),h('span',null,'5 courbes, un verdict calculé pour chacune'),ico('<path d="m9 6 6 6-6 6"/>',20)),c.firstChild);}
-return {ouvrir,bouton,annonce,cockpitEntree,ou:()=>OU.ouvre(),dispo};
+return {ouvrir,bouton,carte,cockpitEntree,ou:()=>OU.ouvre(),dispo};
 })();
 function rsOuvrir(cle,depuis,ouvreur){return RS.ouvrir(cle,depuis,ouvreur);}
 function rsBouton(num,id){return RS?RS.bouton(num,id):'';}
 function ouJenSuis(){RS.ou();}
 (function(){const rc=renderCockpit;renderCockpit=function(){const r=rc.apply(this,arguments);try{RS.cockpitEntree();}catch(e){console.warn('Où j\'en suis',e);}return r;};})();
-try{RS.annonce();}catch(e){console.warn('annonce Rewind',e);}
+try{RS.carte();}catch(e){console.warn('carte du coach',e);}
