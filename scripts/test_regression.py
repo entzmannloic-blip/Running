@@ -678,8 +678,8 @@ def run():
             der = pm.evaluate("REWIND_SEANCE.map(c=>{const [w,i]=c.split('-');const s=SEANCES_BY_WEEK[w].find(x=>String(x.id)===i);return [s.date+'|'+c,c];}).sort().pop()[1]")
             w, i = der.split("-")
             pm.evaluate(f"ouvrirSeance('{w}',{i})")
-            pm.wait_for_selector("#contenu .rs-launch", timeout=5000)
-            pm.click("#contenu .rs-launch")
+            pm.wait_for_selector("#contenu .fs-revoir", timeout=5000)
+            pm.click("#contenu .fs-revoir")
             pm.wait_for_selector(".rs:not([hidden]) .rs-sl", timeout=5000)
             labels, ko = [], 0
             for _ in range(9):
@@ -769,6 +769,20 @@ def run():
             check("T25 Accueil : en-tête, analyse du coach, prochaine séance, météo, forme, semaine (7 jours), courses, année ; sans records ni emoji",
                   ac["ordre"].startswith("ac-tete,ac-coach,ac-pro,wdg-meteo-slot,ac-forme,forme-detail,ac-carte,ac-carte,ac-carte")
                   and not ac["records"] and not ac["emoji"] and ac["semaine"] == 7 and (ac["jn"] or "").isdigit(), str(ac))
+            # Fiche d'une seance faite (lot 5, PR 3) : chiffres, analyse du coach, trace et zones, km par km, seance prevue
+            pf.evaluate("ouvrirSeance('44',3)")
+            pf.wait_for_selector("#fs-trace:not([hidden]) svg", timeout=6000)
+            pf.wait_for_selector("#fs-zones:not([hidden]) .fs-zbar", timeout=6000)
+            fi = pf.evaluate("""(function(){var f=document.querySelector('#contenu .fs');return {
+                chif:f.querySelectorAll('.fs-chif .fs-st').length, pvr:f.querySelectorAll('.fs-pvr-r[role=row]').length-1,
+                coach:['Le verdict','Ce qui est bien','À corriger','Pour la suite'].every(function(t){return f.innerText.indexOf(t)>=0;}),
+                km:f.querySelectorAll('#fs-km .fs-km-l .fs-km-r').length, bande:!!f.querySelector('#fs-km .fs-bande'),
+                segs:f.querySelectorAll('#fs-trace line').length, prevue:!!f.querySelector('.fs-struct li'),
+                vide:/NaN|undefined|Infinity/.test(f.innerText), emoji:/\\p{Extended_Pictographic}/u.test(f.innerText.replace(/[\\s\\S]*Lire la revue compl[èe]te/,''))};})()""")
+            check("T26 fiche d'une séance faite : chiffres, prévu face au réalisé, analyse en 4 parties, tracé coloré, zones, km par km sur la bande de cible, séance prévue",
+                  fi["chif"] == 6 and fi["pvr"] == 3 and fi["coach"] and fi["km"] >= 10 and fi["bande"] and fi["segs"] > 50
+                  and fi["prevue"] and not fi["vide"], str(fi))
+            pf.evaluate("fermer()")
             ctxf.close()
         except Exception as e:
             check("T24 police des chiffres embarquee", False, str(e)[:160])
