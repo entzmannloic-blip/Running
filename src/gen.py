@@ -2727,6 +2727,9 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":284,"date":"30 octobre 2026","sha":"","tag":"Fond de carte du Rewind : passage à OpenStreetMap (CARTO exige maintenant une clé)","items":[
+    "LE TRACÉ : les tuiles CARTO affichaient un filigrane « API KEY REQUIRED » (CARTO réclame désormais une clé). Le fond vient maintenant d'OpenStreetMap (tile.openstreetmap.org), passé en gris clair pour que le tracé coloré reste lisible, avec l'attribution « © OpenStreetMap contributors » en lien vers openstreetmap.org/copyright (lien dans une ligne de texte, pour l'audit d'accessibilité).",
+    "TUILES : elles ne sont demandées qu'au moment où l'image « Le tracé » s'affiche (plus au chargement du Rewind), comme l'exige la politique d'usage d'OpenStreetMap ; hors connexion ou en cas d'échec, le tracé s'affiche seul comme avant."]},
   {"build":283,"date":"29 octobre 2026","sha":"","tag":"Rewind de séance : fond de carte sous le tracé, 300 premiers et derniers mètres masqués","items":[
     "LE TRACÉ : l'image 2 du Rewind pose le tracé coloré selon l'allure sur un fond de carte clair (CARTO Positron, © OpenStreetMap © CARTO). Hors connexion, ou si le réseau ne répond pas, le tracé s'affiche seul comme avant, sans case vide ; rien n'est ajouté au pré-cache.",
     "CONFIDENTIALITÉ : l'app est publique. Les 300 premiers et les 300 derniers mètres du tracé ne sont plus enregistrés (comme la zone de confidentialité de Strava) ; la fiche d'une séance en profite aussi. Le tracé est maintenant placé en Web Mercator avec un ancrage géographique, sans quoi la carte ne pourrait pas se poser sur les rues.",

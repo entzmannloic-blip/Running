@@ -1,1 +1,1 @@
-{"CHANGELOG":[{"build":283,"date":"29 octobre 2026","tag":"Rewind de séance : fond de carte sous le tracé, 300 premiers et derniers mètres masqués","sha":"","items":[]}],"BUILT_ON":"2026-10-30"}
+{"CHANGELOG":[{"build":284,"date":"30 octobre 2026","tag":"Fond de carte du Rewind : passage à OpenStreetMap (CARTO exige maintenant une clé)","sha":"","items":[]}],"BUILT_ON":"2026-10-30"}
