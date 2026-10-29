@@ -710,6 +710,19 @@ def run():
             coach = pm.evaluate("document.querySelector('.rs-sl:last-child').getAttribute('aria-label')")
             check("T23 défilement automatique ; l'analyse du coach attend « Continuer »",
                   img.startswith("2 sur 9") and coach.startswith("8 sur 9"), f"{img} / {coach}")
+            dock = pm.evaluate("""(()=>{const s=document.querySelector('.rs-sl:last-child'),d=s.querySelector('.rs-defile'),b=s.querySelector('.rs-dock .rs-btn:not(.second)');
+                return {hors:!!(b&&d)&&!d.contains(b),visible:!!b&&b.getBoundingClientRect().bottom<=innerHeight}})()""")
+            pm.click(".rs-sl:last-child .rs-dock .rs-btn:not(.second)")
+            pm.wait_for_timeout(500)
+            neuf = pm.evaluate("document.querySelector('.rs-sl:last-child').getAttribute('aria-label')")
+            check("T31 analyse du coach : « Continuer » hors de la zone qui défile, visible sans défiler, mène à l'image 9",
+                  dock["hors"] and dock["visible"] and neuf.startswith("9 sur 9"), f"{dock} {neuf}")
+            pm.keyboard.press("Escape")
+            pm.evaluate("rsOuvrir('44-2',4)")
+            pm.wait_for_selector(".rs-sl:last-child .rs-fc", timeout=5000)
+            clair = pm.evaluate("""(()=>{const lum=c=>{const m=(c||'').match(/[0-9.]+/g);if(!m)return 1;return (0.2126*m[0]+0.7152*m[1]+0.0722*m[2])/255;};
+                return [lum(getComputedStyle(document.querySelector('.rs-sl:last-child .rs-fc')).stroke)]})()""")
+            check("T31 le cœur : courbe de FC lisible sur fond blanc (pas de trait presque blanc)", clair[0] < 0.6, f"luminance {clair}")
             pm.keyboard.press("Escape")
             pm.evaluate("showTab('cockpit')")
             pm.wait_for_selector("#vue-cockpit .ck-z[data-zone='2']", timeout=5000)
