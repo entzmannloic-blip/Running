@@ -175,6 +175,17 @@ Ne jamais soustraire `new Date('YYYY-MM-DD')` à une date locale. Une course don
 - **Garde-fou mécanisé.** T15 ignore ces trois champs ; les échecs de régression sortent en annotations GitHub
   (`::error`), lisibles par l'API quand les journaux de la CI ne le sont pas.
 
+## L14 — CI rouge sur un log : un test écrivait une sortie fictive à une date devenue réelle (29/10)
+
+- **Symptôme.** `verify` a échoué sur la PR du log S44-5 (29/10) : « sortie deja dans la reference : pas de double
+  compte » dans `test_log_seance.py`.
+- **Cause.** Le test loggait une sortie fictive datée du 29/10/2026, un jour encore vide quand il a été écrit. La vraie
+  sortie du 29/10 est arrivée dans `src/strava_reference.json` : le script a additionné les deux, comme prévu pour deux
+  sorties le même jour, et le test attendait la sortie fictive seule.
+- **Règle.** Un test ne suppose jamais qu'une date du calendrier réel reste libre : il la calcule à partir des données.
+- **Garde-fou mécanisé.** Le test prend le lendemain de la dernière sortie de la référence. `pr_scope.py` range aussi
+  `src/rewind/` dans les PR de données (le dossier manquait, alors qu'ENRICHISSEMENT.md § 6 l'y place).
+
 ## Quirks Strava MCP (non mécanisables, à connaître)
 
 - Les activités **privées** n'apparaissent pas dans `list_activities`, quelle que soit
