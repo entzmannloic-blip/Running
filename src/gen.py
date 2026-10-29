@@ -2727,6 +2727,14 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":274,"date":"28 octobre 2026","sha":"","tag":"Blanc et orange (3/4) : fiche de séance","items":[
+    "FICHE D'UNE SÉANCE FAITE : le réalisé d'abord (chiffres en grille, chaussure, « Revoir ma séance »), puis l'analyse du coach : prévu face au réalisé calculé, verdict, ce qui est bien, à corriger, pour la suite, revue complète à un toucher.",
+    "FICHE : le tracé coloré selon l'allure (plus foncé, plus rapide), l'allure km par km sur la bande grise de la cible, le cœur avec le temps par zone et la dérive, puis la séance prévue.",
+    "Rampe d'allure orange, du plus lent (clair) au plus rapide (foncé) ; plus d'emoji dans le formulaire du réalisé."]},
+  {"build":273,"date":"28 octobre 2026","sha":"","tag":"Blanc et orange (2/4) : Accueil et barre d'onglets","items":[
+    "ACCUEIL : l'analyse du coach sur ta dernière séance en tête (chiffres, verdict, prévu face au réalisé, « Lire l'analyse » et « Revoir »), puis la prochaine séance, la météo, la forme du jour, la semaine en cours jour par jour, les courses et ton année.",
+    "ACCUEIL : cartes blanches sans ombre, chiffres en Barlow, icônes au trait à la place des emojis ; le compteur de records est retiré.",
+    "BARRE D'ONGLETS : givrée, onglet actif en orange."]},
   {"build":272,"date":"28 octobre 2026","sha":"","tag":"Blanc et orange (1/4) : couleurs et police des chiffres","items":[
     "COULEURS : l'orange remplace le teal dans toute l'app (orange vif pour les aplats et les graphes, orange encre pour le petit texte) ; neutres gris sans bleu ; l'ocre remplace l'ambre pour la vigilance.",
     "CHIFFRES : police Barlow Semi Condensed, embarquée dans l'app (disponible hors ligne) ; plus de serif Georgia.",
