@@ -2347,6 +2347,124 @@ svg.tr-go .tr-b{animation:trBarre var(--d-ecran) var(--ease) both;animation-dela
 .rs-raccourci{display:flex;align-items:center;justify-content:center;gap:4px;width:100%;min-height:48px;border-radius:14px;font-size:16px;font-weight:650}
 .rs-btn{font-size:19px;font-weight:700;min-height:52px}
 .rs-pied{font-size:13px;font-weight:600;color:var(--texte-trois)}
+
+/* ===== LOT 5 partie B — SÉANCES : phases sans couleur, semaines en cartes blanches ===== */
+#vue-plan{max-width:1000px;margin:0 auto}
+#phases{padding-top:12px}
+.phase-bloc{margin-bottom:28px}
+.phase-entete{display:block;margin:0 0 6px;padding:0 4px;border:0}
+.phase-lab{margin:0;font-size:12px;font-weight:600;color:var(--texte-trois)}
+.phase-nom{margin:2px 0 0;font-size:22px;font-weight:800;letter-spacing:-.01em;line-height:1.2;color:var(--texte)}
+.phase-role{margin:0 0 14px;padding:0 4px;font-size:14px;line-height:1.45;color:var(--texte-deux)}
+.sem-grille{gap:10px}
+.sem-carte,.sem-carte.cliquable{min-height:0;padding:16px;border:0!important;border-radius:18px;background:var(--bg-card);box-shadow:none!important;overflow:visible}
+.sem-carte.cliquable:hover{transform:none;box-shadow:none}
+.sem-carte.sem-cur{box-shadow:inset 0 0 0 2px var(--primary)!important}
+.sem-tete{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:26px}
+.sem-num{margin:0;font-size:12px;font-weight:600;letter-spacing:0;text-transform:none;color:var(--texte-trois)}
+.sem-ok{width:24px;height:24px;border-radius:50%;background:var(--ok-fond);color:var(--ok-deux);display:grid;place-items:center}
+.sem-theme{margin:6px 0 8px;font-size:17px;font-weight:700;line-height:1.25;color:var(--texte)}
+.sem-km{margin:0;font-size:14px;font-weight:500;color:var(--texte-deux)}
+.sem-km .ac-n{display:inline;font-size:22px}
+.sem-prog{height:6px;margin-top:12px;border-radius:99px;background:var(--primary-fond);overflow:hidden}
+.sem-prog i{display:block;height:100%;border-radius:99px;background:var(--primary)}
+.sem-cnt{margin:6px 0 0;font-size:12px;font-weight:600;color:var(--texte-trois)}
+.note-foot{color:var(--texte-trois)}
+.fab-jump-week{background:var(--primary-fill);color:#fff;font-size:15px;font-weight:700;padding:12px 18px;box-shadow:0 6px 18px -6px rgba(24,24,27,.35)}
+/* barre du haut des fiches et des panneaux */
+.modale-topbar{align-items:center;padding:8px 10px;background:rgba(255,255,255,.92);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);border-bottom:1px solid var(--gris-clair)}
+.modale-topbar .btn-nav{min-height:44px;padding:0 6px;border:0;background:none;font-size:16px;font-weight:600;letter-spacing:0;color:var(--primary-deux)}
+.btn-close-round{border:0;background:var(--gris-fond);color:var(--texte)}
+/* séances d'une semaine : liste à filets dans une section blanche */
+.fsw .seance-liste{display:flex;flex-direction:column;gap:0;margin-top:8px}
+.seance-carte{display:grid;grid-template-columns:44px minmax(0,1fr) auto;align-items:center;gap:12px;padding:14px 0;margin:0;border:0;border-top:1px solid var(--gris-clair);border-radius:0;background:none;box-shadow:none;cursor:pointer}
+.fsw .seance-liste .seance-carte:first-child{border-top:0}
+.seance-carte .seance-bande,.seance-carte .seance-idx{display:none}
+.sc-jour{display:flex;flex-direction:column;align-items:center;gap:2px;text-align:center}
+.sc-jour .ac-n{font-size:22px}
+.seance-nom{font-size:16px;font-weight:700;line-height:1.25;color:var(--texte)}
+.seance-desc{margin-top:2px;font-size:14px;line-height:1.4;color:var(--texte-deux)}
+.sc-real{display:flex;align-items:center;gap:4px;margin:4px 0 0;font-size:13px;font-weight:650;color:var(--ok-deux)}
+.seance-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+.seance-tag,.st-chip,.cat-badge{display:inline-flex;align-items:center;gap:4px;min-height:24px;padding:2px 9px;border:0;border-radius:99px;font-size:12px;font-weight:650;letter-spacing:0;text-transform:none;line-height:1.2;background:var(--gris-fond);color:var(--texte-deux)}
+.st-chip.st-fait{background:var(--ok-fond);color:var(--ok-deux)}
+.st-chip.st-afaire{background:var(--primary-fond);color:var(--primary-deux)}
+.st-chip.st-partiel,.seance-tag.tag-skip{background:var(--warn-fond);color:var(--warn-deux)}
+.st-chip.st-manque{background:var(--gris-fond);color:var(--texte-deux)}
+.cat-badge.cat-specifique{background:var(--primary-fond);color:var(--primary-deux)}
+.seance-carte .sc-check{width:32px;height:32px;border-radius:50%;background:var(--ok-fond);color:var(--ok-deux);display:grid;place-items:center;font-size:0}
+.seance-carte.sc-fait .seance-nom{color:var(--texte)}
+.seance-fleche-wrap{display:flex;align-items:center;gap:6px}
+.ql-btn{background:var(--primary-fill);color:#fff;border:0}
+.sm-btn{border:0;background:var(--gris-fond);color:var(--texte-deux)}
+/* fiche d'une séance à faire */
+.fs-sous{margin-top:-4px!important;margin-bottom:12px!important;font-size:15px;line-height:1.45;color:var(--texte-deux)}
+.fs-st-txt{margin-top:6px!important;font-size:16px;font-weight:700;line-height:1.25;color:var(--texte)}
+.fs-st-sous{margin-top:4px!important;font-size:12px;font-weight:500;color:var(--texte-trois)}
+.fs-grille-p .fs-st:nth-child(n+4){border-top:1px solid var(--gris-clair)}
+.fs-shoe-l{display:block;margin-top:2px;font-size:12px;font-weight:500;color:var(--texte-trois)}
+.fs-conseil+.fs-conseil{margin-top:4px}
+.fs-vigil{background:var(--warn-fond)}
+.fs-vigil .fs-kick{margin-top:0!important}
+.fs-cap{margin-top:20px!important;margin-bottom:8px!important}
+.fs-liste{list-style:none;margin:12px 0 0;padding:0}
+.fs-liste li{padding:12px 0;border-top:1px solid var(--gris-clair)}
+.fs-liste li:last-child{border-bottom:1px solid var(--gris-clair)}
+.fs-liste-k{font-size:15px;font-weight:700;color:var(--texte)}
+.fs-liste .fs-para{margin-top:4px!important;font-size:15px}
+.fs-s24{margin-top:12px}
+/* lecture vocale */
+.tts-bar,.tts-bar-seance{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:12px 0 0;padding:0;border:0;background:none;box-shadow:none}
+.tts-btn,.tts-btn.tts-play,.tts-btn.tts-stop{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:0 18px;border:0;border-radius:14px;background:var(--bg-card);box-shadow:inset 0 0 0 1.5px var(--gris-clair);color:var(--texte);font:inherit;font-size:16px;font-weight:650;cursor:pointer}
+.tts-bar-seance .tts-btn.tts-play{width:100%}
+.tts-hint{flex-basis:100%;margin:0;text-align:center;font-size:12px;font-weight:600;font-style:normal;color:var(--texte-trois)}
+/* comprendre la séance, théorie */
+.cc-block{margin:8px 0 0;padding:0;border:0;background:none}
+.cc-item{margin-top:12px}
+.cc-h{font-size:15px;font-weight:700;color:var(--texte)}
+.cc-txt{margin-top:4px;font-size:16px;line-height:1.55;color:var(--texte-deux)}
+.theo-btn,.theo-btn.theo-btn-rich{display:inline-flex;align-items:center;gap:4px;min-height:44px;margin-top:8px;padding:0;border:0;background:none;box-shadow:none;font:inherit;font-size:16px;font-weight:650;color:var(--primary-deux);cursor:pointer}
+.theo-btn-arr{font-size:20px;line-height:1}
+.theo-panel{margin-top:8px;padding:16px;border:0;border-radius:16px;background:var(--primary-fond);color:var(--texte)}
+/* frise chronologique de la séance */
+.fp .viz-wrap{margin-top:16px;padding:0;border:0;background:none;box-shadow:none}
+.viz-entete{display:flex;justify-content:space-between;gap:8px}
+.viz-label,.viz-hint{font-size:12px;font-weight:600;letter-spacing:0;text-transform:none;color:var(--texte-trois)}
+.barre-piste{background:var(--gris-fond);border-radius:12px}
+.seg-vert{background:var(--allure-1)}.seg-bleu{background:var(--primary)}.seg-orange{background:var(--ligne-forte)}
+.seg-violet{background:var(--texte-trois)}.seg-jaune{background:var(--allure-2)}.seg-rouge{background:var(--primary-sombre)}
+.detail-panneau{border:0;border-radius:14px;background:var(--gris-fond)}
+.fp .legende{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:12px}
+.legende-item{font-size:13px;color:var(--texte-deux)}
+/* records tombés */
+.prc{display:flex;align-items:flex-start;gap:12px;margin-top:14px;padding:14px;border:0;border-radius:14px;background:var(--primary-fond);box-shadow:none;animation:none}
+.prc-ico{width:36px;height:36px;border-radius:11px;background:var(--primary);color:#fff;display:grid;place-items:center;flex:none}
+.prc-titre{margin:0;font-size:15px;font-weight:700;color:var(--texte)}
+.prc-row{margin:2px 0 0;font-size:14px;color:var(--texte-deux)}
+.prc-row b{font-family:var(--f-num);font-size:17px;color:var(--texte)}
+.prc-detail{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+/* formulaire du réalisé */
+.lf-wrap{margin:0}
+.logform{margin-top:12px;padding:16px;border:0;border-radius:16px;background:var(--gris-fond)}
+.lf-st{min-height:44px;border:0;border-radius:12px;background:var(--bg-card);box-shadow:inset 0 0 0 1.5px var(--gris-clair);color:var(--texte);font-weight:650}
+.lf-st.actif{background:var(--primary-fond);box-shadow:inset 0 0 0 2px var(--primary);color:var(--primary-deux)}
+.lf-f span{font-size:12px;font-weight:600;letter-spacing:0;text-transform:none;color:var(--texte-trois)}
+.lf-f input,.lf-f textarea{min-height:44px;border:0;border-radius:12px;background:var(--bg-card);box-shadow:inset 0 0 0 1.5px var(--gris-clair);font-size:16px;color:var(--texte)}
+.lf-save{min-height:48px;border:0;border-radius:14px;background:var(--primary-fill);color:#fff;font-size:16px;font-weight:700}
+.lf-clear{min-height:44px;border:0;background:none;color:var(--texte-deux)}
+.lf-hint{color:var(--texte-trois)}
+.seance-carte.sc-fait{background:none;border:0;border-top:1px solid var(--gris-clair)}
+.fsw .seance-liste .seance-carte.sc-fait:first-child,.fsw .seance-liste .seance-carte.sc-skipped:first-child{border-top:0!important}
+.sc-skipped{background:none!important;border:0!important;border-top:1px solid var(--gris-clair)!important;opacity:1}
+.sc-skipped .seance-nom{color:var(--texte-deux)}
+.vue-tete{padding:14px 4px 6px}
+.vue-titre{margin:4px 0 0;font-family:var(--f-num);font-size:34px;font-weight:800;letter-spacing:-.01em;line-height:1.05;color:var(--texte)}
+.ac-btn{text-decoration:none}
+.fs .sd-section{margin:20px 0 8px;padding:0;border:0;font-size:13px;font-weight:700;letter-spacing:.02em;text-transform:none;color:var(--texte)}
+/* revue du coach : du texte, pas un encart coloré */
+.rev-coach{background:none;border:0;border-radius:0;padding:0;font-size:16px;line-height:1.55;color:var(--texte-deux)}
+.rev-coach p+p{margin-top:10px}
+.prc .ac-puce.or{background:var(--bg-card)}
 #boot-load,#boot-err{position:fixed;inset:0;z-index:500;display:flex;flex-direction:column;gap:14px;align-items:center;justify-content:center;padding:24px;text-align:center;background:var(--gris-fond);color:var(--texte-trois);font-size:var(--t-callout)}
 #boot-err{color:var(--texte)}#boot-load[hidden],#boot-err[hidden]{display:none}</style></head>
 <body>
@@ -2357,7 +2475,7 @@ svg.tr-go .tr-b{animation:trBarre var(--d-ecran) var(--ease) both;animation-dela
   </div>
   <main id="main" tabindex="-1">
   <div id="vue-accueil"><h1 class="sr-only">Accueil</h1><div id="hero-plan"></div><div id="accueil-annee"></div></div>
-  <div id="vue-plan" style="display:none"><h1 class="sr-only">Séances</h1>
+  <div id="vue-plan" style="display:none"><header class="vue-tete"><p class="ac-lb">Le plan, semaine par semaine · S24 – S53</p><h1 class="vue-titre">Séances</h1></header>
     <div id="phases"></div>
     <p class="note-foot">Plan complet S25→S53. Dis-moi « j'ai fait la séance X de la semaine Y » et tout se met à jour.</p>
   </div>
@@ -2367,7 +2485,7 @@ svg.tr-go .tr-b{animation:trBarre var(--d-ecran) var(--ease) both;animation-dela
   <div class="maj-foot" id="maj-foot"></div>
 </div>
 <nav class="botbar" id="botbar" aria-label="Navigation principale"><button class="bi actif" id="tab-accueil" aria-current="page" onclick="goTab('accueil')"><svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/><path d="M9 20v-6h6v6"/></svg><span>Accueil</span></button><button class="bi" id="tab-plan" onclick="goTab('plan')"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 9h18M8 3v4M16 3v4"/></svg><span>Séances</span></button><button class="bi" id="tab-cockpit" onclick="goTab('cockpit')"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 1 9 9M12 12l5-3"/></svg><span>Cockpit</span></button><button class="bi" id="tab-palmares" onclick="goTab('palmares')"><svg viewBox="0 0 24 24"><path d="M5 21V4"/><path d="M5 4h11l-2 3 2 3H5"/></svg><span>Courses</span></button></nav>
-<button id="fab-jump-week" class="fab-jump-week" onclick="jumpToWeek(isoWeek(new Date()))" aria-label="Aller à la semaine en cours">📍 En cours</button>
+<button id="fab-jump-week" class="fab-jump-week" onclick="jumpToWeek(isoWeek(new Date()))" aria-label="Aller à la semaine en cours"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.3"/></svg>Semaine en cours</button>
 <div class="rw-overlay" id="rwoverlay"><div class="rw-card" id="rwcard" onclick="rwNext()"></div></div>
 <div class="modale-overlay" id="overlay"><div class="modale-boite" id="boite"><div class="modale-topbar" id="topbar"></div><div id="contenu"></div></div></div>
 <div class="theo-overlay" id="theoOverlay"><div class="theo-sheet" id="theoSheet"></div></div>
@@ -2376,7 +2494,7 @@ svg.tr-go .tr-b{animation:trBarre var(--d-ecran) var(--ease) both;animation-dela
 <div id="boot-err" role="alert" hidden><p>Données indisponibles. Vérifie ta connexion puis réessaie.</p><button type="button" class="btn-nav" onclick="location.reload()">Réessayer</button></div>
 <script>
 (function(){
-var V="275",EAGER=["plan", "seances", "historique", "meta"];
+var V="276",EAGER=["plan", "seances", "historique", "meta"];
 function get(f){return fetch("data/"+f+".json?v="+V).then(function(r){if(!r.ok)throw new Error(f+" "+r.status);return r.json();});}
 function fail(){var l=document.getElementById("boot-load");if(l)l.hidden=true;var e=document.getElementById("boot-err");if(e)e.hidden=false;}
 var cl=null;
