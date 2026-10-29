@@ -1783,11 +1783,12 @@ function s24Chart(splits){const n=splits.length,W=720,h=190,padL=8,padR=8,padT=2
 /* ===== REWIND hebdo ===== */
 let rwIdx=0,rwCur=null;
 function rwRender(){const r=rwCur;if(!r)return;const s=r.slides[rwIdx];
+  /* lot 5 : Rewind de semaine sur fond blanc, comme le Rewind de séance (le fond de chaque image est ignoré) */
   const prog=r.slides.map((_,i)=>`<div class="rw-seg ${i<=rwIdx?'done':''}"></div>`).join('');
-  const card=document.getElementById('rwcard');card.style.background=s.bg;
-  card.innerHTML=`<div class="rw-prog">${prog}</div><button class="rw-close" onclick="event.stopPropagation();rwClose()">\u2715</button>
-    <div class="rw-kicker">${s.kicker}</div><div class="rw-big">${s.big}</div><div class="rw-txt">${s.txt}</div>
-    <div class="rw-hint">tape pour continuer \u00b7 ${rwIdx+1}/${r.slides.length}</div>`;}
+  const card=document.getElementById('rwcard');card.style.background='';
+  card.innerHTML=`<div class="rw-prog" aria-hidden="true">${prog}</div><button class="rw-close" aria-label="Fermer le Rewind" onclick="event.stopPropagation();rwClose()">\u2715</button>
+    <div class="rw-kicker">${_sansEmoji(s.kicker)}</div><div class="rw-big">${_sansEmoji(s.big)}</div><div class="rw-txt">${s.txt}</div>
+    <div class="rw-hint">Touche pour continuer · ${rwIdx+1}/${r.slides.length}</div>`;}
 function rwOpen(id){rwCur=REWINDS.find(x=>x.id===id);if(!rwCur||!rwCur.slides)return;rwIdx=0;document.getElementById('rwoverlay').classList.add('on');document.body.style.overflow='hidden';rwRender();
   try{localStorage.setItem('rw_seen',id);}catch(e){}}
 function rwNext(){if(!rwCur)return;if(rwIdx<rwCur.slides.length-1){rwIdx++;rwRender();}else rwClose();}
@@ -1927,12 +1928,12 @@ function _ckRender(race){
   el.innerHTML=secs.map(sec=>{
     const sd=sec.items.filter(it=>st[it.id]).length,all=sd===sec.items.length,open=st['_o_'+sec.id]!==false;
     return`<div class="ck-sc"><div class="ck-sh" onclick="ckToggleSec('${race}','${sec.id}')">
-      <span class="ck-si">${sec.ico}</span><span class="ck-st">${sec.title}</span>
+      <span class="ck-st">${_sansEmoji(sec.title)}</span>
       <span class="ck-sb ${all?'ck-sbd':''}">${sd}/${sec.items.length}</span>
       <span class="ck-sa ${open?'ck-sao':''}">›</span></div>
     ${open?`<div class="ck-is">${sec.items.map(it=>`<div class="ck-item" onclick="ckToggle('${race}','${it.id}')">
       <div class="ck-chk ${st[it.id]?'ck-on':''}">${st[it.id]?'✓':''}</div>
-      <div class="ck-itx"><div class="ck-il ${st[it.id]?'ck-ild':''}">${it.label}</div>
+      <div class="ck-itx"><div class="ck-il ${st[it.id]?'ck-ild':''}">${_sansEmoji(it.label)}</div>
       ${it.note?`<div class="ck-in">${it.note}</div>`:''}</div></div>`).join('')}</div>`:''}
     </div>`;
   }).join('');
@@ -1940,59 +1941,40 @@ function _ckRender(race){
 function renderChecklistHTML(race){
   if(!CK_SECS[race])return'';
   const total=CK_SECS[race].reduce((a,s)=>a+s.items.length,0);
-  return`<h3 class="dos-h3">✅ Checklist J-7</h3>
+  return`<h3 class="ac-h2">Checklist J-7</h3>
     <div class="ck-prog"><div class="ck-ph"><span class="ck-ptit">Préparation course</span><span class="ck-pc" id="ck-pc">0/${total}</span></div>
       <div class="ck-pbw"><div class="ck-pb" id="ck-pb" style="width:0%"></div></div>
       <div class="ck-ps" id="ck-ps">${total} items à valider</div></div>
-    <div class="ck-done" id="ck-ad" style="display:none">✅&nbsp;&nbsp;<strong>Tout est prêt !</strong> Bonne course 💪</div>
+    <div class="ck-done" id="ck-ad" style="display:none"><strong>Tout est prêt.</strong> Bonne course.</div>
     <div id="ck-secs"></div>
     <button class="ck-rst" onclick="ckReset('${race}')">↺ Réinitialiser</button>`;
 }
 
 function ouvrirDossier(id){
+  /* lot 5 : dossier de course en sections blanches, un seul accent (orange), aucun emoji */
   const D=(typeof DOSSIERS!=='undefined')?DOSSIERS[id]:null; if(!D)return;
-  const ac=D.accent||'#F4561D';
-  const stats=D.stats.map(s=>`<div class="dos-stat"><div class="dos-stat-v">${s[0]}</div><div class="dos-stat-l">${s[1]}</div></div>`).join('');
-  const segs=D.segments.map(s=>`<div class="dos-seg"><div class="dos-seg-h"><span class="dos-seg-t">${s.t}</span><span class="dos-seg-km">${s.km}</span></div><div class="dos-seg-f">${s.faire}</div></div>`).join('');
-  const plan=D.plan.map(p=>`<div class="dos-plan" style="--pc:${p.c}"><div class="dos-plan-h"><span class="dos-plan-n">${p.n}</span><span class="dos-plan-titre">${p.titre}</span><span class="dos-plan-tag">${p.tag}</span></div><div class="dos-plan-txt">${p.txt}</div><div class="dos-plan-fuel">⛽ ${p.fuel}</div></div>`).join('');
-  const nut=D.nutrition.items.map(i=>`<div class="dos-nut"><div class="dos-nut-n">${i[0]}</div><div class="dos-nut-d">${i[1]}</div><div class="dos-nut-r">${i[2]}</div></div>`).join('');
-  const zones=D.zones.map(z=>`<div class="dos-zone"><span class="dos-zone-n">${z[0]}</span><span class="dos-zone-fc">${z[1]}</span><span class="dos-zone-o">${z[2]}</span></div>`).join('');
-  const prat=D.pratique.map(p=>`<div class="dos-prat"><div class="dos-prat-l">${p[0]}</div><div class="dos-prat-v">${p[1]}</div></div>`).join('');
+  const ac='#F4561D',cap=x=>{x=String(x||'');return x.charAt(0).toUpperCase()+x.slice(1);};
+  const stats=D.stats.map(s=>`<div class="fs-st"><p class="ac-lb">${_acEsc(cap(_sansEmoji(s[1])))}</p><p class="ac-n">${_sansEmoji(s[0])}</p></div>`).join('');
+  const segs=D.segments.map(s=>`<div class="dos-seg"><div class="dos-seg-h"><span class="dos-seg-t">${_sansEmoji(s.t)}</span><span class="dos-seg-km">${_sansEmoji(s.km)}</span></div><div class="dos-seg-f">${s.faire}</div></div>`).join('');
+  const plan=D.plan.map(p=>`<div class="dos-plan"><div class="dos-plan-h"><span class="dos-plan-n">${p.n}</span><span class="dos-plan-titre">${_sansEmoji(p.titre)}</span><span class="dos-plan-tag">${_sansEmoji(p.tag)}</span></div><div class="dos-plan-txt">${p.txt}</div><div class="dos-plan-fuel"><span class="ac-lb">Carburant</span>${p.fuel}</div></div>`).join('');
+  const nut=D.nutrition.items.map(i=>`<div class="dos-nut"><div class="dos-nut-n">${_sansEmoji(i[0])}</div><div class="dos-nut-d">${i[1]}</div><div class="dos-nut-r">${i[2]}</div></div>`).join('');
+  const zones=D.zones.map(z=>`<div class="dos-zone"><span class="dos-zone-n">${_sansEmoji(z[0])}</span><span class="dos-zone-fc">${z[1]}</span><span class="dos-zone-o">${z[2]}</span></div>`).join('');
+  const prat=D.pratique.map(p=>`<div class="dos-prat"><div class="dos-prat-l">${_sansEmoji(p[0])}</div><div class="dos-prat-v">${p[1]}</div></div>`).join('');
   const err=D.erreurs.map(e=>`<li>${e}</li>`).join('');
-  contenu.innerHTML=`
-   <div class="dos" style="--ac:${ac}">
-     <div class="dos-head">
-       <div class="dos-eyebrow">Dossier de course</div>
-       <h2 class="dos-nom">${D.nom}</h2>
-       <div class="dos-sous">${D.soustitre}</div>
-       <div class="dos-meta">${D.date} · ${D.format}<br>${D.depart}</div>
-     </div>
-     <div class="dos-stats">${stats}</div>
-     <div class="dos-intro">${D.intro}</div>
-     <div class="dos-phrase">${D.phrase}</div>
-     <h3 class="dos-h3">Le profil</h3>
-     ${dosProfilSVG(D,ac)}
-     <p class="dos-p">${D.profil}</p>
-     <h3 class="dos-h3">Le déroulé</h3>
-     ${segs}
-     <h3 class="dos-h3">Plan d'exécution</h3>
-     ${plan}
-     <h3 class="dos-h3">Nutrition — le cœur de cette course</h3>
-     ${D.nutrition.avant?`<div class="dos-bloc dos-av"><div class="dos-bloc-ico">🌅</div><div><strong>Avant la course</strong><br>${D.nutrition.avant}</div></div>`:''}
-     <p class="dos-p">${D.nutrition.intro}</p>
-     ${nut}
-     <p class="dos-note">${D.nutrition.note}</p>
-     <div class="dos-hydra">💧 ${D.hydra}</div>
-     ${D.nutrition.apres?`<div class="dos-bloc dos-ap"><div class="dos-bloc-ico">🔄</div><div><strong>Après la course</strong><br>${D.nutrition.apres}</div></div>`:''}
-     <h3 class="dos-h3">Zones d'effort (FC)</h3>
-     ${zones}
-     <h3 class="dos-h3">Terrain &amp; infos pratiques</h3>
-     <p class="dos-p">${D.terrain}</p>
-     ${prat}
-     <h3 class="dos-h3">Les erreurs à ne pas faire</h3>
-     <ul class="dos-err">${err}</ul>
-     <p class="dos-sources">${D.sources}</p>
-     ${renderChecklistHTML(id)}
+  contenu.innerHTML=`<div class="fs dos" style="--ac:${ac}">
+     <header class="fs-sec fs-tete"><p class="ac-lb fs-quand">Dossier de course</p><h2 class="fs-titre">${D.nom}</h2><p class="fs-sous">${D.soustitre}</p><p class="dos-meta">${D.date} · ${D.format}<br>${D.depart}</p></header>
+     <section class="fs-sec fs-chif" aria-label="La course en chiffres"><div class="fs-grille dos-stats">${stats}</div><div class="dos-intro">${D.intro}</div><div class="dos-phrase">${D.phrase}</div></section>
+     <section class="fs-sec" aria-labelledby="dos-pr"><h3 class="ac-h2" id="dos-pr">Le profil</h3>${dosProfilSVG(D,ac)}<p class="dos-p">${D.profil}</p></section>
+     <section class="fs-sec" aria-labelledby="dos-de"><h3 class="ac-h2" id="dos-de">Le déroulé</h3>${segs}</section>
+     <section class="fs-sec" aria-labelledby="dos-pl"><h3 class="ac-h2" id="dos-pl">Plan d’exécution</h3>${plan}</section>
+     <section class="fs-sec" aria-labelledby="dos-nu"><h3 class="ac-h2" id="dos-nu">Nutrition</h3>
+       ${D.nutrition.avant?`<div class="dos-bloc dos-av"><p class="fs-kick">Avant la course</p><p class="fs-para">${D.nutrition.avant}</p></div>`:''}
+       <p class="dos-p">${D.nutrition.intro}</p>${nut}<p class="dos-note">${D.nutrition.note}</p><div class="dos-hydra"><p class="fs-kick">Hydratation</p><p class="fs-para">${D.hydra}</p></div>
+       ${D.nutrition.apres?`<div class="dos-bloc dos-ap"><p class="fs-kick">Après la course</p><p class="fs-para">${D.nutrition.apres}</p></div>`:''}</section>
+     <section class="fs-sec" aria-labelledby="dos-zo"><h3 class="ac-h2" id="dos-zo">Zones d’effort (FC)</h3>${zones}</section>
+     <section class="fs-sec" aria-labelledby="dos-te"><h3 class="ac-h2" id="dos-te">Terrain et infos pratiques</h3><p class="dos-p">${D.terrain}</p>${prat}</section>
+     <section class="fs-sec" aria-labelledby="dos-er"><h3 class="ac-h2" id="dos-er">Les erreurs à ne pas faire</h3><ul class="dos-err">${err}</ul><p class="dos-sources">${D.sources}</p></section>
+     ${CK_SECS[id]?`<section class="fs-sec">${renderChecklistHTML(id)}</section>`:''}
    </div>`;
   topbar.innerHTML=`<span></span>${btnFermer}`;
   ouvrir();
@@ -2616,24 +2598,28 @@ function _wrappedData(){
   /* « sortie » = seance courue avec kilometrage : meme definition que le compteur de l'accueil (les seances de PPG ou de mobilite ne comptent pas) */
   return {n:done.filter(function(s){return s.realise.km>0;}).length,km:km,dplus:dplus,longest:longest,pr:pr,heures:Math.round(min/60),streak:streak};
 }
+function _wrIco(n){var P={course:'<path d="M3 16.5h15.5a2.5 2.5 0 0 0 2.5-2.5c0-1.2-.9-2-2-2.3l-4.5-1.2L11 6H8.5L8 8.5 5 8 3 13z"/><path d="M3 19h18"/>',
+  route:'<path d="M4 20 9 4M20 20 15 4M12 6v2M12 11v2M12 16v2"/>',trail:'<path d="m3 20 6.5-11 4 6.5 2.5-3.5L21 20z"/>',chrono:'<circle cx="12" cy="13.5" r="7.5"/><path d="M12 13.5V9.5M10 2.5h4M18.5 6.5l1.5-1.5"/>',
+  medaille:'<circle cx="12" cy="15" r="5.5"/><path d="M8.5 10.5 6 3h4l2 4 2-4h4l-2.5 7.5"/>',serie:'<path d="M12 21c4 0 6.5-2.6 6.5-6.2 0-3.4-2.4-5.3-3.5-8.3-.7 2-1.8 3-3 3.6C12.6 7.4 11.4 4.6 9 3c.4 3.5-3.5 5.6-3.5 10.2C5.5 18.1 8.2 21 12 21z"/>',
+  drapeau:'<path d="M5 21V4"/><path d="M5 4h11l-2 3 2 3H5"/>'};return '<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+(P[n]||'')+'</svg>';}
 function openWrapped(){
   const d=_wrappedData();
   const eiffel=(d.dplus/330).toFixed(1); // Tour Eiffel = 330m
   const paris=Math.round(d.km/2.4); // longueur approx d'un tour du périph parisien ~35km... on prend un repère parlant: distance Lyon->? Simplifions: équiv. en % d'un marathon
   const marathons=(d.km/42.195).toFixed(1);
   const cards=[
-    {bg:'linear-gradient(160deg,#18181B,#1e3a5f)',ico:'\u{1F3C3}',big:d.n,unit:'sorties',sub:'C\u2019est parti pour ta saison en chiffres, depuis la S24'},
-    {bg:'linear-gradient(160deg,#F4561D,#C2410C)',ico:'\u{1F4CF}',big:d.km,unit:'km parcourus',sub:'Soit '+marathons+' marathons bout \u00e0 bout'},
-    {bg:'linear-gradient(160deg,#8F5A07,#CA8A04)',ico:'\u26F0\uFE0F',big:d.dplus,unit:'m\u00e8tres de D+',sub:eiffel+'\u00d7 la Tour Eiffel, grimp\u00e9s avec les jambes'},
-    {bg:'linear-gradient(160deg,#7c3aed,#a78bfa)',ico:'\u23F1\uFE0F',big:d.heures,unit:'heures d\u2019effort',sub:'De transpiration bien plac\u00e9e'},
-    {bg:'linear-gradient(160deg,#be123c,#fb7185)',ico:'\u{1F3C5}',big:d.pr,unit:'records battus',sub:'Des segments et des perfos qui tombent'},
-    {bg:'linear-gradient(160deg,#C2410C,#F9A070)',ico:'\u{1F525}',big:d.streak,unit:'semaines d\u2019affil\u00e9e',sub:'La r\u00e9gularit\u00e9, ton vrai super-pouvoir'},
-    {bg:'linear-gradient(160deg,#18181B,#52525B)',ico:'\u{1F3AF}',big:'Nice',unit:'',sub:'Prochain chapitre : 3h45 au Marathon de Nice. On y va.',isFinal:true}
+    {bg:'',ico:'course',big:d.n,unit:'sorties',sub:'C\u2019est parti pour ta saison en chiffres, depuis la S24'},
+    {bg:'',ico:'route',big:d.km,unit:'km parcourus',sub:'Soit '+marathons+' marathons bout \u00e0 bout'},
+    {bg:'',ico:'trail',big:d.dplus,unit:'m\u00e8tres de D+',sub:eiffel+'\u00d7 la Tour Eiffel, grimp\u00e9s avec les jambes'},
+    {bg:'',ico:'chrono',big:d.heures,unit:'heures d\u2019effort',sub:'De transpiration bien plac\u00e9e'},
+    {bg:'',ico:'medaille',big:d.pr,unit:'records battus',sub:'Des segments et des perfos qui tombent'},
+    {bg:'',ico:'serie',big:d.streak,unit:'semaines d\u2019affil\u00e9e',sub:'La r\u00e9gularit\u00e9, ton vrai super-pouvoir'},
+    {bg:'',ico:'drapeau',big:'Nice',unit:'',sub:'Prochain chapitre : 3h45 au Marathon de Nice. On y va.',isFinal:true}
   ];
   let idx=0;
   const old=document.getElementById('wrapped-ov');if(old)old.remove();
   const ov=document.createElement('div');ov.id='wrapped-ov';ov.className='wrapped-ov';
-  ov.innerHTML=`<div class="wr-bars"></div><button class="wr-close" onclick="_wrappedClose()" aria-label="Fermer">\u2715</button><div class="wr-stage"></div><div class="wr-hint">tap pour continuer</div>`;
+  ov.innerHTML=`<div class="wr-bars"></div><button class="wr-close" onclick="_wrappedClose()" aria-label="Fermer">\u2715</button><div class="wr-stage"></div><div class="wr-hint">Touche pour continuer</div>`;
   document.body.appendChild(ov);
   const bars=ov.querySelector('.wr-bars');
   bars.innerHTML=cards.map((_,i)=>`<div class="wr-bar"><div class="wr-bar-fill" data-b="${i}"></div></div>`).join('');
@@ -2641,13 +2627,13 @@ function openWrapped(){
   requestAnimationFrame(()=>ov.classList.add('show'));
   function render(i){
     const c=cards[i];
-    stage.style.background=c.bg;
+    stage.style.background='';
     stage.innerHTML=`<div class="wr-card ${c.isFinal?'wr-final':''}">
-      <div class="wr-ico">${c.ico}</div>
+      <div class="wr-ico" aria-hidden="true">${_wrIco(c.ico)}</div>
       <div class="wr-big">${c.big}</div>
       ${c.unit?`<div class="wr-unit">${c.unit}</div>`:''}
       <div class="wr-sub">${c.sub}</div>
-      ${c.isFinal?'<button class="wr-share" onclick="event.stopPropagation();_wrappedClose()">Terminer \u{1F44A}</button>':''}
+      ${c.isFinal?'<button class="wr-share" onclick="event.stopPropagation();_wrappedClose()">Terminer</button>':''}
     </div>`;
     // barres de progression
     ov.querySelectorAll('.wr-bar-fill').forEach((f,bi)=>{f.style.width=bi<i?'100%':bi===i?'100%':'0%';f.style.transition=bi===i?'width 3.4s linear':'none';});
@@ -2660,61 +2646,32 @@ function openWrapped(){
 }
 function _wrappedClose(){const ov=document.getElementById('wrapped-ov');if(!ov)return;if(ov._stopTimer)ov._stopTimer();ov.classList.remove('show');setTimeout(()=>ov.remove(),300);}
 function renderPalmares(){
+  /* lot 5 : Courses en blanc et orange — saison en chiffres, à venir, passées ; aucun emoji, pas de liseré de couleur par course */
   const el=document.getElementById('palmares-contenu');if(!el)return;
   const P=(typeof PALMARES!=='undefined'?PALMARES:DATA.PALMARES)||[];
-  const types={'trail':'🏔️ Trail','trail_nuit':'🌙 Trail nuit','route':'🛣️ Route','semi':'🏃 Semi-marathon','marathon':'🏅 Marathon'};
-  const totalKm=P.reduce((a,p)=>a+p.distance,0);
+  const types={'trail':'Trail','trail_nuit':'Trail de nuit','route':'Route','semi':'Semi-marathon','marathon':'Marathon'};
+  const totalKm=P.reduce((a,p)=>a+p.distance,0),totalDplus=P.reduce((a,p)=>a+(p.dplus||0),0);
   const _wd=(typeof _wrappedData==='function')?_wrappedData():{n:0,km:0,dplus:0};
-  const totalDplus=P.reduce((a,p)=>a+(p.dplus||0),0);
-  const _tdy=new Date();_tdy.setHours(0,0,0,0);
-  const _moisC=['janv.','f\u00e9vr.','mars','avr.','mai','juin','juil.','ao\u00fbt','sept.','oct.','nov.','d\u00e9c.'];
-  const _up=((typeof RACES!=='undefined'?RACES:(typeof DATA!=='undefined'&&DATA.RACES))||[]).map(r=>{const d=new Date(r.date+'T12:00:00');return{nom:r.nom,dossier:r.dossier,d:d,dn:_joursAvant(r.date)};}).filter(r=>r.dn>=0).sort((a,b)=>a.dn-b.dn);
-  const _aVenir=_up.length?'<h2 class="crs-lab">\u00c0 venir</h2>'+_up.map(r=>{const ds=r.d.getDate()+' '+_moisC[r.d.getMonth()]+' '+r.d.getFullYear();return `<button class="crs-up"${r.dossier?` onclick="ouvrirDossier('${r.dossier}')"`:''}><span class="crs-jx">J-${r.dn}</span><span class="crs-mid"><span class="crs-nom">${r.nom}</span><span class="crs-date">${ds}</span></span>${r.dossier?'<span class="crs-go">Dossier \u203a</span>':''}</button>`;}).join(''):''; 
-  el.innerHTML=`<div style="padding:12px 12px 40px">
-<h1 class="lt-title" style="margin-bottom:2px">Courses</h1>
-<div style="font-size:var(--t-caption);color:var(--texte-deux);margin-bottom:14px">À venir &amp; passées · objectifs et résultats</div><button class="wr-launch" onclick="openWrapped()"><span class="wrl-ico">✨</span><span class="wrl-txt"><span class="wrl-t1">Ta saison en chiffres</span><span class="wrl-t2">${_wd.n} sorties du plan · ${_wd.km} km · ${_wd.dplus} m D+</span></span><span class="wrl-go">▶</span></button>${_aVenir}<h2 class="crs-lab">Passées</h2>
-<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px">
-  <div style="background:var(--bg-card);border:.5px solid var(--bord-card);border-radius:12px;padding:10px;text-align:center"><div style="font-size:20px;font-weight:700;color:var(--texte)">${P.length}</div><div style="font-size:var(--t-data);text-transform:uppercase;letter-spacing:.05em;color:var(--texte-deux);margin-top:4px">Courses</div></div>
-  <div style="background:var(--bg-card);border:.5px solid var(--bord-card);border-radius:12px;padding:10px;text-align:center"><div style="font-size:20px;font-weight:700;color:var(--texte)">${totalKm.toFixed(0)}</div><div style="font-size:var(--t-data);text-transform:uppercase;letter-spacing:.05em;color:var(--texte-deux);margin-top:4px">km courus</div></div>
-  <div style="background:var(--bg-card);border:.5px solid var(--bord-card);border-radius:12px;padding:10px;text-align:center"><div style="font-size:20px;font-weight:700;color:var(--texte)">${(totalDplus/1000).toFixed(1)}k</div><div style="font-size:var(--t-data);text-transform:uppercase;letter-spacing:.05em;color:var(--texte-deux);margin-top:4px">D+ cumulé</div></div>
-</div>
-${P.slice().sort((a,b)=>b.date.localeCompare(a.date)).map((p,i)=>{
-  const typeLabel=types[p.type]||p.type;
-  const d=new Date(p.date+'T12:00:00');
-  const mois=['janv.','févr.','mars','avr.','mai','juin','juil.','août','sept.','oct.','nov.','déc.'];
-  const dateStr=d.getDate()+' '+mois[d.getMonth()]+' '+d.getFullYear();
-  const classGen=p.classement_gen?`<span style="font-size:var(--t-data);font-weight:600;padding:2px 8px;border-radius:99px;background:var(--primary-fond);color:var(--primary-deux)">#${p.classement_gen}${p.total_finishers?' / '+p.total_finishers:''} général</span>`:'';
-  const classCat=p.classement_cat?`<span style="font-size:var(--t-data);font-weight:600;padding:2px 8px;border-radius:99px;background:var(--ok-fond);color:var(--ok-deux)">#${p.classement_cat} cat.</span>`:'';
-  return`<div style="background:var(--bg-card);border:.5px solid var(--bord-card);border-radius:14px;margin-bottom:10px;overflow:hidden">
-    <div style="display:flex;align-items:stretch">
-      <div style="width:5px;background:${p.accent};flex:0 0 5px"></div>
-      <div style="padding:12px 12px;flex:1;min-width:0">
-        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px">
-          <div>
-            <div style="font-size:var(--t-data);color:var(--texte-deux);margin-bottom:2px">${typeLabel} · ${dateStr}</div>
-            <div style="font-size:15px;font-weight:700;color:var(--texte);line-height:1.2">${p.nom}</div>
-            <div style="font-size:var(--t-data);color:var(--texte-deux);margin-top:1px">${p.lieu}</div>
-          </div>
-          <div style="text-align:right;flex:0 0 auto;margin-left:8px">
-            <div style="font-size:20px;font-weight:700;color:var(--texte)">${p.temps||'—'}</div>
-            <div style="font-size:var(--t-data);color:var(--texte-deux)">${p.allure?p.allure+'/km':''}</div>
-          </div>
-        </div>
-        <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px">
-          <span style="font-size:var(--t-data);font-weight:600;padding:2px 8px;border-radius:99px;background:var(--gris-fond,#F4F4F5);color:var(--texte-deux)">${p.distance} km</span>
-          <span style="font-size:var(--t-data);font-weight:600;padding:2px 8px;border-radius:99px;background:var(--gris-fond,#F4F4F5);color:var(--texte-deux)">D+ ${p.dplus} m</span>
-          ${p.fc_moy?`<span style="font-size:var(--t-data);font-weight:600;padding:2px 8px;border-radius:99px;background:var(--danger-fond);color:var(--danger-deux)">❤️ ${p.fc_moy}/${p.fc_max}</span>`:''}
-          ${p.meteo?`<span style="font-size:var(--t-data);padding:2px 8px;border-radius:99px;background:var(--gris-fond,#F4F4F5);color:var(--texte-deux)">🌡️ ${p.meteo}</span>`:''}
-          ${classGen}${classCat}
-        </div>
-        ${p.chaussures?`<div style="font-size:var(--t-data);color:var(--texte-deux);margin-bottom:6px">👟 ${p.chaussures}</div>`:''}
-        <div style="font-size:var(--t-caption);color:var(--texte-deux);line-height:1.55;background:var(--gris-fond,#F7F7F8);border-radius:8px;padding:8px 10px">${p.bilan}</div>
-      </div>
-    </div>
-  </div>`;
-}).join('')}
-<div style="font-size:var(--t-caption);color:var(--texte-deux);text-align:center;margin-top:8px;font-style:italic">Classements à compléter après chaque course · partage les résultats officiels</div>
-</div>`;
+  const _moisC=['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+  const _up=((typeof RACES!=='undefined'?RACES:(typeof DATA!=='undefined'&&DATA.RACES))||[]).map(r=>{const d=new Date(r.date+'T12:00:00');return{r:r,nom:r.nom,dossier:r.dossier,d:d,dn:_joursAvant(r.date)};}).filter(r=>r.dn>=0).sort((a,b)=>a.dn-b.dn);
+  const aVenir=_up.length?`<section class="ac-carte" aria-labelledby="crs-av"><h2 class="ac-h2" id="crs-av">À venir</h2>`+_up.map((r,i)=>(i?'<div class="ac-sep ac-sep16"></div>':'')
+    +`<button type="button" class="ac-course crs-up"${r.dossier?` onclick="ouvrirDossier('${r.dossier}')"`:''} aria-label="${_acEsc(_acNomCourse(r))}, dans ${r.dn} jours${r.dossier?', ouvrir le dossier de course':''}">`
+    +`<span class="ac-min"><span class="ac-course-n">${_acEsc(_acNomCourse(r))}</span><span class="ac-course-s">${_acEsc(_acCourseSous(r.r))}</span>${r.dossier?'<span class="crs-dos">Dossier de course ›</span>':''}</span>`
+    +`<span class="ac-jn${i?'':' prem'}" aria-hidden="true">J-${r.dn}</span></button>`).join('')+`</section>`:'';
+  const passees=P.slice().sort((a,b)=>b.date.localeCompare(a.date)).map(p=>{
+    const d=new Date(p.date+'T12:00:00'),ds=d.getDate()+' '+_moisC[d.getMonth()]+' '+d.getFullYear();
+    const puces=[`${String(p.distance).replace('.',',')} km`,p.dplus!=null?`D+ ${p.dplus} m`:null,p.fc_moy?`FC ${p.fc_moy}/${p.fc_max}`:null,p.meteo?_sansEmoji(p.meteo):null].filter(Boolean).map(x=>`<span class="ac-puce ne">${_acEsc(x)}</span>`).join('')
+      +(p.classement_gen?`<span class="ac-puce or">#${p.classement_gen}${p.total_finishers?' / '+p.total_finishers:''}</span>`:'')+(p.classement_cat?`<span class="ac-puce ok">#${p.classement_cat} cat.</span>`:'');
+    return `<article class="crs-p"><div class="crs-p-t"><div class="ac-min"><p class="ac-lb">${types[p.type]||_acEsc(p.type)} · ${ds}</p><h3 class="crs-p-n">${_acEsc(p.nom)}</h3><p class="crs-p-l">${_acEsc(p.lieu||'')}</p></div>`
+      +`<div class="crs-p-c"><p class="ac-n">${_acEsc(p.temps||'—')}</p>${p.allure?`<p class="ac-lb">${_acEsc(p.allure)}/km</p>`:''}</div></div>`
+      +`<div class="fs-puces crs-p-puces">${puces}</div>${p.chaussures?`<p class="crs-p-ch">${_acIco('chaussure',16)}${_acEsc(_sansEmoji(p.chaussures))}</p>`:''}`
+      +(p.bilan?`<details class="fs-revue crs-bilan"><summary>Le bilan${_acIco('fleche',18)}</summary><div class="rev-coach">${p.bilan}</div></details>`:'')+`</article>`;}).join('');
+  el.innerHTML=`<div class="crs-page"><header class="vue-tete"><p class="ac-lb">À venir et passées</p><h1 class="vue-titre">Courses</h1></header>`
+    +`<button type="button" class="ac-carte wr-launch" onclick="openWrapped()"><span class="wrl-ico" aria-hidden="true">${_acIco('rewind',20)}</span><span class="wrl-txt"><span class="wrl-t1">Ta saison en chiffres</span><span class="wrl-t2">${_wd.n} sorties du plan · ${_acNb(_wd.km)} km · ${_acNb(_wd.dplus)} m D+</span></span><span class="wrl-go" aria-hidden="true">›</span></button>`
+    +aVenir
+    +`<section class="ac-carte" aria-labelledby="crs-pa"><h2 class="ac-h2" id="crs-pa">Passées</h2><div class="ac-chiffres crs-tot">`
+    +`<div><p class="ac-lb">Courses</p><p class="ac-n ac-n28">${P.length}</p></div><div><p class="ac-lb">Km courus</p><p class="ac-n ac-n28">${_acNb(totalKm)}</p></div><div><p class="ac-lb">D+ cumulé</p><p class="ac-n ac-n28">${_acNb(totalDplus)}<span class="ac-u">m</span></p></div></div>`
+    +passees+`</section><p class="note-foot crs-note">Classements à compléter après chaque course.</p></div>`;
 }
 
 /* ===================================================================
