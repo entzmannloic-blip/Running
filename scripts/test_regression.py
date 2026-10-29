@@ -204,13 +204,11 @@ def run():
         try:
             p.evaluate("_ckRenderAll(8)")
             p.wait_for_timeout(200)
-            val = p.evaluate("parseFloat(document.getElementById('ck-acwr-val').textContent)")
-            label = p.evaluate(
-                "document.getElementById('ck-acwr-val').parentElement"
-                ".querySelector('.ck-kd')?.textContent||''").lower()
-            # coherence : <0.8 => frais/allegement ; >1.5 => surcharge ; sinon maitrise/eleve
-            coherent = True
-            if val < 0.8 and not ("frais" in label or "all" in label):
+            val = p.evaluate("parseFloat(String(document.getElementById('ck-acwr-val').textContent).replace(',','.'))")
+            label = p.evaluate("(document.getElementById('ckc-puce')||{}).textContent||''").lower()
+            # coherence (lot 5 : puce de zone de la carte Charge) : <0.8 => sous-charge ; >1.5 => surcharge ; sinon optimale/vigilance
+            coherent = bool(label)
+            if val < 0.8 and "sous-charge" not in label:
                 coherent = False
             if val > 1.5 and not ("surcharge" in label or "\u00e9lev" in label or "elev" in label):
                 coherent = False
@@ -684,7 +682,7 @@ def run():
             der = pm.evaluate("REWIND_SEANCE.map(c=>{const [w,i]=c.split('-');const s=SEANCES_BY_WEEK[w].find(x=>String(x.id)===i);return [s.date+'|'+c,c];}).sort().pop()[1]")
             w, i = der.split("-")
             pm.evaluate(f"ouvrirSeance('{w}',{i})")
-            pm.wait_for_selector("#contenu .fs-revoir", timeout=5000)
+            pm.wait_for_selector("#contenu .fs-revoir", timeout=5000)  # bouton « Revoir ma séance » de la fiche faite
             pm.click("#contenu .fs-revoir")
             pm.wait_for_selector(".rs:not([hidden]) .rs-sl", timeout=5000)
             labels, ko = [], 0
@@ -714,8 +712,10 @@ def run():
                   img.startswith("2 sur 9") and coach.startswith("8 sur 9"), f"{img} / {coach}")
             pm.keyboard.press("Escape")
             pm.evaluate("showTab('cockpit')")
-            pm.wait_for_selector("#cockpit-contenu .rs-ou-entree", timeout=5000)
-            pm.click("#cockpit-contenu .rs-ou-entree")
+            pm.wait_for_selector("#vue-cockpit .ck-z[data-zone='2']", timeout=5000)
+            pm.click("#vue-cockpit .ck-z[data-zone='2']")
+            pm.wait_for_selector("#ck-ou .ck-ou-btn", timeout=5000)
+            pm.click("#ck-ou .ck-ou-btn")
             pm.wait_for_timeout(900)
             ou = pm.evaluate("[...document.querySelectorAll('.rs-ou-carte .rs-verd')].map(v=>v.innerText.trim())")
             check("T23 Où j'en suis : 5 courbes, chacune avec un verdict",
@@ -813,6 +813,19 @@ def run():
                   and sw["fsw"] and sw["ses"] == sw["attendu"] and not sw["emo"]
                   and fp.get("fp") and "Le réalisé" in fp.get("titres", []) and "Le déroulé" in fp.get("titres", []) and fp.get("log")
                   and not fp.get("emo") and not fp.get("vide"), f"{pl} {sw} {fp}")
+            # Cockpit (lot 5, partie B) : 4 onglets, Aujourd'hui comme la maquette, Ou j'en suis en ligne, Records, tableau de bord dans Analyse
+            pf.evaluate("showTab('cockpit')")
+            pf.wait_for_selector("#ck-ou-liste .ck-ou-r", state="attached", timeout=8000)
+            ck = pf.evaluate("(function(){" + CHROME_JS + """var v=document.getElementById('vue-cockpit'),z=function(n){return v.querySelector('.ck-zone[data-zone="'+n+'"]');};
+                return {onglets:[...v.querySelectorAll('.ck-z')].map(function(b){return b.textContent;}),sel:v.querySelectorAll('.ck-z[aria-selected="true"]').length,
+                  ind:z(1).querySelectorAll('.ckf-r').length,puce:(document.getElementById('ckc-puce')||{}).textContent||'',pt:(document.getElementById('ckc-pt')||{style:{}}).style.left||'',
+                  acwr:(document.getElementById('ck-acwr-val')||{}).dataset.fin||'',vo2:!!z(1).querySelector('#vo2-val'),barres:z(1).querySelectorAll('#ck-sem-barres rect').length,
+                  ou:z(2).querySelectorAll('.ck-ou-r').length,rec:z(4).querySelectorAll('.ckr-r').length,recAtt:(typeof RECORDS_PERF!=='undefined'?RECORDS_PERF.length:0),
+                  dash:!!z(3).querySelector('#dash-contenu'),emo:chrome(v),vide:/NaN|undefined|Infinity/.test(v.innerText)};})()""")
+            check("T28 Cockpit : 4 onglets, forme et ses 4 indicateurs, charge (zone et repère), VO2max, 12 semaines, 5 courbes « Où j'en suis », records, tableau de bord dans Analyse, aucun emoji",
+                  ck["onglets"] == ["Aujourd'hui", "Progression", "Records", "Analyse"] and ck["sel"] == 1 and ck["ind"] == 4 and ck["puce"] and ck["pt"]
+                  and ck["acwr"] and ck["vo2"] and ck["barres"] == 12 and ck["ou"] >= 3 and ck["rec"] == ck["recAtt"] > 0 and ck["dash"]
+                  and not ck["emo"] and not ck["vide"], str(ck))
             ctxf.close()
         except Exception as e:
             check("T24 police des chiffres embarquee", False, str(e)[:160])
