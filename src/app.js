@@ -67,7 +67,7 @@ function svgMountain(){const wks=SEMAINES.filter(s=>s.num>=25);const W=760,h=195
   const kmlab=tpidx.map(i=>{const w=wks[i];const up=(i>0)?(w.km>=wks[i-1].km):true;return `<text x="${X(i).toFixed(1)}" y="${(up?Y(w.km)-6:Y(w.km)+13).toFixed(1)}" font-size="8.5" font-weight="700" fill="#A1A1AA" text-anchor="middle">${w.km}</text>`;}).join('');
   const cur=`<circle cx="${X(0).toFixed(1)}" cy="${Y(wks[0].km).toFixed(1)}" r="7" fill="#16a34a" opacity=".25"/><circle cx="${X(0).toFixed(1)}" cy="${Y(wks[0].km).toFixed(1)}" r="3.5" fill="#16a34a"/>`;
   const cols=wks.map((w,i)=>`<rect x="${(X(i)-(W-2*padX)/n/2).toFixed(1)}" y="0" width="${((W-2*padX)/n).toFixed(1)}" height="${h}" fill="transparent" style="cursor:pointer" onclick="ouvrirSemaine(${w.num})"><title>S${w.num} · ${w.theme} · ${w.km} km</title></rect>`).join('');
-  return `<svg viewBox="0 0 ${W} ${h}" class="chart-svg"><defs><linearGradient id="mtn" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#CA8A04" stop-opacity=".45"/><stop offset=".55" stop-color="#F4561D" stop-opacity=".2"/><stop offset="1" stop-color="#16a34a" stop-opacity="0"/></linearGradient></defs><path d="${area}" fill="url(#mtn)"/><path d="${line}" fill="none" stroke="#52525B" stroke-width="2"/>${mk(42,'⛰️','Pic 88',true)}${mk(37,'🏕️','USA',false)}${mk(45,'🏁','Nice',true)}${mk(48,'🌙','SaintExpress',false)}${cur}${kmlab}${cols}</svg>`;
+  return `<svg viewBox="0 0 ${W} ${h}" class="chart-svg"><defs><linearGradient id="mtn" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#CA8A04" stop-opacity=".45"/><stop offset=".55" stop-color="#F4561D" stop-opacity=".2"/><stop offset="1" stop-color="#16a34a" stop-opacity="0"/></linearGradient></defs><path d="${area}" fill="url(#mtn)"/><path d="${line}" fill="none" stroke="#52525B" stroke-width="2"/>${mk(42,'','Pic 88',true)}${mk(37,'','USA',false)}${mk(45,'','Nice',true)}${mk(48,'','SaintExpress',false)}${cur}${kmlab}${cols}</svg>`;
 }
 function svgDonut(segs){const tot=segs.reduce((a,s)=>a+s.val,0)||1;let a=-90,paths='';const R=54,r=31,cx=64,cy=64;
   segs.forEach(s=>{const ang=s.val/tot*360,a2=a+ang;const P=(deg,rad)=>[cx+rad*Math.cos(Math.PI*deg/180),cy+rad*Math.sin(Math.PI*deg/180)];const large=ang>180?1:0;const[x1,y1]=P(a,R),[x2,y2]=P(a2,R),[x3,y3]=P(a2,r),[x4,y4]=P(a,r);paths+=`<path d="M ${x1.toFixed(1)} ${y1.toFixed(1)} A ${R} ${R} 0 ${large} 1 ${x2.toFixed(1)} ${y2.toFixed(1)} L ${x3.toFixed(1)} ${y3.toFixed(1)} A ${r} ${r} 0 ${large} 0 ${x4.toFixed(1)} ${y4.toFixed(1)} Z" fill="${s.color}"/>`;a=a2;});
@@ -90,7 +90,7 @@ function showTab(t){
     var _tb=document.getElementById('tab-'+id);
     if(t===id)_tb.setAttribute('aria-current','page');else _tb.removeAttribute('aria-current');
   });
-  if(t==='cockpit'){renderCockpit();renderDash();_ckFreshness();if(typeof _compte==='function')_compte(document.getElementById('ck-hero-num'),'ck-forme');setTimeout(()=>{if(typeof _vo2Reveal==='function')_vo2Reveal();if(typeof _effRender==='function')_effRender();if(typeof _heatRender==='function')_heatRender();if(typeof _saisonRender==='function')_saisonRender();if(typeof _decoupRender==='function')_decoupRender();if(typeof _profilRender==='function')_profilRender();},250);}
+  if(t==='cockpit'){renderCockpit();renderDash();if(typeof _ckTabsA11y==='function')_ckTabsA11y();_ckFreshness();if(typeof _compte==='function')_compte(document.getElementById('ck-hero-num'),'ck-forme');setTimeout(()=>{if(typeof _vo2Reveal==='function')_vo2Reveal();if(typeof _effRender==='function')_effRender();if(typeof _heatRender==='function')_heatRender();if(typeof _saisonRender==='function')_saisonRender();if(typeof _decoupRender==='function')_decoupRender();if(typeof _profilRender==='function')_profilRender();},250);}
   if(t==='palmares')renderPalmares();
   /* Le saut vers la semaine en cours ne se faisait qu'a la PREMIERE ouverture
      de l'onglet : toute visite suivante repartait en haut, c'est-a-dire en
@@ -306,8 +306,8 @@ function _ckRebuild(){
     if(_CK.FCZ){
       var Z={Z1:0,Z2:0,Z3:0,'Z4+':0},tot=0;
       ws.forEach(function(w){var zm=(agg[w]&&agg[w].zoneMin)||{};['Z1','Z2','Z3','Z4+'].forEach(function(k){Z[k]+=(zm[k]||0);tot+=(zm[k]||0);});});
-      if(tot>0)_CK.FCZ[N]=[['Z1','#86efac',Math.round(Z.Z1/tot*100)],['Z2','#16a34a',Math.round(Z.Z2/tot*100)],
-                           ['Z3','#CA8A04',Math.round(Z.Z3/tot*100)],['Z4+','#DC2626',Math.round(Z['Z4+']/tot*100)]];
+      if(tot>0)_CK.FCZ[N]=[['Z1','#FDE3D3',Math.round(Z.Z1/tot*100)],['Z2','#FBB089',Math.round(Z.Z2/tot*100)],
+                           ['Z3','#F4561D',Math.round(Z.Z3/tot*100)],['Z4+','#C2410C',Math.round(Z['Z4+']/tot*100)]];
     }
     if(_CK.CAD)_CK.CAD[N]={w:lbl,v:ws.map(function(w){return _val('CAD','v',w,agg[w]&&agg[w].cad);})};
     if(_CK.PACE){var _pp=(_CK._PACE_ORIG&&_CK._PACE_ORIG[N])||{};var _L=lbl.length;var _tail=function(a){return Array.isArray(a)?a.slice(-_L):a;};_CK.PACE[N]={w:lbl,v:ws.map(function(w){return agg[w]?agg[w].pace:null;}),ef:ws.map(function(w){return agg[w]?agg[w].z2:null;}),am:ws.map(function(w){return agg[w]?agg[w].am:null;}),se:ws.map(function(w){return agg[w]?agg[w].se:null;})};}
@@ -529,7 +529,7 @@ function computeFormeScore(){
   // 2. ACWR (25%) - fenetre glissante 7/28 j
   let acwrScore=70,acwrVal=_dynamicACWR(),acwrLabel='—';
   if(acwrVal>=0.8&&acwrVal<=1.3){acwrScore=100;acwrLabel='Zone optimale ('+acwrVal+')';}
-  else if(acwrVal>1.3&&acwrVal<=1.5){acwrScore=58;acwrLabel='⚠ Charge élevée ('+acwrVal+')';}
+  else if(acwrVal>1.3&&acwrVal<=1.5){acwrScore=58;acwrLabel='Charge élevée ('+acwrVal+')';}
   else if(acwrVal>1.5){acwrScore=22;acwrLabel='Surcharge ('+acwrVal+')';}
   else if(acwrVal>=0.7){acwrScore=72;acwrLabel='Légère sous-charge ('+acwrVal+')';}
   else{acwrScore=44;acwrLabel='Sous-charge ('+acwrVal+')';}
@@ -622,25 +622,25 @@ function _coachNudge(){
     if(typeof RACES!=='undefined'&&RACES.length){
       for(const rc of RACES){
         const jr=_joursAvant(rc.date);
-        if(jr===0)return {tone:'ok',icon:'\u{1F3C1}',mot:'jour J',txt:'Jour de course : '+rc.nom+' ! Confiance dans ta pr\u00e9pa \u2014 pars prudent, finis fort.'};
-        if(jr>0&&jr<=7)return {tone:'ok',icon:'\u{1F3C1}',mot:'aff\u00fbtage',txt:rc.nom+' dans '+jr+' jour'+(jr>1?'s':'')+' \u2014 priorit\u00e9 fra\u00eecheur : sorties courtes et faciles, sommeil, glucides.'};
+        if(jr===0)return {tone:'ok',icon:'',mot:'jour J',txt:'Jour de course : '+rc.nom+' ! Confiance dans ta pr\u00e9pa \u2014 pars prudent, finis fort.'};
+        if(jr>0&&jr<=7)return {tone:'ok',icon:'',mot:'aff\u00fbtage',txt:rc.nom+' dans '+jr+' jour'+(jr>1?'s':'')+' \u2014 priorit\u00e9 fra\u00eecheur : sorties courtes et faciles, sommeil, glucides.'};
       }
     }
     // Priorité aux signaux de risque, puis de relance
     if(acwr>1.5)
-      return {tone:'warn',icon:'\u{1F534}',mot:'r\u00e9cup',txt:'Ton ACWR est \u00e0 '+acwr.toFixed(2)+' \u2014 charge aigu\u00eb \u00e9lev\u00e9e. Priorise la r\u00e9cup ces prochains jours.'};
+      return {tone:'warn',icon:'',mot:'r\u00e9cup',txt:'Ton ACWR est \u00e0 '+_acNb(acwr,2)+' \u2014 charge aigu\u00eb \u00e9lev\u00e9e. Priorise la r\u00e9cup ces prochains jours.'};
     // Phase "Maintien — Road trip USA" (S36-39) : le plan prévoit peu de course, on n'alarme pas sur l'inactivité.
     const _inUSA=cur>=36&&cur<=39;
     if(_inUSA&&daysSinceAny>=4&&daysSinceAny<900)
-      return {tone:'info',icon:'\u{1F30E}',mot:'maintien',txt:'Phase maintien (road trip) \u2014 randos et temps de pied comptent. Cours quand c\u2019est possible, sans pression.'};
+      return {tone:'info',icon:'',mot:'maintien',txt:'Phase maintien (road trip) \u2014 randos et temps de pied comptent. Cours quand c\u2019est possible, sans pression.'};
     if(daysSinceAny>=5&&daysSinceAny<900&&!_inUSA)
-      return {tone:'info',icon:'\u{1F440}',mot:'relance',txt:daysSinceAny+' jours sans sortie logg\u00e9e. Tout va bien ? Une sortie facile relancerait la machine.'};
+      return {tone:'info',icon:'',mot:'relance',txt:daysSinceAny+' jours sans sortie logg\u00e9e. Tout va bien ? Une sortie facile relancerait la machine.'};
     if(acwr<0.7&&daysSinceAny<5)
-      return {tone:'info',icon:'\u{1F4C8}',mot:'marge',txt:'Charge basse (ACWR '+acwr.toFixed(2)+') \u2014 de la marge pour ajouter du volume si la forme suit.'};
+      return {tone:'info',icon:'',mot:'marge',txt:'Charge basse (ACWR '+_acNb(acwr,2)+') \u2014 de la marge pour ajouter du volume si la forme suit.'};
     if(daysSinceQ>=10&&daysSinceQ<900)
-      return {tone:'info',icon:'\u26a1',mot:'qualit\u00e9 ?',txt:daysSinceQ+' jours sans s\u00e9ance qualit\u00e9. Un seuil ou un tempo ferait progresser ton chrono.'};
+      return {tone:'info',icon:'',mot:'qualit\u00e9 ?',txt:daysSinceQ+' jours sans s\u00e9ance qualit\u00e9. Un seuil ou un tempo ferait progresser ton chrono.'};
     if(forme.score>=85)
-      return {tone:'ok',icon:'\u{1F7E2}',mot:'qualit\u00e9 OK',txt:'Forme \u00e0 '+forme.score+'/100 \u2014 excellent moment pour une s\u00e9ance qualit\u00e9 si le plan s\u2019y pr\u00eate.'};
+      return {tone:'ok',icon:'',mot:'qualit\u00e9 OK',txt:'Forme \u00e0 '+forme.score+'/100 \u2014 excellent moment pour une s\u00e9ance qualit\u00e9 si le plan s\u2019y pr\u00eate.'};
     return null;
   }catch(e){return null;}
 }
@@ -684,12 +684,12 @@ function _whatsNew(){
     if(!prev)return null; // première visite : rien à comparer
     let msg=null;
     if(lastDate&&lastDate>prev.lastDate){
-      if(lastPr>0)msg={icon:'\u{1F3C5}',txt:lastPr+' record'+(lastPr>1?'s':'')+' battu'+(lastPr>1?'s':'')+' depuis ta derni\u00e8re visite !'};
-      else msg={icon:'\u2705',txt:'Nouvelle s\u00e9ance logg\u00e9e : '+String(lastKm).replace('.',',')+' km'};
+      if(lastPr>0)msg={icon:'',txt:lastPr+' record'+(lastPr>1?'s':'')+' battu'+(lastPr>1?'s':'')+' depuis ta derni\u00e8re visite !'};
+      else msg={icon:'',txt:'Nouvelle s\u00e9ance logg\u00e9e : '+String(lastKm).replace('.',',')+' km'};
     }else if(streak>(prev.streak||0)&&streak>=2){
-      msg={icon:'\u{1F525}',txt:streak+' semaines d\u2019affil\u00e9e maintenant !'};
+      msg={icon:'',txt:streak+' semaines d\u2019affil\u00e9e maintenant !'};
     }else if(forme!==null&&prev.forme!==null&&Math.abs(forme-prev.forme)>=8){
-      msg=forme>prev.forme?{icon:'\u{1F4C8}',txt:'Ta forme a progress\u00e9 : '+prev.forme+' \u2192 '+forme}:null;
+      msg=forme>prev.forme?{icon:'',txt:'Ta forme a progress\u00e9 : '+prev.forme+' \u2192 '+forme}:null;
     }
     return msg;
   }catch(e){return null;}
@@ -722,7 +722,7 @@ function _timelineHTML(){
     return `<div class="timeline-wrap" onclick="showTab('plan')">
       <div class="tl-head"><span class="tl-phase">${curPhase.nom}</span><span class="tl-week">S${curWk}</span></div>
       <div class="tl-track">${segs}<div class="tl-fill" style="width:${prog}%"></div><div class="tl-you" style="left:${prog}%"></div></div>
-      <div class="tl-foot"><span>Début S${startWk}</span><span class="tl-goal">🏁 ${raceName} · J-${jRace} · ${cible}</span></div>
+      <div class="tl-foot"><span>Début S${startWk}</span><span class="tl-goal">${raceName} · J-${jRace} · ${cible}</span></div>
     </div>`;
   }catch(e){return '';}
 }
@@ -804,7 +804,8 @@ function _acForme(F,nudge){
     +'<span class="ac-forme-v" aria-hidden="true">'+F.score+'</span></span>'
     +'<span class="ac-min"><span class="ac-lb">Forme du jour <span class="sr-only">: '+F.score+' sur 100</span></span>'
     +'<span class="ac-forme-s">'+_acEsc(titre)+'</span>'
-    +(sous.length?'<span class="ac-forme-c">'+_acEsc(sous.join(' · '))+'</span>':'')+'</span></button>';
+    +(sous.length?'<span class="ac-forme-c">'+_acEsc(sous.join(' · '))+'</span>':'')
+    +(nudge&&nudge.txt?'<span class="ac-nudge ac-nudge-'+(nudge.tone==='warn'?'warn':'info')+'"><span class="sr-only">Conseil du jour : </span>'+_acEsc(nudge.txt)+'</span>':'')+'</span></button>';
 }
 function _acSemaine(sc){
   var arr=(SEANCES_BY_WEEK[sc.num]||SEANCES_BY_WEEK[String(sc.num)]||[]).filter(function(s){return s.date;});
@@ -856,7 +857,7 @@ function _acAnnee(SA){
   if(dp>=8849)rec.push(_acNb(dp/8849,1)+' fois l’Everest');else if(dp>0)rec.push(Math.round(dp/8849*100)+' % de l’Everest');
   var j=_JALONS.filter(function(x){return SA.km>=x.km&&!x.ar;}).pop();
   if(j)rec.push((rec.length?'et déjà ':'déjà ')+'la distance de Lyon à '+j.nom);
-  return '<section class="ac-carte" aria-labelledby="ac-annee-t"><h2 class="ac-h2" id="ac-annee-t">Ton année '+new Date().getFullYear()+'</h2>'
+  return '<section class="ac-carte" aria-labelledby="ac-annee-t"><h2 class="ac-h2" id="ac-annee-t">Ton année '+(SA.annee||2026)+'</h2>'
     +'<div class="ac-chiffres ac-annee">'
     +'<div><p class="ac-n ac-n28">'+_acNb(SA.km)+'</p><p class="ac-lb">km</p></div>'
     +'<div><p class="ac-n ac-n28">'+_acNb(SA.sorties)+'</p><p class="ac-lb">sorties</p></div>'
@@ -864,156 +865,43 @@ function _acAnnee(SA){
     +(rec.length?'<p class="ac-annee-r">'+_acCap(rec.join(', '))+'.</p>':'')+'</section>';
 }
 function renderHeader(){
+  /* Accueil (lot 5, maquette validée le 28/10/2026) : en-tête, analyse du coach (RS.carte), prochaine séance,
+     météo, forme du jour et son détail, semaine en cours, courses, année. Les anciens blocs (héros, tuiles,
+     capital, nouveautés, frise) ont été retirés au lot 5 avec leur code. */
   const cur=isoWeek(new Date());const sc=SEMAINES.find(s=>s.num===cur)||SEMAINES[0];
   const _t=new Date();_t.setHours(0,0,0,0);
-  const _ps=prochaineSeance();let _psCard='';
+  const _ps=prochaineSeance();
+  if(_ps)window._psGlobalDiff=Math.round((_ps.d-_t)/86400000);
   const _FORME_=computeFormeScore();
-  // Feature 2 — ajustement allure selon température
-  let _tempAdj='';
-  try{const mc=JSON.parse(localStorage.getItem('meteo_cache')||'null');
-    if(mc&&mc.temp!==undefined){
-      const _diff0=_ps?Math.round((_ps.d-_t)/86400000):0;
-      const refT=Math.round(_diff0<=1&&mc.tomorrow_max?mc.tomorrow_max:mc.temp);
-      if(refT>22){const adj=refT<26?10:refT<30?20:refT<34?30:40;
-        /* Deux alertes temperature s'empilaient et disaient presque la meme
-           chose : "32 degres demain, pars avant 8h30" puis "32 degres,
-           allure cible +30s/km". Fusionnees en une seule ligne. */
-        _tempAdj='';}  /* fusionnee dans la ligne vdj-depart */
-    }}catch(e){}
-  if(_ps){
-    const _diff=Math.round((_ps.d-_t)/86400000);
-    window._psGlobalDiff=_diff;
-    const _J=['dimanche','lundi','mardi','mercredi','jeudi','vendredi','samedi'];
-    const _M=['janv.','févr.','mars','avr.','mai','juin','juil.','août','sept.','oct.','nov.','déc.'];
-    const _jn=_J[_ps.d.getDay()];
-    const _lbl=_diff===0?"Aujourd'hui":_diff===1?'Demain':_jn.charAt(0).toUpperCase()+_jn.slice(1)+' '+_ps.d.getDate()+' '+_M[_ps.d.getMonth()];
-    const _se=_ps.se;
-    const _fit=_se.fit?`<a class="vdj-fit" href="${_se.fit}" download onclick="event.stopPropagation()">⌚ Télécharger la séance</a>`:'';
-    const _dist=(_se.metriques&&_se.metriques.Distance)?' · '+_se.metriques.Distance:'';
-    const _shoe='';  /* la chaussure rejoint la ligne d'infos ci-dessous */
-    /* CARTE HERO : la seance du jour et la forme fusionnees en UN bloc dominant.
-     Avant, elles vivaient dans deux conteneurs separes de 157 px et 107 px :
-     rien ne designait de point focal, l oeil ne savait pas par ou commencer.
-     La forme devient un anneau de progression a droite du titre, lisible d un
-     coup d oeil, et reste cliquable pour ouvrir le detail. */
-  _psCard=`<div class="vdj vdj-hero" onclick="ouvrirCarte(this,${_ps.wk},${_se.id})"><div class="vdj-lbl">Prochaine séance · ${_lbl}</div><div class="vdj-main"><div class="vdj-txt"><div class="vdj-t">${_se.titre}</div><div class="vdj-s">${_se.type}${_dist}${_se.chaussure?' · '+_se.chaussure.replace(/^(ASICS|HOKA|Brooks) /,''):''}</div>${_shoe}</div><button class="vdj-forme" aria-label="Forme du jour : ${_FORME_.score} sur 100" onclick="event.stopPropagation();document.getElementById('forme-detail').classList.toggle('fd-open')"><svg viewBox="0 0 64 64" class="vdj-ring"><circle cx="32" cy="32" r="27" class="vr-bg"/><circle cx="32" cy="32" r="27" class="vr-fg" stroke="${_FORME_.color}" stroke-dasharray="${(2*Math.PI*27).toFixed(1)}" stroke-dashoffset="${(2*Math.PI*27*(1-_FORME_.score/100)).toFixed(1)}"/></svg><span class="vdj-fv">${_FORME_.score}</span></button></div><div class="vdj-depart" id="vdj-depart" style="display:none"></div>${_fit}${_tempAdj}</div>`;
-  }
-  const _forme=_FORME_;
-  const _formeTile=`<button class="htile htile-forme" onclick="document.getElementById('forme-detail').classList.toggle('fd-open')"><span class="ht-k">Forme du jour <span class="ht-help" role="button" tabindex="0" onclick="event.stopPropagation();openFormeHelp()">\u24d8</span></span><span class="ht-v" style="color:${_forme.color}">${_forme.score}<span class="ht-trend">${_forme.trend}</span></span><span class="ht-s">${_forme.signal}</span></button>`;
-  const _formeDetail=`<div class="forme-detail" id="forme-detail">${_forme.components.map(c=>`<div class="fd-row"><div class="fd-lbl">${c.label}</div><div class="fd-track"><div class="fd-fill" style="width:${c.score}%;background:${c.score>=80?'#F4561D':c.score>=65?'#16a34a':c.score>=50?'#CA8A04':'#DC2626'}"></div></div><div class="fd-val">${c.detail}</div></div>`).join('')}</div>`;
-  // Sprint 1 — courses : la plus proche en tuile, les autres repliees
-  let _nearTile='',_mini='',_COURSES_=[];
-  /* Courses a venir uniquement, compteur via _joursAvant (meme chiffre que
-     toutes les vues). Avant : Math.ceil(new Date(date) - minuit local), qui
-     lit la date en UTC (decalage d'un jour en France) et clampait les
-     courses passees a J-0 (Run In Lyon apres le 04/10 restait « prochaine
-     course »). */
-  const _rc=(RACES||[]).map(r=>Object.assign({},r,{dn:_joursAvant(r.date)})).filter(r=>r.dn>=0).sort((a,b)=>a.dn-b.dn);
-  if(_rc.length){
-    _COURSES_=_rc;
-    const _n=_rc[0];
-    _nearTile=`<button class="htile htile-race" ${_n.dossier?`onclick="ouvrirDossier('${_n.dossier}')"`:''}><span class="ht-k">Prochaine course</span><span class="ht-v">J-${_n.dn}</span><span class="ht-s">${_n.nom}</span>${_n.dossier?'<span class="ht-arr">\u203a</span>':''}</button>`;
-    _mini=_rc.slice(1).map(r=>`<button class="hmini" ${r.dossier?`onclick="ouvrirDossier('${r.dossier}')"`:''}><span class="hmini-n">J-${r.dn}</span>${r.nom}${r.dossier?'<span class="hmini-go">\u203a</span>':''}</button>`).join('');
-  }
+  const _formeDetail=`<div class="forme-detail" id="forme-detail">${_FORME_.components.map(c=>`<div class="fd-row"><div class="fd-lbl">${c.label==='ACWR'?'Charge':c.label}</div><div class="fd-track"><div class="fd-fill" style="width:${c.score}%;background:${c.score>=65?'var(--ok)':c.score>=50?'var(--warn)':'var(--danger)'}"></div></div><div class="fd-val">${c.detail}</div></div>`).join('')}</div>`;
+  /* courses a venir uniquement, compteur via _joursAvant (meme chiffre que toutes les vues, date lue en heure locale) */
+  const _COURSES_=(RACES||[]).map(r=>Object.assign({},r,{dn:_joursAvant(r.date)})).filter(r=>r.dn>=0).sort((a,b)=>a.dn-b.dn);
   const _latestBuild=(typeof CHANGELOG!=='undefined'&&CHANGELOG.length)?CHANGELOG[0].build:'—';
   const _latestDate=(typeof CHANGELOG!=='undefined'&&CHANGELOG.length&&CHANGELOG[0].date)?CHANGELOG[0].date:MAJ;
-  const _maj=`<div class="vdj-maj">Données à jour au ${_latestDate}<button id="build-badge" onclick="openVersionPanel()">Build ${_latestBuild}</button></div>`;
   document.getElementById('cd-strip').innerHTML='';
-  const _cw=`<button class="cw-link" onclick="jumpToWeek(${sc.num})"><span class="cw-pin">📍</span><span class="cw-txt">Tu es en <strong>S${sc.num} · ${sc.theme}</strong></span><span class="cw-arr">voir dans le plan →</span></button>`;
   const _nudge=_coachNudge();
-  const _wn=_whatsNew();
-  const _wnCard=_wn?`<div class="whats-new"><span class="wn-ico">${_wn.icon}</span><span class="wn-txt">${_wn.txt}</span></div>`:'';
-  const _tl=_timelineHTML();
-  const _ltDate=new Date().toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'});
-  /* Le bandeau affichait "Aujourd'hui" juste au-dessus d'une carte annoncant
-   "Prochaine seance - Demain" : une contradiction en plein milieu de l'ecran,
-   et la premiere chose que voit l'utilisateur. On garde la date seule, qui
-   est factuelle et ne peut pas se contredire. */
-  const _lt=`<div class="lt-wrap"><div class="lt-date">${_ltDate.charAt(0).toUpperCase()+_ltDate.slice(1)}</div></div>`;
-  /* Accueil regroupe par ECHELLE DE TEMPS, meme principe que le Cockpit.
-   Avant : 7 conteneurs visuellement differents (3 systemes de rayon, 3 de
-   marge, une seule ombre sur 7 blocs) empiles dans l'ordre ou les
-   fonctionnalites avaient ete construites. L'ecran paraissait charge alors
-   qu'il ne fait qu'1,2 ecran : le probleme n'etait pas la longueur mais
-   l'absence de grammaire visuelle commune. */
-function _acGrp(id,titre,corps){
-  return '<section class="ac-grp" data-grp="'+id+'">'+
-    '<div class="ac-grp-h"><span class="ac-grp-t">'+titre+'</span></div>'+corps+'</section>';
-}
-/* REFONTE : des PUCES COMPACTES qui s'ouvrent au tap, au lieu de conteneurs
-   pleine largeur qui s'expliquent eux-memes.
-   Constat : 50 unites d'information, 130 mots, 7 blocs pleine largeur sur
-   1,4 ecran. Le probleme n'etait pas la quantite d'information mais le fait
-   que CHAQUE information reclamait un conteneur entier -- une banniere pleine
-   largeur pour dire qu'il fait chaud, une autre pour un lien vers le plan.
-   Reference explicite : l'accueil Strava, qui empile 3 stats dans une seule
-   ligne compacte plutot que 3 cartes.
-   Chaque puce porte l'essentiel (une icone, un chiffre) et ouvre le detail
-   complet au tap. Rien n'est perdu, tout est hierarchise. */
-/* Progression dans la prepa et bilan cumule : ce sont les seuls chiffres
-   qui disent "regarde ce que tu as construit". Ils etaient tout en bas de
-   l ecran, fragmentes en 8 morceaux minuscules. */
-var _DEB_=24,_FIN_=45;
-try{var _r0=RACES&&RACES[0];if(_r0&&_r0.semaine)_FIN_=_r0.semaine;}catch(e){}
-var _PCT_=Math.max(0,Math.min(100,Math.round((sc.num-_DEB_)/(_FIN_-_DEB_)*100)));
-var _NB_=0,_KM_=0,_SEMOK_=0;
-try{
-  var _vus={};
-  Object.keys(SEANCES_BY_WEEK).forEach(function(w){
-    var n=0;
-    (SEANCES_BY_WEEK[w]||[]).forEach(function(s){
-      var r=s.realise;
-      if(r&&(r.statut==="fait"||r.statut==="partiel")&&r.km){_NB_++;_KM_+=r.km;n++;}
-    });
-    if(n>0)_vus[w]=1;
-  });
-  _SEMOK_=Object.keys(_vus).length;
-}catch(e){}
-var _PR_=0,_DPLUS_=0;
-try{Object.keys(SEANCES_BY_WEEK).forEach(function(w){
-  (SEANCES_BY_WEEK[w]||[]).forEach(function(s){var r=s.realise;
-    if(r&&(r.statut==='fait'||r.statut==='partiel')){_PR_+=(r.pr||0);_DPLUS_+=(r.elevation_gain||0);}});
-});}catch(e){}
-var _BILAN_='<div class="abil"><div class="abil-i"><b>'+_NB_+'</b><span>sorties</span></div>'
-  +'<div class="abil-i"><b>'+Math.round(_KM_)+'</b><span>km</span></div>'
-  +'<div class="abil-i"><b>'+_SEMOK_+'</b><span>semaines</span></div></div>';
-/* Les 2 puces sont supprimees : "S32 / le plan" dupliquait le widget Prepa
-   juste dessous, et "marge / conseil" etait incomprehensible -- un mot isole
-   perd son sujet ("marge de quoi ?"). Le conseil du coach redevient une
-   PHRASE, sous la carte du jour : c'est le "quoi faire" qui manquait, et il
-   merite mieux qu'une pastille de 65 px. Modele des suggestions Siri. */
-var _conseil='';
-if(_nudge){
-  window._NUDGE_=_nudge;
-  /* L'acronyme brut (ACWR 0.55) n'a aucun sens sur un ecran d'accueil :
-     on garde la partie de phrase qui dit QUOI FAIRE, pas la metrique. */
-  var _parts=_nudge.txt.split(/\s+—\s+|\s+--\s+/);
-  var _court=(_parts[1]||_parts[0]).replace(/\s*\([^)]*\)/g,'').trim();
-  _court=_court.charAt(0).toUpperCase()+_court.slice(1);
-  if(_court.length>62)_court=_court.slice(0,60)+'…';
-  _conseil='<button class="ac-tip" onclick="_ouvrirNudge()">'
-    +'<span class="ac-tip-i">'+_nudge.icon+'</span>'
-    +'<span class="ac-tip-t">'+_court+'</span>'
-    +'<span class="ac-tip-a">›</span></button>';
-}
-var _SA_=(typeof SAISON2026!=='undefined')?SAISON2026:null,_rc0_=_COURSES_[0];
-document.getElementById('hero-plan').innerHTML='<div class="ac">'
-  +'<header class="ac-tete"><div class="ac-tete-l"><p class="ac-lb">Semaine '+sc.num+((PHASES||[]).filter(function(p){return p.id===sc.phase;})[0]?' · '+_acEsc(PHASES.filter(function(p){return p.id===sc.phase;})[0].nom):'')+'</p>'
-  +(_rc0_?'<span class="ac-puce or">'+_acEsc(_acCourtCourse(_rc0_))+' J-'+_rc0_.dn+'</span>':'')+'</div>'
-  +'<p class="ac-date">'+_acCap(_acJour(new Date(),true))+'</p></header>'
-  +'<section class="ac-carte ac-coach" id="ac-coach" aria-labelledby="ac-coach-h" hidden></section>'
-  +_acProchaine(_ps)
-  +'<div id="wdg-meteo-slot">'+_wMeteo()+'</div>'
-  +_acForme(_FORME_,_nudge)+_formeDetail
-  +_acSemaine(sc)
-  +_acCourses(_COURSES_,_PCT_,_NB_)
-  +_acAnnee(_SA_)+'</div>'
-  +'<div id="canicule-banner" style="display:none!important"></div>'
-  +'<div id="meteo-widget" class="meteo" style="display:none"><div class="meteo-loc">⏳</div></div>';
+  /* preparation : semaines ecoulees du plan jusqu'a la course cible ; sorties du plan = seances faites avec kilometrage */
+  var _DEB_=24,_FIN_=45;try{var _r0=RACES&&RACES[0];if(_r0&&_r0.semaine)_FIN_=_r0.semaine;}catch(e){}
+  var _PCT_=Math.max(0,Math.min(100,Math.round((sc.num-_DEB_)/(_FIN_-_DEB_)*100))),_NB_=0;
+  try{Object.keys(SEANCES_BY_WEEK).forEach(function(w){(SEANCES_BY_WEEK[w]||[]).forEach(function(s){var r=s.realise;if(r&&(r.statut==='fait'||r.statut==='partiel')&&r.km)_NB_++;});});}catch(e){}
+  var _SA_=(typeof SAISON2026!=='undefined')?SAISON2026:null,_rc0_=_COURSES_[0],_ph=(PHASES||[]).filter(function(p){return p.id===sc.phase;})[0];
+  document.getElementById('hero-plan').innerHTML='<div class="ac">'
+    +'<header class="ac-tete"><div class="ac-tete-l"><p class="ac-lb">Semaine '+sc.num+(_ph?' · '+_acEsc(_ph.nom):'')+'</p>'
+    +(_rc0_?'<span class="ac-puce or">'+_acEsc(_acCourtCourse(_rc0_))+' J-'+_rc0_.dn+'</span>':'')+'</div>'
+    +'<p class="ac-date">'+_acCap(_acJour(new Date(),true))+'</p></header>'
+    +'<section class="ac-carte ac-coach" id="ac-coach" aria-labelledby="ac-coach-h" hidden></section>'
+    +_acProchaine(_ps)
+    +'<div id="wdg-meteo-slot">'+_wMeteo()+'</div>'
+    +_acForme(_FORME_,_nudge)+_formeDetail
+    +_acSemaine(sc)
+    +_acCourses(_COURSES_,_PCT_,_NB_)
+    +_acAnnee(_SA_)+'</div>'
+    +'<div id="canicule-banner" style="display:none!important"></div>'
+    +'<div id="meteo-widget" class="meteo" style="display:none"><div class="meteo-loc"></div></div>';
   renderMeteo();
   try{if(typeof RS!=='undefined'&&RS&&RS.carte)RS.carte();}catch(e){console.warn('carte du coach',e);}
-  document.getElementById('maj-foot').innerHTML=_maj;
-   {const _ae=document.getElementById('accueil-annee');if(_ae)_ae.innerHTML='';}
+  document.getElementById('maj-foot').innerHTML=`<div class="vdj-maj">Données à jour au ${_latestDate}<button id="build-badge" onclick="openVersionPanel()">Build ${_latestBuild}</button></div>`;
+  {const _ae=document.getElementById('accueil-annee');if(_ae)_ae.innerHTML='';}
   const _ab=document.getElementById('appbar');if(_ab&&document.documentElement)document.documentElement.style.setProperty('--appbar-h',_ab.offsetHeight+'px');
   if(typeof _compte==='function'){
     /* Forme du jour : la jauge se remplit pendant que le chiffre compte, a la premiere apparition seulement */
@@ -1026,15 +914,15 @@ document.getElementById('hero-plan').innerHTML='<div class="ac">'
 /* ===== Widget météo (accueil) — Open-Meteo, lieu fixé Lyon quai des Bons Enfants ===== */
 const METEO_LAT=45.76,METEO_LON=4.83,METEO_TTL=30*60*1000;
 function _meteoEmoji(c){
-  if(c===0)return'☀️';
-  if(c===1||c===2)return'⛅';
-  if(c===3)return'☁️';
-  if(c===45||c===48)return'🌫️';
-  if(c>=51&&c<=57)return'🌦️';
-  if((c>=61&&c<=67)||(c>=80&&c<=82))return'🌧️';
-  if((c>=71&&c<=77)||c===85||c===86)return'🌨️';
-  if(c>=95)return'⛈️';
-  return'🌡️';
+  /* lot 5 : icônes météo au trait (plus d'emoji) */
+  var I={soleil:'<circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M4.6 4.6 6 6M18 18l1.4 1.4M2.5 12h2M19.5 12h2M4.6 19.4 6 18M18 6l1.4-1.4"/>',
+    eclaircie:'<path d="M8 3.5v1.2M3.6 8H2.4M4.8 4.8l.9.9M11.2 4.8l-.9.9"/><path d="M5.6 9.7a3.3 3.3 0 0 1 6-2.2"/><path d="M9 20h8.5a3.5 3.5 0 0 0 .3-7A5 5 0 0 0 8.2 14 3 3 0 0 0 9 20z"/>',
+    nuage:'<path d="M7 18h10a4 4 0 0 0 .4-8A6 6 0 0 0 6 11.6 3.3 3.3 0 0 0 7 18z"/>',brume:'<path d="M4 9h16M3 13h18M5 17h14"/>',
+    averse:'<path d="M7 14h10a4 4 0 0 0 .4-8A6 6 0 0 0 6 7.6 3.3 3.3 0 0 0 7 14z"/><path d="M9 17.5l-1 3M13 17.5l-1 3M17 17.5l-1 3"/>',
+    neige:'<path d="M7 14h10a4 4 0 0 0 .4-8A6 6 0 0 0 6 7.6 3.3 3.3 0 0 0 7 14z"/><path d="M9 18h.01M13 20h.01M17 18h.01"/>',
+    orage:'<path d="M7 14h10a4 4 0 0 0 .4-8A6 6 0 0 0 6 7.6 3.3 3.3 0 0 0 7 14z"/><path d="m12 15-2 4h4l-2 3"/>',temp:'<path d="M12 4v10"/><circle cx="12" cy="17.5" r="3.2"/>'};
+  var n=c===0?'soleil':(c===1||c===2)?'eclaircie':c===3?'nuage':(c===45||c===48)?'brume':(c>=51&&c<=67)||(c>=80&&c<=82)?'averse':(c>=71&&c<=77)||c===85||c===86?'neige':c>=95?'orage':'temp';
+  return '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+I[n]+'</svg>';
 }
 function _meteoPaint(d){
   const el=document.getElementById('meteo-widget');if(!el)return;
@@ -1055,11 +943,11 @@ function _meteoPaint(d){
   const tmaxOk=d.tomorrow_max!==undefined&&!isNaN(d.tomorrow_max);
   const demainHtml=tmaxOk?
     '<div class="meteo-demain">Demain&nbsp;&nbsp;<span class="meteo-demain-t">'+d.tomorrow_max+'°</span>'+
-    (d.tomorrow_max>33?'&nbsp;<span class="meteo-badge canicule">⚠️ Canicule</span>':d.tomorrow_max>28?'&nbsp;<span class="meteo-badge chaud">🌡️ Chaud</span>':'')+'</div>':'';
+    (d.tomorrow_max>33?'&nbsp;<span class="meteo-badge canicule">Canicule</span>':d.tomorrow_max>28?'&nbsp;<span class="meteo-badge chaud">Chaud</span>':'')+'</div>':'';
   const showChip=Math.round(t)>28||(tmaxOk&&d.tomorrow_max>28);
   const chipHtml=showChip?
     '<div class="wx-chip" onclick="openCreneaux()">'+
-      '<span class="wx-chip-ico">🌡️</span>'+
+      '<span class="wx-chip-ico" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v10"/><circle cx="12" cy="17.5" r="3.2"/><path d="M15.5 6H18M15.5 9.5H18"/></svg></span>'+
       '<div class="wx-chip-body"><div class="wx-chip-title">Créneaux d\'entraînement</div><div class="wx-chip-sub">Meilleures heures aujourd\'hui et demain</div></div>'+
       '<span class="wx-chip-arr">›</span></div>':'';
   el.innerHTML=
@@ -1067,8 +955,8 @@ function _meteoPaint(d){
       '<span class="meteo-ico">'+_meteoEmoji(d.code)+'</span>'+
       '<span class="meteo-temp">'+tempStr+'</span>'+
       '<span class="meteo-metrics">'+
-        '<span class="meteo-m">💨 '+Math.round(d.wind)+' km/h</span>'+
-        '<span class="meteo-m">🌧️ '+precipStr+'</span>'+
+        '<span class="meteo-m">vent '+Math.round(d.wind)+' km/h</span>'+
+        '<span class="meteo-m">pluie '+precipStr+'</span>'+
       '</span>'+
     '</div>'+demainHtml+chipHtml;
   if(d.hourly_today||d.hourly_tomorrow)window._wxHourly={today:d.hourly_today||[],tomorrow:d.hourly_tomorrow||[]};
@@ -1091,7 +979,7 @@ function _meteoPaint(d){
        quand la seance est aujourd'hui. */
     var _qd=(typeof _psGlobalDiff!=='undefined'&&_psGlobalDiff===0)?'':' demain';
     var _adj=T<26?10:T<30?20:T<34?30:40;
-    if(T>=26){depEl.innerHTML='🌡️ '+T+'° · <strong>avant 8h30</strong> · <strong>+'+_adj+'s/km</strong>';depEl.style.display='block';}
+    if(T>=26){depEl.innerHTML=''+T+'° · <strong>avant 8h30</strong> · <strong>+'+_adj+'s/km</strong>';depEl.style.display='block';}
     else{depEl.style.display='none';}
   }
 }
@@ -1125,39 +1013,6 @@ var _JALONS=[
   {km:575,nom:'Munich'},{km:749,nom:'Rome'},{km:912,nom:'Madrid'},{km:975,nom:'Berlin'},{km:1388,nom:'Lisbonne'},
   {km:1781,nom:'Ath\u00e8nes'},{km:2013,nom:'Istanbul'},{km:2075,nom:'Helsinki'},{km:2528,nom:'Moscou'},{km:2624,nom:'Reykjavik'},{km:2879,nom:'Le Caire'}
 ];
-function _wCapital(nb,km,sem,pr,dplus){
-  var atteints=_JALONS.filter(function(j){return km>=j.km;});
-  var suivant=_JALONS.filter(function(j){return km<j.km;})[0];
-  var dernier=atteints.length?atteints[atteints.length-1]:null;
-  var recit='';
-  if(dernier){
-    var corps=dernier.cible
-      ? 'Tu as d\u00e9j\u00e0 couru la distance <strong>Lyon \u2192 Nice</strong>'
-      : (dernier.ar
-         ? 'Tu as couru <strong>Lyon \u2192 Nice aller-retour</strong>'
-         : 'Tu as parcouru la distance <strong>Lyon \u2192 '+dernier.nom+'</strong>');
-    recit='<div class="cap-recit"><span class="cap-recit-i">\u{1F5FA}\uFE0F</span>'
-      +'<span>'+corps
-      +(suivant?'. Plus que <strong>'+Math.round(suivant.km-km)+' km</strong> pour '+(suivant.ar?'l\u2019aller-retour Lyon \u2192 Nice':'Lyon \u2192 '+suivant.nom)+'.':'.')
-      +'</span></div>';
-  }else if(suivant){
-    recit='<div class="cap-recit"><span class="cap-recit-i">\u{1F5FA}\uFE0F</span>'
-      +'<span>Encore <strong>'+Math.round(suivant.km-km)+' km</strong> pour atteindre Lyon \u2192 '+suivant.nom+'</span></div>';
-  }
-  var everest=Math.round(dplus/8849*100);
-  var evTxt=dplus>=8849?'<strong>'+(dplus/8849).toFixed(1).replace('.',',')+' fois</strong> l\u2019Everest grimp\u00e9 depuis le 1er janvier'
-                       :'<strong>'+everest+' %</strong> de l\u2019Everest grimp\u00e9s depuis le 1er janvier';
-  return '<div class="wdg wdg-cap">'
-    +'<div class="cap-h">Ton capital</div>'
-    +'<div class="cap-grid">'
-    +'<div class="cap-c"><b>'+Math.round(km)+'</b><span>km en 2026</span></div>'
-    +'<button class="cap-c cap-c-btn" onclick="event.stopPropagation();_ouvrirRecords()"><b>'+pr+'</b><span>records \u203a</span></button>'
-    +'<div class="cap-c"><b>'+sem+'</b><span>sorties</span></div>'
-    +'</div>'+recit
-    +(everest>=10?'<div class="cap-recit cap-recit-2"><span class="cap-recit-i">\u26F0\uFE0F</span>'
-      +'<span>'+evTxt+'</span></div>':'')
-    +'</div>';
-}
 function _wMeteo(){
   /* lot 5 : carte blanche, icones au trait ; creneaux = les heures les plus fraiches de la journee restante */
   var d=null;try{d=JSON.parse(localStorage.getItem('meteo_cache')||'null');}catch(e){}
@@ -1181,22 +1036,6 @@ function _wMeteo(){
     +(alerte?'<span class="ac-meteo-al">'+alerte+'</span>':'')
     +(cre?'<span class="ac-sep"></span><span class="ac-heures">'+cre+'</span>':'')
     +'</button>';
-}
-function _wPrepa(courses,pct,nb,km,sem,semNum){
-  var c0=courses[0];
-  var barres=courses.slice(0,2).map(function(r){
-    var nom=/nice/i.test(r.nom)?'Marathon de Nice':(/saintex/i.test(r.nom)?'SaintExpress':r.nom);
-    return '<button class="wdg-race"'+(r.dossier?' onclick="event.stopPropagation();ouvrirDossier(\''+r.dossier+'\')"':'')
-      +'><span class="wdg-race-j">J-<span class="cnt">'+r.dn+'</span></span><span class="wdg-race-n">'+nom+'</span>'
-      +'<span class="wdg-race-a">›</span></button>';}).join('');
-  return '<div class="wdg wdg-prepa">'
-    +'<div class="wdg-top"><div><div class="wdg-lbl">Semaine '+semNum+'</div>'
-    +'<div class="wdg-big">'+pct+'<span class="wdg-pct">%</span></div>'
-    +'<div class="wdg-sub">du plan \u00b7 S24 \u2192 Nice</div></div>'
-    +'<div class="wdg-st wdg-st-solo"><b>'+nb+'</b><span>sorties du plan</span></div></div>'
-    +'<div class="wdg-path">'+'<div class="wdg-path-bar"><div class="wdg-path-f" style="width:'+pct+'%"></div>'+'<div class="wdg-path-dot" style="left:'+pct+'%"></div></div>'+'<div class="wdg-path-lbl"><span>S24 \u00b7 d\u00e9but</span><span>🏁 Nice</span></div>'+'</div>'
-    +'<div class="wdg-sep"></div>'+barres
-    +'</div>';
 }
 /* ===== FEUILLE DES RECORDS =====
    Le chiffre "127 records" etait affiche sans etre cliquable : impressionnant
@@ -1228,7 +1067,7 @@ function _ouvrirRecords(){
     return '<div class="rec-row"><span class="rec-row-n">'+x.pr+'</span>'
       +'<span class="rec-row-t"><b>'+(x.t||'').slice(0,34)+'</b><i>'+dt
       +(x.km?' \u00b7 '+x.km+' km':'')+(x.al?' \u00b7 '+x.al:'')+'</i></span></div>';}).join('');
-  topbar.innerHTML='<span></span><button class="btn-fermer" onclick="fermer()" aria-label="Fermer">\u2715</button>';
+  topbar.innerHTML='<span></span><button class="btn-fermer" onclick="fermer()" aria-label="Fermer">✕</button>';
   contenu.innerHTML='<div class="fiche-pad rec-wrap">'
     +'<div class="rec-hero"><div class="rec-hero-n">'+total+'</div><svg class="cel-trait cel-trait-rec" id="rec-burst" viewBox="0 0 120 8" aria-hidden="true"><path d="M3 5.5C40 1.5 80 1.5 117 5.5" pathLength="1"/></svg>'
     +'<div class="rec-hero-l">records personnels</div>'
@@ -1247,7 +1086,7 @@ function _recBurst(){
 }
 function _ouvrirNudge(){
   var n=window._NUDGE_;if(!n)return;
-  topbar.innerHTML='<span></span><button class="btn-fermer" onclick="fermer()" aria-label="Fermer">\u2715</button>';
+  topbar.innerHTML='<span></span><button class="btn-fermer" onclick="fermer()" aria-label="Fermer">✕</button>';
   contenu.innerHTML='<div class="fiche-pad"><h2 class="fiche-h2">'+n.icon+' Conseil du jour</h2>'
     +'<p style="font-size:15px;line-height:1.6;color:var(--texte-deux);margin:0 0 18px">'+n.txt+'</p>'
     +'</div>';
@@ -1256,7 +1095,7 @@ function _ouvrirNudge(){
 function _ouvrirMeteo(){
   var src=document.getElementById("meteo-widget");
   var html=(src&&src.innerHTML.length>40)?src.innerHTML:"<p style=\"font-size:13px;color:var(--texte-deux)\">M\u00e9t\u00e9o en cours de chargement\u2026</p>";
-  topbar.innerHTML='<span></span><button class="btn-fermer" onclick="fermer()" aria-label="Fermer">\u2715</button>';
+  topbar.innerHTML='<span></span><button class="btn-fermer" onclick="fermer()" aria-label="Fermer">✕</button>';
   contenu.innerHTML='<div class="fiche-pad"><h2 class="fiche-h2">M\u00e9t\u00e9o \u00e0 Lyon</h2><div class="meteo meteo-sheet">'+html+'</div></div>';
   ouvrir();
 }
@@ -1384,7 +1223,7 @@ function hmStats(){
   let best=0,cur=0,prev=null;
   days.forEach(iso=>{const d=new Date(iso+'T00:00:00');if(prev&&Math.round((d-prev)/86400000)===1)cur++;else cur=1;if(cur>best)best=cur;prev=d;});
   const totalKm=(typeof SAISON2026!=='undefined'&&SAISON2026.km!=null)?SAISON2026.km:Object.values(HEATMAP).reduce((a,b)=>a+b,0); /* source unique : SAISON2026.km */
-  return '🔥 Plus longue série : <strong>'+best+' jours</strong> · <strong>'+days.length+'</strong> jours courus · <strong>'+Math.round(totalKm)+' km</strong> en 2026';
+  return 'Plus longue série : <strong>'+best+' jours</strong> · <strong>'+days.length+'</strong> jours courus · <strong>'+Math.round(totalKm)+' km</strong> en 2026';
 }
 function renderHeatmap(){
   const year=2026, jan1=new Date(year,0,1);
@@ -1430,30 +1269,30 @@ function renderTrophees(){
   const t=dashTotals();
   const fmt=n=>Math.round(n).toLocaleString('fr-FR');
   const B=[
-   {i:'🏃',n:'1 000 km',d:t.km>=1000,s:fmt(t.km)+' km'},
-   {i:'⛰️',n:'10 000 m D+',d:t.dplus>=10000,s:fmt(t.dplus)+' m'},
-   {i:'🥾',n:'Premier 30 km',d:t.longest>=30,s:Math.round(t.longest)+' km max'},
-   {i:'🔥',n:'Série 7 jours',d:t.streak>=7,s:t.streak+" jours d'affilée"},
-   {i:'💯',n:'100 jours courus',d:t.active>=100,s:t.active+' jours'},
-   {i:'🏁',n:'Marathon bouclé',d:t.longest>=42,s:'MaraTrail'},
-   {i:'🎯',n:'Marathon < 3h45',d:false,s:'Nice · 8 nov'},
-   {i:'🌙',n:'Trail de nuit',d:false,s:'SaintExpress · 28 nov'}
+   {i:'course',n:'1 000 km',d:t.km>=1000,s:fmt(t.km)+' km'},
+   {i:'trail',n:'10 000 m D+',d:t.dplus>=10000,s:fmt(t.dplus)+' m'},
+   {i:'chaussure',n:'Premier 30 km',d:t.longest>=30,s:Math.round(t.longest)+' km max'},
+   {i:'serie',n:'Série 7 jours',d:t.streak>=7,s:t.streak+" jours d'affilée"},
+   {i:'chrono',n:'100 jours courus',d:t.active>=100,s:t.active+' jours'},
+   {i:'drapeau',n:'Marathon bouclé',d:t.longest>=42,s:'MaraTrail'},
+   {i:'medaille',n:'Marathon < 3h45',d:false,s:'Nice · 8 nov'},
+   {i:'trail',n:'Trail de nuit',d:false,s:'SaintExpress · 28 nov'}
   ];
-  const cards=B.map(b=>'<div class="tr-badge'+(b.d?' tr-on':'')+'"><div class="tr-i">'+b.i+'</div><div class="tr-n">'+b.n+'</div><div class="tr-s">'+b.s+'</div>'+(b.d?'<div class="tr-chk">✓</div>':'<div class="tr-lock">🔒</div>')+'</div>').join('');
+  const cards=B.map(b=>'<div class="tr-badge'+(b.d?' tr-on':'')+'"><div class="tr-i" aria-hidden="true">'+(b.i==='chaussure'?_acIco('chaussure',26):_wrIco(b.i).replace('width="40" height="40"','width="26" height="26"'))+'</div><div class="tr-n">'+b.n+'</div><div class="tr-s">'+b.s+'</div>'+(b.d?'<div class="tr-chk">✓</div>':'<div class="tr-lock" aria-label="À venir"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div>')+'</div>').join('');
   const maras=t.km/42.195, mb=t.dplus/4807, ev=t.dplus/8849;
-  const meta='📏 <strong>'+fmt(t.km)+' km</strong> en 2026, soit <strong>'+maras.toFixed(0)+' marathons</strong> enchaînés.<br>⛰️ <strong>'+fmt(t.dplus)+' m</strong> de D+, soit <strong>'+mb.toFixed(1)+'× le Mont Blanc</strong> gravi ('+ev.toFixed(1)+"× l'Everest depuis la mer).";
+  const meta='<strong>'+fmt(t.km)+' km</strong> en 2026, soit <strong>'+maras.toFixed(0)+' marathons</strong> enchaînés.<br><strong>'+fmt(t.dplus)+' m</strong> de D+, soit <strong>'+mb.toFixed(1)+'× le Mont Blanc</strong> gravi ('+ev.toFixed(1)+"× l'Everest depuis la mer).";
   return '<div class="tr-grid">'+cards+'</div><div class="tr-meta">'+meta+'</div>';
 }
 
 /* ===== Item 2 — Navigation dashboard (sections repliables + sous-nav collante) ===== */
 const DASH_GROUPS=[
-  {id:'cal',ic:'📅',t:"Aujourd'hui & calendrier"},
-  {id:'coach',ic:'🧠',t:'Analyse du coach'},
-  {id:'annee',ic:'🔥',t:'Année & trophées'},
-  {id:'saison',ic:'📊',t:'2026 en chiffres'},
-  {id:'charge',ic:'❤️',t:'Charge & physiologie'},
-  {id:'perf',ic:'🏆',t:'Performances & objectifs'},
-  {id:'profil',ic:'⛰️',t:'Profil & matériel'},
+  {id:'cal',ic:'',t:"Aujourd'hui & calendrier"},
+  {id:'coach',ic:'',t:'Analyse du coach'},
+  {id:'annee',ic:'',t:'Année & trophées'},
+  {id:'saison',ic:'',t:'2026 en chiffres'},
+  {id:'charge',ic:'',t:'Charge & physiologie'},
+  {id:'perf',ic:'',t:'Performances & objectifs'},
+  {id:'profil',ic:'',t:'Profil & matériel'},
 ];
 function dashGrpOpen(id){try{const v=localStorage.getItem('dash_grp_'+id);if(v===null)return id==='cal';return v==='1';}catch(e){return id==='cal';}}
 function dashNav(){return `<div class="dash-nav" id="dash-nav">${DASH_GROUPS.map(g=>`<button class="dnav-chip" data-g="${g.id}" onclick="dashJump('${g.id}')">${g.t}</button>`).join('')}</div>`;}
@@ -1540,16 +1379,16 @@ function renderCrystalBall(){
     :`<strong style="color:var(--warn)">+${ahMin} min</strong> au-dessus de 3h45`;
   const deltaShort=ahead>=0?`${ahMin} min d'avance sur l'objectif 3h45`:`${ahMin} min au-dessus de 3h45 — le bloc va combler l'écart`;
   let clarte;
-  if(P.n===0)clarte=`<div class="cb-clarte">🌫️ <strong>Boule encore voilée.</strong> La projection part de ta forme actuelle (${PROJ.base_label}). Elle s'affinera à chaque séance qualité loguée — le <strong>test 10 km de la S31</strong> sera le premier gros recalibrage, puis chaque seuil et chaque séance d'allure marathon.</div>`;
-  else clarte=`<div class="cb-clarte">🔮 <strong>${P.n} séance${P.n>1?'s':''} qualité intégrée${P.n>1?'s':''}.</strong> Plus tu logues de qualité, plus la projection se précise.</div>`;
+  if(P.n===0)clarte=`<div class="cb-clarte"><strong>Boule encore voilée.</strong> La projection part de ta forme actuelle (${PROJ.base_label}). Elle s'affinera à chaque séance qualité loguée — le <strong>test 10 km de la S31</strong> sera le premier gros recalibrage, puis chaque seuil et chaque séance d'allure marathon.</div>`;
+  else clarte=`<div class="cb-clarte"><strong>${P.n} séance${P.n>1?'s':''} qualité intégrée${P.n>1?'s':''}.</strong> Plus tu logues de qualité, plus la projection se précise.</div>`;
   const sources=P.n?`<div class="cb-src"><div class="cb-src-t">Ce qui nourrit la projection</div>${P.sources.map(s=>`<div class="cb-src-l"><span>${s.label}${s.sub?` · ${s.sub}`:''}</span><span class="cb-src-v">${_s2hm(s.sec)}</span></div>`).join('')}<div class="cb-src-l cb-src-base"><span>Forme de départ (référence)</span><span class="cb-src-v">${_s2hm(PROJ.base)}</span></div></div>`:'';
   const trend=P.trend.length>=2?`<div class="cb-trend"><div class="cb-src-t">Affinage de la projection séance après séance</div>${chartLine(P.trend.map(v=>v/60),{color:'#F4561D',h:120,fmtY:v=>_s2hm(v*60),baseline:goal/60,annotate:true})}</div>`:'';
   return `<div class="kpi cb">
-    <div class="cb-head"><span class="cb-orb">🔮</span><div><div class="kpi-t" style="margin:0">Projection marathon — boule de cristal</div><div class="kpi-r" style="margin:2px 0 0">Temps projeté sur Nice, recalculé à chaque séance qualité loguée.</div></div></div>
+    <div class="cb-head"><span class="cb-orb"></span><div><div class="kpi-t" style="margin:0">Projection marathon — boule de cristal</div><div class="kpi-r" style="margin:2px 0 0">Temps projeté sur Nice, recalculé à chaque séance qualité loguée.</div></div></div>
     <div class="cb-big"><div class="cb-time">${_s2hm(P.sec)}</div><div class="cb-delta">${deltaTxt}</div></div>
     <div class="cb-gauge">
       <div class="cb-bar"><div class="cb-fill" style="width:${pos}%"></div>
-        <div class="cb-goal" style="left:${goalPos}%"><span>🎯 3h45</span></div>
+        <div class="cb-goal" style="left:${goalPos}%"><span>3h45</span></div>
         <div class="cb-needle" style="left:${pos}%"><span>${_s2hm(P.sec)}</span></div></div>
       <div class="cb-scale"><span>3h30</span><span>4h00</span></div>
     </div>
@@ -1744,9 +1583,17 @@ let _scrollLockY=0;
 let _viderTimer=null;
 const overlay=document.getElementById('overlay'),boite=document.getElementById('boite'),topbar=document.getElementById('topbar'),contenu=document.getElementById('contenu');
 let segActif=null;
-function ouvrir(){if(_viderTimer){clearTimeout(_viderTimer);_viderTimer=null;}var _dejaOuv=overlay.classList.contains('ouverte');overlay.classList.add('ouverte');if(!_dejaOuv)_scrollLockY=window.scrollY||document.documentElement.scrollTop||0;document.documentElement.style.overflow='hidden';document.body.style.overflow='hidden';document.body.style.position='fixed';document.body.style.top=(-_scrollLockY)+'px';document.body.style.left='0';document.body.style.right='0';overlay.scrollTop=0;boite.scrollTop=0;}
-function fermer(){if(typeof _bbHold==='function')_bbHold(600);if(typeof ttsStop==='function')ttsStop();overlay.classList.remove('ouverte');document.documentElement.style.overflow='';document.body.style.overflow='';document.body.style.position='';document.body.style.top='';document.body.style.left='';document.body.style.right='';window.scrollTo(0,_scrollLockY||0);if(_viderTimer)clearTimeout(_viderTimer);_viderTimer=setTimeout(()=>{contenu.innerHTML='';topbar.innerHTML='';_viderTimer=null;},300);}
+function ouvrir(){if(_viderTimer){clearTimeout(_viderTimer);_viderTimer=null;}var _dejaOuv=overlay.classList.contains('ouverte');_ovDialogue(true,_dejaOuv);overlay.classList.add('ouverte');if(!_dejaOuv)_scrollLockY=window.scrollY||document.documentElement.scrollTop||0;document.documentElement.style.overflow='hidden';document.body.style.overflow='hidden';document.body.style.position='fixed';document.body.style.top=(-_scrollLockY)+'px';document.body.style.left='0';document.body.style.right='0';overlay.scrollTop=0;boite.scrollTop=0;}
+function fermer(){_ovDialogue(false);if(typeof closeCkHelp==='function')closeCkHelp();if(typeof _bbHold==='function')_bbHold(600);if(typeof ttsStop==='function')ttsStop();overlay.classList.remove('ouverte');document.documentElement.style.overflow='';document.body.style.overflow='';document.body.style.position='';document.body.style.top='';document.body.style.left='';document.body.style.right='';window.scrollTo(0,_scrollLockY||0);if(_viderTimer)clearTimeout(_viderTimer);_viderTimer=setTimeout(()=>{contenu.innerHTML='';topbar.innerHTML='';_viderTimer=null;},300);}
 overlay.addEventListener('click',e=>{if(e.target===overlay)fermerAnime()});
+var _ovRetour=null;
+function _ovDialogue(on,deja){try{
+  var m=document.getElementById('main'),b=document.getElementById('botbar');
+  overlay.setAttribute('role','dialog');overlay.setAttribute('aria-modal','true');
+  if(on){if(!deja)_ovRetour=document.activeElement;if(m)m.inert=true;if(b)b.inert=true;
+    setTimeout(function(){var f=document.querySelector('#topbar button');if(f&&overlay.classList.contains('ouverte'))f.focus({preventScroll:true});},0);}
+  else{if(m)m.inert=false;if(b)b.inert=false;var r=_ovRetour;_ovRetour=null;if(r&&r.isConnected&&typeof r.focus==='function')r.focus({preventScroll:true});}
+}catch(e){}}
 (function(){const to=document.getElementById('theoOverlay');if(to)to.addEventListener('click',e=>{if(e.target===to)closeTheory();});})();
 document.addEventListener('keydown',e=>{if(e.key!=='Escape')return;
   // Ferme l'overlay actuellement ouvert (priorité au plus au-dessus)
@@ -1754,6 +1601,8 @@ document.addEventListener('keydown',e=>{if(e.key!=='Escape')return;
   if(wr){_wrappedClose();return;}
   var rp=document.getElementById('replay-ov');
   if(rp){_replayClose();return;}
+  var rwo=document.getElementById('rwoverlay');
+  if(rwo&&rwo.classList.contains('on')){if(typeof rwClose==='function')rwClose();return;}
   var help=document.getElementById('ck-help-ov');
   if(help&&help.classList.contains('open')){if(typeof closeCkHelp==='function')closeCkHelp();return;}
   var ver=document.getElementById('version-ov');
@@ -1786,7 +1635,7 @@ function rwRender(){const r=rwCur;if(!r)return;const s=r.slides[rwIdx];
   /* lot 5 : Rewind de semaine sur fond blanc, comme le Rewind de séance (le fond de chaque image est ignoré) */
   const prog=r.slides.map((_,i)=>`<div class="rw-seg ${i<=rwIdx?'done':''}"></div>`).join('');
   const card=document.getElementById('rwcard');card.style.background='';
-  card.innerHTML=`<div class="rw-prog" aria-hidden="true">${prog}</div><button class="rw-close" aria-label="Fermer le Rewind" onclick="event.stopPropagation();rwClose()">\u2715</button>
+  card.innerHTML=`<div class="rw-prog" aria-hidden="true">${prog}</div><button class="rw-close" aria-label="Fermer le Rewind" onclick="event.stopPropagation();rwClose()">✕</button>
     <div class="rw-kicker">${_sansEmoji(s.kicker)}</div><div class="rw-big">${_sansEmoji(s.big)}</div><div class="rw-txt">${s.txt}</div>
     <div class="rw-hint">Touche pour continuer · ${rwIdx+1}/${r.slides.length}</div>`;}
 function rwOpen(id){rwCur=REWINDS.find(x=>x.id===id);if(!rwCur||!rwCur.slides)return;rwIdx=0;document.getElementById('rwoverlay').classList.add('on');document.body.style.overflow='hidden';rwRender();
@@ -1816,45 +1665,45 @@ function dosProfilSVG(D,ac){
 }
 /* ===== Checklist J-7 par course ===== */
 const CK_SECS={deraille:[
-  {id:'equip',ico:'🎒',title:'Équipement',items:[
+  {id:'equip',ico:'',title:'Équipement',items:[
     {id:'dossard',label:'Dossard récupéré',note:'À retirer sur place le matin dès 7h30'},
     {id:'gilet',label:'Gilet HDV5 préparé',note:'Flasques 2×500ml · sifflet · couverture de survie obligatoire'},
     {id:'cascadia',label:'Cascadia 19 vérifiées',note:'Lacets · semelles · pas de nouveauté le jour J'},
     {id:'tenue',label:'Tenue de course posée',note:'Short · t-shirt technique · casquette · crème solaire'},
     {id:'garmin',label:'Garmin chargé + contact urgence',note:'Fenix 6 Pro · ceinture cardiaque Decathlon chargée'}
   ]},
-  {id:'nutrition',ico:'⚡',title:'Nutrition & hydratation',items:[
+  {id:'nutrition',ico:'',title:'Nutrition & hydratation',items:[
     {id:'ta_tube',label:'TA Electrolytes — tube complet',note:'Min. 6 cpr · 2 départ + 1 ravito km 8 + 1 après'},
     {id:'gels_apto',label:'2 gels non-caféinés Aptonia',note:'Km 0 dans gilet + km 8 ravito ou gilet'},
     {id:'cherry',label:'1 Nduranz Cherry 65mg',note:'Km 13-14 — pic d\'effort montée finale'},
     {id:'amarena',label:'1 Nduranz Coffee Amarena 130mg',note:'Km 20-21 — relance pour la descente finale'},
     {id:'ptidej',label:'Petit-déjeuner J-0 planifié',note:'Pâtes la veille · toast + œuf le matin · 1 cpr TA 1h avant'}
   ]},
-  {id:'logistique',ico:'🗺️',title:'Logistique',items:[
+  {id:'logistique',ico:'',title:'Logistique',items:[
     {id:'transport',label:'Transport organisé',note:'Lac des Sapins — Valsonne 69170 · ~1h de Lyon'},
     {id:'horaire',label:'Heure de départ vague connue',note:'Consulter site officiel · départ prévu ~9h'},
     {id:'ravitos',label:'Ravitos repérés',note:'2 ravitos sur le parcours · km ~8 et ~15'},
     {id:'dropbag',label:'Sac de récupération préparé',note:'Vêtements chauds · chaussures · snack post-course'}
   ]},
-  {id:'technique',ico:'🧠',title:'Stratégie de course',items:[
+  {id:'technique',ico:'',title:'Stratégie de course',items:[
     {id:'plan_relu',label:'Plan d\'exécution relu',note:'4 étapes · montée progressive · pas de départ trop vite'},
     {id:'allures',label:'Allures cibles mémorisées',note:'~9:30/km montée · flotter en descente · FC max 165'},
     {id:'electro',label:'Protocole électrolytes mémorisé',note:'2 cpr départ + 1 cpr ravito km 8 · toujours avec eau'},
     {id:'cafeine',label:'Protocole caféine mémorisé',note:'Cherry km 13 · Amarena km 20 · pas avant'}
   ]},
-  {id:'recup',ico:'🛌',title:'Récupération J+0',items:[
+  {id:'recup',ico:'',title:'Récupération J+0',items:[
     {id:'ta_apres',label:'1 cpr TA immédiatement à l\'arrivée',note:'Dans la poche short · ne pas oublier même euphorique'},
     {id:'vetements',label:'Vêtements chauds accessibles',note:'Le corps refroidit vite après l\'arrivée en altitude'}
   ]}
 ],nice:[
-  {id:'equip',ico:'🎽',title:'Équipement',items:[
+  {id:'equip',ico:'',title:'Équipement',items:[
     {id:'dossard',label:'Dossard / billet TER récupéré',note:'Le dossard vaut billet de train Nice · vérifier horaire'},
     {id:'novablast',label:'Novablast 5 V (vertes) prêtes',note:'Chaussures de course fraîches · vérifier lacets et semelles'},
     {id:'tenue',label:'Tenue marathon posée',note:'Short · t-shirt · manchons si froid matinal · casquette'},
     {id:'garmin',label:'Garmin + ceinture chargés',note:'Profil marathon configuré · contact urgence · playlist'},
     {id:'gels_kit',label:'Kit nutrition du matin préparé',note:'TA + gels dans poche accessible dès le départ'}
   ]},
-  {id:'nutrition',ico:'⚡',title:'Nutrition J-0',items:[
+  {id:'nutrition',ico:'',title:'Nutrition J-0',items:[
     {id:'ta_réveil',label:'2 cpr TA au réveil (5h)',note:'Avec grand verre d\'eau · avant le petit-déjeuner'},
     {id:'ptidej',label:'Petit-déjeuner 3h avant départ',note:'Toast + banane + café · rien de nouveau · connu et testé'},
     {id:'gel0',label:'1 gel Aptonia 15min avant le départ',note:'Dans les starting blocks · déclenche les réserves'},
@@ -1862,24 +1711,24 @@ const CK_SECS={deraille:[
     {id:'cherry',label:'Nduranz Cherry km 32',note:'Anti-mur · NE PAS OUBLIER · 65mg caféine'},
     {id:'amarena',label:'Nduranz Coffee Amarena km 38',note:'Relance finale · 130mg caféine · tout lâcher ensuite'}
   ]},
-  {id:'logistique',ico:'🚂',title:'Logistique',items:[
+  {id:'logistique',ico:'',title:'Logistique',items:[
     {id:'ter',label:'Billet TER Nice confirmé',note:'Dossard = billet · horaire aller + retour validé'},
     {id:'hébergement',label:'Hébergement J-1 confirmé',note:'Arriver la veille · pâtes le soir · calme garanti'},
     {id:'expo',label:'Retrait dossard planifié',note:'Horaires expo à vérifier · dossard physique si nécessaire'},
     {id:'vague',label:'Numéro de vague connu',note:'Vague 3h30-3h59 · arriver 45min avant le départ'}
   ]},
-  {id:'stratégie',ico:'🧠',title:'Stratégie de course',items:[
+  {id:'stratégie',ico:'',title:'Stratégie de course',items:[
     {id:'allure',label:'5:20/km mémorisé = objectif 3h45',note:'Ne pas partir à 5:10 · les 5 premiers km sont toujours trop rapides'},
     {id:'antibes',label:'Segment Antibes km 25-28 anticipé',note:'+35m D+ · ralentir à 5:30 · FC < 162 · ne pas paniquer'},
     {id:'mur',label:'Plan anti-mur km 30-35 validé',note:'Cherry km 32 · penser technique · rester régulier'},
     {id:'finish',label:'Relance km 38-42 mentalisée',note:'Amarena km 38 · si bien géré → donner le reste'}
   ]},
-  {id:'recup',ico:'🛌',title:'Récupération',items:[
+  {id:'recup',ico:'',title:'Récupération',items:[
     {id:'ta_arrivée',label:'1 cpr TA à l\'arrivée',note:'Dans la poche · avant même la médaille'},
     {id:'vêtements',label:'Vêtements chauds dans sac remis',note:'Le corps chute vite après l\'effort · couche chaude immédiate'}
   ]}
 ],saintexpress:[
-  {id:'equip',ico:'🌙',title:'Équipement nuit',items:[
+  {id:'equip',ico:'',title:'Équipement nuit',items:[
     {id:'dossard',label:'Dossard récupéré',note:'Retrait sur site Sainte-Catherine · vérifier horaire'},
     {id:'frontale1',label:'Frontale principale chargée',note:'Obligatoire · ≥ 200 lumens · batterie 100%'},
     {id:'frontale2',label:'Frontale de secours',note:'Obligatoire · vérification batterie indépendante'},
@@ -1887,24 +1736,24 @@ const CK_SECS={deraille:[
     {id:'cascadia',label:'Cascadia 19 (trail technique)',note:'Km 0-27 inconnu · trail technique nocturne'},
     {id:'tenue_nuit',label:'Tenue nuit (0-5°C au départ)',note:'Départ 23h à 757m · manches longues + coupe-vent + gants'}
   ]},
-  {id:'nutrition',ico:'⚡',title:'Nutrition (5h30–7h)',items:[
+  {id:'nutrition',ico:'',title:'Nutrition (5h30–7h)',items:[
     {id:'ta_gilet',label:'TA Electrolytes dans le gilet',note:'6+ cpr · TA partenaire officiel → aussi aux ravitos'},
     {id:'gels_nuit',label:'2-3 gels Aptonia',note:'Non-caféinés · km ~5 et km ~15'},
     {id:'cherry',label:'Nduranz Cherry km ~27 (Soucieu)',note:'~1h30 du matin · début terrain connu · 65mg caféine'},
     {id:'amarena',label:'Nduranz Coffee Amarena km ~38',note:'Avant les aqueducs · dernier effort technique · 130mg'}
   ]},
-  {id:'logistique',ico:'🗺️',title:'Logistique nuit',items:[
+  {id:'logistique',ico:'',title:'Logistique nuit',items:[
     {id:'transport',label:'Transport Sainte-Catherine organisé',note:'757m · ~1h de Lyon · partir à 22h max'},
     {id:'retour',label:'Retour Lyon planifié',note:'Arrivée ~5h-6h matin · transport ou attente organisée'},
     {id:'contact',label:'Contact urgence informé',note:'Sainte-Catherine → Lyon · heure estimée d\'arrivée communiquée'}
   ]},
-  {id:'stratégie',ico:'🧠',title:'Stratégie de course',items:[
+  {id:'stratégie',ico:'',title:'Stratégie de course',items:[
     {id:'terrain_inconnu',label:'Km 0-27 : terrain INCONNU · très prudent',note:'FC < 160 · marcher les montées dures · ne pas s\'emballer'},
     {id:'terrain_connu',label:'Km 27-45 : terrain CONNU (relay 2022)',note:'Référence : 6:28/km · tu connais ce segment de nuit'},
     {id:'lumière',label:'Gestion lumière planifiée',note:'Frontale sur la tête 100% du parcours · vérifier à mi-course'},
     {id:'ravitos_ta',label:'Ravitos TA repérés',note:'TA partenaire officiel → électrolytes disponibles sur tout le parcours'}
   ]},
-  {id:'recup',ico:'🌅',title:'Récupération J+0',items:[
+  {id:'recup',ico:'',title:'Récupération J+0',items:[
     {id:'ta_arrivée',label:'1 cpr TA immédiatement à l\'arrivée',note:'Arrivée ~5h-6h · corps épuisé · électrolytes en priorité'},
     {id:'vêtements_chauds',label:'Vêtements très chauds à l\'arrivée',note:'Nuit froide · le corps refroidit instantanément à l\'arrêt'},
     {id:'récup_j1',label:'J+1 : journée de repos complet',note:'Aucune reprise avant J+3 · protéines + sommeil'}
@@ -2021,7 +1870,7 @@ function ouvrirSemaine(num){const s=SEMAINES.find(x=>x.num===num);const ph=PHASE
     const isDone=r.statut==='fait'||r.statut==='partiel';
     const _today=new Date();_today.setHours(0,0,0,0);
     const loggable=!isDone&&!isSkipped&&se.date&&new Date(se.date+'T00:00:00')<=_today;
-    const tags=[stChip(isSkipped?'skipped':r.statut),`<span class="seance-tag">${se.type}</span>`,catBadge(se.cat),`<span class="seance-tag">Effort ${se.rpe}/10</span>`];
+    const tags=[stChip(isSkipped?'skipped':r.statut),`<span class="seance-tag">${se.type}</span>`,catBadge(se.cat),(((se.metriques||{}).RPE||se.rpe)!=null?`<span class="seance-tag">Effort ${String((se.metriques||{}).RPE||se.rpe).replace('.',',')}/10</span>`:'')].filter(Boolean);
     if(se.chaussure)tags.push(`<span class="seance-tag">${_acIco('chaussure',14)}${se.chaussure.replace("ASICS ","").replace("HOKA ","").replace("Brooks ","")}</span>`);
     if(se.fit)tags.push(`<span class="seance-tag">${_acIco('montre',14)}.fit</span>`);
     if(se.opt)tags.push('<span class="seance-tag tag-opt">Optionnelle</span>');
@@ -2056,10 +1905,10 @@ function ouvrirSemaine(num){const s=SEMAINES.find(x=>x.num===num);const ph=PHASE
 }
 /* ===== Créneaux météo — popup horaire ===== */
 function _wxStatus(t){
-  if(t<22)return{cls:'wx-ideal',lbl:'🟢 Idéal',c:'#16a34a'};
-  if(t<27)return{cls:'wx-ok',lbl:'🟡 OK',c:'#CA8A04'};
-  if(t<32)return{cls:'wx-dur',lbl:'🟠 Difficile',c:'#CA8A04'};
-  return{cls:'wx-evit',lbl:'🔴 Éviter',c:'#DC2626'};
+  if(t<22)return{cls:'wx-ideal',lbl:'Idéal',c:'#16a34a'};
+  if(t<27)return{cls:'wx-ok',lbl:'OK',c:'#CA8A04'};
+  if(t<32)return{cls:'wx-dur',lbl:'Difficile',c:'#CA8A04'};
+  return{cls:'wx-evit',lbl:'Éviter',c:'#DC2626'};
 }
 function _wxReco(hrs){
   const ideal=hrs.filter(([h,t])=>t<22);
@@ -2105,7 +1954,7 @@ function initCreneaux(){
   <div id="wx-sheet">
     <div class="wx-head">
       <div class="wx-handle"></div>
-      <div class="wx-sheet-title">🌡️ Créneaux d'entraînement</div>
+      <div class="wx-sheet-title">Créneaux d'entraînement</div>
       <div class="wx-tabs"><div class="wx-tab active" id="wx-t0" onclick="wxTab('today')">Aujourd'hui</div><div class="wx-tab" id="wx-t1" onclick="wxTab('tomorrow')">Demain</div></div>
       <div class="wx-reco" id="wx-reco"></div>
       <div class="wx-strip" id="wx-strip"></div>
@@ -2137,7 +1986,7 @@ function _celebrateLog(realise){
   const ov=document.createElement('div');ov.id='log-celeb';ov.className='log-celeb'+(isPr?' lc-pr':'');
   if(isPr){
     const label=(parseInt(realise.pr,10)||0)>0?((parseInt(realise.pr,10))+' record'+((parseInt(realise.pr,10))>1?'s':'')+' battu'+((parseInt(realise.pr,10))>1?'s':'')+' !'):(nbPr+' troph\u00e9e'+(nbPr>1?'s':'')+' !');
-    ov.innerHTML='<div class="lc-card"><div class="lc-medal">\u{1F3C5}</div><div class="lc-txt">'+label+'</div><svg class="cel-trait" viewBox="0 0 120 8" aria-hidden="true"><path d="M3 5.5C40 1.5 80 1.5 117 5.5" pathLength="1"/></svg>'+(km?'<div class="lc-sub">'+km+'</div>':'')+'</div>';
+    ov.innerHTML='<div class="lc-card"><div class="lc-medal"></div><div class="lc-txt">'+label+'</div><svg class="cel-trait" viewBox="0 0 120 8" aria-hidden="true"><path d="M3 5.5C40 1.5 80 1.5 117 5.5" pathLength="1"/></svg>'+(km?'<div class="lc-sub">'+km+'</div>':'')+'</div>';
   }else{
     ov.innerHTML='<div class="lc-card"><div class="lc-check"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" pathLength="1"/></svg></div><div class="lc-txt">S\u00e9ance enregistr\u00e9e</div>'+(km?'<div class="lc-sub">'+km+'</div>':'')+'</div>';
   }
@@ -2183,7 +2032,7 @@ function openReplay(key){
   const areaPath=path+' L'+x(N-1)+','+H+' L'+x(0)+','+H+' Z';
   const ov=document.createElement('div');ov.id='replay-ov';ov.className='replay-ov';
   ov.innerHTML=`
-    <button class="rp-close" onclick="_replayClose()" aria-label="Fermer">\u2715</button>
+    <button class="rp-close" onclick="_replayClose()" aria-label="Fermer">✕</button>
     <div class="rp-head"><div class="rp-title">${d.titre}</div><div class="rp-date">${d.date} \u00b7 ${d.dist} km \u00b7 D+ ${d.dplus} m</div></div>
     <div class="rp-chart">
       <svg viewBox="0 0 ${W} ${H}" class="rp-svg" preserveAspectRatio="none">
@@ -2239,14 +2088,14 @@ function _replayRun(key){
     altEl.textContent=alt+' m';hrEl.textContent=hr;distEl.textContent=dk.toFixed(1);
     // phase narrative
     const slope=cur>i?(d.alt[cur]-d.alt[i]):0;
-    if(alt>=1980)phaseEl.textContent='\u{1F3D4}\uFE0F Sommet du Croisse Baulet \u2014 2000 m !';
-    else if(slope>8)phaseEl.textContent='\u26F0\uFE0F \u00c7a grimpe fort \u2014 marche efficace';
-    else if(slope<-8)phaseEl.textContent='\u{1F3C3} Descente engag\u00e9e \u2014 on d\u00e9roule';
-    else phaseEl.textContent='\u{1F33F} Terrain roulant';
+    if(alt>=1980)phaseEl.textContent='Sommet du Croisse Baulet \u2014 2000 m !';
+    else if(slope>8)phaseEl.textContent='\u00c7a grimpe fort \u2014 marche efficace';
+    else if(slope<-8)phaseEl.textContent='Descente engag\u00e9e \u2014 on d\u00e9roule';
+    else phaseEl.textContent='Terrain roulant';
     // couleur FC selon zone
     hrEl.style.color=_tc(hr>165?'#dc2626':hr>145?'#CA8A04':'#16a34a');
     if(p<1)_replayRAF=requestAnimationFrame(frame);
-    else{phaseEl.textContent='\u{1F3C1} Sortie termin\u00e9e \u2014 belle grimpette !';btn.style.opacity='1';btn.style.pointerEvents='auto';}
+    else{phaseEl.textContent='Sortie termin\u00e9e \u2014 belle grimpette !';btn.style.opacity='1';btn.style.pointerEvents='auto';}
   }
   _replayRAF=requestAnimationFrame(frame);
 }
@@ -2271,7 +2120,7 @@ const _CK_HELP={
     <p><strong>Pourquoi pas juste les bpm ?</strong> Parce que les bpm seuls peuvent mentir : si tu ralentis beaucoup en fin de sortie, ta FC reste stable et tout semble parfait, alors que tu t'es d\u00e9grad\u00e9 \u2014 tu l'as juste masqu\u00e9 en levant le pied. Le d\u00e9couplage regarde les deux ensemble, donc impossible de tricher. Les bpm restent affich\u00e9s parce que c'est ce que tu lis sur ta montre, et quand les deux divergent, c'est justement l\u00e0 qu'est l'info.</p>
     <p><strong>L'\u00e9chelle</strong> \u2014 calibr\u00e9e sur tes propres sorties, pas sur une table g\u00e9n\u00e9rique :<br>
     <span style="color:var(--ok-deux);font-weight:800">&lt; 3 %</span> footing ma\u00eetris\u00e9, tu es rest\u00e9 dans ta zone de confort<br>
-    <span style="color:#65a30d;font-weight:800">3-6 %</span> conforme, normal sur du long ou du chaud<br>
+    <span style="color:var(--ok-deux);font-weight:800">3-6 %</span> conforme, normal sur du long ou du chaud<br>
     <span style="color:var(--warn-deux);font-weight:800">6-9 %</span> sous tension, tu as puis\u00e9 plus que pr\u00e9vu<br>
     <span style="color:var(--danger-deux);font-weight:800">&gt; 9 %</span> s\u00e9ance subie : parti trop vite, trop chaud, ou pas assez frais</p>
     <p><strong>Le trait gris sur la jauge, c'est l'attendu.</strong> Un m\u00eame chiffre ne vaut pas la m\u00eame chose selon les conditions : la tol\u00e9rance s'\u00e9largit d'environ 2 points au-del\u00e0 de 2 h, et de 2 points de plus au-dessus de 25 \u00b0C. <strong>Ce qui compte, c'est ta position par rapport \u00e0 ce rep\u00e8re</strong>, pas la valeur brute : 9 % sur 2h23 en canicule c'est bien tenu, 9 % sur un footing d'une heure au frais beaucoup moins.</p>
@@ -2302,61 +2151,61 @@ const _CK_HELP={
     <div class="ch-rule"><div class="ch-dot" style="background:var(--ok)"></div><div><strong>Adhérence (25%)</strong> : régularité sur les 2 dernières semaines — as-tu fait ce qui était prévu ?</div></div>
     <div class="ch-rule"><div class="ch-dot" style="background:var(--primary-deux)"></div><div><strong>Allure Z2 (25%)</strong> : progression de ton allure en endurance fondamentale, l'indicateur n°1 du moteur aérobie.</div></div>
     <div class="ch-rule"><div class="ch-dot" style="background:var(--warn)"></div><div><strong>Fraîcheur (20%)</strong> : ta charge du moment, pour capter la fatigue accumulée.</div></div>
-    <div class="ch-tip">💡 Un score élevé = bon moment pour une séance qualité. Un score bas = privilégie la récup ou l'endurance facile.</div>`},
+    <div class="ch-tip">Un score élevé = bon moment pour une séance qualité. Un score bas = privilégie la récup ou l'endurance facile.</div>`},
   pmc:{t:'PMC — Fitness · Fatigue · Forme',c:'#F4561D',body:`<p>Le <strong>Performance Management Chart</strong> (PMC) est le graphe fondamental du coaching de haut niveau — c'est ce qu'utilisent les entraîneurs TrainingPeaks. Il montre l'équilibre entre ta construction de forme et ta fatigue.</p>
-    <div class="ch-rule"><div class="ch-dot" style="background:var(--primary)"></div><div><strong>CTL — Fitness (teal)</strong> : Charge chronique sur 42 jours. Représente ta forme physique accumulée. Monte lentement avec l'entraînement, descend lentement avec le repos.</div></div>
+    <div class="ch-rule"><div class="ch-dot" style="background:var(--primary)"></div><div><strong>CTL — Fitness</strong> : Charge chronique sur 42 jours. Représente ta forme physique accumulée. Monte lentement avec l'entraînement, descend lentement avec le repos.</div></div>
     <div class="ch-rule"><div class="ch-dot" style="background:var(--warn)"></div><div><strong>ATL — Fatigue (orange tirets)</strong> : Charge aiguë sur 7 jours. Réagit vite aux variations de charge. Monte rapidement après une grosse semaine, descend vite avec le repos.</div></div>
-    <div class="ch-rule"><div class="ch-dot" style="background:var(--ok)"></div><div><strong>TSB — Forme (barres)</strong> : CTL − ATL. Positif (vert) = tu es frais, reposé. Négatif (rouge) = tu accumules de la fatigue.</div></div>
-    <div class="ch-tip">💡 <strong>Comment lire ce graphe pour Nice :</strong> La CTL doit monter progressivement jusqu'à octobre (pic prévu ~65-70), puis la TSB doit remonter en positif grâce au tapering J-21/J-14/J-7. Le jour de Nice, visée : CTL élevée + TSB entre +5 et +20 = pic de forme.</div>`},
+    <div class="ch-rule"><div class="ch-dot" style="background:var(--ok)"></div><div><strong>TSB — Forme (barres)</strong> : CTL − ATL. Positif = tu es frais, reposé. Négatif = tu accumules de la fatigue.</div></div>
+    <div class="ch-tip"><strong>Comment lire ce graphe pour Nice :</strong> La CTL doit monter progressivement jusqu'à octobre (pic prévu ~65-70), puis la TSB doit remonter en positif grâce au tapering J-21/J-14/J-7. Le jour de Nice, visée : CTL élevée + TSB entre +5 et +20 = pic de forme.</div>`},
   vol:{t:'Volume hebdomadaire',c:'#CA8A04',body:`<p>Kilomètres courus chaque semaine (barres colorées) comparés au volume planifié (barres grises en arrière-plan).</p>
     <div class="ch-rule"><div class="ch-dot" style="background:var(--warn)"></div><div><strong>Barre au-dessus du gris</strong> → tu as sur-performé. Vérifie que ce n'était pas au détriment de la qualité des séances.</div></div>
     <div class="ch-rule"><div class="ch-dot" style="background:var(--gris)"></div><div><strong>Barre en dessous du gris</strong> → semaine incomplète. Normal pendant les allègements ou après une course.</div></div>
-    <div class="ch-tip">💡 Tendance à surveiller : une progression de +5–10% max par semaine. Au-delà, tu accumules une dette de récupération même sans le ressentir.</div>`},
+    <div class="ch-tip">Tendance à surveiller : une progression de +5–10% max par semaine. Au-delà, tu accumules une dette de récupération même sans le ressentir.</div>`},
   re:{t:'Relative Effort (RE)',c:'#CA8A04',body:`<p>Score de charge calculé par Strava à partir de la fréquence cardiaque. Il intègre à la fois la durée et l'intensité de chaque sortie.</p>
     <div class="ch-rule"><div class="ch-dot" style="background:var(--ok)"></div><div><strong>EF 10 km facile</strong> ≈ 40–70 RE</div></div>
     <div class="ch-rule"><div class="ch-dot" style="background:var(--warn)"></div><div><strong>Sortie longue 16 km</strong> ≈ 150–180 RE</div></div>
     <div class="ch-rule"><div class="ch-dot" style="background:var(--danger)"></div><div><strong>Circaète 30 km trail</strong> ≈ 696 RE</div></div>
-    <div class="ch-tip">💡 Glisse le doigt sur le graphe pour voir la valeur semaine par semaine. La tendance sur 8 semaines est plus parlante que la valeur isolée.</div>`},
+    <div class="ch-tip">Glisse le doigt sur le graphe pour voir la valeur semaine par semaine. La tendance sur 8 semaines est plus parlante que la valeur isolée.</div>`},
   acwr:{t:'ACWR — Risque de blessure',c:'#CA8A04',body:`<p>Ratio Charge Aiguë / Charge Chronique (Acute:Chronic Workload Ratio). Compare la charge des 7 derniers jours à la moyenne des 28 derniers jours.</p>
-    <div class="ch-rule"><div class="ch-dot" style="background:var(--primary)"></div><div><strong>ACWR &lt; 0.8 (bleu)</strong> → Sous-entraîné. Semaine légère ou récup prolongée. Faible risque mais perte de forme.</div></div>
-    <div class="ch-rule"><div class="ch-dot" style="background:var(--ok)"></div><div><strong>ACWR 0.8–1.3 (vert)</strong> → Zone optimale. Continue sur cette lancée.</div></div>
-    <div class="ch-rule"><div class="ch-dot" style="background:var(--warn)"></div><div><strong>ACWR 1.3–1.5 (orange)</strong> → Charge élevée. Pas dangereux si ponctuel, mais surveille.</div></div>
-    <div class="ch-rule"><div class="ch-dot" style="background:var(--danger)"></div><div><strong>ACWR &gt; 1.5 (rouge)</strong> → Surcharge. Risque de blessure ×5. Réduire l'intensité immédiatement.</div></div>
-    <div class="ch-tip">💡 Objectif : rester dans la zone verte 80% du temps. Dépasser 1.3 ponctuellement (semaine de pic avant compétition) est acceptable si les semaines suivantes permettent de récupérer.</div>`},
+    <div class="ch-rule"><div class="ch-dot" style="background:var(--ligne-forte)"></div><div><strong>ACWR &lt; 0,8</strong> → Sous-entraîné. Semaine légère ou récup prolongée. Faible risque mais perte de forme.</div></div>
+    <div class="ch-rule"><div class="ch-dot" style="background:var(--ok)"></div><div><strong>ACWR 0,8–1,3</strong> → Zone optimale. Continue sur cette lancée.</div></div>
+    <div class="ch-rule"><div class="ch-dot" style="background:var(--warn)"></div><div><strong>ACWR 1,3–1,5</strong> → Charge élevée. Pas dangereux si ponctuel, mais surveille.</div></div>
+    <div class="ch-rule"><div class="ch-dot" style="background:var(--danger)"></div><div><strong>ACWR &gt; 1,5</strong> → Surcharge. Risque de blessure ×5. Réduire l'intensité immédiatement.</div></div>
+    <div class="ch-tip">Objectif : rester dans la zone verte 80% du temps. Dépasser 1.3 ponctuellement (semaine de pic avant compétition) est acceptable si les semaines suivantes permettent de récupérer.</div>`},
   dp:{t:'Dénivelé positif (D+)',c:'#F4561D',body:`<p>Mètres de dénivelé positif cumulés par semaine. Indicateur clé pour la préparation aux courses de trail.</p>
     <div class="ch-rule"><div class="ch-dot" style="background:var(--primary)"></div><div><strong>Semaine route pure</strong> → D+ ≈ 30–80 m (variation naturelle du terrain)</div></div>
     <div class="ch-rule"><div class="ch-dot" style="background:var(--primary)"></div><div><strong>Semaine trail légère</strong> → D+ 200–500 m</div></div>
     <div class="ch-rule"><div class="ch-dot" style="background:var(--warn)"></div><div><strong>Semaine spécifique trail</strong> → D+ 600–1000 m</div></div>
-    <div class="ch-tip">💡 Pour la Déraille (+901m) et SaintExpress, le D+ hebdo doit idéalement atteindre 500–800m dans les 4 semaines précédentes. Ce graphe permet de vérifier que la spécificité trail est bien intégrée.</div>`},
+    <div class="ch-tip">Pour la Déraille (+901m) et SaintExpress, le D+ hebdo doit idéalement atteindre 500–800m dans les 4 semaines précédentes. Ce graphe permet de vérifier que la spécificité trail est bien intégrée.</div>`},
   z2:{t:'Z2 pace — Allure EF',c:'#F4561D',body:`<p>Allure moyenne de tes footings faciles semaine par semaine. C'est <strong>l'indicateur fondamental</strong> du développement aérobie.</p>
     <p>La Zone 2 = effort où tu peux tenir une conversation. FC entre 134 et 154 bpm pour toi (zone Z2) ; sur un footing, vise 150 maximum.</p>
     <div class="ch-rule"><div class="ch-dot" style="background:var(--primary)"></div><div><strong>Courbe descendante</strong> (allure plus rapide) = ta forme aérobie progresse. Tu vas plus vite sans travailler plus fort.</div></div>
     <div class="ch-rule"><div class="ch-dot" style="background:var(--warn)"></div><div><strong>Courbe plate</strong> = stagnation. Normal en période de maintien ou de volume élevé.</div></div>
     <div class="ch-rule"><div class="ch-dot" style="background:var(--danger)"></div><div><strong>Courbe montante</strong> = régression. Souvent liée à la fatigue, la chaleur, ou un ACWR > 1.3.</div></div>
-    <div class="ch-tip">💡 Ton objectif saison : passer de 5:56/km à ~5:40/km en Z2 d’ici octobre. Chaque dixième de seconde gagné reflète une adaptation mitochondriale réelle.</div>`},
+    <div class="ch-tip">Ton objectif saison : passer de 5:56/km à ~5:40/km en Z2 d’ici octobre. Chaque dixième de seconde gagné reflète une adaptation mitochondriale réelle.</div>`},
   dc:{t:'Découplage cardiaque',c:'#F4561D',body:`<p>Mesure l'écart entre ton allure et ta FC sur une sortie longue. Un faible découplage = ton cœur reste stable alors que tu te fatigues.</p>
-    <div class="ch-rule"><div class="ch-dot" style="background:var(--ok)"></div><div><strong>&lt; 5% (vert)</strong> → Excellent. Ton système aérobie est solide et stable sur la durée.</div></div>
-    <div class="ch-rule"><div class="ch-dot" style="background:var(--warn)"></div><div><strong>5–8% (orange)</strong> → Acceptable. Léger décrochage en fin de sortie, souvent dû à la chaleur ou à la fatigue.</div></div>
-    <div class="ch-rule"><div class="ch-dot" style="background:var(--danger)"></div><div><strong>&gt; 8% (rouge)</strong> → Problème. Sortie trop longue, trop chaude, ou nutrition insuffisante.</div></div>
-    <div class="ch-tip">💡 Ce graphe te dit si tes sorties longues sont vraiment "faciles" ou si ton cœur souffre en fin de sortie sans que tu le ressentes. Un découplage élevé en canicule est normal — c'est pour ça qu'on court avant 8h30.</div>`},
+    <div class="ch-rule"><div class="ch-dot" style="background:var(--ok)"></div><div><strong>&lt; 5%</strong> → Excellent. Ton système aérobie est solide et stable sur la durée.</div></div>
+    <div class="ch-rule"><div class="ch-dot" style="background:var(--warn)"></div><div><strong>5–8%</strong> → Acceptable. Léger décrochage en fin de sortie, souvent dû à la chaleur ou à la fatigue.</div></div>
+    <div class="ch-rule"><div class="ch-dot" style="background:var(--danger)"></div><div><strong>&gt; 8%</strong> → Problème. Sortie trop longue, trop chaude, ou nutrition insuffisante.</div></div>
+    <div class="ch-tip">Ce graphe te dit si tes sorties longues sont vraiment "faciles" ou si ton cœur souffre en fin de sortie sans que tu le ressentes. Un découplage élevé en canicule est normal — c'est pour ça qu'on court avant 8h30.</div>`},
   pace:{t:'Progression allure par type',c:'#16a34a',body:`<p>3 courbes d'allure sur la fenêtre sélectionnée — footings faciles (EF), allure marathon (AM) et seuil. Permet de voir si tu progresses sur tous les registres.</p>
-    <div class="ch-rule"><div class="ch-dot" style="background:var(--ok)"></div><div><strong>EF (vert)</strong> → Allure Z2, footing facile. Doit descendre progressivement toute la saison.</div></div>
-    <div class="ch-rule"><div class="ch-dot" style="background:var(--primary)"></div><div><strong>AM (bleu)</strong> → Allure marathon cible. Doit converger vers 5:20/km pour Nice (objectif 3h45).</div></div>
-    <div class="ch-rule"><div class="ch-dot" style="background:var(--warn)"></div><div><strong>Seuil (orange)</strong> → Allure séance AM ou tempo. Reflète ta capacité lactique.</div></div>
-    <div class="ch-tip">💡 Glisse le doigt sur le graphe pour voir les 3 valeurs simultanément. L'écart entre EF et seuil = ton amplitude de vitesse. Plus il est grand, meilleur est ton profil de coureur.</div>`},
+    <div class="ch-rule"><div class="ch-dot" style="background:var(--ok)"></div><div><strong>EF</strong> → Allure Z2, footing facile. Doit descendre progressivement toute la saison.</div></div>
+    <div class="ch-rule"><div class="ch-dot" style="background:var(--primary)"></div><div><strong>AM</strong> → Allure marathon cible. Doit converger vers 5:20/km pour Nice (objectif 3h45).</div></div>
+    <div class="ch-rule"><div class="ch-dot" style="background:var(--warn)"></div><div><strong>Seuil</strong> → Allure séance AM ou tempo. Reflète ta capacité lactique.</div></div>
+    <div class="ch-tip">Glisse le doigt sur le graphe pour voir les 3 valeurs simultanément. L'écart entre EF et seuil = ton amplitude de vitesse. Plus il est grand, meilleur est ton profil de coureur.</div>`},
   fc:{t:'Répartition par intensité',c:'#DC2626',body:`<p>Part de ton <strong>temps de course</strong> passée dans chaque zone d'intensité, sur la fenêtre sélectionnée. C'est la photo de la structure de ton entraînement.</p>
-    <div class="ch-rule"><div class="ch-dot" style="background:#86efac"></div><div><strong>Z1 Récupération (&lt; 134 bpm)</strong> → échauffement, footing très facile.</div></div>
+    <div class="ch-rule"><div class="ch-dot" style="background:var(--z1)"></div><div><strong>Z1 Récupération (&lt; 134 bpm)</strong> → échauffement, footing très facile.</div></div>
     <div class="ch-rule"><div class="ch-dot" style="background:var(--ok)"></div><div><strong>Z2 Endurance fondamentale (134–154)</strong> → ton moteur aérobie. Doit représenter 70–80 % du total.</div></div>
     <div class="ch-rule"><div class="ch-dot" style="background:var(--warn)"></div><div><strong>Z3 Tempo / marathon (154–167)</strong> → allure spécifique marathon.</div></div>
     <div class="ch-rule"><div class="ch-dot" style="background:var(--danger)"></div><div><strong>Z4+ Seuil et au-delà (&gt; 167)</strong> → seuil, VMA. Doit rester minoritaire.</div></div>
-    <div class="ch-tip">💡 Objectif d'un entraînement polarisé : 75–80 % en Z1-Z2, une petite part en Z3, 15–20 % en Z4+. Trop de Z3 = « moyen partout », progression lente.</div>
+    <div class="ch-tip">Objectif d'un entraînement polarisé : 75–80 % en Z1-Z2, une petite part en Z3, 15–20 % en Z4+. Trop de Z3 = « moyen partout », progression lente.</div>
     <p style="font-size:var(--t-data);color:var(--texte-trois);margin-top:10px"><strong>Précision de méthode :</strong> chaque séance est classée par sa <strong>FC moyenne</strong>, puis pondérée par sa durée. Ce n'est donc pas un vrai temps-passé-en-zone seconde par seconde : une séance de fractionné dont la moyenne tombe en Z3 masque les pointes réelles en Z4-Z5. La photo d'ensemble est fiable, la part des zones hautes est sous-estimée.</p>
     <p style="font-size:var(--t-data);color:var(--texte-trois)">Les bornes sont celles de ta table de zones officielle (onglet Courses), et non plus des valeurs approximatives qui la contredisaient.</p>`},
-  cad:{t:'Cadence (pas/min)',c:'#6366f1',body:`<p>Nombre de pas par minute. La valeur affichée est en SPM (steps per minute = total des deux pieds). Ta cadence naturelle est d'environ 172–174 spm en route.</p>
+  cad:{t:'Cadence (pas/min)',c:'#F4561D',body:`<p>Nombre de pas par minute. La valeur affichée est en SPM (steps per minute = total des deux pieds). Ta cadence naturelle est d'environ 172–174 spm en route.</p>
     <div class="ch-rule"><div class="ch-dot" style="background:var(--ok)"></div><div><strong>170–180 spm</strong> → Zone optimale. Limite l'impact au sol et réduit le risque de blessures aux genoux et hanches.</div></div>
     <div class="ch-rule"><div class="ch-dot" style="background:var(--warn)"></div><div><strong>&lt;170 spm</strong> → Foulée trop longue. Augmente les forces d'impact. Surtout visible en fatigue ou en descente trail.</div></div>
-    <div class="ch-rule"><div class="ch-dot" style="background:#6366f1"></div><div><strong>Trail &lt;155 spm</strong> → Normal en montée raide (marche) ou sur terrain très technique.</div></div>
-    <div class="ch-tip">💡 Ta cadence trail (146 spm au Circaète) inclut les passages de marche en montée — c'est tout à fait normal. L'écart route/trail que tu vois dans ce graphe est attendu et sain.</div>`}
+    <div class="ch-rule"><div class="ch-dot" style="background:var(--primary)"></div><div><strong>Trail &lt;155 spm</strong> → Normal en montée raide (marche) ou sur terrain très technique.</div></div>
+    <div class="ch-tip">Ta cadence trail (146 spm au Circaète) inclut les passages de marche en montée — c'est tout à fait normal. L'écart route/trail que tu vois dans ce graphe est attendu et sain.</div>`}
 };
 function _ckCtxBlock(key){
   try{
@@ -2368,7 +2217,7 @@ function _ckCtxBlock(key){
     var acwr=D.ACWR&&D.ACWR[2]?D.ACWR[2].v[D.ACWR[2].v.length-1]:null;
     var canEl=document.getElementById('canicule-banner');
     var isHot=canEl&&canEl.style.display!=='none'&&canEl.textContent.trim();
-    var h='<div class="ck-ctx"><div class="ck-ctx-h">\u{1F4CD} Ta lecture en ce moment</div><p>';
+    var h='<div class="ck-ctx"><div class="ck-ctx-h">Ta lecture en ce moment</div><p>';
     if(key==='pmc'){
       var pmc=typeof _pmcCompute==='function'?_pmcCompute(W):null;
       if(!pmc||!pmc.length)return '';
@@ -2393,7 +2242,7 @@ function _ckCtxBlock(key){
       if(acwr===null)return '';
       var col=acwr>1.3?'#DC2626':acwr<0.8?'#F4561D':'#16a34a';
       var label=acwr>1.5?'en surcharge':acwr>1.3?'charge \u00e9lev\u00e9e':acwr<0.8?'sous-entra\u00een\u00e9':'dans la zone optimale';
-      var txt='Ton ACWR est \u00e0 <strong style="color:'+col+'">'+acwr.toFixed(2)+'</strong> \u2014 tu es <strong>'+label+'</strong>.';
+      var txt='Ton ACWR est \u00e0 <strong style="color:'+col+'">'+_acNb(acwr,2)+'</strong> \u2014 tu es <strong>'+label+'</strong>.';
       if(acwr>1.3&&jrace<=21)txt+=' J-'+jrace+' avant '+rname+'\u00a0: c\u2019est le moment de lever le pied. R\u00e9duis le volume de 20\u201330\u00a0% cette semaine, garde 2\u20133 acc\u00e9l\u00e9rations courtes, dors bien. Tu arriveras plus frais que si tu pushs.';
       else if(acwr>1.3)txt+=' Surveille les signaux de fatigue (jambes lourdes, sommeil perturb\u00e9, FC matin \u00e9lev\u00e9e). Si un 2\u1d49\u1d49 indicateur clignote, all\u00e8ge la semaine.';
       else if(acwr<0.8)txt+=' Tu peux relancer le volume progressivement. Pas de rattrapage brutal \u2014 +10\u00a0% max par semaine.';
@@ -2441,7 +2290,7 @@ function initCkHelp(){
 <div id="ck-help-ov">
   <div class="ckh-topbar">
     <div class="ckh-title" id="ck-help-title"></div>
-    <button class="ckh-close" onclick="closeCkHelp()">✕</button>
+    <button class="ckh-close" onclick="closeCkHelp()" aria-label="Fermer l'aide">✕</button>
   </div>
   <div class="ckh-body" id="ck-help-body"></div>
 </div>`);}
@@ -2454,11 +2303,11 @@ function initInstall(){
   if(_lsGet('install_dismissed')==='1')return;
   if(!_isIos())return;
   document.body.insertAdjacentHTML('beforeend',`
-<div id="install-banner"><span class="inst-ico">📲</span><span class="inst-txt">Installe l'app sur l'écran d'accueil</span><button class="inst-cta" onclick="openInstall()">Voir</button><button class="inst-x" onclick="dismissInstall()">✕</button></div>
+<div id="install-banner"><span class="inst-ico"></span><span class="inst-txt">Installe l'app sur l'écran d'accueil</span><button class="inst-cta" onclick="openInstall()">Voir</button><button class="inst-x" onclick="dismissInstall()">✕</button></div>
 <div id="install-ov" onclick="if(event.target===this)closeInstall()">
   <div class="inst-sheet">
     <div class="inst-handle"></div>
-    <div class="inst-title">📲 Installer l'app</div>
+    <div class="inst-title">Installer l'app</div>
     <div class="inst-sub">3 étapes · 10 secondes</div>
     <div class="inst-steps">
       <div class="inst-step"><span class="inst-n">1</span><div><div class="inst-sl">Tape l'icône <strong>Partage</strong></div><div class="inst-ss">Le carré avec la flèche ↑ en bas de Safari</div></div></div>
@@ -2482,7 +2331,7 @@ function _buildVersionPanel(cl){
 <div id="ver-ov" onclick="if(event.target===this)closeVersionPanel()">
   <div class="ver-sheet">
     <div class="ver-handle"></div>
-    <div class="ver-title">🕐 Historique des versions</div>
+    <div class="ver-title">Historique des versions</div>
     <div class="ver-sub">Tap un build pour le détail · Rollback → me demander le SHA</div>
     <div class="ver-list">
     ${cl.map((b,i)=>`<div class="ver-item ${i===0?'ver-latest':''}">
@@ -2530,9 +2379,9 @@ function initFormeHelp(){
       <div class="fh-comp"><div class="fh-c-head">Adhérence <span>20 %</span></div><div class="fh-c-txt">Part des séances réalisées sur les deux dernières semaines. Seules les séances <strong>déjà échues</strong> sont comptées — celles encore à venir dans la semaine en cours ne pénalisent pas.</div></div>
       <div class="fh-comp"><div class="fh-c-head">Efficience <span>20 %</span></div><div class="fh-c-txt">Tendance de ton allure sur les footings faciles. Si tu cours plus vite à effort égal, ton moteur aérobie progresse.</div></div>
     </div>
-    <div class="fh-note">💡 Le score est un <strong>composite</strong> : il répond à « comment se passe mon entraînement », pas seulement à « suis-je fatigué ». Au lendemain d'une grosse sortie, l'ACWR et l'adhérence peuvent rester excellents alors que la fraîcheur s'effondre. <strong>Regarde toujours la composante Fraîcheur et le message du jour</strong> avant de décider d'une séance de qualité.</div>
-    <div class="fh-note">💡 Tape directement sur la barre "Forme du jour" pour voir le détail de chaque composante avec tes valeurs du jour en temps réel.</div>
-    <div class="fh-note" style="background:var(--ok-fond);color:var(--ok-deux)">🎯 L'objectif à long terme : maintenir le score au-dessus de 75 sur les semaines de charge, et au-dessus de 80 pendant les allègements. Le trend (↑ ↓ →) te dit si tu vas dans le bon sens.</div>
+    <div class="fh-note">Le score est un <strong>composite</strong> : il répond à « comment se passe mon entraînement », pas seulement à « suis-je fatigué ». Au lendemain d'une grosse sortie, l'ACWR et l'adhérence peuvent rester excellents alors que la fraîcheur s'effondre. <strong>Regarde toujours la composante Fraîcheur et le message du jour</strong> avant de décider d'une séance de qualité.</div>
+    <div class="fh-note">Tape directement sur la barre "Forme du jour" pour voir le détail de chaque composante avec tes valeurs du jour en temps réel.</div>
+    <div class="fh-note" style="background:var(--ok-fond);color:var(--ok-deux)">L'objectif à long terme : maintenir le score au-dessus de 75 sur les semaines de charge, et au-dessus de 80 pendant les allègements. Le trend (↑ ↓ →) te dit si tu vas dans le bon sens.</div>
   </div>
 </div>`);}
 
@@ -2573,7 +2422,7 @@ function checkAutoSync(){
            81 px pour redire ce que la carte du jour affiche deja juste
            au-dessus, avec le meme bouton d'action. */
         return;
-        bar.innerHTML=`<div class="as-ico">📍</div><div class="as-txt"><strong>Séance ${when} non loggée</strong> — S${wk} ${s.titre}</div><button class="as-btn" onclick="ouvrirQuickLog(${wk},${s.id})">Logger</button><button class="as-x" onclick="_lsSet('${k}','1');this.parentElement.remove()">✕</button>`;
+        bar.innerHTML=`<div class="as-ico"></div><div class="as-txt"><strong>Séance ${when} non loggée</strong> — S${wk} ${s.titre}</div><button class="as-btn" onclick="ouvrirQuickLog(${wk},${s.id})">Logger</button><button class="as-x" onclick="_lsSet('${k}','1');this.parentElement.remove()">✕</button>`;
         hero.insertAdjacentElement('afterend',bar);return;
       }
     }
@@ -2619,7 +2468,7 @@ function openWrapped(){
   let idx=0;
   const old=document.getElementById('wrapped-ov');if(old)old.remove();
   const ov=document.createElement('div');ov.id='wrapped-ov';ov.className='wrapped-ov';
-  ov.innerHTML=`<div class="wr-bars"></div><button class="wr-close" onclick="_wrappedClose()" aria-label="Fermer">\u2715</button><div class="wr-stage"></div><div class="wr-hint">Touche pour continuer</div>`;
+  ov.innerHTML=`<div class="wr-bars"></div><button class="wr-close" onclick="_wrappedClose()" aria-label="Fermer">✕</button><div class="wr-stage"></div><div class="wr-hint">Touche pour continuer</div>`;
   document.body.appendChild(ov);
   const bars=ov.querySelector('.wr-bars');
   bars.innerHTML=cards.map((_,i)=>`<div class="wr-bar"><div class="wr-bar-fill" data-b="${i}"></div></div>`).join('');
@@ -2975,7 +2824,7 @@ function _ckRenderAll(win){
   _av.style.color=_tc(_acol);_av.classList.remove('warn');
   var _alab=al>1.5?'surcharge':al>1.3?'\u00e9lev\u00e9':al<0.8?'frais / all\u00e8gement':'ma\u00eetris\u00e9';
   var _akd=_av.parentElement.querySelector('.ck-kd');if(_akd){_akd.textContent=_alab;_akd.style.color=_tc(_acol);_akd.classList.remove('warn');}
-  var _av2=document.getElementById('ck-acwr-val2');if(_av2){_av2.textContent=al.toFixed(2);_av2.style.color=_tc(_acol);}
+  var _av2=document.getElementById('ck-acwr-val2');if(_av2){_av2.textContent=_acNb(al,2);_av2.style.color=_tc(_acol);}
   _ckBar('ckDP','ckDPW','ckDPT','ckDPX',D.DPLUS[W],{col:'#A1A1AA',unit:' m',h:75});
   _ckLine('ckZ2','ckZ2W','ckZ2T','ckZ2X',D.Z2[W].w,[{v:D.Z2[W].v,color:'#F4561D',lbl:'/km'}],_ckSmin,{h:85});
   var _z2v=D.Z2[W].v.filter(function(x){return x!=null;});
@@ -3317,7 +3166,7 @@ function _saisonRender(){
   el.innerHTML=`
     <div class="sais-head"><span class="sais-gain">${gainSec>=3?'▲ '+gainSec+' s/km':gainSec<=-3?'▼ '+Math.abs(gainSec)+' s/km':'→ stable'}</span><span class="sais-gain-sub">${gainSec>=3?"plus rapide à effort égal depuis l'hiver (+"+gainPct.toFixed(1)+"%)":gainSec<=-3?"plus lent à effort égal qu'en hiver ("+gainPct.toFixed(1)+"%)":"à effort égal, comparable à l'hiver ("+(gainPct>0?'+':'')+gainPct.toFixed(1)+"%)"}</span></div>
     <div class="sais-chart">${bars}</div>
-    <div class="sais-note">${SAISON_EFF.note||''} L'été (🌡️) est corrigé de la chaleur par estimation.</div>`;
+    <div class="sais-note">${SAISON_EFF.note||''} L'été est corrigé de la chaleur par estimation.</div>`;
 }
 function _decoupRuns(){
   // Sorties eligibles avec un KPI decouplage valide (calcule au log, jamais recalcule ici)
@@ -3335,7 +3184,7 @@ function _decoupVerdict(d){
   var ecart=d.pct-d.attendu;
   if(d.pct<3)                return {t:"Footing ma\u00eetris\u00e9",c:"#16a34a",f:"var(--ok-fond)"};
   if(ecart<=-2)              return {t:"Bien tenu",c:"#16a34a",f:"var(--ok-fond)"};
-  if(d.pct<6||ecart<=0)      return {t:"Conforme",c:"#65a30d",f:"var(--ok-fond)"};
+  if(d.pct<6||ecart<=0)      return {t:"Conforme",c:"#16a34a",f:"var(--ok-fond)"};
   if(d.pct<9||ecart<=1.5)    return {t:"Sous tension",c:"#8F5A07",f:"var(--warn-fond)"};
   return {t:"S\u00e9ance subie",c:"#b91c1c",f:"var(--danger-fond)"};
 }
@@ -3353,14 +3202,14 @@ function _decoupRender(){
   var fdate=function(iso){var M=['janv.','f\u00e9vr.','mars','avr.','mai','juin','juil.','ao\u00fbt','sept.','oct.','nov.','d\u00e9c.'];
     var x=new Date(iso+'T12:00:00');return isNaN(x)?iso:(x.getDate()+' '+M[x.getMonth()]);};
   var num=function(n){return n.toFixed(1).replace('.',',');};
-  if(src)src.innerHTML=fdate(last.date)+' \u00b7 '+last.km+' km<br>'+d.fen_min+' min analys\u00e9es';
+  if(src)src.innerHTML=fdate(last.date)+' \u00b7 '+_acNb(+last.km,2)+' km<br>'+d.fen_min+' min analys\u00e9es';
   var posC=Math.max(0,Math.min(100,d.pct/MAXG*100)),posA=Math.max(0,Math.min(100,d.attendu/MAXG*100));
   var sousDessus=d.pct<d.attendu?'<strong style="color:'+_tc(v.c)+'">tu es en dessous</strong>':'<strong style="color:'+_tc(v.c)+'">tu es au-dessus</strong>';
   var rows=runs.slice().reverse().slice(0,8).map(function(r){
     var vv=_decoupVerdict(r.d);
     return '<div class="dc-row"><div class="dc-dot" style="background:'+vv.c+'"></div>'+
       '<div class="dc-main"><div class="dc-t">'+r.titre+'</div>'+
-      '<div class="dc-s">'+fdate(r.date)+' \u00b7 '+r.km+' km \u00b7 '+r.d.temp+' \u00b0C \u00b7 attendu ~'+r.d.attendu+' %</div></div>'+
+      '<div class="dc-s">'+fdate(r.date)+' \u00b7 '+_acNb(+r.km,2)+' km \u00b7 '+r.d.temp+' \u00b0C \u00b7 attendu ~'+r.d.attendu+' %</div></div>'+
       '<div class="dc-track"><div class="dc-fill" style="width:'+Math.min(100,r.d.pct/MAXG*100)+'%;background:'+vv.c+'"></div></div>'+
       '<div class="dc-v" style="color:'+vv.c+'">'+num(r.d.pct)+' %</div></div>';
   }).join('');
@@ -3520,7 +3369,7 @@ function _profilAxes(){
           general:Math.round(moy(axes.map(function(a){return a.v;}))),
           nice:Math.round(axes.reduce(function(a,x){return a+x.v*(POIDS[x.k]||0);},0))};
 }
-function _profilCouleur(v){return v>=85?'#F4561D':v>=70?'#16a34a':v>=55?'#84cc16':v>=40?'#CA8A04':'#DC2626';}
+function _profilCouleur(v){return v>=85?'#F4561D':v>=70?'#16a34a':v>=55?'#16a34a':v>=40?'#CA8A04':'#DC2626';}
 /* Ouverture facon pack : l'enveloppe se dechire le long d'un trace cardiaque,
    puis le radar s'ecrit comme une trace GPS qui s'enregistre.
    Ne se declenche qu'a la PREMIERE decouverte (memorisee en localStorage),
@@ -3665,12 +3514,23 @@ function _ckAujourdhui(){
   var lg=document.getElementById('ck-sem-leg');if(lg)lg.textContent='Barre pâle : semaine en cours ('+_acNb(ws[ws.length-1].km,1)+' km).';
 }
 var _ckZoneActive=1;
+function _ckTabsA11y(){
+  var tl=document.querySelector('#vue-cockpit .ck-zones');if(!tl)return;
+  tl.querySelectorAll('.ck-z').forEach(function(t){var z=t.dataset.zone;t.id='ck-tab-'+z;t.setAttribute('aria-controls','ck-zone-'+z);
+    t.tabIndex=t.getAttribute('aria-selected')==='true'?0:-1;});
+  document.querySelectorAll('#vue-cockpit .ck-zone').forEach(function(p){var z=p.dataset.zone;p.id='ck-zone-'+z;p.setAttribute('role','tabpanel');p.setAttribute('aria-labelledby','ck-tab-'+z);});
+  if(!tl._kb){tl._kb=1;tl.addEventListener('keydown',function(e){
+    var ts=[].slice.call(tl.querySelectorAll('.ck-z')),i=ts.indexOf(document.activeElement);if(i<0)return;
+    var j=e.key==='ArrowRight'?(i+1)%ts.length:e.key==='ArrowLeft'?(i-1+ts.length)%ts.length:e.key==='Home'?0:e.key==='End'?ts.length-1:-1;
+    if(j<0)return;e.preventDefault();ts[j].focus();ts[j].click();});}
+}
 function _ckZone(n,el){
   _ckZoneActive=n;
   document.querySelectorAll('#vue-cockpit .ck-zone').forEach(function(z){
     z.style.display=(+z.dataset.zone===n)?'':'none';});
   document.querySelectorAll('#vue-cockpit .ck-z').forEach(function(b){b.classList.remove('ck-z-on');b.setAttribute('aria-selected','false');});
   var b=el||document.querySelector('#vue-cockpit .ck-z[data-zone="'+n+'"]');if(b){b.classList.add('ck-z-on');b.setAttribute('aria-selected','true');}
+  _ckTabsA11y();
   var v=document.getElementById('vue-cockpit');if(v)v.scrollTop=0;
   window.scrollTo(0,0);
 }
@@ -3806,7 +3666,7 @@ ${_v?`<section class="ck-c" aria-labelledby="ckv-h">
 ${card('ckVol','Volume hebdomadaire','',null,null,90,'<div style="font-size:var(--t-data);color:var(--texte-trois);text-align:center;margin-top:4px">touche une barre · ■ prévu</div>','vol')}
 <div class="ck-cs" id="ck-vol-sub" style="margin:-4px 0 8px;padding:0 2px"></div>
 ${card('ckRE','Relative Effort / sem.','charge Strava réelle',null,null,80,'<div style="font-size:var(--t-data);color:var(--texte-trois);text-align:center;margin-top:4px">glisse →</div>','re')}
-<div class="ck-card"><div class="ck-ch"><div><div class="ck-ct">ACWR — risque blessure<button class="ck-help" onclick="event.stopPropagation();openCkHelp('acwr')">?</button></div><div class="ck-cs">ratio charge aiguë / chronique</div></div><div style="font-size:26px;font-weight:700;line-height:1" id="ck-acwr-val2">0.69</div></div><div class="ck-cw" id="ckACWRW"><svg id="ckACWR" height="65" style="display:block;width:100%"></svg><div class="ck-tt" id="ckACWRT"></div></div><div class="ck-xl" id="ckACWRX"></div></div>
+<div class="ck-card"><div class="ck-ch"><div><div class="ck-ct">ACWR — risque blessure<button class="ck-help" onclick="event.stopPropagation();openCkHelp('acwr')">?</button></div><div class="ck-cs">ratio charge aiguë / chronique</div></div><div style="font-size:26px;font-weight:700;line-height:1" id="ck-acwr-val2">—</div></div><div class="ck-cw" id="ckACWRW"><svg id="ckACWR" height="65" style="display:block;width:100%"></svg><div class="ck-tt" id="ckACWRT"></div></div><div class="ck-xl" id="ckACWRX"></div></div>
 ${card('ckDP','Dénivelé D+','',null,'m',75,'','dp')}
 </div>
 <div class="ck-sec ck-sec-tg" data-open="0" onclick="_ckToggleSec(this)">Moteur aérobie<span class="ck-sec-chev">▸</span></div>
@@ -3934,8 +3794,8 @@ function initSessionMenu(){
     <div class="sm-handle"></div>
     <div class="sm-stitle" id="sm-title"></div>
     <div class="sm-ssub" id="sm-sub"></div>
-    <button class="sm-action" onclick="openSMMove()"><span class="sm-aico">📅</span><div><div class="sm-al">Déplacer cette séance</div><div class="sm-as">Choisir une autre date</div></div><span class="sm-aarr">›</span></button>
-    <button class="sm-action" onclick="openSMSkip()"><span class="sm-aico">⏭</span><div><div class="sm-al">Passer cette séance</div><div class="sm-as">Fatigue, agenda, météo…</div></div><span class="sm-aarr">›</span></button>
+    <button class="sm-action" onclick="openSMMove()"><span class="sm-aico"></span><div><div class="sm-al">Déplacer cette séance</div><div class="sm-as">Choisir une autre date</div></div><span class="sm-aarr">›</span></button>
+    <button class="sm-action" onclick="openSMSkip()"><span class="sm-aico"></span><div><div class="sm-al">Passer cette séance</div><div class="sm-as">Fatigue, agenda, météo…</div></div><span class="sm-aarr">›</span></button>
     <button class="sm-cancel" onclick="closeSM()">Annuler</button>
   </div>
 </div>
@@ -4057,10 +3917,10 @@ function initQuickLog(){
       <label class="ql-label">RPE (1-10)<input id="ql-rpe" type="number" min="1" max="10" inputmode="numeric"></label>
       <div class="ql-label">Nutrition (optionnel)
         <div class="ql-nutr" id="ql-nutr">
-          <div class="ql-nc" data-n="TA Electrolytes" onclick="qlNutr(this)">⚡ TA</div>
-          <div class="ql-nc" data-n="Gel Aptonia" onclick="qlNutr(this)">🟡 Gel</div>
-          <div class="ql-nc" data-n="Nduranz Cherry" onclick="qlNutr(this)">🍒 Cherry</div>
-          <div class="ql-nc" data-n="Nduranz Amarena" onclick="qlNutr(this)">☕ Amarena</div>
+          <div class="ql-nc" data-n="TA Electrolytes" onclick="qlNutr(this)">TA</div>
+          <div class="ql-nc" data-n="Gel Aptonia" onclick="qlNutr(this)">Gel</div>
+          <div class="ql-nc" data-n="Nduranz Cherry" onclick="qlNutr(this)">Cherry</div>
+          <div class="ql-nc" data-n="Nduranz Amarena" onclick="qlNutr(this)">Amarena</div>
         </div>
       </div>
     </div>
@@ -4102,7 +3962,7 @@ function _fcAjusteeBloc(r){
   const derive=Math.min(15,Math.round(r.temp-15));
   const fcAdj=r.fc_moy-derive;
   const pctReel=Math.round(r.fc_moy/192*100),pctAdj=Math.round(fcAdj/192*100);
-  return `<div class="fc-adj"><div class="fc-adj-top"><span class="fc-adj-t">🌡️ FC ajustée température</span><span class="fc-adj-temp">${r.temp}°C</span></div>
+  return `<div class="fc-adj"><div class="fc-adj-top"><span class="fc-adj-t">FC ajustée température</span><span class="fc-adj-temp">${r.temp}°C</span></div>
     <div class="fc-adj-row"><span class="fc-adj-brut">${r.fc_moy} bpm</span><span class="fc-adj-arrow">→</span><span class="fc-adj-val">~${fcAdj} bpm</span><span class="fc-adj-eq">équivalent 15°C</span></div>
     <div class="fc-adj-note">Par cette chaleur, ton cœur a compensé ~${derive} bpm pour te refroidir. Ton effort réel correspond à ${pctAdj}% FCmax (au lieu des ${pctReel}% affichés) — ta vraie forme est meilleure que ce que le cardio montre.</div></div>`;
 }
@@ -4160,7 +4020,7 @@ function seanceTag(se){const t=se.type||'';
   if(t.indexOf('trail')>=0||t.indexOf('Trail')>=0)return 'trail';
   if(t.indexOf('EF')>=0||t.indexOf('Récup')>=0||t.indexOf('Endurance')>=0||t.indexOf('Footing')>=0)return 'ef';
   return null;}
-function theoToggle(){const p=document.getElementById('theo-panel');if(!p)return;const open=p.style.display==='none';p.style.display=open?'block':'none';const b=document.getElementById('theo-btn');if(b)b.textContent=open?'▲ Replier la théorie':'📖 La théorie pour progresser';}
+function theoToggle(){const p=document.getElementById('theo-panel');if(!p)return;const open=p.style.display==='none';p.style.display=open?'block':'none';const b=document.getElementById('theo-btn');if(b)b.textContent=open?'▲ Replier la théorie':'La théorie pour progresser';}
 function coachAvant(num,se){const c=COACH_THEORY[seanceTag(se)];if(!c)return '';
   const tag=seanceTag(se);const rich=!!RICH_THEORY[tag];
   const theoBtn=rich
@@ -4178,35 +4038,35 @@ function coachDebrief(num,se){
   const r=se.realise;if(!r||(r.statut==='a_faire'))return '';
   const c=COACH_THEORY[seanceTag(se)];const find=[];
   // statut
-  if(r.statut==='manque'){return `<div class="sd-section">📊 Débrief du coach</div><div class="cd-debrief"><div class="cd-line cd-warn"><span class="cd-ic">🟠</span><span><strong>Séance manquée.</strong> Pas de drame — une séance ratée ne casse pas un bloc. Si c'est le dos ou la fatigue, c'était la bonne décision. Si c'est l'organisation, on cale la prochaine. L'important, c'est la régularité sur la durée, pas la perfection.</span></div></div>`;}
+  if(r.statut==='manque'){return `<div class="sd-section">Débrief du coach</div><div class="cd-debrief"><div class="cd-line cd-warn"><span class="cd-ic"></span><span><strong>Séance manquée.</strong> Pas de drame — une séance ratée ne casse pas un bloc. Si c'est le dos ou la fatigue, c'était la bonne décision. Si c'est l'organisation, on cale la prochaine. L'important, c'est la régularité sur la durée, pas la perfection.</span></div></div>`;}
   // Allure : cible (métriques) vs réalisé
   const tgt=_pacesIn((se.metriques||{}).Allure);const real=_pacesIn(r.allure)[0];
   if(real&&tgt.length){
     const lo=Math.min(...tgt),hi=Math.max(...tgt);
-    if(real<lo-4){find.push(['⚠️','warn',`<strong>Plus rapide que la cible.</strong> Tu visais ${(se.metriques||{}).Allure}, tu as tenu ${r.allure}. ${c&&seanceTag(se)==='ef'?"Sur un footing facile, c'est le piège de la zone grise : trop rapide pour récupérer. Lâche du lest la prochaine fois.":"Attention à ne pas transformer la séance en un effort plus dur que prévu — tu perds en spécificité et tu ajoutes de la fatigue."}`]);}
-    else if(real>hi+6){find.push(['🟠','warn',`<strong>Plus lent que la cible.</strong> Cible ${(se.metriques||{}).Allure}, réalisé ${r.allure}. Soit la fatigue, soit les conditions (chaleur, vent, relief), soit un objectif un peu ambitieux. À surveiller si ça se répète.`]);}
-    else{find.push(['✅','good',`<strong>Allure dans la cible.</strong> ${r.allure} pour un objectif ${(se.metriques||{}).Allure} — exactement ce qu'il fallait. Le contrôle d'allure, c'est la moitié de la réussite d'une séance.`]);}
+    if(real<lo-4){find.push(['','warn',`<strong>Plus rapide que la cible.</strong> Tu visais ${(se.metriques||{}).Allure}, tu as tenu ${r.allure}. ${c&&seanceTag(se)==='ef'?"Sur un footing facile, c'est le piège de la zone grise : trop rapide pour récupérer. Lâche du lest la prochaine fois.":"Attention à ne pas transformer la séance en un effort plus dur que prévu — tu perds en spécificité et tu ajoutes de la fatigue."}`]);}
+    else if(real>hi+6){find.push(['','warn',`<strong>Plus lent que la cible.</strong> Cible ${(se.metriques||{}).Allure}, réalisé ${r.allure}. Soit la fatigue, soit les conditions (chaleur, vent, relief), soit un objectif un peu ambitieux. À surveiller si ça se répète.`]);}
+    else{find.push(['','good',`<strong>Allure dans la cible.</strong> ${r.allure} pour un objectif ${(se.metriques||{}).Allure} — exactement ce qu'il fallait. Le contrôle d'allure, c'est la moitié de la réussite d'une séance.`]);}
   }
   // FC vs bande attendue
   if(c&&r.fc_moy&&c.lecture.fcBand[1]>0){
     const[a,b]=c.lecture.fcBand;const fc=+r.fc_moy;
-    if(a>0&&fc<a-5)find.push(['🟠','warn',`<strong>FC plus basse qu'attendu</strong> (${fc}, cible ${c.lecture.fcLabel}). Tu as peut-être sous-dosé l'intensité — la séance était plus facile que son objectif.`]);
-    else if(fc>b+5)find.push(['⚠️','warn',`<strong>FC élevée</strong> (${fc} pour ${c.lecture.fcLabel}). Si l'allure était bonne mais la FC haute, pense dérive cardiaque : chaleur ou hydratation — ton point de vigilance depuis La Circaète. ${r.fc_max?'Pic à '+r.fc_max+'.':''}`]);
-    else find.push(['✅','good',`<strong>FC dans la zone</strong> (${fc}, cible ${c.lecture.fcLabel}). Intensité bien dosée, tu as travaillé la bonne filière.`]);
+    if(a>0&&fc<a-5)find.push(['','warn',`<strong>FC plus basse qu'attendu</strong> (${fc}, cible ${c.lecture.fcLabel}). Tu as peut-être sous-dosé l'intensité — la séance était plus facile que son objectif.`]);
+    else if(fc>b+5)find.push(['','warn',`<strong>FC élevée</strong> (${fc} pour ${c.lecture.fcLabel}). Si l'allure était bonne mais la FC haute, pense dérive cardiaque : chaleur ou hydratation — ton point de vigilance depuis La Circaète. ${r.fc_max?'Pic à '+r.fc_max+'.':''}`]);
+    else find.push(['','good',`<strong>FC dans la zone</strong> (${fc}, cible ${c.lecture.fcLabel}). Intensité bien dosée, tu as travaillé la bonne filière.`]);
   }
   // RPE ressenti vs attendu
   if(r.rpe_ressenti&&se.rpe){const rr=parseInt(r.rpe_ressenti,10);if(!isNaN(rr)){
-    if(rr>=se.rpe+2)find.push(['⚠️','warn',`<strong>Ressenti plus dur que prévu</strong> (RPE ${rr} vs ${se.rpe} attendu). Pour une même allure, un RPE qui grimpe = fatigue accumulée, sommeil, ou conditions. Si ça persiste sur plusieurs séances, c'est un signal pour alléger.`]);
-    else if(rr<=se.rpe-2)find.push(['✅','good',`<strong>Plus facile que prévu</strong> (RPE ${rr} vs ${se.rpe}). Bon signe de fraîcheur et de progression — la séance commence à rentrer dans tes cordes.`]);}}
+    if(rr>=se.rpe+2)find.push(['','warn',`<strong>Ressenti plus dur que prévu</strong> (RPE ${rr} vs ${se.rpe} attendu). Pour une même allure, un RPE qui grimpe = fatigue accumulée, sommeil, ou conditions. Si ça persiste sur plusieurs séances, c'est un signal pour alléger.`]);
+    else if(rr<=se.rpe-2)find.push(['','good',`<strong>Plus facile que prévu</strong> (RPE ${rr} vs ${se.rpe}). Bon signe de fraîcheur et de progression — la séance commence à rentrer dans tes cordes.`]);}}
   // PR / records
-  if((r.pr||0)+(r.ach||0)>0)find.push(['🏆','good',`<strong>Des records au passage</strong> — ${r.pr?r.pr+' perso':''}${r.pr&&r.ach?', ':''}${r.ach?r.ach+' segment(s)':''}. La forme monte, c'est concret.`]);
+  if((r.pr||0)+(r.ach||0)>0)find.push(['','good',`<strong>Des records au passage</strong> — ${r.pr?r.pr+' perso':''}${r.pr&&r.ach?', ':''}${r.ach?r.ach+' segment(s)':''}. La forme monte, c'est concret.`]);
   if(!find.length)return '';
   const lines=find.map(f=>`<div class="cd-line cd-${f[1]}"><span class="cd-ic">${f[0]}</span><span>${f[2]}</span></div>`).join('');
-  return `<div class="sd-section">📊 Débrief du coach</div><div class="cd-debrief">${lines}<div class="cd-foot">Lecture automatique de tes données. Pour une analyse fine d'une séance précise, parle-m'en — j'ajoute ma revue détaillée.</div></div>`;
+  return `<div class="sd-section">Débrief du coach</div><div class="cd-debrief">${lines}<div class="cd-foot">Lecture automatique de tes données. Pour une analyse fine d'une séance précise, parle-m'en — j'ajoute ma revue détaillée.</div></div>`;
 }
 /* ===== Schémas théoriques SVG (FCmax 192) ===== */
 function svgZonesFC(hi){
-  const Z=[['Z1','Récup / EF','<134','#16a34a'],['Z2','Endurance','134-154','#84cc16'],['Z3','Tempo / AM','154-167','#CA8A04'],['Z4','Seuil','167-177','#CA8A04'],['Z5','VO2max','>177','#DC2626']];
+  const Z=[['Z1','Récup / EF','<134','#FDE3D3'],['Z2','Endurance','134-154','#FBB089'],['Z3','Tempo / AM','154-167','#F4561D'],['Z4','Seuil','167-177','#C2410C'],['Z5','VO2max','>177','#7C2D12']];
   const w=300,bh=34,gap=4,x0=8;let bars='',labs='';const bw=(w-x0*2-gap*4)/5;
   Z.forEach((z,i)=>{const x=x0+i*(bw+gap);const on=hi===i;bars+=`<rect x="${x}" y="14" width="${bw}" height="${bh}" rx="5" fill="${z[3]}" opacity="${on?1:.3}"/>${on?`<rect x="${x}" y="14" width="${bw}" height="${bh}" rx="5" fill="none" stroke="${z[3]}" stroke-width="2.5"/>`:''}`;labs+=`<text x="${x+bw/2}" y="62" text-anchor="middle" font-size="9" font-weight="700" fill="${on?z[3]:'#A1A1AA'}">${z[0]}</text><text x="${x+bw/2}" y="73" text-anchor="middle" font-size="7.5" fill="#A1A1AA">${z[2]}</text>`;});
   return `<svg viewBox="0 0 ${w} 82" class="theo-svg" role="img" aria-label="Zones de fréquence cardiaque">${bars}${labs}</svg>`;
@@ -4263,53 +4123,53 @@ function svgLactate(){
 }
 /* ===== Panneau théorie & coaching approfondi (pilote S25) ===== */
 const RICH_THEORY={
- ef:{titre:'Endurance fondamentale',icone:'🌱',sections:[
+ ef:{titre:'Endurance fondamentale',icone:'',sections:[
    {h:'Le moteur aérobie, ta fondation',html:`<p>L'endurance fondamentale, c'est 80 % de ton volume et la base de <strong>toute</strong> ta performance. À cette intensité, tu construis le moteur : tu multiplies les <em>mitochondries</em> (les centrales énergétiques de tes muscles), tu densifies ton réseau de <em>capillaires</em> (plus d'oxygène livré à chaque foulée), et tu renforces ton cœur. Rien de spectaculaire séance par séance — mais c'est la somme de ces footings qui fait qu'en novembre tu tiendras 42 km.</p>`+svgZonesFC(0)+`<p>Sur un EF, tu vis dans la <strong>Z1-Z2</strong> : FC en zone Z2 (134-154, soit 70 à 80 % de tes 192 de FCmax), plafond 150 sur un footing.</p>`},
-   {h:'La polarisation 80/20',html:`<p>Les coureurs qui progressent le plus courent <strong>très facile la plupart du temps</strong>, et <strong>vraiment dur le reste</strong>. Le danger, c'est le milieu — la fameuse « zone grise » : ni assez lent pour récupérer et construire, ni assez rapide pour créer un vrai stimulus. Tu paies la fatigue d'un effort dur sans en récolter les bénéfices.</p>`+svg8020()+`<p class="theo-perso">📌 <strong>Pour toi, Loïc :</strong> ton analyse historique montrait <strong>53 % de tes km en zone grise</strong>. C'est ton chantier n°1. Sur tes footings, vise <strong>≥ 6:00/km</strong> et ne négocie pas, même si tu te sens bien — surtout si tu te sens bien.</p>`},
+   {h:'La polarisation 80/20',html:`<p>Les coureurs qui progressent le plus courent <strong>très facile la plupart du temps</strong>, et <strong>vraiment dur le reste</strong>. Le danger, c'est le milieu — la fameuse « zone grise » : ni assez lent pour récupérer et construire, ni assez rapide pour créer un vrai stimulus. Tu paies la fatigue d'un effort dur sans en récolter les bénéfices.</p>`+svg8020()+`<p class="theo-perso"><strong>Pour toi, Loïc :</strong> ton analyse historique montrait <strong>53 % de tes km en zone grise</strong>. C'est ton chantier n°1. Sur tes footings, vise <strong>≥ 6:00/km</strong> et ne négocie pas, même si tu te sens bien — surtout si tu te sens bien.</p>`},
    {h:'Apprendre à brûler les graisses',html:`<p>À basse intensité, ton corps puise majoritairement dans les <em>lipides</em> — un stock quasi illimité. Plus tu cours lentement et souvent, plus tu deviens efficace pour brûler du gras. L'enjeu : <strong>épargner ton glycogène</strong> (le carburant rapide mais limité). Un coureur qui oxyde bien les graisses tape le mur du marathon beaucoup plus tard. L'EF, c'est littéralement l'entraînement de cette filière.</p>`},
    {h:'Le test de la parole',html:`<p>La meilleure jauge ne coûte rien : <strong>si tu peux tenir une conversation en phrases complètes, l'allure est bonne</strong>. Dès que tu haches tes phrases, tu es trop vite. Respire facilement par le nez, foulée souple et relâchée. Sur un EF tu dois finir <strong>frais</strong>, capable d'en refaire autant.</p>`},
    {h:'Les 3 erreurs classiques',html:`<p><strong>1. L'ego du chrono.</strong> Courir « pas trop lent pour ne pas avoir honte » = zone grise garantie.<br><strong>2. Accélérer sur la fin.</strong> Finir vite un footing flatte, mais ajoute de la fatigue parasite.<br><strong>3. Sauter l'EF parce que « c'est juste un footing ».</strong> C'est la séance qui construit le plus, justement parce qu'elle est facile.</p>`}],
    coach:`<p>Loïc, sur tes footings, l'objectif n'est jamais la distance ni l'allure : c'est de <strong>tenir le réflexe « facile = vraiment facile »</strong>. FC plafonnée à 150, allure ≥ 6:00/km, sans négocier — c'est ton antidote à la zone grise qui te plombait. Quand un footing inclut des lignes droites, ce sont 6 accélérations courtes et <strong>relâchées</strong>, juste pour réveiller la foulée : jamais un travail de vitesse, jamais en force, pour préserver ton dos.</p>`},
- am:{titre:'Allure marathon',icone:'🎯',sections:[
+ am:{titre:'Allure marathon',icone:'',sections:[
    {h:'La spécificité : t\'entraîner comme tu courses',html:`<p>Plus tu approches de Nice, plus l'entraînement doit <strong>ressembler à la course</strong>. Tenir précisément 5:20/km en séance apprend deux choses à ton corps : à ton <em>système nerveux</em>, le geste exact à cette allure ; à ton <em>métabolisme</em>, le bon mélange de carburants. C'est la définition de la spécificité — et c'est pour ça que ces séances montent en volume à mesure que la course approche.</p>`},
    {h:'Le métabolisme à allure marathon',html:`<p>À 5:20/km, tu brûles un <strong>mélange de glucides et de graisses</strong>. Le glycogène (sucre stocké dans les muscles et le foie) est ton carburant rapide, mais limité : ~90 à 120 minutes de stock. Au-delà, si tu n'as pas rechargé, c'est la panne.</p>`+svgGlycogen()+`<p>D'où les deux parades que cette séance entraîne : mieux <strong>oxyder les graisses</strong> (pour épargner le glycogène) et <strong>apprendre à manger en courant</strong>.</p>`},
    {h:'Le mur, expliqué',html:`<p>« Le mur » du marathon (souvent vers 30-35 km) n'est pas une faiblesse mentale : c'est <strong>l'épuisement du glycogène</strong>. Ton cerveau et tes muscles manquent brutalement de carburant rapide, l'allure s'effondre. La séance d'allure marathon, en répétant l'intensité exacte de la course, repousse ce seuil — et te force à roder ton plan nutrition.</p>`},
    {h:'Pourquoi 5:20/km, à la seconde près',html:`<p>Pour viser <strong>3h45</strong>, il faut tenir <strong>5:20/km</strong>. L'erreur la plus coûteuse du marathon, c'est de partir 10 sec/km trop vite : tu « gagnes » 2 minutes au début que tu rends au prix de 5-6 minutes à la fin. Répéter 5:20 jusqu'à ce que ce soit gravé dans tes jambes, c'est ta meilleure assurance.</p><table class="theo-tab"><tr><th>Point</th><th>Temps cible</th></tr><tr><td>5 km</td><td>26:40</td></tr><tr><td>10 km</td><td>53:20</td></tr><tr><td>Semi (21,1)</td><td>1:52:30</td></tr><tr><td>30 km</td><td>2:40:00</td></tr><tr><td>Arrivée</td><td>3:45:00</td></tr></table>`},
-   {h:'La dérive cardiaque',html:`<p>Sur un effort prolongé, ta FC peut <strong>monter alors que ton allure reste constante</strong> : c'est le découplage. Plus il survient tôt, plus c'est un signal de fatigue, de chaleur ou de déshydratation.</p>`+svgDerive()+`<p class="theo-perso">📌 <strong>Pour toi :</strong> surveille ce découplage sur tes séances AM. S'il apparaît vite, c'est ton signal hydratation/électrolytes — exactement le mécanisme de La Circaète.</p>`}],
+   {h:'La dérive cardiaque',html:`<p>Sur un effort prolongé, ta FC peut <strong>monter alors que ton allure reste constante</strong> : c'est le découplage. Plus il survient tôt, plus c'est un signal de fatigue, de chaleur ou de déshydratation.</p>`+svgDerive()+`<p class="theo-perso"><strong>Pour toi :</strong> surveille ce découplage sur tes séances AM. S'il apparaît vite, c'est ton signal hydratation/électrolytes — exactement le mécanisme de La Circaète.</p>`}],
    coach:`<p>Loïc, chaque séance d'allure marathon est un <strong>test de calibrage</strong> : est-ce que 5:20/km « coule » ou est-ce que ça force déjà ? Plus tu avances dans le bloc, plus ces séances s'allongent (1×4 km en reprise, puis 3×4, puis 2×6 km au cœur du spécifique) — c'est là que se joue 3h45. Profites-en <strong>systématiquement pour roder ton fueling de course</strong> : un gel testé (4Endurance ou Nduranz) même sur les formats courts, pour habituer l'estomac. Rien de nouveau le jour J.</p>`},
- longue:{titre:'Sortie longue',icone:'⛰️',sections:[
+ longue:{titre:'Sortie longue',icone:'',sections:[
    {h:'La séance reine',html:`<p>Si tu ne devais garder qu'une séance par semaine, ce serait celle-ci. Le marathon se gagne sur l'endurance, et l'endurance se construit sur la <strong>durée</strong>. La sortie longue étend tes réserves de glycogène, multiplie tes capillaires, renforce tendons et articulations dans la durée, et surtout muscle ta tête : rester efficace quand c'est long et que ça devient inconfortable.</p>`},
    {h:'Glycogène, capillaires, durée',html:`<p>Passé ~90 minutes, ton corps s'adapte : il apprend à stocker plus de glycogène et à mieux brûler les graisses pour l'épargner. C'est l'adaptation clé du marathonien.</p>`+svgGlycogen()+`<p>C'est aussi pour ça que la durée compte plus que l'allure : courir lentement <strong>longtemps</strong> bat courir vite <strong>court</strong>.</p>`},
-   {h:'Le fueling, ton limiteur n°1',html:`<p class="theo-perso">📌 C'est <strong>ton</strong> point faible identifié. À La Circaète, tu t'es effondré au km 20-21 : pas par manque de jambes, mais par <strong>déficit d'eau et d'électrolytes</strong> par 26-31°C. Yannis t'a relancé avec une pastille de sodium.</p><p>La sortie longue est <em>l'</em>occasion de répéter ton plan, jamais de l'improviser le jour J :</p><p><strong>• Électrolytes :</strong> 1 pastille toutes les 45 min sur effort long ou par chaleur, sans attendre.<br><strong>• Hydratation :</strong> boire <strong>avant</strong> d'avoir soif (~500-600 ml/h).<br><strong>• Glucides :</strong> 1 gel testé toutes les 40-45 min (4Endurance Pro, Nduranz NRGY — déjà validés en training).<br><strong>• Règle d'or :</strong> rien de nouveau le jour de la course.</p>`},
+   {h:'Le fueling, ton limiteur n°1',html:`<p class="theo-perso">C'est <strong>ton</strong> point faible identifié. À La Circaète, tu t'es effondré au km 20-21 : pas par manque de jambes, mais par <strong>déficit d'eau et d'électrolytes</strong> par 26-31°C. Yannis t'a relancé avec une pastille de sodium.</p><p>La sortie longue est <em>l'</em>occasion de répéter ton plan, jamais de l'improviser le jour J :</p><p><strong>• Électrolytes :</strong> 1 pastille toutes les 45 min sur effort long ou par chaleur, sans attendre.<br><strong>• Hydratation :</strong> boire <strong>avant</strong> d'avoir soif (~500-600 ml/h).<br><strong>• Glucides :</strong> 1 gel testé toutes les 40-45 min (4Endurance Pro, Nduranz NRGY — déjà validés en training).<br><strong>• Règle d'or :</strong> rien de nouveau le jour de la course.</p>`},
    {h:'L\'endurance mentale (la durabilité)',html:`<p>Au-delà du physique, la sortie longue entraîne ta <strong>durabilité</strong> : ta capacité à garder une foulée efficace quand la fatigue s'installe. Deux coureurs avec le même VO2max ne finissent pas pareil un marathon — c'est la durabilité qui les sépare. Et ça, ça ne se travaille qu'en accumulant des kilomètres fatigués.</p>`},
    {h:'Le finish allure marathon',html:`<p>Quand la sortie longue se termine par quelques km à 5:20/km sur des jambes déjà entamées, tu répètes <strong>exactement le 35e km de Nice</strong>. C'est dur, c’est volontaire, et c'est ce qui fait la différence entre finir solide et marcher. Garde toujours du jus pour ce finish : tu dois le terminer en contrôle, pas cramé.</p>`}],
    coach:`<p>Loïc, sur tes sorties longues, deux non-négociables. <strong>Un : le fueling, dès le départ et même sans « besoin »</strong> — c'est l'automatisme à graver après ta défaillance de juin (pastilles d'électrolytes + gels testés, boire avant la soif). <strong>Deux : la régularité de l'allure</strong>, en EF (≤ 150) sur le corps. Quand un finish allure marathon est prévu, garde du jus pour le tenir en contrôle : c'est la répétition exacte du 35e km de Nice. Plus tard, ces longues iront jusqu'à 30 km avec 14 km de finish AM — la vraie séance reine de ta prépa.</p>`},
- seuil:{titre:'Seuil',icone:'🔥',sections:[
+ seuil:{titre:'Seuil',icone:'',sections:[
    {h:'Qu\'est-ce que le seuil ?',html:`<p>À l'effort, tes muscles produisent du <em>lactate</em>. Tant que ton corps l'élimine (la « clairance ») aussi vite qu'il le produit, tu tiens. Au-delà d'une certaine intensité — ton <strong>seuil lactique</strong> — le lactate s'accumule, l'acidité monte, et tu dois ralentir.</p>`+svgLactate()+`<p>Entraîner le seuil, c'est déplacer ce point de bascule <strong>plus haut</strong> : courir plus vite, plus longtemps, avant de « cramer ».</p>`},
    {h:'Le déterminant n°1 de ton chrono',html:`<p>Plus que le VO2max (largement génétique), c'est ton seuil qui décide de ta performance du 10 km au marathon. C'est aussi la qualité qui répond le plus vite à l'entraînement : <strong>quelques semaines de seuil bien fait font gagner des minutes</strong>. C'est ton meilleur retour sur investissement par heure courue.</p>`},
    {h:'Confortablement dur (et pas plus)',html:`<p>L'allure de seuil, c'est « confortablement dur » : tu pourrais lâcher 3-4 mots, pas une phrase complète. FC <strong>88-92 % de FCmax (169-177)</strong>.</p>`+svgZonesFC(3)+`<p>Tu dois finir en te disant « j'aurais pu tenir un bloc de plus » — <strong>pas vidé</strong>. Si tu finis cuit, c'était trop rapide.</p>`},
    {h:'Seuil 30 vs Seuil 60',html:`<p><strong>Seuil 30</strong> ≈ l'allure que tu tiendrais 30 min en course (~4:40/km pour toi) : un poil plus rapide, blocs plus courts. <strong>Seuil 60</strong> ≈ ton allure semi (~4:55/km) : un peu plus lent, blocs plus longs. Les deux poussent le même plafond par deux angles complémentaires.</p>`},
-   {h:'L\'erreur qui ruine la séance',html:`<p class="theo-perso">📌 Partir trop vite (FC > 180) te fait <strong>basculer au-dessus du seuil</strong>, en VO2max : plus fatigant, moins spécifique, et tu rates la cible physiologique. Le contrôle de l'allure <em>est</em> la séance. Mieux vaut 4:45 tenu proprement que 4:30 qui explose au 2e bloc.</p>`}],
+   {h:'L\'erreur qui ruine la séance',html:`<p class="theo-perso">Partir trop vite (FC > 180) te fait <strong>basculer au-dessus du seuil</strong>, en VO2max : plus fatigant, moins spécifique, et tu rates la cible physiologique. Le contrôle de l'allure <em>est</em> la séance. Mieux vaut 4:45 tenu proprement que 4:30 qui explose au 2e bloc.</p>`}],
    coach:`<p>Loïc, le seuil est la séance qui fera le plus bouger ta projection marathon. La règle d'or pour toi : <strong>FC 169-177, allure contrôlée, et tu surveilles la dérive</strong> sur les derniers blocs. Si ta FC grimpe de +8-10 bpm à allure constante, c'est soit la fatigue, soit l'hydratation (ton point Circaète) — note-le dans ton ressenti, ça nourrit mon analyse. Deux séances qualité par semaine maximum, jamais deux jours de suite.</p>`},
- cotes:{titre:'Côtes — force & économie',icone:'⛰️',sections:[
+ cotes:{titre:'Côtes — force & économie',icone:'',sections:[
    {h:'La force spécifique',html:`<p>Monter, c'est de la musculation <strong>avec le geste exact de la course</strong>. Tu pousses contre la gravité, tu recrutes davantage de fibres rapides, tu renforces fessiers, mollets et tendons — sans charger une barre ni casser ta semaine.</p>`+svgCote()},
    {h:'L\'économie de course (le ressort)',html:`<p>La côte améliore la <em>raideur tendineuse</em> (stiffness) : tes tendons stockent et restituent mieux l'énergie élastique à chaque foulée, comme un ressort. Résultat concret : tu cours <strong>plus vite pour le même coût énergétique</strong>. C'est un gain « gratuit » de performance qui se transfère au plat.</p>`},
    {h:'Pourquoi la côte plutôt que la muscu',html:`<p>La salle développe la force, mais la côte développe la force <em>utilisable en courant</em> — le bon angle, la bonne chaîne, le bon timing. Et sans le stress articulaire de la vitesse à plat : tu montes vite mais tu n'encaisses pas d'impacts violents. Idéal quand on a un dos à ménager.</p>`},
-   {h:'La descente : récup ET technique',html:`<p class="theo-perso">📌 La descente n'est <strong>jamais</strong> en force. Tu redescends en récupération totale, foulée souple, pour deux raisons : laisser le cœur redescendre avant la côte suivante, et <strong>protéger tes quadriceps et tes lombaires</strong> des impacts excentriques. C'est une consigne clé pour toi.</p>`},
+   {h:'La descente : récup ET technique',html:`<p class="theo-perso">La descente n'est <strong>jamais</strong> en force. Tu redescends en récupération totale, foulée souple, pour deux raisons : laisser le cœur redescendre avant la côte suivante, et <strong>protéger tes quadriceps et tes lombaires</strong> des impacts excentriques. C'est une consigne clé pour toi.</p>`},
    {h:'Le lien avec SaintExpress',html:`<p>Pour ton trail de nuit de 45 km, la force en côte et un geste de descente relâché sont déterminants. Ces séances construisent les jambes qui encaisseront le D+ — et la technique de descente que tu rejoueras dans le Pilat.</p>`}],
    coach:`<p>Loïc, en côte : <strong>effort vif et constant en montée</strong> (pas un sprint de départ qui meurt à mi-pente), foulée courte et active, regard 5 m devant. L'idéal, c'est que ta dernière côte ressemble à la première — si elles s'effondrent, tu es parti trop fort. Et je le répète parce que c'est ton point : <strong>descente totalement relâchée</strong>, pour le cœur et pour le dos. Si tu sens une raideur lombaire après, c'est que tu as freiné en force en descente : allège.</p>`},
- test:{titre:'Test / recalibrage',icone:'⏱️',sections:[
+ test:{titre:'Test / recalibrage',icone:'',sections:[
    {h:'Pourquoi tester ?',html:`<p>Tes allures cibles dérivent quand ta forme évolue. Un test <strong>recale tout</strong> : tes zones FC, tes allures de seuil et de marathon, et ta projection. Sans recalibrage régulier, tu t'entraînes sur des chiffres périmés — trop faciles ou trop durs.</p>`},
    {h:'La prédiction de performance',html:`<p>Un 10 km bien couru prédit assez fidèlement ton marathon, via des modèles comme <strong>Riegel</strong> (le temps grandit avec la distance selon un exposant ~1,07).</p>`+svgRiegel()+`<p>C'est exactement ce qui nourrit ta <strong>boule de cristal</strong> : un 10 km plus rapide tire ta projection marathon vers le bas, automatiquement.</p>`},
-   {h:'Le pacing change tout',html:`<p class="theo-perso">📌 Parti trop vite, tu finis en marchant et le chrono <strong>sous-estime</strong> ta vraie forme. En <strong>négatif split</strong> (2e moitié plus rapide), le chrono reflète ton potentiel réel. Le test mesure autant ta forme que ta gestion d'allure — deux choses qui comptent le jour J.</p>`},
+   {h:'Le pacing change tout',html:`<p class="theo-perso">Parti trop vite, tu finis en marchant et le chrono <strong>sous-estime</strong> ta vraie forme. En <strong>négatif split</strong> (2e moitié plus rapide), le chrono reflète ton potentiel réel. Le test mesure autant ta forme que ta gestion d'allure — deux choses qui comptent le jour J.</p>`},
    {h:'Comment courir ton test',html:`<p>Échauffement <strong>complet</strong> (15-20 min + quelques accélérations) : un test à froid est faussé et sous-évalue tout. Pars légèrement <em>sous</em> ce que tu penses tenir, installe-toi, puis accélère progressivement. Donne tout sur les 2 derniers km.</p>`},
    {h:'Ce que le test recalibre',html:`<p>Après un test : on remonte (ou ajuste) tes zones FC, tes allures de seuil et marathon, et la projection se met à jour. C'est ton <strong>juge de paix périodique</strong> — la vérité du terrain, sans ego ni sensation trompeuse.</p>`}],
    coach:`<p>Loïc, un test, ça se respecte : échauffement sérieux, pacing maîtrisé, et tu logues bien le résultat (distance + temps) — la boule de cristal se réactualise toute seule et tes allures cibles suivent. Pars sur un négatif split : c'est le meilleur moyen d'obtenir ton <strong>vrai</strong> niveau, pas un chrono gâché par un départ trop ambitieux. Et compare au test précédent : une allure qui progresse = des zones à remonter.</p>`},
- trail:{titre:'Spécifique trail',icone:'🏔️',sections:[
+ trail:{titre:'Spécifique trail',icone:'',sections:[
    {h:'Le trail, une autre discipline',html:`<p>Le trail ne se court pas comme la route. L'allure ne veut plus rien dire (le relief commande), c'est l'<strong>effort</strong> qui se gère. On ajoute la technique (pieds, équilibre, lecture du terrain), le dénivelé, et une gestion mentale plus longue. Tes séances spécifiques trail préparent <strong>SaintExpress</strong> : 45 km de nuit, ton objectif plaisir.</p>`},
    {h:'Économie en montée et descente',html:`<p>La montée se gère en <strong>effort constant</strong>, quitte à marcher vite (power hiking) quand ça devient raide — souvent plus économique que courir. La descente, elle, est une compétence à part entière : relâchement, cadence rapide, petits pas.</p>`+svgCote()},
    {h:'La gestion d\'effort',html:`<p>Sur un long trail, partir « aux sensations » est un piège : le relief te fait surpayer le moindre excès. La règle : rester en deçà de ce que tu pourrais faire, surtout en début de course. <strong>Le trail se gagne en seconde moitié</strong>, sur ceux qui ont gardé des jambes.</p>`},
-   {h:'Fueling longue durée — et de nuit',html:`<p class="theo-perso">📌 C'est <strong>ton</strong> limiteur, et SaintExpress l'amplifie : 45 km, plusieurs heures, de nuit, au froid. Le froid masque la soif → tu bois moins → risque de défaillance comme à La Circaète. Plan : <strong>boire et manger à intervalles réguliers à la montre</strong> (pas à la sensation), électrolytes même par temps frais, et des apports solides en plus des gels sur cette durée.</p>`},
+   {h:'Fueling longue durée — et de nuit',html:`<p class="theo-perso">C'est <strong>ton</strong> limiteur, et SaintExpress l'amplifie : 45 km, plusieurs heures, de nuit, au froid. Le froid masque la soif → tu bois moins → risque de défaillance comme à La Circaète. Plan : <strong>boire et manger à intervalles réguliers à la montre</strong> (pas à la sensation), électrolytes même par temps frais, et des apports solides en plus des gels sur cette durée.</p>`},
    {h:'Technique de descente & ton dos',html:`<p>En descente, <strong>ne freine pas en force</strong> : tu déroules, cadence élevée, buste légèrement en avant. Freiner avec les quadris contractés, c'est l'impact excentrique qui martèle tes lombaires — ton point de vigilance. Une descente relâchée protège ton dos <em>et</em> va plus vite.</p>`}],
    coach:`<p>Loïc, SaintExpress est ton objectif <strong>plaisir</strong>, 3 semaines après Nice : aucune pression chrono, c'est l'expérience du nocturne hivernal et du relief. Ces séances trail construisent les jambes (force, descente) et rodent ta logistique de nuit (frontale, couches, fueling au froid). Reste prudent sur les descentes pour le dos, et traite chaque sortie comme une répétition de gestion d'effort longue durée. Le Pilat est ton terrain — profites-en.</p>`}
 };
@@ -4318,7 +4178,7 @@ function theoryPanelHTML(tag){const T=RICH_THEORY[tag];if(!T)return '';
   const ttsBar=(typeof window!=='undefined'&&'speechSynthesis' in window)?`<div class="tts-bar" id="ttsBar"><button class="tts-btn tts-play" onclick="ttsPlay()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5v5h3.5L12 19V5L7.5 9.5z"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/></svg>Écouter la leçon</button><span class="tts-hint">lecture vocale de toute la leçon</span></div>`:'';
   return `<div class="theo-sheet-head"><div><div class="theo-kicker">Théorie & coaching · ${T.icone}</div><div class="theo-sheet-titre">${T.titre}</div></div><button class="theo-close" onclick="closeTheory()" aria-label="Fermer le panneau">✕</button></div>
     ${ttsBar}
-    <div class="theo-sheet-body" id="theoSheetBody">${secs}<div class="theo-coachbox" id="tsec-coach"><div class="theo-coachbox-h">🧠 Le mot du coach — personnalisé</div>${T.coach}</div><div class="theo-end">Tu sais maintenant le <em>pourquoi</em> et le <em>comment</em>. Bonne séance, Loïc.</div></div>`;
+    <div class="theo-sheet-body" id="theoSheetBody">${secs}<div class="theo-coachbox" id="tsec-coach"><div class="theo-coachbox-h">Le mot du coach — personnalisé</div>${T.coach}</div><div class="theo-end">Tu sais maintenant le <em>pourquoi</em> et le <em>comment</em>. Bonne séance, Loïc.</div></div>`;
 }
 function openTheory(num,id){const se=findSeance(num,id);if(!se)return;const tag=seanceTag(se);if(!RICH_THEORY[tag])return;
   if(typeof ttsStop==='function')ttsStop();
@@ -4482,7 +4342,7 @@ function _fsKm(sp,c,src){
     +(cr?'<div class="fs-km-leg"><p><span class="fs-km-sw ok"></span>Dans la cible</p>'+(vite?'<p><span class="fs-km-sw vite"></span>Trop rapide</p>':'')+(lent?'<p><span class="fs-km-sw lent"></span>Trop lent</p>':'')+'</div>':'')
     +'<p class="fs-note fs-note-2">Le plus rapide : km '+rap.n+' en '+_fsAll(rap.p)+'. Le plus lent : km '+len.n+' en '+_fsAll(len.p)+'. Écart de '+Math.round(len.p-rap.p)+' s/km.</p>';
 }
-function ficheFaite(num,se){
+function ficheFaite(num,se,tts){
   var r=se.realise||{},cle=num+'-'+se.id,rw=typeof RS!=='undefined'&&RS.dispo(cle),c=(typeof RS!=='undefined'&&RS.cibleFiche)?RS.cibleFiche(cle):null;
   var t0=String(se.titre||'').replace(/\s*\((non planifie|non planifié)\)\s*/i,'').trim(),mt=t0.match(/^(.*?)\s*\(([^)]+)\)\s*$/);
   var titre=mt?mt[1]:t0,note=mt?_acCap(mt[2]):'',d=se.date?new Date(se.date+'T12:00:00'):null;
@@ -4534,13 +4394,15 @@ function ficheFaite(num,se){
     +(cc?'<p class="fs-kick">Conseil : '+_acEsc(String(cc.titre||'').replace(/^./,function(x){return x.toLowerCase();}))+'</p><p class="fs-para fs-gris">'+cc.texte+'</p>':'')
     +(bv?'<details class="fs-revue"><summary>Bénéfices et vigilance'+_acIco('fleche',18)+'</summary>'+bv+'</details>':'')
     +(se.chaussure?'<p class="fs-note">Chaussure conseillée : '+_acEsc(se.chaussure)+'</p>':'')
+    +(typeof RICH_THEORY!=='undefined'&&RICH_THEORY[seanceTag(se)]?'<button type="button" class="theo-btn theo-btn-rich" onclick="openTheory('+num+','+se.id+')">La théorie de cette séance <span class="theo-btn-arr" aria-hidden="true">›</span></button>':'')
+    +(tts||'')
     +'<div class="fs-modif" id="modifier">'+logForm(num,se)+'</div></section>'
     +'</div>';
 }
 function ouvrirSeance(num,id){const se=(SEANCES_BY_WEEK[num]||[]).find(x=>x.id===id);if(!se)return;segActif=null;if(typeof ttsStop==='function')ttsStop();
   const ttsBarSeance=(typeof window!=='undefined'&&'speechSynthesis' in window)?`<div class="tts-bar tts-bar-seance" id="ttsBarSeance"><button class="tts-btn tts-play" onclick="ttsPlaySeance(${num},${se.id})"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5v5h3.5L12 19V5L7.5 9.5z"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/></svg>Écouter la séance</button><span class="tts-hint">lecture vocale de la fiche, de haut en bas</span></div>`:'';
   topbar.innerHTML=`<button class="btn-nav" onclick="ouvrirSemaine(${num})">‹ Retour semaine ${num}</button>${btnFermer}`;
-  {const _r=se.realise||{};if(_r.statut==='fait'||_r.statut==='partiel'){contenu.innerHTML=ficheFaite(num,se);ouvrir();
+  {const _r=se.realise||{};if(_r.statut==='fait'||_r.statut==='partiel'){contenu.innerHTML=ficheFaite(num,se,ttsBarSeance);ouvrir();
     try{if(typeof RS!=='undefined'&&RS.dispo(num+'-'+se.id))RS.ficheDetail(num+'-'+se.id);}catch(e){console.warn('fiche',e);}return;}}
   const metr=Object.entries(se.metriques).map(([k,v])=>`<div class="metrique"><div class="metrique-l">${k}</div><div class="metrique-v">${v}</div></div>`).join('');
   const struct=se.struct.map((b,i)=>{const c=(i===0||i===se.struct.length-1)?'#16a34a':se.accent;return `<div class="struct-ligne"><div class="struct-puce" style="background:${c}"></div><div class="struct-nom">${b.nom}</div><div class="struct-txt">${b.txt}</div></div>`;}).join('');
@@ -5295,7 +5157,7 @@ function vu(cle){const d=derniere();if(!cle||!d||d.cle!==cle)return;try{localSto
    tant qu'elle a moins de 8 jours. Chiffres du réalisé, verdict du coach (repris de la revue), prévu face
    au réalisé calculé (allure, FC, distance), « Lire l'analyse » (la fiche) et « Revoir » (le Rewind). */
 function carte(){const el=document.getElementById('ac-coach');if(!el)return;const d=derniere();
-  if(!d||!d.s.date||(Date.now()-jd(d.s.date))/864e5>7.5){el.hidden=true;el.innerHTML='';return;}
+  const _age=d&&d.s.date?(Date.now()-jd(d.s.date))/864e5:null;if(_age==null||_age>7.5||_age<-1){el.hidden=true;el.innerHTML='';return;}
   const s=d.s,r=s.realise||{},[w,i]=d.cle.split('-'),t0=titreSeance(s),mt=t0.match(/^(.*?)\s*\(([^)]+)\)\s*$/);
   const titre=mt?mt[1]:t0,note=mt?mt[2].charAt(0).toUpperCase()+mt[2].slice(1):'',km=+r.km,al=String(r.allure||'').match(/^(\d+:\d\d)/);
   const ch=[['Distance',km>0?fN(km,2):null,'km'],['Allure',al?al[1]:null,'/km'],['Temps',r.temps||null,'']].filter(x=>x[1]);

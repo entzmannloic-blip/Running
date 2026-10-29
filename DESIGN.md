@@ -136,7 +136,7 @@ Chaque état a un aplat (graphes, points), une encre (texte) et un fond (puces).
 
 ## Layout
 
-Colonne unique, largeur maximale 480 px pour les vues redessinées (Accueil), 1000 px pour les autres ; marges de 12 px autour des cartes de l'Accueil, 20 à 24 px dans la fiche et le Rewind ; 12 px entre les cartes. Espacement sur une base de 4 px (`--sp-1` à `--sp-12`). Référence de conception : iPhone 390 px.
+Colonne unique, largeur maximale 480 px pour l'Accueil, le Cockpit et Courses, 1000 px pour Séances (grille de semaines) ; marges de 12 px autour des cartes de l'Accueil, 20 à 24 px dans la fiche et le Rewind ; 12 px entre les cartes. Espacement sur une base de 4 px (`--sp-1` à `--sp-12`). Référence de conception : iPhone 390 px.
 
 ## Elevation & Depth
 
@@ -176,6 +176,15 @@ Rayons : 8 px (petits éléments), 12 px (encarts), 14 px (boutons), 18 px (cart
 ### Chips
 Pastille 26 px de haut, 12 px semi-gras : réalisé (vert sur fond vert), vigilance (ocre sur fond ocre), marque (orange encre sur lavis), neutre (encre 2 sur fond gris). Une coche au trait peut précéder le texte.
 
+### Vues
+- **Titre de vue** (`.vue-tete`) : étiquette 12 px au-dessus, titre en Barlow 34 px 800 (Séances, Cockpit, Courses ; la date sur l'Accueil).
+- **Séances** : phases sans couleur (étiquette « Phase N · Sx – Sy », nom 22 px), semaines en cartes blanches (volume en Barlow, barre de progression des séances faites en orange sur lavis, semaine en cours entourée de 2 px d'orange, coche verte pour une semaine finie).
+- **Cockpit** : quatre onglets en contrôle segmenté (piste `--piste` #E9E9EC, onglet actif blanc) : Aujourd'hui (forme en anneau de 120 px et quatre indicateurs, Charge avec barre de zones 0,5–2,0 et repère noir, VO₂max, N dernières semaines), Progression (« Où j'en suis » en lignes avec mini-courbes 96 × 34 px, cartes d'analyse), Records, Analyse (graphes et tableau de bord en groupes repliables à icône au trait).
+- **Courses** : « Ta saison en chiffres », à venir (J-N en Barlow, orange pour la première), passées (totaux, temps et allure, puces, bilan à déplier).
+
+### Fiches et panneaux
+Fiche d'une séance (faite ou à faire), de la semaine et dossier de course partagent une grammaire : sections blanches séparées par une bande de 8 px du fond gris, en-tête (date en étiquette, titre 28 px 800, puces), chiffres en grille de trois colonnes à filets, titres de section 20 px gras, listes à filets d'un pixel. La barre du haut est givrée (blanc à 92 %), « ‹ Retour » en orange encre, croix dans un rond gris. Les Rewinds (séance, semaine, saison en chiffres) sont sur fond blanc.
+
 ### Navigation
 Barre fixe en bas, givrée, quatre onglets de largeur égale (Accueil, Séances, Cockpit, Courses), icône au trait 24 px et étiquette 11 px semi-gras ; actif : icône orange vif et étiquette orange encre ; inactif : encre 3. 48 px de haut minimum, marge basse = zone de sécurité iOS.
 
@@ -199,5 +208,7 @@ Anneau SVG (trait de 7 px, fond en lavis, arc orange vif) avec la valeur centré
 - **Don't** ajouter une couleur ad hoc hors jetons (`scripts/audit_tokens.py` refuse une hausse) ; les dégradés propres à chaque course (dossiers) restent la seule exception.
 - **Don't** utiliser une couleur d'état pour décorer, ni l'ambre (remplacé par l'ocre).
 - **Don't** mettre d'ombre ou de bordure sur une carte, ni d'emoji dans l'interface.
-- **Don't** réintroduire de mode sombre (retiré au build 242) ni de serif.
+- **Don't** réintroduire de mode sombre (retiré au build 242) ni de serif, ni de carte sombre (profil de coureur, Rewinds).
+- **Don't** colorer une phase, une course ou une semaine : l'identité vient du texte, l'orange marque seulement l'actuel ou l'important.
+- **Don't** animer en boucle (ECG, reflets, respirations) : les animations jouent une fois.
 - **Don't** afficher une valeur par défaut qui ressemble à une mesure (0, NaN, undefined) quand la donnée manque.
