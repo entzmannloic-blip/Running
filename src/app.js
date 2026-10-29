@@ -4791,7 +4791,7 @@ function img1(se,a){
    n'en contient aucune. */
 const CARTE_C=40075016.68557849;
 function fondCarte(se,G){
-  const fond=h('div',{class:'rs-fond','aria-hidden':'true'}),att=h('a',{class:'rs-attrib',href:'https://www.openstreetmap.org/copyright',target:'_blank',rel:'noopener'},'© OpenStreetMap contributors'),A=se.ancrage;
+  const fond=h('div',{class:'rs-fond','aria-hidden':'true'}),att=h('span',{class:'rs-attrib'},h('a',{href:'https://www.openstreetmap.org/copyright',target:'_blank',rel:'noopener'},'© OpenStreetMap contributors')),A=se.ancrage;
   let fait=false;
   const charge=()=>{
     if(fait||!A||navigator.onLine===false)return;fait=true;

@@ -800,7 +800,7 @@ def run():
 
         LIRE_CARTE = """(()=>{const c=document.querySelector('.rs-sl:last-child .rs-carte'),a=c.querySelector('.rs-attrib');
             return {imgs:[...c.querySelectorAll('.rs-fond img')].map(i=>({src:i.getAttribute('src'),left:parseFloat(i.style.left),top:parseFloat(i.style.top),w:parseFloat(i.style.width)})),
-              attrib:getComputedStyle(a).display!=='none'?a.innerText.trim():null,attribPx:parseFloat(getComputedStyle(a).fontSize),href:a.href,
+              attrib:getComputedStyle(a).display!=='none'?a.innerText.trim():null,attribPx:parseFloat(getComputedStyle(a).fontSize),href:a.querySelector('a').href,
               casing:c.querySelector('svg > path').getAttribute('d'),lignes:c.querySelectorAll('svg g > line').length,
               box:c.getBoundingClientRect().width,legende:!!document.querySelector('.rs-sl:last-child .rs-legende'),
               cap:document.querySelector('.rs-sl:last-child .rs-cap').innerText,aria:c.querySelector('svg').getAttribute('aria-label')}})()"""

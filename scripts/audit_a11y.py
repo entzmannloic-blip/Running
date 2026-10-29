@@ -116,6 +116,9 @@ def main():
                             service_workers="block", reduced_motion="reduce",
                             color_scheme="light")
         ctx.route("**/*open-meteo.com/**", lambda r: r.abort())
+        # fond de carte du Rewind : fausses tuiles, pour auditer l'attribution visible avec ou sans réseau
+        ctx.route("**/tile.openstreetmap.org/**", lambda r: r.fulfill(status=200, content_type="image/svg+xml",
+                  body=b'<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256"><rect width="256" height="256" fill="#e9ecee"/></svg>'))
         p = ctx.new_page()
         p.clock.install(time="2026-10-08T10:00:00")
         p.goto(html_url(), wait_until="load", timeout=20000)
