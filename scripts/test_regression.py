@@ -33,6 +33,12 @@ PASS = []
 FAIL = []
 
 
+CHROME_JS = """var chrome=function(root){var sel='h1,h2,h3,h4,button,.ac-lb,.ac-puce,.fs-kick,.seance-tag,.st-chip,.cat-badge,.sem-num,.phase-lab,label,summary,[role=tab],.vue-titre,.lt-title';
+  var rx=/\\p{Extended_Pictographic}/u,out=[];root.querySelectorAll(sel).forEach(function(e){if(e.closest('.rev-coach'))return;
+  var t=(e.innerText||'').trim();if(rx.test(t))out.push(t.slice(0,40));});return out;};
+"""
+
+
 def check(name, cond, detail=""):
     if cond:
         PASS.append(name)
@@ -783,6 +789,30 @@ def run():
                   fi["chif"] == 6 and fi["pvr"] == 3 and fi["coach"] and fi["km"] >= 10 and fi["bande"] and fi["segs"] > 50
                   and fi["prevue"] and not fi["vide"], str(fi))
             pf.evaluate("fermer()")
+            # Seances, fiche semaine, fiche d'une seance a faire (lot 5, partie B) : sans couleur de phase ni emoji dans l'interface
+            pf.evaluate("showTab('plan')")
+            pf.wait_for_timeout(300)
+            pl = pf.evaluate(CHROME_JS + """(function(){var v=document.getElementById('vue-plan');return {cartes:v.querySelectorAll('.sem-carte').length,
+                semaines:SEMAINES.length,puces:v.querySelectorAll('.phase-puce').length,cur:v.querySelectorAll('.sem-carte.sem-cur').length,emo:chrome(v)};})()""")
+            pf.evaluate("ouvrirSemaine(44)")
+            pf.wait_for_timeout(500)
+            sw = pf.evaluate(CHROME_JS + """(function(){var c=document.getElementById('contenu');return {fsw:!!c.querySelector('.fsw'),
+                ses:c.querySelectorAll('.seance-carte').length,attendu:(SEANCES_BY_WEEK[44]||[]).length,emo:chrome(c)};})()""")
+            pf.evaluate("fermer()")
+            cle = pf.evaluate("(function(){var t=new Date().toISOString().slice(0,10);for(var w in SEANCES_BY_WEEK){var a=SEANCES_BY_WEEK[w];for(var i=0;i<a.length;i++){var r=a[i].realise||{};if((!r.statut||r.statut==='a_faire')&&a[i].date>=t&&a[i].struct&&a[i].struct.length)return [w,a[i].id];}}return null;})()")
+            fp = {"cle": cle}
+            if cle:
+                pf.evaluate(f"ouvrirSeance('{cle[0]}',{cle[1]})")
+                pf.wait_for_timeout(500)
+                fp = pf.evaluate(CHROME_JS + """(function(){var c=document.getElementById('contenu'),f=c.querySelector('.fp');return {fp:!!f,
+                    titres:f?[...f.querySelectorAll('h3')].map(function(h){return h.textContent;}):[],log:!!c.querySelector('#logform'),emo:chrome(c),
+                    vide:/NaN|undefined|Infinity/.test(c.innerText)};})()""")
+                pf.evaluate("fermer()")
+            check("T27 Séances, fiche semaine, fiche à faire : cartes sans couleur de phase, semaine en cours marquée, sections de la fiche, aucun emoji dans l'interface",
+                  pl["cartes"] == pl["semaines"] and pl["puces"] == 0 and pl["cur"] <= 1 and not pl["emo"]
+                  and sw["fsw"] and sw["ses"] == sw["attendu"] and not sw["emo"]
+                  and fp.get("fp") and "Le réalisé" in fp.get("titres", []) and "Le déroulé" in fp.get("titres", []) and fp.get("log")
+                  and not fp.get("emo") and not fp.get("vide"), f"{pl} {sw} {fp}")
             ctxf.close()
         except Exception as e:
             check("T24 police des chiffres embarquee", False, str(e)[:160])

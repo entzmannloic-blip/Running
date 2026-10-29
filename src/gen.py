@@ -2727,6 +2727,11 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":276,"date":"29 octobre 2026","sha":"","tag":"Blanc et orange (5/8) : Séances et fiches","items":[
+    "SÉANCES : titre de la vue, phases sans pastille de couleur, semaines en cartes blanches (volume en grand, progression des séances en orange, semaine en cours entourée).",
+    "FICHE DE LA SEMAINE : chiffres (volume prévu, réalisé, séances faites), objectif, séances en liste avec le jour, bilan du coach ; « Revoir la semaine ».",
+    "FICHE D'UNE SÉANCE À FAIRE : même grammaire que la fiche faite : chiffres prévus, chaussure conseillée, « Télécharger pour la montre », objectif, déroulé et frise, conseils du coach, nutrition, le réalisé à logger ; l'analyse du coach s'affiche aussi pour une séance sautée.",
+    "Revues du coach en texte simple ; records de la séance sobres ; lecture vocale, théorie et bouton « Semaine en cours » sans emoji."]},
   {"build":275,"date":"29 octobre 2026","sha":"","tag":"Blanc et orange (4/4) : Rewind de séance sur fond blanc","items":[
     "REWIND DE SÉANCE : fond blanc, encre noire, orange seul accent, ocre pour le dépassement de cible ; barre de progression orange.",
     "IMAGE 1 : le titre et sa note séparés, la distance en très grand, les six chiffres en deux colonnes sans cadres, « Aller à l'analyse du coach » en bouton.",

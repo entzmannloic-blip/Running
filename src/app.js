@@ -27,12 +27,12 @@ let _gradSeq=0;
 function rpeColor(r){return r<=3?'#16a34a':r<=5?'#F4561D':r<=6.9?'#CA8A04':r<=8?'#CA8A04':'#DC2626';}
 function rpeScale(r){let h='';for(let i=1;i<=10;i++){const on=i<=Math.round(r);h+=`<div class="rpe-seg" style="background:${on?rpeColor(r):''}"></div>`;}return h;}
 function catBadge(c){return c==='specifique'?'<span class="cat-badge cat-specifique">Spécifique</span>':'<span class="cat-badge cat-classique">Classique</span>';}
-function stChip(st){const m={a_faire:['st-afaire','À faire'],fait:['st-fait','Fait ✓'],partiel:['st-partiel','Partiel'],manque:['st-manque','Manqué'],skipped:['st-manque','Sautée']};const x=m[st]||m.a_faire;return `<span class="st-chip ${x[0]}">${x[1]}</span>`;}
+function stChip(st){const m={a_faire:['st-afaire','À faire'],fait:['st-fait','Fait ✓'],partiel:['st-partiel','Partiel'],manque:['st-manque','Manqué'],skipped:['st-manque','Sautée'],echec:['st-partiel','Annulée']};const x=m[st]||m.a_faire;return `<span class="st-chip ${x[0]}">${x[1]}</span>`;}
 function prCelebration(o){if(!o)return'';const pr=o.pr||0,ach=o.ach||0;if(pr+ach<=0)return'';
-  const parts=[];if(pr>0)parts.push(`<span class="prc-stat"><span class="prc-n">${pr}</span> record${pr>1?'s':''} perso</span>`);
-  if(ach>0)parts.push(`<span class="prc-stat"><span class="prc-n">${ach}</span> trophée${ach>1?'s':''} de segment</span>`);
-  const detail=(o.pr_detail&&o.pr_detail.length)?`<div class="prc-detail">${o.pr_detail.map(d=>`<span class="prc-chip">🥇 ${d}</span>`).join('')}</div>`:'';
-  return `<div class="prc"><div class="prc-burst">🎉</div><div class="prc-body"><div class="prc-titre">Records tombés !</div><div class="prc-row">${parts.join('<span class="prc-sep">·</span>')}</div>${detail}</div></div>`;}
+  /* lot 5 : records de la séance, sobres, sans emoji */
+  const parts=[];if(pr>0)parts.push(`<b>${pr}</b> record${pr>1?'s':''} perso`);if(ach>0)parts.push(`<b>${ach}</b> trophée${ach>1?'s':''} de segment`);
+  const detail=(o.pr_detail&&o.pr_detail.length)?`<div class="prc-detail">${o.pr_detail.map(d=>`<span class="ac-puce or">${_sansEmoji(d)}</span>`).join('')}</div>`:'';
+  return `<div class="prc"><span class="prc-ico" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="15" r="5.5"/><path d="M8.5 10.5 6 3h4l2 4 2-4h4l-2.5 7.5"/></svg></span><div class="prc-body"><p class="prc-titre">Records tombés</p><p class="prc-row">${parts.join(' · ')}</p>${detail}</div></div>`;}
 function fmt(s){const m=Math.floor(s/60),x=s%60;return x?`${m} min ${String(x).padStart(2,'0')}`:`${m} min`;}
 function paceFmt(s){const m=Math.floor(s/60),x=Math.round(s%60);return `${m}:${String(x).padStart(2,'0')}`;}
 function isoWeek(d){d=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()));const day=d.getUTCDay()||7;d.setUTCDate(d.getUTCDate()+4-day);const ys=new Date(Date.UTC(d.getUTCFullYear(),0,1));return Math.ceil((((d-ys)/86400000)+1)/7);}
@@ -1313,12 +1313,16 @@ async function renderMeteo(){
 
 /* ===== PLAN ===== */
 function renderPlan(){const phasesEl=document.getElementById('phases');phasesEl.innerHTML='';const _cur=isoWeek(new Date());
-  PHASES.forEach(ph=>{const bloc=document.createElement('div');bloc.className='phase-bloc';const sems=SEMAINES.filter(s=>s.phase===ph.id);
+  /* lot 5 : phases sans couleur (un seul accent), semaines en cartes blanches, progression des séances en orange */
+  PHASES.forEach((ph,pi)=>{const bloc=document.createElement('section');bloc.className='phase-bloc';bloc.setAttribute('aria-labelledby','ph-'+ph.id);const sems=SEMAINES.filter(s=>s.phase===ph.id);
     const cartes=sems.map(s=>{const ses=SEANCES_BY_WEEK[s.num]||[];const fait=ses.filter(x=>x.realise&&(x.realise.statut==='fait'||x.realise.statut==='partiel')).length;
-      const cnt=s.num===24?`<div class="sem-km" style="margin-top:4px"><span>${S24R.runs.length} sorties · ${S24R.km} km réalisés</span></div>`:(ses.length?`<div class="sem-km" style="margin-top:4px"><span>${fait}/${ses.length} séances</span></div>`:'');
-      const badge=s.num===_cur?`<div class="sem-statut st-courante">En cours</div>`:'';
-      return `<div class="sem-carte cliquable" id="wk-${s.num}" onclick="ouvrirCarte(this,${s.num},null,true)">${badge}<div class="sem-num">Semaine ${s.num}</div><h3 class="sem-theme">${s.theme}</h3><div class="sem-km">${s.km} <span>km · ${s.charge}</span></div>${cnt}<div class="sem-barre"><div class="sem-barre-fill" style="width:${Math.min(100,s.km/88*100)}%;background:${ph.c}"></div></div></div>`;}).join('');
-    bloc.innerHTML=`<div class="phase-entete"><div class="phase-puce" style="background:${ph.c}"></div><h2 class="phase-nom">${ph.nom}</h2><div class="phase-sem">${ph.sem}</div></div><p class="phase-role">${ph.role}</p><div class="sem-grille">${cartes}</div>`;
+      const s24=s.num===24,tot=s24?S24R.runs.length:ses.length,f=s24?S24R.runs.length:fait,pct=tot?Math.round(f/tot*100):0,cur=s.num===_cur,fini=!cur&&tot>0&&f===tot;
+      const cnt=s24?`${S24R.runs.length} sorties · ${_acNb(S24R.km,1)} km réalisés`:`${f}/${tot} séance${tot>1?'s':''}`;
+      return `<div class="sem-carte cliquable${cur?' sem-cur':''}" id="wk-${s.num}" onclick="ouvrirCarte(this,${s.num},null,true)">`
+        +`<div class="sem-tete"><p class="sem-num">Semaine ${s.num}</p>${cur?'<span class="ac-puce or">En cours</span>':fini?`<span class="sem-ok" role="img" aria-label="Semaine terminée">${_acIco('check',14)}</span>`:''}</div>`
+        +`<h3 class="sem-theme">${s.theme}</h3><p class="sem-km"><span class="ac-n">${s.km}</span><span class="ac-u">km</span> · ${s.charge}</p>`
+        +(tot?`<div class="sem-prog" aria-hidden="true"><i style="width:${pct}%"></i></div><p class="sem-cnt">${cnt}</p>`:'')+`</div>`;}).join('');
+    bloc.innerHTML=`<div class="phase-entete"><p class="phase-lab">Phase ${pi+1} · ${ph.sem}</p><h2 class="phase-nom" id="ph-${ph.id}">${ph.nom}</h2></div><p class="phase-role">${ph.role}</p><div class="sem-grille">${cartes}</div>`;
     phasesEl.appendChild(bloc);});
 }
 
@@ -1993,27 +1997,29 @@ function ouvrirDossier(id){
 }
 function ouvrirSeanceS24(idx){const r=S24R.runs[idx];if(!r)return;segActif=null;
   topbar.innerHTML=`<button class="btn-nav" onclick="ouvrirSemaine(24)">‹ Retour semaine 24</button>${btnFermer}`;
-  const metr=Object.entries(r.metriques).map(([k,v])=>`<div class="metrique"><div class="metrique-l">${k}</div><div class="metrique-v">${v}</div></div>`).join('');
-  contenu.innerHTML=`<div class="sd-hero"><div class="hero-badges"><span class="sd-badge" style="background:#16a34a22;color:var(--ok-deux)">Course à pied</span><span class="st-chip st-fait">Fait ✓</span><span class="seance-tag">${r.tag}</span></div>
-    <h2 class="sd-titre">${r.titre}</h2><p class="sd-sous">Semaine 24 · ${r.date} juin · récupération post-Circaète</p>
-    <div class="sd-metriques">${metr}</div>${r.chaussure?`<div class="shoe-chip">👟 ${r.chaussure}</div>`:''}${prCelebration(r)}</div>
-    <div class="sd-corps">
-    <div class="sd-section">Kilomètre par kilomètre</div><div class="viz-wrap" style="padding:14px">${s24Chart(r.splits)}</div>
-    <div class="sd-section">Lecture de la séance</div><div class="callout callout-obj">${r.lecture}</div>
-    <div class="sd-section">Revue du coach</div><div class="rev-coach">${r.revue}</div></div>`;
+  const M=r.metriques||{},g=(window.GEAR||[]).filter(x=>(x.marque+' '+x.modele)===r.chaussure)[0];
+  contenu.innerHTML=`<div class="fs"><header class="fs-sec fs-tete"><p class="ac-lb fs-quand">${r.date} juin 2026 · semaine 24</p><h2 class="fs-titre">${r.titre}</h2>`
+    +`<div class="fs-puces"><span class="ac-puce ok">${_acIco('check',13)}Faite</span><span class="ac-puce ne">${r.tag}</span></div></header>`
+    +`<section class="fs-sec fs-chif" aria-label="La séance en chiffres"><div class="fs-grille fs-grille-p">${Object.keys(M).slice(0,6).map(k=>_fsValeur(k,M[k])).join('')}</div>`
+    +(r.chaussure?`<div class="fs-shoe">${_acIco('chaussure',26)}<p>${r.chaussure}</p>${g&&g.km!=null?`<p class="ac-n">${_acNb(g.km)}<span class="ac-u">km</span></p>`:''}</div>`:'')+prCelebration(r)+`</section>`
+    +`<section class="fs-sec" aria-labelledby="s24-km"><h3 class="ac-h2" id="s24-km">Kilomètre par kilomètre</h3><div class="fs-s24">${s24Chart(r.splits)}</div></section>`
+    +`<section class="fs-sec" aria-labelledby="s24-lec"><h3 class="ac-h2" id="s24-lec">Lecture de la séance</h3><p class="fs-para">${r.lecture}</p></section>`
+    +`<section class="fs-sec" aria-labelledby="s24-rev"><div class="fs-coach-t"><span class="fs-coach-ico" aria-hidden="true">${_acIco('coach',18)}</span><h3 class="ac-h2" id="s24-rev">L’analyse du coach</h3></div><div class="rev-coach fs-revue-seule">${r.revue}</div></section></div>`;
   ouvrir();boite.scrollTop=0;
 }
 
 const S25_CAP=`<strong>Reprise &amp; déblocage.</strong> Le chantier de la semaine, c'est <strong>corriger la zone grise</strong> : footings vraiment faciles (≥ 6:00/km, FC ≤ 144), lignes droites relâchées pour réveiller la foulée, et on relance la structure tout en douceur. Tu arrives <strong>en avance sur la récupération</strong> — dos et jambes OK, aucune douleur — les conditions sont idéales pour repartir proprement. Objectif : 52 km sur 5 séances, zéro précipitation. C'est le socle du bloc de développement qui démarre juste après.`;
 function ouvrirSemaine(num){const s=SEMAINES.find(x=>x.num===num);const ph=PHASES.find(p=>p.id===s.phase);segActif=null;
   if(num===24){topbar.innerHTML=`<span></span>${btnFermer}`;
-    const runs=S24R.runs.map((r,i)=>`<div class="seance-carte" onclick="ouvrirSeanceS24(${i})"><div class="seance-bande" style="background:var(--ok)"></div><div class="seance-idx">${r.date}</div><div class="seance-info"><div class="seance-nom">${r.titre}</div><div class="seance-desc">${r.desc}</div><div class="seance-tags"><span class="st-chip st-fait">Fait ✓</span><span class="seance-tag">${r.tag}</span><span class="cat-badge cat-classique">Classique</span></div></div><div class="seance-fleche">›</div></div>`).join('');
-    contenu.innerHTML=`<div class="sw-hero"><span class="sw-tag" style="background:${COUL[s.phase]}22;color:${_tc(COUL[s.phase])}">${ph.nom}</span><h2 class="sw-titre">Semaine ${s.num} — ${s.theme}</h2><p class="sw-sous">Semaine terminée · récupération post-Circaète</p></div>
-      <div class="sw-corps"><div class="callout callout-obj">${s.objectif}</div>
-      <div class="sw-section">Réalisé sur la semaine — ${S24R.runs.length} sorties · ${S24R.km} km</div><div class="seance-liste">${runs}</div>
-      <div style="text-align:center"><button class="rw-btn" onclick="rwOpen('S24')">🎬 Lance le Rewind de ta semaine</button></div><div class="sw-section">Bilan du coach</div><div class="rev-coach">${S24R.revue}</div>
-      <div class="sw-section">🎯 Cap sur la S25</div><div class="callout callout-cap">${S25_CAP}</div>
-      <p class="note-foot" style="margin-top:24px">La reprise structurée démarre maintenant, en S25.</p></div>`;ouvrir();return;}
+    const runs=S24R.runs.map((r,i)=>`<div class="seance-carte sc-fait" onclick="ouvrirSeanceS24(${i})"><div class="sc-jour" aria-hidden="true"><span class="ac-lb">${String(r.date).split(' ')[0].toLowerCase()}</span><span class="ac-n">${String(r.date).split(' ')[1]||''}</span></div><div class="seance-info"><div class="seance-nom">${r.titre}</div><div class="seance-desc">${r.desc}</div><div class="seance-tags"><span class="st-chip st-fait">Fait ✓</span><span class="seance-tag">${r.tag}</span><span class="cat-badge cat-classique">Classique</span></div></div><div class="seance-fleche-wrap"><div class="seance-fleche sc-check" aria-hidden="true">${_acIco('check',18)}</div></div></div>`).join('');
+    contenu.innerHTML=`<div class="fs fsw"><header class="fs-sec fs-tete"><p class="ac-lb fs-quand">${ph.nom}</p><h2 class="fs-titre">Semaine ${s.num} · ${s.theme}</h2><p class="fs-sous">Semaine terminée · récupération post-Circaète</p></header>
+      <section class="fs-sec fs-chif" aria-label="La semaine en chiffres"><div class="fs-grille"><div class="fs-st"><p class="ac-lb">Sorties</p><p class="ac-n">${S24R.runs.length}</p></div><div class="fs-st"><p class="ac-lb">Distance</p><p class="ac-n">${_acNb(S24R.km,1)}<span class="ac-u">km</span></p></div></div>
+      <button type="button" class="ac-btn ac-btn-2 fs-revoir" onclick="rwOpen('S24')">${_acIco('play',20)}Revoir la semaine</button></section>
+      <section class="fs-sec" aria-labelledby="fsw-obj"><h3 class="ac-h2" id="fsw-obj">L’objectif</h3><p class="fs-para fs-gris">${s.objectif}</p></section>
+      <section class="fs-sec" aria-labelledby="fsw-ses"><h3 class="ac-h2" id="fsw-ses">Les sorties</h3><div class="seance-liste">${runs}</div></section>
+      <section class="fs-sec" aria-labelledby="fsw-rev"><div class="fs-coach-t"><span class="fs-coach-ico" aria-hidden="true">${_acIco('coach',18)}</span><h3 class="ac-h2" id="fsw-rev">Le bilan du coach</h3></div><div class="rev-coach fs-revue-seule">${S24R.revue}</div>
+      <p class="fs-kick or fs-cap">${_acIco('suite',16)}Cap sur la S25</p><div class="fs-suite"><p class="fs-para">${S25_CAP}</p></div>
+      <p class="fs-note">La reprise structurée démarre maintenant, en S25.</p></section></div>`;ouvrir();return;}
   /* Les seances sont stockees dans l'ordre de construction du plan, qui
      n'est pas l'ordre chronologique : une seance deplacee (longue avancee,
      renfo recale) restait affichee a sa position d'origine. Sur S42 par
@@ -2030,25 +2036,38 @@ function ouvrirSemaine(num){const s=SEMAINES.find(x=>x.num===num);const ph=PHASE
     const isDone=r.statut==='fait'||r.statut==='partiel';
     const _today=new Date();_today.setHours(0,0,0,0);
     const loggable=!isDone&&!isSkipped&&se.date&&new Date(se.date+'T00:00:00')<=_today;
-    const tags=[stChip(isSkipped?'skipped':r.statut),`<span class="seance-tag">${se.type}</span>`,catBadge(se.cat),`<span class="rpe-pill"><span class="rpe-dot" style="background:${rpeColor(se.rpe)}"></span>RPE ${se.rpe}</span>`];
-    if(se.chaussure)tags.push(`<span class="seance-shoe">👟 ${se.chaussure.replace("ASICS ","").replace("HOKA ","").replace("Brooks ","")}</span>`);
-    if(se.fit)tags.push('<span class="seance-fit">⌚ .fit</span>');
+    const tags=[stChip(isSkipped?'skipped':r.statut),`<span class="seance-tag">${se.type}</span>`,catBadge(se.cat),`<span class="seance-tag">Effort ${se.rpe}/10</span>`];
+    if(se.chaussure)tags.push(`<span class="seance-tag">${_acIco('chaussure',14)}${se.chaussure.replace("ASICS ","").replace("HOKA ","").replace("Brooks ","")}</span>`);
+    if(se.fit)tags.push(`<span class="seance-tag">${_acIco('montre',14)}.fit</span>`);
     if(se.opt)tags.push('<span class="seance-tag tag-opt">Optionnelle</span>');
-    if(isSkipped&&r.reason)tags.push(`<span class="seance-tag" style="color:var(--warn-deux);background:var(--warn-fond)">⏭ ${r.reason}</span>`);
-    const rs=r.km?`<div class="seance-desc" style="color:var(--ok-deux);font-weight:700;margin-top:4px">✓ ${r.km} km${r.allure?' · '+r.allure:''}</div>`:'';
+    if(isSkipped&&r.reason)tags.push(`<span class="seance-tag tag-skip">${_sansEmoji(r.reason)}</span>`);
+    const rs=r.km?`<p class="sc-real">${_acIco('check',14)}${_acNb(+r.km,2)} km${r.allure?' · '+r.allure:''}</p>`:'';
     const menuBtn=(!isDone&&!isSkipped)?`<button class="sm-btn" onclick="event.stopPropagation();openSM(${num},'${se.id}')">···</button>`:'';
     const rightEl=isDone
-      ?`<div class="seance-fleche sc-check">✓</div>`
+      ?`<div class="seance-fleche sc-check" aria-hidden="true">${_acIco('check',18)}</div>`
       :isSkipped
         ?`<div class="seance-fleche" style="color:var(--warn-deux);font-size:20px">—</div>`
         :loggable
           ?`<div class="ql-btn" onclick="event.stopPropagation();ouvrirQuickLog(${num},${se.id})" role="button" aria-label="Enregistrer la séance" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();event.stopPropagation();ouvrirQuickLog(${num},${se.id});}"><i class="ti ti-check"></i></div>${menuBtn}`
           :menuBtn;
     const cardClass=isDone?' sc-fait':isSkipped?' sc-skipped':'';
-    return `<div class="seance-carte${cardClass}" id="sc-${num}-${se.id}" onclick="ouvrirCarte(this,${num},${se.id})"  ><div class="seance-bande" style="background:${se.accent}"></div><div class="seance-idx">Séance ${_i+1}</div><div class="seance-info"><div class="seance-nom">${se.titre}</div><div class="seance-desc">${se.sous}</div>${rs}<div class="seance-tags">${tags.join('')}</div></div><div class="seance-fleche-wrap">${rightEl}</div></div>`;
+    const _d=se.date?new Date(se.date+'T12:00:00'):null,_jr=_d?`<div class="sc-jour" aria-hidden="true"><span class="ac-lb">${['dim.','lun.','mar.','mer.','jeu.','ven.','sam.'][_d.getDay()]}</span><span class="ac-n">${_d.getDate()}</span></div>`:`<div class="sc-jour" aria-hidden="true"><span class="ac-lb">séance</span><span class="ac-n">${_i+1}</span></div>`;
+    return `<div class="seance-carte${cardClass}" id="sc-${num}-${se.id}" onclick="ouvrirCarte(this,${num},${se.id})">${_jr}<div class="seance-info"><div class="seance-nom">${se.titre}</div><div class="seance-desc">${se.sous}</div>${rs}<div class="seance-tags">${tags.join('')}</div></div><div class="seance-fleche-wrap">${rightEl}</div></div>`;
   }).join('');
-  const repPill=s.repartition&&s.repartition!=='—'?`<div class="sw-pill"><div class="sw-pill-l">Répartition</div><div class="sw-pill-v" style="font-size:var(--t-data)">${s.repartition}</div></div>`:'';
-  contenu.innerHTML=`<div class="sw-hero"><span class="sw-tag" style="background:${COUL[s.phase]}22;color:${_tc(COUL[s.phase])}">${ph.nom}</span><h2 class="sw-titre">Semaine ${s.num} — ${s.theme}</h2><p class="sw-sous">Semaine type · clique une séance</p><div class="sw-meta"><div class="sw-pill"><div class="sw-pill-l">Volume cible</div><div class="sw-pill-v">${s.km} km</div></div><div class="sw-pill"><div class="sw-pill-l">Réalisé</div><div class="sw-pill-v">${fait}/${seances.length} · ${realKm} km</div></div><div class="sw-pill"><div class="sw-pill-l">Charge</div><div class="sw-pill-v" style="font-size:.84rem">${s.charge}</div></div>${repPill}</div></div><div class="sw-corps"><div class="callout callout-obj">${s.objectif}</div><div class="sw-section">Séances de la semaine</div><div class="seance-liste">${liste}</div>${(typeof REWINDS!=='undefined'&&REWINDS.some(x=>x.id==='S'+s.num))?`<div style="text-align:center;margin-top:18px"><button class="rw-btn" onclick="rwOpen('S${s.num}')">🎬 Lance le Rewind de ta semaine</button></div>`:''}${s.revue?`<div class="sw-section">Revue du coach — bilan de la semaine</div><div class="rev-coach">${s.revue}</div>`:`<div class="realise-empty" style="margin-top:18px"><strong>Revue de la semaine à venir.</strong> Quand la semaine sera bouclée, tu trouveras ici mon bilan complet : volume et charge vs prévu, adhérence, signaux à surveiller, et la décision pour la semaine suivante. Elle alimentera aussi le Journal du coach.</div>`}</div>`;ouvrir();
+  const _cur=num===isoWeek(new Date()),_rw=(typeof REWINDS!=='undefined'&&REWINDS.some(x=>x.id==='S'+s.num));
+  contenu.innerHTML=`<div class="fs fsw"><header class="fs-sec fs-tete"><p class="ac-lb fs-quand">${ph.nom}</p><h2 class="fs-titre">Semaine ${s.num} · ${s.theme}</h2>`
+    +`<div class="fs-puces">${_cur?'<span class="ac-puce or">En cours</span>':''}${s.charge?`<span class="ac-puce ne">Charge ${String(s.charge).toLowerCase()}</span>`:''}</div></header>`
+    +`<section class="fs-sec fs-chif" aria-label="La semaine en chiffres"><div class="fs-grille">`
+    +`<div class="fs-st"><p class="ac-lb">Volume prévu</p><p class="ac-n">${s.km}<span class="ac-u">km</span></p></div>`
+    +`<div class="fs-st"><p class="ac-lb">Réalisé</p><p class="ac-n">${_acNb(realKm,1)}<span class="ac-u">km</span></p></div>`
+    +`<div class="fs-st"><p class="ac-lb">Séances faites</p><p class="ac-n">${fait}<span class="ac-u">/${seances.length}</span></p></div></div>`
+    +(s.repartition&&s.repartition!=='—'?`<p class="fs-plus">Répartition : ${s.repartition}</p>`:'')
+    +(_rw?`<button type="button" class="ac-btn ac-btn-2 fs-revoir" onclick="rwOpen('S${s.num}')">${_acIco('play',20)}Revoir la semaine</button>`:'')+`</section>`
+    +(s.objectif?`<section class="fs-sec" aria-labelledby="fsw-obj"><h3 class="ac-h2" id="fsw-obj">L’objectif</h3><p class="fs-para fs-gris">${s.objectif}</p></section>`:'')
+    +`<section class="fs-sec" aria-labelledby="fsw-ses"><h3 class="ac-h2" id="fsw-ses">Les séances</h3><div class="seance-liste">${liste}</div></section>`
+    +`<section class="fs-sec" aria-labelledby="fsw-rev"><div class="fs-coach-t"><span class="fs-coach-ico" aria-hidden="true">${_acIco('coach',18)}</span><h3 class="ac-h2" id="fsw-rev">Le bilan du coach</h3></div>`
+    +(s.revue?`<div class="rev-coach fs-revue-seule">${s.revue}</div>`:`<p class="fs-para fs-gris"><strong>Revue de la semaine à venir.</strong> Quand la semaine sera bouclée, tu trouveras ici mon bilan complet : volume et charge face au prévu, adhérence, signaux à surveiller, et la décision pour la semaine suivante.</p>`)
+    +`</section></div>`;ouvrir();
 }
 /* ===== Créneaux météo — popup horaire ===== */
 function _wxStatus(t){
@@ -4140,9 +4159,9 @@ function theoToggle(){const p=document.getElementById('theo-panel');if(!p)return
 function coachAvant(num,se){const c=COACH_THEORY[seanceTag(se)];if(!c)return '';
   const tag=seanceTag(se);const rich=!!RICH_THEORY[tag];
   const theoBtn=rich
-    ? `<button type="button" class="theo-btn theo-btn-rich" onclick="openTheory(${num},${se.id})">📖 Théorie & coaching approfondi <span class="theo-btn-arr">→</span></button>`
-    : `<button type="button" class="theo-btn" id="theo-btn" onclick="theoToggle()">📖 La théorie pour progresser</button><div class="theo-panel" id="theo-panel" style="display:none"><div class="theo-tag">${c.nom} — la science</div>${c.theorie}</div>`;
-  return `<div class="sd-section">🎓 Comprendre cette séance</div>
+    ? `<button type="button" class="theo-btn theo-btn-rich" onclick="openTheory(${num},${se.id})">La théorie de cette séance <span class="theo-btn-arr" aria-hidden="true">›</span></button>`
+    : `<button type="button" class="theo-btn" id="theo-btn" onclick="theoToggle()">La théorie pour progresser <span class="theo-btn-arr" aria-hidden="true">›</span></button><div class="theo-panel" id="theo-panel" style="display:none"><div class="theo-tag">${c.nom} — la science</div>${c.theorie}</div>`;
+  return `<p class="fs-kick">Comprendre cette séance</p>
     <div class="cc-block">
       <div class="cc-item"><div class="cc-h">Pourquoi cette séance ?</div><div class="cc-txt">${c.pourquoi}</div></div>
       <div class="cc-item"><div class="cc-h">Comment l'exécuter ?</div><div class="cc-txt">${c.comment}</div></div>
@@ -4291,7 +4310,7 @@ const RICH_THEORY={
 };
 function theoryPanelHTML(tag){const T=RICH_THEORY[tag];if(!T)return '';
   const secs=T.sections.map((s,i)=>`<div class="theo-sec" id="tsec-${i}"><div class="theo-sec-h"><span class="theo-sec-n">${i+1}</span>${s.h}</div><div class="theo-sec-b">${s.html}</div></div>`).join('');
-  const ttsBar=(typeof window!=='undefined'&&'speechSynthesis' in window)?`<div class="tts-bar" id="ttsBar"><button class="tts-btn tts-play" onclick="ttsPlay()">🔊 Écouter la leçon</button><span class="tts-hint">lecture vocale de toute la leçon</span></div>`:'';
+  const ttsBar=(typeof window!=='undefined'&&'speechSynthesis' in window)?`<div class="tts-bar" id="ttsBar"><button class="tts-btn tts-play" onclick="ttsPlay()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5v5h3.5L12 19V5L7.5 9.5z"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/></svg>Écouter la leçon</button><span class="tts-hint">lecture vocale de toute la leçon</span></div>`:'';
   return `<div class="theo-sheet-head"><div><div class="theo-kicker">Théorie & coaching · ${T.icone}</div><div class="theo-sheet-titre">${T.titre}</div></div><button class="theo-close" onclick="closeTheory()" aria-label="Fermer le panneau">✕</button></div>
     ${ttsBar}
     <div class="theo-sheet-body" id="theoSheetBody">${secs}<div class="theo-coachbox" id="tsec-coach"><div class="theo-coachbox-h">🧠 Le mot du coach — personnalisé</div>${T.coach}</div><div class="theo-end">Tu sais maintenant le <em>pourquoi</em> et le <em>comment</em>. Bonne séance, Loïc.</div></div>`;
@@ -4328,9 +4347,9 @@ function _ttsBuildLesson(tag){const T=RICH_THEORY[tag],C=COACH_THEORY[tag],ch=[]
   T.sections.forEach((s,i)=>{add(s.h+'.',i);add(_ttsClean(s.html),i);});
   add('Le mot du coach. '+_ttsClean(T.coach),'coach');return ch;}
 function _ttsBar(state){const el=document.getElementById(_ttsBarId);if(!el)return;
-  if(state==='playing')el.innerHTML=`<button class="tts-btn" onclick="ttsPause()">⏸ Pause</button><button class="tts-btn tts-stop" onclick="ttsStop()">⏹ Stop</button><span class="tts-state"><span class="tts-eq"><i></i><i></i><i></i></span> Lecture en cours…</span>`;
-  else if(state==='paused')el.innerHTML=`<button class="tts-btn tts-play" onclick="ttsResume()">▶︎ Reprendre</button><button class="tts-btn tts-stop" onclick="ttsStop()">⏹ Stop</button>`;
-  else{const sc=_ttsCtx&&_ttsCtx.t==='seance';el.innerHTML=sc?`<button class="tts-btn tts-play" onclick="ttsPlaySeance(${_ttsCtx.num},${_ttsCtx.id})">🔊 Lecture de la séance</button><span class="tts-hint">lecture vocale de la fiche, de haut en bas</span>`:`<button class="tts-btn tts-play" onclick="ttsPlay()">🔊 Écouter la leçon</button><span class="tts-hint">lecture vocale de toute la leçon</span>`;}}
+  if(state==='playing')el.innerHTML=`<button class="tts-btn" onclick="ttsPause()"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6.5" y="5" width="4" height="14" rx="1"/><rect x="13.5" y="5" width="4" height="14" rx="1"/></svg>Pause</button><button class="tts-btn tts-stop" onclick="ttsStop()"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>Stop</button><span class="tts-state"><span class="tts-eq"><i></i><i></i><i></i></span> Lecture en cours…</span>`;
+  else if(state==='paused')el.innerHTML=`<button class="tts-btn tts-play" onclick="ttsResume()"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z"/></svg>Reprendre</button><button class="tts-btn tts-stop" onclick="ttsStop()"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>Stop</button>`;
+  else{const sc=_ttsCtx&&_ttsCtx.t==='seance';el.innerHTML=sc?`<button class="tts-btn tts-play" onclick="ttsPlaySeance(${_ttsCtx.num},${_ttsCtx.id})"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5v5h3.5L12 19V5L7.5 9.5z"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/></svg>Écouter la séance</button><span class="tts-hint">lecture vocale de la fiche, de haut en bas</span>`:`<button class="tts-btn tts-play" onclick="ttsPlay()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5v5h3.5L12 19V5L7.5 9.5z"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/></svg>Écouter la leçon</button><span class="tts-hint">lecture vocale de toute la leçon</span>`;}}
 function _ttsHi(sec){try{document.querySelectorAll('.theo-sec,.theo-coachbox').forEach(e=>e.classList.remove('tts-reading'));}catch(e){}
   let el=null;if(sec==='coach')el=document.getElementById('tsec-coach');else if(typeof sec==='number'&&sec>=0)el=document.getElementById('tsec-'+sec);
   if(el){el.classList.add('tts-reading');try{el.scrollIntoView({behavior:'smooth',block:'center'});}catch(e){}}}
@@ -4388,6 +4407,45 @@ function svgRiegel(){
     <text x="58" y="110" font-size="8" fill="#A1A1AA">10 km</text><text x="135" y="110" font-size="8" fill="#A1A1AA">semi</text><text x="240" y="110" font-size="8" fill="#A1A1AA">marathon</text>
     <text x="150" y="122" text-anchor="middle" font-size="7.5" fill="#A1A1AA">un 10 km bien couru prédit ton marathon (Riegel, exp. 1,07)</text>
   </svg>`;
+}
+/* ===== lot 5 partie B — sans emoji dans l'interface : retire pictogrammes, sélecteurs de variante et liaisons ===== */
+var _RX_EMO=/(?:\p{Extended_Pictographic}|\p{Regional_Indicator})(?:️|‍\p{Extended_Pictographic}|[\u{1F3FB}-\u{1F3FF}])*️?\s*/gu;
+function _sansEmoji(s){return String(s==null?'':s).replace(_RX_EMO,'').replace(/^\s+/,'');}
+/* une valeur du plan (« ~9 km », « 5:50-6:25/km », « EF ») en chiffre de fiche */
+function _fsValeur(lib,v){v=_sansEmoji(v).trim();if(/^\d+\s?h\s?\d{2}$/.test(v))return '<div class="fs-st"><p class="ac-lb">'+_acEsc(lib)+'</p><p class="ac-n">'+_acEsc(v.replace(/\s/g,''))+'</p></div>';var m=v.match(/^([~≈]?\s?\d[\d.,:]*(?:\s?[-–+]\s?[~≈]?\d[\d.,:]*)?)\s*(\/km|km|min|bpm|h|m|°C|%)?(.*)$/);
+  if(!m||(m[3].trim().length>3&&!/^tout compris$/i.test(m[3].trim())))return '<div class="fs-st"><p class="ac-lb">'+_acEsc(lib)+'</p><p class="fs-st-txt">'+_acEsc(v)+'</p></div>';
+  var u=m[2]||(/^RPE|Effort/i.test(lib)?'/10':/^FC/i.test(lib)?'bpm':'');
+  return '<div class="fs-st"><p class="ac-lb">'+_acEsc(lib)+'</p><p class="ac-n">'+_acEsc(m[1].replace(/\s/g,''))+(u?'<span class="ac-u">'+u+'</span>':'')+'</p>'+(m[3].trim()?'<p class="fs-st-sous">'+_acEsc(m[3].trim())+'</p>':'')+'</div>';}
+/* ===== FICHE D'UNE SÉANCE À FAIRE (ou manquée) — même grammaire que la fiche faite ===== */
+function fichePrevue(num,se,leg,viz,tts){
+  var r=se.realise||{},st=r.statut||'a_faire',d=se.date?new Date(se.date+'T12:00:00'):null,m=se.metriques||{};
+  var t=new Date();t.setHours(0,0,0,0);var passe=d&&d<t&&st==='a_faire';
+  var puce={a_faire:passe?'<span class="ac-puce wa">Pas encore loggée</span>':'<span class="ac-puce or">À faire</span>',manque:'<span class="ac-puce wa">Manquée</span>',skipped:'<span class="ac-puce ne">Sautée</span>',echec:'<span class="ac-puce wa">Annulée</span>'}[st]||'<span class="ac-puce or">À faire</span>';
+  var lib={RPE:'Effort ressenti','Durée totale':'Durée'};
+  var chif=Object.keys(m).slice(0,6).map(function(k){return _fsValeur(lib[k]||k,m[k]);}).join('');
+  var sh=se.chaussure||'',g=(window.GEAR||[]).filter(function(x){return (x.marque+' '+x.modele)===sh;})[0];
+  var shoe=sh?'<div class="fs-shoe">'+_acIco('chaussure',26)+'<p>'+_acEsc(sh)+'<span class="fs-shoe-l">Chaussure conseillée</span></p>'+(g&&g.km!=null?'<p class="ac-n">'+_acNb(g.km)+'<span class="ac-u">km</span></p>':'')+'</div>':'';
+  var fit=se.fit?'<a class="ac-btn ac-btn-o fs-revoir" href="'+se.fit+'" download>'+_acIco('montre',20)+'Télécharger pour la montre</a><p class="ac-lb fs-revoir-l">Fichier .fit à importer dans Garmin Connect</p>':'';
+  var st2=(se.struct||[]).map(function(b){return '<li><p class="ac-lb">'+_acEsc(_sansEmoji(b.nom))+'</p><p>'+b.txt+'</p></li>';}).join('');
+  var co=(se.coach||[]).map(function(c){return '<div class="fs-conseil"><p class="fs-kick">'+_acEsc(_sansEmoji(c.titre))+'</p><p class="fs-para fs-gris">'+c.texte+'</p></div>';}).join('');
+  var nu=se.nutrition?'<section class="fs-sec" aria-labelledby="fp-nut"><h3 class="ac-h2" id="fp-nut">'+_acEsc(_sansEmoji(se.nutrition.titre||'Nutrition'))+'</h3><ul class="fs-liste">'
+    +(se.nutrition.items||[]).map(function(i){return '<li><p class="fs-liste-k">'+_acEsc(_sansEmoji(i[0]))+'</p><p class="fs-para fs-gris">'+i[1]+'</p></li>';}).join('')+'</ul></section>':'';
+  var etat=st==='skipped'?'<p class="fs-para fs-gris">Séance sautée'+(r.reason?' : '+_acEsc(_sansEmoji(r.reason)):'')+'.</p>':st==='manque'?'<p class="fs-para fs-gris">Séance marquée comme manquée.</p>':st==='echec'?'<p class="fs-para fs-gris">'+_acEsc(_sansEmoji(r.commentaire||'Séance annulée.'))+'</p>':'';
+  var rev=r.revue?'<section class="fs-sec" aria-labelledby="fp-rev"><div class="fs-coach-t"><span class="fs-coach-ico" aria-hidden="true">'+_acIco('coach',18)+'</span><h3 class="ac-h2" id="fp-rev">L\u2019analyse du coach</h3></div><div class="rev-coach fs-revue-seule">'+r.revue+'</div></section>':'';
+  return '<div class="fs fp" data-cle="'+num+'-'+se.id+'">'
+    +'<header class="fs-sec fs-tete"><p class="ac-lb fs-quand">'+(d?_acCap(_acJour(d,true))+' '+d.getFullYear():'Semaine '+num)+'</p>'
+    +'<h2 class="fs-titre">'+_acEsc(se.titre)+'</h2>'+(se.sous?'<p class="fs-sous">'+se.sous+'</p>':'')
+    +'<div class="fs-puces">'+puce+(se.type?'<span class="ac-puce ne">'+_acEsc(se.type)+'</span>':'')+(se.cat==='specifique'?'<span class="ac-puce ne">Spécifique</span>':'')+(se.opt?'<span class="ac-puce ne">Optionnelle</span>':'')+'</div></header>'
+    +'<section class="fs-sec fs-chif" aria-label="La séance prévue en chiffres"><div class="fs-grille fs-grille-p">'+chif+'</div>'+shoe+fit+(tts||'')+'</section>'+rev
+    +(se.objectif||se.benefices?'<section class="fs-sec" aria-labelledby="fp-obj"><h3 class="ac-h2" id="fp-obj">L’objectif</h3>'+(se.objectif?'<p class="fs-para">'+se.objectif+'</p>':'')
+      +(se.benefices?'<p class="fs-kick ok">'+_acIco('check',16)+'Ce que tu y gagnes</p><p class="fs-para fs-gris">'+se.benefices+'</p>':'')+'</section>':'')
+    +(st2||viz?'<section class="fs-sec" aria-labelledby="fp-der"><h3 class="ac-h2" id="fp-der">Le déroulé</h3>'+(st2?'<ol class="fs-struct">'+st2+'</ol>':'')+(viz||'')+(leg?'<div class="legende">'+leg+'</div>':'')+'</section>':'')
+    +'<section class="fs-sec" aria-labelledby="fp-coach"><div class="fs-coach-t"><span class="fs-coach-ico" aria-hidden="true">'+_acIco('coach',18)+'</span><h3 class="ac-h2" id="fp-coach">Les conseils du coach</h3></div>'
+      +co+(typeof coachAvant==='function'?coachAvant(num,se):'')
+      +(se.vigilance?'<div class="fs-suite fs-vigil"><p class="fs-kick wa">'+_acIco('attention',16)+'Points de vigilance</p><p class="fs-para">'+se.vigilance+'</p></div>':'')+'</section>'
+    +nu
+    +'<section class="fs-sec" aria-labelledby="fp-log"><h3 class="ac-h2" id="fp-log">Le réalisé</h3>'+etat+'<div class="fs-modif" id="modifier">'+logForm(num,se)+'</div></section>'
+    +'</div>';
 }
 /* ===== FICHE D'UNE SÉANCE FAITE — lot 5 « blanc et orange » (maquette validée le 28/10/2026) =====
    Le réalisé d'abord (chiffres en grille, chaussure, Rewind), l'analyse du coach (prévu face au réalisé,
@@ -4458,7 +4516,7 @@ function ficheFaite(num,se){
     +(r.statut==='partiel'?'<span class="ac-puce wa">Partielle</span>':'<span class="ac-puce ok">'+_acIco('check',13)+'Faite</span>')
     +(se.type?'<span class="ac-puce ne">'+_acEsc(se.type)+'</span>':'')+(note?'<span class="ac-puce wa">'+_acEsc(note)+'</span>':'')+'</div></header>'
     +'<section class="fs-sec fs-chif" aria-label="La séance en chiffres"><div class="fs-grille">'+chif+'</div>'
-    +'<p class="fs-plus" id="fs-plus">'+(r.fc_max?'FC max '+r.fc_max:'')+'</p>'+shoe+rev+'</section>'
+    +'<p class="fs-plus" id="fs-plus">'+(r.fc_max?'FC max '+r.fc_max:'')+'</p>'+shoe+prCelebration(r)+rev+'</section>'
     +'<section class="fs-sec" aria-labelledby="fs-coach-h"><div class="fs-coach-t"><span class="fs-coach-ico" aria-hidden="true">'+_acIco('coach',18)+'</span><h3 class="ac-h2" id="fs-coach-h">L’analyse du coach</h3></div>'+tab+ana+'</section>'
     +(rw?'<section class="fs-sec" id="fs-trace" aria-labelledby="fs-trace-h" hidden><h3 class="ac-h2" id="fs-trace-h">Le tracé</h3><div class="fs-trace-z"></div></section>':'')
     +'<section class="fs-sec" id="fs-km" aria-labelledby="fs-km-h"'+(sp.length?' data-ok="1">'+_fsKm(sp,c,'Tours de la montre'):' hidden>')+'</section>'
@@ -4475,17 +4533,17 @@ function ficheFaite(num,se){
     +'</div>';
 }
 function ouvrirSeance(num,id){const se=(SEANCES_BY_WEEK[num]||[]).find(x=>x.id===id);if(!se)return;segActif=null;if(typeof ttsStop==='function')ttsStop();
-  const ttsBarSeance=(typeof window!=='undefined'&&'speechSynthesis' in window)?`<div class="tts-bar tts-bar-seance" id="ttsBarSeance"><button class="tts-btn tts-play" onclick="ttsPlaySeance(${num},${se.id})">🔊 Lecture de la séance</button><span class="tts-hint">lecture vocale de la fiche, de haut en bas</span></div>`:'';
+  const ttsBarSeance=(typeof window!=='undefined'&&'speechSynthesis' in window)?`<div class="tts-bar tts-bar-seance" id="ttsBarSeance"><button class="tts-btn tts-play" onclick="ttsPlaySeance(${num},${se.id})"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5v5h3.5L12 19V5L7.5 9.5z"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/></svg>Écouter la séance</button><span class="tts-hint">lecture vocale de la fiche, de haut en bas</span></div>`:'';
   topbar.innerHTML=`<button class="btn-nav" onclick="ouvrirSemaine(${num})">‹ Retour semaine ${num}</button>${btnFermer}`;
   {const _r=se.realise||{};if(_r.statut==='fait'||_r.statut==='partiel'){contenu.innerHTML=ficheFaite(num,se);ouvrir();
     try{if(typeof RS!=='undefined'&&RS.dispo(num+'-'+se.id))RS.ficheDetail(num+'-'+se.id);}catch(e){console.warn('fiche',e);}return;}}
   const metr=Object.entries(se.metriques).map(([k,v])=>`<div class="metrique"><div class="metrique-l">${k}</div><div class="metrique-v">${v}</div></div>`).join('');
   const struct=se.struct.map((b,i)=>{const c=(i===0||i===se.struct.length-1)?'#16a34a':se.accent;return `<div class="struct-ligne"><div class="struct-puce" style="background:${c}"></div><div class="struct-nom">${b.nom}</div><div class="struct-txt">${b.txt}</div></div>`;}).join('');
-  const LEGMAP={vert:['#16a34a','Endurance / échauffement / retour au calme'],bleu:['#F4561D','Travail qualitatif / spécifique'],orange:['#CA8A04','Récupération'],violet:['#6B6B74','Nutrition / rappel'],jaune:['#A1A1AA','Descente active'],rouge:['#DC2626','Effort chrono']};
+  const LEGMAP={vert:['#FCCDB0','Endurance / échauffement / retour au calme'],bleu:['#F4561D','Travail qualitatif / spécifique'],orange:['#D4D4D8','Récupération'],violet:['#6B6B74','Nutrition / rappel'],jaune:['#F9A070','Descente active'],rouge:['#7C2D12','Effort chrono']};
   const leg=(se.segments?[...new Set(se.segments.map(s=>s.couleur))].map(c=>LEGMAP[c]||['#A1A1AA',c]).map(x=>`<div class="legende-item"><div class="legende-puce" style="background:${x[0]}"></div>${x[1]}</div>`).join(''):se.legende.map(l=>`<div class="legende-item"><div class="legende-puce" style="background:${l.c}"></div>${l.l}</div>`).join(''));
   const coach=se.coach.map(c=>`<div class="coach-carte"><div class="coach-titre">${c.titre}</div><p class="coach-texte">${c.texte}</p></div>`).join('');
   const viz=se.segments?`<div class="sd-section">Visualisation chronologique</div><div class="viz-wrap"><div class="viz-entete"><span class="viz-label">Structure de la séance</span><span class="viz-hint">Clique un segment</span></div><div class="barre-scroll"><div class="barre-piste" id="piste"></div></div><div class="detail-panneau" id="dpan"><div class="detail-nom" id="dnom"></div><div class="detail-role" id="drole"></div><div class="detail-grille" id="dgr"></div></div></div>`:'';
-  contenu.innerHTML=`${rsBouton(num,se.id)}<div class="sd-hero"><div class="hero-badges"><span class="sd-badge" style="background:${se.accent}22;color:${_tc(se.accent)}">${se.sport}</span>${catBadge(se.cat)}${stChip((se.realise||{}).statut||'a_faire')}</div><h2 class="sd-titre">${se.titre}</h2><p class="sd-sous">${se.sous}</p><div class="sd-metriques">${metr}</div>${se.chaussure?`<div class="shoe-chip">Chaussure conseillée — ${se.chaussure}</div>`:''}${se.fit?`<a class="fit-btn" href="${se.fit}" download>⌚ Télécharger la séance</a>`:''}</div><div class="sd-corps">${ttsBarSeance}${!rsBouton(num,se.id)&&_REPLAY_DATA[num+'_'+se.id]?`<button class="rp-launch" onclick="openReplay('${num}_${se.id}')"><span class="rpl-ico">🎬</span><span class="rpl-txt"><span class="rpl-t1">Revoir cette sortie</span><span class="rpl-t2">Replay animé du profil · altitude, FC, distance</span></span><span class="rpl-go">▶</span></button>`:''}<div class="sd-section">Intensité ressentie (RPE)</div><div class="rpe-wrap"><div class="rpe-info"><div class="rpe-label">RPE</div><div class="rpe-val" style="color:${rpeColor(se.rpe)}">${se.rpe}<span style="font-size:.8rem;color:var(--texte-trois);font-weight:600">/10</span></div></div><div class="rpe-scale">${rpeScale(se.rpe)}</div></div><div class="sd-section">Objectif</div><div class="callout callout-obj">${se.objectif}</div>${coachAvant(num,se)}<div class="sd-section">Légende</div><div class="legende">${leg}</div><div class="sd-section">Déroulé</div><div class="struct">${struct}</div>${viz}<div class="sd-section">Bénéfices recherchés</div><div class="callout callout-ben">${se.benefices}</div><div class="sd-section">Conseil du coach</div><div class="coach-grille">${coach}</div>${se.nutrition?`<div class="sd-section">Nutrition de séance</div><div class="nutri"><div class="nutri-t">🍌 ${se.nutrition.titre}</div>${se.nutrition.items.map(i=>`<div class="nutri-l"><b>${i[0]}</b><span>${i[1]}</span></div>`).join('')}</div>`:''}<div class="sd-section">Points de vigilance</div><div class="callout callout-vig">${se.vigilance}</div>${realiseBloc(num,se)}</div>`;
+  contenu.innerHTML=fichePrevue(num,se,leg,viz,ttsBarSeance);
   ouvrir();if(se.segments&&se.segments.length)initBarre(se);
 }
 function initBarre(se){const piste=document.getElementById('piste');if(!piste)return;if(!se.segments||!se.segments.length)return;const pan=document.getElementById('dpan'),dnom=document.getElementById('dnom'),drole=document.getElementById('drole'),dgr=document.getElementById('dgr');const total=se.segments[se.segments.length-1].fin;
