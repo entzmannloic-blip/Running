@@ -26,6 +26,10 @@ Fichier d'entree (champs Strava recopies tels quels) :
  "streams":{"time":[…],"distance":[…],"altitude":[…],"velocity_smooth":[…],"heart_rate":[…]}}
                                      get_activity_streams(resolution=150, streams=[time, distance, altitude,
                                                                                     velocity_smooth, heart_rate])
+
+Trace (fond de carte, build 283) : les 300 premiers et derniers metres sont retires (l'app est publique), le reste est
+projete en Web Mercator exact avec un ancrage (EPSG:3857) pour poser les tuiles. Rewind deja ecrit :
+    python scripts/rewind_seance.py S44-2 strava/<id>-polyline.json --retrace
 """
 import argparse
 import json
@@ -100,13 +104,55 @@ def decode_polyline(s):
     return pts
 
 
-def projette(pts):
-    """Coordonnees locales en metres (x vers l'est, y vers le nord), origine au coin bas-gauche."""
-    la0 = sum(p[0] for p in pts) / len(pts)
-    k = math.cos(math.radians(la0))
-    xy = [(p[1] * 111320 * k, p[0] * 110540) for p in pts]
-    x0, y0 = min(x for x, _ in xy), min(y for _, y in xy)
-    return [[round(x - x0), round(y - y0)] for x, y in xy]
+MASQUE_M = 300      # metres masques au depart et a l'arrivee (zone de confidentialite, comme Strava)
+RAYON = 6378137.0   # rayon de la sphere Web Mercator (EPSG:3857)
+
+
+def _sol(a, b):
+    """Distance au sol en metres entre deux points (lat, lng) : haversine."""
+    la1, lo1, la2, lo2 = map(math.radians, (a[0], a[1], b[0], b[1]))
+    h = math.sin((la2 - la1) / 2) ** 2 + math.cos(la1) * math.cos(la2) * math.sin((lo2 - lo1) / 2) ** 2
+    return 2 * RAYON * math.asin(math.sqrt(h))
+
+
+def _mercator(p):
+    return RAYON * math.radians(p[1]), RAYON * math.log(math.tan(math.pi / 4 + math.radians(p[0]) / 2))
+
+
+def projette(pts, distance=None, masque=MASQUE_M):
+    """Trace masque et projete en Web Mercator exact (EPSG:3857).
+
+    Retire les `masque` premiers et derniers metres (le polyline reduit de Strava est un peu plus court que la
+    distance reelle : la coupe est faite sur la plus grande des deux mesures, donc jamais sous `masque` metres
+    reels), puis place les points en metres Mercator relatifs a un ancrage entier (x, y en EPSG:3857) : la tuile
+    de fond de carte se pose ainsi sur les rues. Les metres Mercator sont etires de 1/cos(lat) par rapport au sol,
+    sans changer les formes.
+    Retourne {"trace": [[x, y], ...], "ancrage": {"x", "y"}, "trace_d": [debut, fin] (metres reels le long de la
+    sortie), "masque": metres}. Trace vide si la sortie est trop courte pour qu'il en reste quelque chose."""
+    vide = {"trace": [], "ancrage": None, "trace_d": None, "masque": masque}
+    if len(pts) < 2:
+        return vide
+    cum = [0.0]
+    for i in range(1, len(pts)):
+        cum.append(cum[-1] + _sol(pts[i - 1], pts[i]))
+    long_poly = cum[-1]
+    reel = float(distance) if distance else long_poly
+    k = reel / long_poly if long_poly else 1.0
+    coupe = masque * max(1.0, 1.0 / k)          # en metres de polyline
+    if long_poly < 2 * coupe + 100:
+        return vide
+
+    def interp(d):
+        j = next(i for i in range(1, len(cum)) if cum[i] >= d)
+        f = (d - cum[j - 1]) / ((cum[j] - cum[j - 1]) or 1.0)
+        return (pts[j - 1][0] + (pts[j][0] - pts[j - 1][0]) * f, pts[j - 1][1] + (pts[j][1] - pts[j - 1][1]) * f)
+
+    gardes = [interp(coupe)] + [pts[i] for i in range(len(pts)) if coupe < cum[i] < long_poly - coupe] \
+        + [interp(long_poly - coupe)]
+    m = [_mercator(p) for p in gardes]
+    x0, y0 = math.floor(min(x for x, _ in m)), math.floor(min(y for _, y in m))
+    return {"trace": [[round(x - x0), round(y - y0)] for x, y in m], "ancrage": {"x": x0, "y": y0},
+            "trace_d": [math.ceil(coupe * k), math.floor(reel - coupe * k)], "masque": masque}
 
 
 def reduit(n, m=MAX_POINTS):
@@ -127,6 +173,14 @@ def bouche(serie, mini=None):
         der = x if ok(x) else der
         out.append(der)
     return out
+
+
+def trace_de(e):
+    """Champs du tracé (masqué, Mercator) à partir de l'entrée Strava ; rien si pas de polyline."""
+    if not e.get("reduced_polyline"):
+        return {"trace": []}
+    r = projette(decode_polyline(e["reduced_polyline"]), (e.get("summary") or {}).get("distance"))
+    return {k: v for k, v in r.items() if v is not None}
 
 
 def construire(e, cib=None):
@@ -161,8 +215,8 @@ def construire(e, cib=None):
     out = {"strava_id": str(e["id"]), "debut": e["start_local"], "lieu": e.get("location_summary"),
            "meteo": {"temperature": w.get("temperature"), "condition": w.get("condition")},
            "resume": {k: s.get(k) for k in ("distance", "moving_time", "elapsed_time", "elevation_gain")},
-           "flux": flux, "trace": projette(decode_polyline(e["reduced_polyline"])) if e.get("reduced_polyline") else [],
-           "tours": perf.get("laps") or [], "meilleurs": [b[:2] for b in perf.get("best_efforts", [])], "prs": prs}
+           "flux": flux, **trace_de(e), "tours": perf.get("laps") or [],
+           "meilleurs": [b[:2] for b in perf.get("best_efforts", [])], "prs": prs}
     if cib:
         out["cible"] = cib
     return out
@@ -187,6 +241,28 @@ def ecrire(seance, entree, cib=None, sec_seul=False):
     return chemin
 
 
+def retrace(seance, entree):
+    """Refait seulement le tracé d'un Rewind existant (masquage + ancrage) en relisant sa polyline ; le reste est gardé."""
+    m = re.fullmatch(r"S?(\d+)-(\d+)", seance)
+    if not m:
+        raise SystemExit(f"seance illisible : {seance!r} (ex. S44-2)")
+    chemin = os.path.join(DOSSIER, f"{int(m.group(1))}-{int(m.group(2))}.json")
+    with open(chemin, encoding="utf-8") as f:
+        out = json.load(f)
+    with open(entree, encoding="utf-8") as f:
+        e = json.load(f)
+    if str(e["id"]) != str(out["strava_id"]):
+        raise SystemExit(f"l'entree est l'activite {e['id']}, le Rewind {seance} est l'activite {out['strava_id']}")
+    for k in ("trace", "ancrage", "trace_d", "masque"):
+        out.pop(k, None)
+    out.update(trace_de(e))
+    with open(chemin, "w", encoding="utf-8", newline="\n") as f:
+        f.write(json.dumps(out, ensure_ascii=False, separators=(",", ":")) + "\n")
+    print(f"Rewind {seance} : tracé refait, {len(out['trace'])} points, "
+          f"{'masqué à ' + str(out['masque']) + ' m' if out.get('ancrage') else 'sans tracé (sortie trop courte)'}")
+    return chemin
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     ap.add_argument("seance")
@@ -195,7 +271,13 @@ def main(argv=None):
     ap.add_argument("--cible-fc")
     ap.add_argument("--cible-source")
     ap.add_argument("--sec", action="store_true", help="affiche le resume sans rien ecrire")
+    ap.add_argument("--retrace", action="store_true",
+                    help="refait seulement le trace (masque 300 m + ancrage) d'un Rewind existant ; l'entree ne demande "
+                         "que id, summary.distance et reduced_polyline")
     a = ap.parse_args(argv)
+    if a.retrace:
+        retrace(a.seance, a.entree)
+        return 0
     ecrire(a.seance, a.entree, cible(a.cible_allure, a.cible_fc, a.cible_source), a.sec)
 
 

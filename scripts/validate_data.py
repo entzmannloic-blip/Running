@@ -112,6 +112,13 @@ def validate(d):
             errs.append(f"rewind-{cle}.json : valeurs nulles ou aberrantes dans les flux ({', '.join(sorted(set(mauvais))) or 'fc < 40'})")
         if not (rw.get("coach") or {}).get("verdict"):
             errs.append(f"rewind-{cle}.json : pas de verdict tire de la revue (src/textes/seances/S{cle}.html)")
+        # confidentialite (build 283) : l'app est publique, un trace publie est toujours masque de 300 m a chaque bout
+        if len(rw.get("trace") or []) > 1:
+            a, td, dist = rw.get("ancrage") or {}, rw.get("trace_d") or [], (rw.get("resume") or {}).get("distance")
+            if not (isinstance(a.get("x"), int) and isinstance(a.get("y"), int)) or (rw.get("masque") or 0) < 300 or len(td) != 2 \
+                    or not dist or td[0] < 300 or dist - td[1] < 300:
+                errs.append(f"rewind-{cle}.json : trace non masque (ancrage, masque >= 300 m et trace_d requis ; "
+                            f"python scripts/rewind_seance.py S{cle} strava/<id>-polyline.json --retrace)")
     for name, content in files.items():
         if name == "changelog":   # prose de developpement : parle legitimement de NaN / undefined
             continue

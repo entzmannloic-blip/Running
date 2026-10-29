@@ -4712,7 +4712,7 @@ function seanceDe(cle,rw){const s=trouve(cle),r=s.realise||{},m=s.metriques||{};
   const ch=s.chaussure_realise||s.chaussure||'',g=(window.GEAR||[]).find(x=>`${x.marque} ${x.modele}`===ch);
   return {cle,sem:+cle.split('-')[0],titre:s.titre||'',type:s.type||'',objectif:texte(s.objectif),metriques:m,cible:cibleDe(s),
     distance_prevue:dm?{km:parseFloat(dm[1].replace(',','.')),texte:m.Distance}:null,chaussure:ch,chaussure_km:g?g.km:null,
-    realise:r,debut:rw.debut,lieu:rw.lieu,meteo:rw.meteo||{},resume:rw.resume,flux:rw.flux,trace:rw.trace,tours:rw.tours||[],prs:rw.prs||[],
+    realise:r,debut:rw.debut,lieu:rw.lieu,meteo:rw.meteo||{},resume:rw.resume,flux:rw.flux,trace:rw.trace,ancrage:rw.ancrage,trace_d:rw.trace_d,masque:rw.masque,tours:rw.tours||[],prs:rw.prs||[],
     coach:rw.coach||{},revue_html:r.revue||'',splits_depot:(r.splits||[]).filter(x=>/^\d:\d\d$/.test(x.allure||'')).map(x=>[x.km,sec(x.allure),x.fc]),
     prochaine:prochaine(s.date||rw.debut.slice(0,10))};}
 const titreSeance=se=>se.titre.replace(/\s*\((non planifie|non planifié)\)\s*/i,'').trim();
@@ -4779,26 +4779,51 @@ function img1(se,a){
   const kick=h('p',{class:'rs-kick'},'La séance en chiffres'),ti=h('h2',{class:'rs-titre'},mt?mt[1]:t0);
   return {el:h('div',null,kick,ti,note,big,t,go),titre:'La séance en chiffres',joue(){compte(km,r.km,v=>fN(v,2));apparait([kick,ti,note,big,...t.children,go]);}};
 }
+/* Fond de carte du tracé (build 283) : tuiles CARTO « Positron » @2x posées sous le tracé en Web Mercator exact
+   (l'ancrage EPSG:3857 est dans le fichier du Rewind). Le tracé coloré reste par-dessus.
+   Réseau seulement : hors connexion, ou si une tuile échoue, le tracé reste seul, sans case vide, et l'attribution
+   n'apparaît qu'une fois une tuile affichée. Les tuiles sont d'un autre domaine : le service worker ne les prend pas
+   et le pré-cache n'en contient aucune. */
+const CARTE_ATTRIB='© OpenStreetMap © CARTO',CARTE_C=40075016.68557849;
+function fondCarte(se,G){
+  const fond=h('div',{class:'rs-fond','aria-hidden':'true'}),att=h('span',{class:'rs-attrib'},CARTE_ATTRIB),A=se.ancrage;
+  if(!A||navigator.onLine===false)return {fond,att};
+  const z=Math.max(1,Math.min(18,Math.round(Math.log(G.sc*CARTE_C/256)/Math.LN2))),tm=CARTE_C/Math.pow(2,z),nz=Math.pow(2,z);
+  const ax=X=>A.x+G.mnx+(X-G.ox)/G.sc,ay=Y=>A.y+G.mny+(G.Hh-G.oy-Y)/G.sc;
+  const x0=Math.floor((ax(0)+CARTE_C/2)/tm),x1=Math.floor((ax(G.W)+CARTE_C/2)/tm),y0=Math.floor((CARTE_C/2-ay(0))/tm),y1=Math.floor((CARTE_C/2-ay(G.Hh))/tm);
+  if((x1-x0+1)*(y1-y0+1)>16)return {fond,att};
+  for(let ty=y0;ty<=y1;ty++)for(let tx=x0;tx<=x1;tx++){
+    if(tx<0||ty<0||tx>=nz||ty>=nz)continue;
+    const L=(G.ox+((-CARTE_C/2+tx*tm)-A.x-G.mnx)*G.sc)/G.W*100,T=(G.Hh-G.oy-((CARTE_C/2-ty*tm)-A.y-G.mny)*G.sc)/G.Hh*100,S=tm*G.sc/G.W*100,im=new Image();
+    im.alt='';im.decoding='async';im.draggable=false;im.style.cssText=`left:${L.toFixed(3)}%;top:${T.toFixed(3)}%;width:${S.toFixed(3)}%;height:${S.toFixed(3)}%`;
+    /* la tuile n'entre dans la page qu'une fois chargée : une tuile en échec ne laisse rien (ni case vide ni image cassée) */
+    im.onload=()=>{fond.append(im);att.classList.add('on');if(!RM())im.animate([{opacity:0},{opacity:1}],{duration:D_ETAT,easing:EASE});};
+    im.src=`https://${'abcd'.charAt((tx+ty)%4)}.basemaps.cartocdn.com/light_all/${z}/${tx}/${ty}@2x.png`;
+  }
+  return {fond,att};
+}
 function img2(se,a){
   const P=se.trace,W=320,Hh=320,pd=16,xs=P.map(p=>p[0]),ys=P.map(p=>p[1]);
   const mnx=Math.min(...xs),mxx=Math.max(...xs),mny=Math.min(...ys),mxy=Math.max(...ys);
   const sc=Math.min((W-2*pd)/((mxx-mnx)||1),(Hh-2*pd)/((mxy-mny)||1)),ox=(W-(mxx-mnx)*sc)/2,oy=(Hh-(mxy-mny)*sc)/2;
   const pt=P.map(([x,y])=>[ox+(x-mnx)*sc,Hh-oy-(y-mny)*sc]),cum=[0];
   for(let i=1;i<pt.length;i++)cum.push(cum[i-1]+Math.hypot(pt[i][0]-pt[i-1][0],pt[i][1]-pt[i-1][1]));
-  const tot=cum[cum.length-1]||1,dTot=se.flux.d[se.flux.d.length-1],dPath='M'+pt.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join('L');
+  const tot=cum[cum.length-1]||1,dTot=se.flux.d[se.flux.d.length-1],[d0,d1]=se.trace_d||[0,dTot],dPath='M'+pt.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join('L');
   const id=nid('rsmt'),mk=sv('path',{d:dPath,fill:'none',stroke:'#fff','stroke-width':12,'stroke-linecap':'round','stroke-linejoin':'round',pathLength:1,'stroke-dasharray':1,'stroke-dashoffset':0});
   const segs=sv('g',{'stroke-width':4.5,'stroke-linecap':'round'});
-  for(let i=1;i<pt.length;i++){const p=a.pl[a.idxD((cum[i]+cum[i-1])/2/tot*dTot)];
+  for(let i=1;i<pt.length;i++){const p=a.pl[a.idxD(d0+(cum[i]+cum[i-1])/2/tot*(d1-d0))];
     segs.append(sv('line',{x1:pt[i-1][0].toFixed(1),y1:pt[i-1][1].toFixed(1),x2:pt[i][0].toFixed(1),y2:pt[i][1].toFixed(1),stroke:a.couleurDe(p)}));}
-  const[x0,y0]=pt[0],[x1,y1]=pt[pt.length-1],boucle=Math.hypot(x1-x0,y1-y0)<14;
-  const dep=sv('circle',{cx:x0,cy:y0,r:6,fill:'#fff',stroke:'#18181B','stroke-width':2.5}),arr=sv('circle',{cx:x1,cy:y1,r:boucle?3:6,fill:'#18181B'});
-  const g=sv('svg',{viewBox:`0 0 ${W} ${Hh}`,class:'rs-g rs-g-trace',role:'img','aria-label':`Tracé de la sortie (${fN(se.realise.km,2)} km), coloré selon l'allure`},
+  const[x0,y0]=pt[0],[x1,y1]=pt[pt.length-1],boucle=!se.masque&&Math.hypot(x1-x0,y1-y0)<14;
+  const dep=sv('circle',{cx:x0,cy:y0,r:6,fill:'#fff',stroke:'#18181B','stroke-width':2.5}),arr=sv('circle',{cx:x1,cy:y1,r:boucle?3:6,fill:'#18181B',stroke:'#fff','stroke-width':boucle?0:2});
+  const g=sv('svg',{viewBox:`0 0 ${W} ${Hh}`,class:'rs-g rs-g-trace',role:'img','aria-label':`Tracé de la sortie (${fN(se.realise.km,2)} km), coloré selon l'allure${se.masque?`, sans les ${se.masque} premiers et derniers mètres`:''}`},
     sv('defs',null,sv('mask',{id,maskUnits:'userSpaceOnUse',x:0,y:0,width:W,height:Hh},mk)),
-    sv('path',{d:dPath,fill:'none',stroke:'rgba(255,255,255,.1)','stroke-width':9,'stroke-linecap':'round','stroke-linejoin':'round'}),segs,dep,arr);
+    sv('path',{d:dPath,fill:'none',stroke:'rgba(255,255,255,.9)','stroke-width':9,'stroke-linecap':'round','stroke-linejoin':'round'}),segs,dep,arr);
+  const {fond,att}=fondCarte(se,{W,Hh,sc,ox,oy,mnx,mny}),carte=h('div',{class:'rs-carte'},fond,g,att);
   const leg=h('div',{class:'rs-legende'},h('span',null,`${fA(a.dom.lent)} /km`),h('i'),h('span',null,`${fA(a.dom.rapide)} /km`));
   const kick=h('p',{class:'rs-kick'},'Le tracé'),ti=h('h2',{class:'rs-titre'},String(se.lieu||'').replace(/,\s*France$/,'')||'Ton parcours');
-  const cap=h('p',{class:'rs-cap'},'La couleur suit ton allure : plus le trait est foncé, plus tu allais vite. ',boucle?'Départ et arrivée au même endroit.':'Rond creux : départ ; point plein : arrivée.');
-  return {el:h('div',null,kick,ti,g,leg,cap),titre:'Le tracé',joue(){apparait([kick,ti]);if(!RM()){const L=segs.children.length;[...segs.children].forEach((l,i)=>l.animate([{opacity:0},{opacity:1}],{duration:D_PRESS,delay:D_ETAT+i/L*6*D_ECRAN,fill:'backwards'}));}apparait([arr,leg,cap],6*D_ECRAN+D_ETAT);}};
+  const cap=h('p',{class:'rs-cap'},'La couleur suit ton allure : plus le trait est foncé, plus tu allais vite. ',
+    se.masque?`Les ${se.masque} premiers et les ${se.masque} derniers mètres sont masqués, pour ne pas montrer d'où tu pars.`:boucle?'Départ et arrivée au même endroit.':'Rond creux : départ ; point plein : arrivée.');
+  return {el:h('div',null,kick,ti,carte,leg,cap),titre:'Le tracé',joue(){apparait([kick,ti]);if(!RM()){const L=segs.children.length;[...segs.children].forEach((l,i)=>l.animate([{opacity:0},{opacity:1}],{duration:D_PRESS,delay:D_ETAT+i/L*6*D_ECRAN,fill:'backwards'}));}apparait([arr,leg,cap],6*D_ECRAN+D_ETAT);}};
 }
 function img3(se,a){
   const f=se.flux,n=f.t.length,W=340,Hh=200,L=40,R=10,T=14,B=26,dTot=f.d[n-1],amin=Math.min(...f.alt),amax=Math.max(...f.alt);
@@ -5130,8 +5155,8 @@ function traceFiche(se,a){const P=se.trace,W=220,Hh=300,pd=12,xs=P.map(p=>p[0]),
   const sc=Math.min((W-2*pd)/((mxx-mnx)||1),(Hh-2*pd)/((mxy-mny)||1)),ox=(W-(mxx-mnx)*sc)/2,oy=(Hh-(mxy-mny)*sc)/2;
   const pt=P.map(([x,y])=>[ox+(x-mnx)*sc,Hh-oy-(y-mny)*sc]),cum=[0];
   for(let i=1;i<pt.length;i++)cum.push(cum[i-1]+Math.hypot(pt[i][0]-pt[i-1][0],pt[i][1]-pt[i-1][1]));
-  const tot=cum[cum.length-1]||1,dTot=se.flux.d[se.flux.d.length-1];let segs='';
-  for(let i=1;i<pt.length;i++){const p=a.pl[a.idxD((cum[i]+cum[i-1])/2/tot*dTot)];
+  const tot=cum[cum.length-1]||1,dTot=se.flux.d[se.flux.d.length-1],[d0,d1]=se.trace_d||[0,dTot];let segs='';
+  for(let i=1;i<pt.length;i++){const p=a.pl[a.idxD(d0+(cum[i]+cum[i-1])/2/tot*(d1-d0))];
     segs+=`<line x1="${f(pt[i-1][0])}" y1="${f(pt[i-1][1])}" x2="${f(pt[i][0])}" y2="${f(pt[i][1])}" stroke="${a.couleurDe(p)}"/>`;}
   const[x0,y0]=pt[0],[x1,y1]=pt[pt.length-1],boucle=Math.hypot(x1-x0,y1-y0)<14,lieu=String(se.lieu||'').split(',')[0].trim();
   return `<svg viewBox="0 0 ${W} ${Hh}" class="fs-trace-svg" role="img" aria-label="Tracé de la sortie${lieu?' à '+lieu:''}, coloré selon l'allure : plus le trait est foncé, plus tu allais vite">`
