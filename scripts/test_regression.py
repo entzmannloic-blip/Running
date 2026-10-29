@@ -763,6 +763,110 @@ def run():
         except Exception as e:
             check("T23 Rewind sous réduire les animations", False, str(e)[:160])
 
+        # ── T32 : fond de carte du tracé (build 283) : avec tuiles, sans accès, mode avion, réduire les animations ──
+        import math
+        import re as _re
+        TUILE_URL = _re.compile(r"^https://[a-d]\.basemaps\.cartocdn\.com/light_all/(\d+)/(\d+)/(\d+)@2x\.png$")
+
+        def page_carte(mode, reduce=False):
+            ctx = b.new_context(viewport={"width": 390, "height": 844}, service_workers="block",
+                                reduced_motion="reduce" if reduce else "no-preference")
+            if mode == "avion":  # hors connexion : l'app ne doit même pas demander de tuile
+                ctx.add_init_script("Object.defineProperty(navigator,'onLine',{get:()=>false});")
+            urls = []
+
+            def tuile(r):
+                if mode == "echec":
+                    r.abort()
+                    return
+                urls.append(r.request.url)
+                m = TUILE_URL.match(r.request.url)
+                z, x, y = m.groups() if m else ("?", "?", "?")
+                r.fulfill(status=200, content_type="image/svg+xml",
+                          body=(f'<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512"><rect width="512" height="512" fill="#e9ecee"/>'
+                                f'<text x="16" y="40" font-size="28">{z}/{x}/{y}</text></svg>').encode())
+            ctx.route("**/*basemaps.cartocdn.com/**", tuile)
+            pg = ctx.new_page()
+            errs = []
+            pg.on("pageerror", lambda e: errs.append(str(e)[:160]))
+            pg.goto(HTML, wait_until="load", timeout=20000)
+            pg.wait_for_function("typeof showTab==='function'&&!document.getElementById('boot-load')", timeout=10000)
+            pg.wait_for_timeout(600)
+            pg.evaluate("var o=document.getElementById('rwoverlay');if(o)o.classList.remove('on');")
+            pg.evaluate("rsOuvrir('44-5',1)")
+            pg.wait_for_selector(".rs-sl:last-child .rs-carte svg", timeout=6000)
+            pg.wait_for_timeout(900)
+            return ctx, pg, errs, urls
+
+        LIRE_CARTE = """(()=>{const c=document.querySelector('.rs-sl:last-child .rs-carte'),a=c.querySelector('.rs-attrib');
+            return {imgs:[...c.querySelectorAll('.rs-fond img')].map(i=>({src:i.getAttribute('src'),left:parseFloat(i.style.left),top:parseFloat(i.style.top),w:parseFloat(i.style.width)})),
+              attrib:getComputedStyle(a).display!=='none'?a.innerText.trim():null,attribPx:parseFloat(getComputedStyle(a).fontSize),
+              casing:c.querySelector('svg > path').getAttribute('d'),lignes:c.querySelectorAll('svg g > line').length,
+              box:c.getBoundingClientRect().width,legende:!!document.querySelector('.rs-sl:last-child .rs-legende'),
+              cap:document.querySelector('.rs-sl:last-child .rs-cap').innerText,aria:c.querySelector('svg').getAttribute('aria-label')}})()"""
+        try:
+            rw = json.load(open(os.path.join(SITE, "data", "rewind-44-5.json"), encoding="utf-8"))
+            ctx, pc, errs, urls = page_carte("tuiles")
+            r = pc.evaluate(LIRE_CARTE)
+            ok_urls = bool(urls) and all(TUILE_URL.match(u) for u in urls)
+            # alignement : un point du tracé retombe, au centième de pixel près, là où la tuile Web Mercator le place
+            R_ = 6378137.0
+            i = len(rw["trace"]) // 2
+            mx, my = rw["ancrage"]["x"] + rw["trace"][i][0], rw["ancrage"]["y"] + rw["trace"][i][1]
+            lng = math.degrees(mx / R_)
+            lat = math.degrees(2 * math.atan(math.exp(my / R_)) - math.pi / 2)
+            nums = [float(v) for v in _re.findall(r"-?\d+\.?\d*", r["casing"])]
+            px, py = nums[2 * i], nums[2 * i + 1]
+            ecart = None
+            for im in r["imgs"]:
+                z, tx, ty = (int(v) for v in TUILE_URL.match("https://a.basemaps.cartocdn.com/" + im["src"].split("basemaps.cartocdn.com/")[1]).groups())
+                n = 2 ** z
+                fx = (lng + 180) / 360 * n
+                fy = (1 - math.log(math.tan(math.radians(lat)) + 1 / math.cos(math.radians(lat))) / math.pi) / 2 * n
+                if int(fx) == tx and int(fy) == ty:
+                    X = (im["left"] + (fx - tx) * im["w"]) * 3.2
+                    Y = (im["top"] + (fy - ty) * im["w"]) * 3.2
+                    ecart = max(abs(X - px), abs(Y - py))
+            check("T32 fond de carte : tuiles CARTO Positron @2x demandées, posées en Web Mercator (le tracé tombe sur la tuile, écart < 0,2 px de 320)",
+                  len(r["imgs"]) >= 2 and ok_urls and ecart is not None and ecart < 0.2 and len(urls) == len(r["imgs"]) and not errs,
+                  f"imgs={len(r['imgs'])} urls={len(urls)} ok_urls={ok_urls} ecart={ecart} {errs[:1]}")
+            check("T32 fond de carte : attribution « © OpenStreetMap © CARTO » visible en petit (12 px minimum), tracé coloré par-dessus, légende et mention des 300 m",
+                  r["attrib"] == "© OpenStreetMap © CARTO" and r["attribPx"] >= 12 and r["lignes"] > 100 and r["legende"]
+                  and "300 premiers" in r["cap"] and "300" in r["aria"], f"{r['attrib']} {r['attribPx']} lignes={r['lignes']} {r['cap'][:60]}")
+            sw = open(os.path.join(SITE, "sw.js"), encoding="utf-8").read()
+            check("T32 pas de tuiles dans le pré-cache ; le service worker ne prend pas les requêtes d'un autre domaine",
+                  "cartocdn" not in sw and "url.origin!==location.origin" in sw.replace(" ", ""), "")
+            ctx.close()
+        except Exception as e:
+            check("T32 fond de carte avec tuiles", False, str(e)[:200])
+
+        try:
+            ctx, pc, errs, urls = page_carte("echec")
+            r = pc.evaluate(LIRE_CARTE)
+            check("T32 sans accès aux tuiles (réseau coupé) : le tracé seul, ni case vide ni image cassée, pas d'attribution, pas d'erreur",
+                  len(r["imgs"]) == 0 and r["attrib"] is None and r["lignes"] > 100 and r["box"] > 200 and not errs,
+                  f"imgs={len(r['imgs'])} attrib={r['attrib']} lignes={r['lignes']} {errs[:1]}")
+            ctx.close()
+            ctx, pc, errs, urls = page_carte("avion")
+            r = pc.evaluate(LIRE_CARTE)
+            check("T32 hors connexion (mode avion) : aucune tuile demandée, le tracé seul, sans erreur",
+                  len(urls) == 0 and len(r["imgs"]) == 0 and r["attrib"] is None and r["lignes"] > 100 and not errs,
+                  f"urls={len(urls)} imgs={len(r['imgs'])} attrib={r['attrib']} {errs[:1]}")
+            ctx.close()
+        except Exception as e:
+            check("T32 fond de carte sans tuiles", False, str(e)[:200])
+
+        try:
+            ctx, pc, errs, urls = page_carte("tuiles", reduce=True)
+            r = pc.evaluate(LIRE_CARTE)
+            anim = pc.evaluate("""({anims:document.getAnimations().filter(a=>a.playState==='running'&&a.effect&&a.effect.target&&document.querySelector('.rs').contains(a.effect.target)).length,
+                cachee:[...document.querySelectorAll('.rs-sl:last-child *')].filter(e=>getComputedStyle(e).opacity==='0').length})""")
+            check("T32 fond de carte sous réduire les animations : tuiles affichées d'un coup, aucune animation, rien de masqué",
+                  len(r["imgs"]) >= 2 and r["attrib"] and anim["anims"] == 0 and anim["cachee"] == 0 and not errs, f"{len(r['imgs'])} {anim} {errs[:1]}")
+            ctx.close()
+        except Exception as e:
+            check("T32 fond de carte sous réduire les animations", False, str(e)[:200])
+
         # ── T24 : direction blanc et orange (lot 5) : police des chiffres embarquee, jetons orange ──
         try:
             ctxf = b.new_context(viewport={"width": 390, "height": 844}, service_workers="block")

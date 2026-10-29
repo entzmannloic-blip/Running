@@ -152,7 +152,7 @@ Inchangé depuis le build 268. Trois durées et une seule courbe : **120 ms** po
 - **Graphes** : courbes tracées et barres qui montent à la première apparition, une fois par graphe (`_trace`) ; le profil d'une course se dessine au fil du scroll.
 - **Chiffres clés** (forme et sa jauge, ACWR, J-N) : ils comptent jusqu'à leur valeur à leur première apparition, une fois par session (`_compte`).
 - **Célébrations** rares et sobres : une coche ou un trait qui se dessine, jamais de confettis.
-- **Rewind de séance** : récit plein écran sur fond blanc, orange seul accent, ocre pour le dépassement de cible. Les tracés de données durent des multiples de 360 ms (1,4 à 3,2 s) ; le point du relief rejoue la sortie au rythme réel. Défilement automatique (environ 38 s), sauf l'analyse du coach qui attend « Continuer ». Sous réduire les animations : chaque image s'affiche finie et on avance au toucher.
+- **Rewind de séance** : récit plein écran sur fond blanc, orange seul accent, ocre pour le dépassement de cible. Image « Le tracé » (build 283) : fond de carte clair CARTO Positron sous le tracé (liseré blanc de 9 px sous le trait coloré pour qu'il reste lisible), attribution en 12 px dans l'angle ; sans réseau, le tracé seul, sans case vide. Les tracés de données durent des multiples de 360 ms (1,4 à 3,2 s) ; le point du relief rejoue la sortie au rythme réel. Défilement automatique (environ 38 s), sauf l'analyse du coach qui attend « Continuer ». Sous réduire les animations : chaque image s'affiche finie et on avance au toucher.
 - **Toucher** : retour visuel seul (léger enfoncement, 97 %). Pas d'haptique : l'iPhone ne vibre pas pour une web app.
 
 ### Named Rules

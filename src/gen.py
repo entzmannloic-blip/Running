@@ -2727,6 +2727,10 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":283,"date":"29 octobre 2026","sha":"","tag":"Rewind de séance : fond de carte sous le tracé, 300 premiers et derniers mètres masqués","items":[
+    "LE TRACÉ : l'image 2 du Rewind pose le tracé coloré selon l'allure sur un fond de carte clair (CARTO Positron, © OpenStreetMap © CARTO). Hors connexion, ou si le réseau ne répond pas, le tracé s'affiche seul comme avant, sans case vide ; rien n'est ajouté au pré-cache.",
+    "CONFIDENTIALITÉ : l'app est publique. Les 300 premiers et les 300 derniers mètres du tracé ne sont plus enregistrés (comme la zone de confidentialité de Strava) ; la fiche d'une séance en profite aussi. Le tracé est maintenant placé en Web Mercator avec un ancrage géographique, sans quoi la carte ne pourrait pas se poser sur les rues.",
+    "DONNÉES : scripts/rewind_seance.py applique le masquage et écrit l'ancrage (nouvelle option --retrace pour refaire le tracé d'un Rewind existant) ; les Rewinds S43-8, S44-2, S44-3 et S44-5 sont refaits depuis leurs polylignes Strava."]},
   {"build":282,"date":"29 octobre 2026","sha":"","tag":"Log S44 seance 5 : 10 km un peu plus vite que l'allure marathon (renforcement remplacé) du 29/10","items":[
     "SEANCE : S44 seance 5 loggee depuis Strava : 10 km un peu plus vite que l'allure marathon (renforcement remplacé), 10,02 km en 52:02 (5:12/km), FC 150/172, D+ 36 m, 11 °C, Novablast 5 J.",
     "CHAUSSURES : Novablast 5 J a 887 km."]},

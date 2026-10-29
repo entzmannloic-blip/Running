@@ -1,6 +1,6 @@
 # Enrichir l'app après une séance — contrat pour Claude
 
-> Document de référence pour le projet Claude. Mis à jour : 28 octobre 2026 (build 269, P4 « Rewind de séance »).
+> Document de référence pour le projet Claude. Mis à jour : 29 octobre 2026 (build 283, fond de carte et masquage du tracé du Rewind).
 
 ## Le circuit
 
@@ -48,7 +48,7 @@ Il écrit, sans rien inventer :
 - `src/strava_reference.json` : l'activité du jour (additionnée s'il y a déjà une sortie ce jour-là) et le kilométrage de la chaussure ;
 - `GEAR` dans `src/gen.py` : le kilométrage de la chaussure ;
 - une entrée de `CHANGELOG` (build + 1). `--sans-changelog` pour plusieurs séances dans un même build ;
-- avec `--rewind` : `src/rewind/44-2.json` (flux réduit à 160 points, tracé, tours, trophées). `--cible-*` seulement si la séance a été remplacée (ex. seuil remplacé par un footing) : la cible appliquée est gardée et sert au prévu face au réalisé. Rattrapage d'une séance déjà loguée : `python scripts/rewind_seance.py S44-2 strava/<id>-rewind.json`.
+- avec `--rewind` : `src/rewind/44-2.json` (flux réduit à 160 points, tracé masqué, tours, trophées). `--cible-*` seulement si la séance a été remplacée (ex. seuil remplacé par un footing) : la cible appliquée est gardée et sert au prévu face au réalisé. Rattrapage d'une séance déjà loguée : `python scripts/rewind_seance.py S44-2 strava/<id>-rewind.json`.
 
 Il refuse de réécrire un log existant (`--force`) et de logger deux fois la même activité Strava. Le commentaire factuel est produit automatiquement ; `--commentaire` le remplace. Le découplage suit `src/decouplage.py` (seuls les `fiable` servent dans l'app).
 
@@ -58,6 +58,15 @@ Il refuse de réécrire un log existant (`--force`) et de logger deux fois la m�
 - **La revue de la semaine**, quand elle est terminée : `src/textes/semaines/S44.html`.
 - **Le Rewind de la semaine** (s'il y a eu au moins une course) : `src/textes/rewinds/S44.json`, 6 à 8 slides sur les chiffres mesurés (copier la structure d'un Rewind existant). Ils sont rangés par numéro de semaine : le plus récent est ouvert le lundi.
 - Une séance non faite (`skipped`) ou une modification du plan se fait encore dans le bloc de la semaine de `src/gen.py` (voir les semaines précédentes).
+
+### Tracé du Rewind : masquage de 300 m et fond de carte (build 283)
+
+L'app est **publique** (GitHub Pages) : le tracé publié ne doit pas montrer d'où part la séance.
+- `scripts/rewind_seance.py` retire les **300 premiers et les 300 derniers mètres** (distance au sol le long du tracé ; le polyline réduit de Strava est environ 3 % plus court que la distance réelle, la coupe est donc faite sur la plus grande des deux mesures, jamais sous 300 m réels), puis projette le reste en **Web Mercator exact** (EPSG:3857, mètres) avec un **ancrage entier** `ancrage: {x, y}` : c'est ce qui permet de poser les tuiles sur les rues. Il écrit aussi `masque` (300) et `trace_d` (`[début, fin]` en mètres réels de la sortie, pour colorer chaque morceau avec la bonne allure). Sortie trop courte pour garder quelque chose : pas de tracé du tout, jamais un tracé non masqué.
+- **Rien à faire de plus** pour une nouvelle séance : `log_seance.py --rewind` et `rewind_seance.py` appliquent le masquage. `validate_data.py` refuse un Rewind publié dont le tracé n'est pas masqué (ancrage, `masque` ≥ 300, `trace_d`).
+- **Refaire le tracé d'un Rewind existant** (relire sa polyline dans Strava, `list_activities` avec `include_polyline=true` sur le jour de la séance, puis recopier `id`, `summary.distance` et `reduced_polyline` dans `strava/<id>-polyline.json`) : `python scripts/rewind_seance.py S44-2 strava/<id>-polyline.json --retrace`. Seuls `trace`, `ancrage`, `trace_d` et `masque` changent ; l'activité doit être celle du Rewind. Vérifier la recopie : projeter la polyline comme l'ancien code et comparer à l'ancien `trace` (les 4 Rewinds du build 283 l'ont été).
+- **Fond de carte** (`fondCarte()` et `img2()` dans `src/app.js`) : tuiles CARTO « Positron » claires (`light_all`) en `@2x`, attribution « © OpenStreetMap © CARTO » en petit sur l'image. Le tracé coloré reste par-dessus avec son animation. **Réseau seulement** : hors connexion (`navigator.onLine`), ou si une tuile échoue, le tracé reste seul comme avant (une tuile n'entre dans la page qu'une fois chargée : pas de case vide, attribution cachée tant qu'aucune tuile ne s'est affichée). Les tuiles ne sont **jamais dans le pré-cache** du service worker (requêtes d'un autre domaine, non interceptées). Un Rewind ancien, sans `ancrage`, s'affiche sans fond de carte.
+- Limites à connaître : le shell de la session n'atteint pas les serveurs de tuiles (le rendu se voit sur l'iPhone) ; les tests T32 de `test_regression.py` servent de fausses tuiles et vérifient l'alignement par un calcul indépendant.
 
 ## 5. Construire et contrôler en local
 
