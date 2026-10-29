@@ -12,6 +12,7 @@ test_log_seance.py — tests de log_seance.py sur trois vraies seances deja logg
    refuse de reecrire un log existant sans --force.
 """
 import argparse
+import datetime
 import json
 import os
 import shutil
@@ -98,16 +99,19 @@ def test_ecriture():
             shutil.copyfile(src, dst)
             setattr(log_seance, nom, dst)
         log_seance.LOGS = os.path.join(tmp, "logs")
-        e = dict(entree("20753555995"), start_local="2026-10-29T18:00:00", gear_total_distance=1294300)
+        # jour libre : le lendemain de la derniere sortie de la reference (une date fixe finit par recevoir une vraie sortie, L14)
+        dern = max(json.load(open(log_seance.REF, encoding="utf-8"))["activites"])
+        jour = (datetime.date.fromisoformat(dern) + datetime.timedelta(days=1)).isoformat()
+        e = dict(entree("20753555995"), start_local=jour + "T18:00:00", gear_total_distance=1294300)
         chemin_e = os.path.join(tmp, "e.json")
         json.dump(e, open(chemin_e, "w", encoding="utf-8"))
         gen_avant = open(log_seance.GEN, encoding="utf-8").read()
         build = int(gen_avant.split('CHANGELOG=[\n  {"build":', 1)[1].split(",", 1)[0])
         log_seance.main(["S44-3", chemin_e])
         out = json.load(open(os.path.join(tmp, "logs", "S44-3.json"), encoding="utf-8"))
-        check("log ecrit avec realise et date du jour", out["realise"]["km"] == 10.04 and out["seance"].get("date") == "2026-10-29")
+        check("log ecrit avec realise et date du jour", out["realise"]["km"] == 10.04 and out["seance"].get("date") == jour)
         ref = json.load(open(log_seance.REF, encoding="utf-8"))
-        check("reference : activite ajoutee en tete", list(ref["activites"])[0] == "2026-10-29")
+        check("reference : activite ajoutee en tete", list(ref["activites"])[0] == jour)
         check("reference : chaussure a 1294 km", ref["chaussures"]["Clifton 10"] == 1294)
         gen = open(log_seance.GEN, encoding="utf-8").read()
         check("GEAR : Clifton 10 a 1294 km", '"modele":"Clifton 10","km":1294}' in gen)
@@ -120,7 +124,7 @@ def test_ecriture():
         os.remove(os.path.join(tmp, "logs", "S44-3.json"))
         log_seance.main(["S44-3", chemin_e, "--sans-changelog"])
         check("sortie deja dans la reference : pas de double compte",
-              json.load(open(log_seance.REF, encoding="utf-8"))["activites"]["2026-10-29"][0] == 10.0356)
+              json.load(open(log_seance.REF, encoding="utf-8"))["activites"][jour][0] == 10.0356)
         try:
             log_seance.main(["S44-3", chemin_e])
             check("refus de reecrire un log existant", False)
