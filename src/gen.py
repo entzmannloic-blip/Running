@@ -2727,6 +2727,10 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":281,"date":"29 octobre 2026","sha":"","tag":"Rewind de séance : deux corrections après le premier test sur l'iPhone","items":[
+    "LE CŒUR : la courbe de FC sous la cible était tracée presque en blanc (reste du fond sombre) et semblait coupée ; elle est maintenant grise, en entier, avec la partie au-dessus de la cible en ocre et une légende « Ta FC ».",
+    "L'ANALYSE DU COACH : seul le texte défile, avec un fondu en haut et en bas ; « Précédent » et « Continuer » restent toujours visibles en bas, hors de la zone qui défile (sur iPhone, un toucher pendant l'élan du défilement ne déclenchait pas le bouton) ; « Lire la revue complète » passe à la fin du texte.",
+    "TA PROGRESSION : le point de la séance du jour, blanc sur blanc, est orange."]},
   {"build":280,"date":"29 octobre 2026","sha":"","tag":"Blanc et orange : corrections de la relecture indépendante","items":[
     "ACCUEIL : le conseil du jour (affûtage avant une course, surcharge, relance) réapparaît dans la carte Forme ; « Ton année » prend l'année des données.",
     "FICHE D'UNE SÉANCE FAITE : lecture vocale et théorie de la séance rétablies.",

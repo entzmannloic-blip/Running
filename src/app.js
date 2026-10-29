@@ -4858,11 +4858,11 @@ function img5(se,a){
     if(z.lo>lo&&z.lo<hi)bandes.append(sv('text',{x:L-6,y:y(z.lo)+4,class:'rs-ax','text-anchor':'end'},z.lo));});
   const sm=f.fc.map((v,i)=>(f.fc[Math.max(0,i-1)]+v+f.fc[Math.min(n-1,i+1)])/3),d='M'+sm.map((v,i)=>x(f.t[i]).toFixed(1)+','+y(v).toFixed(1)).join('L');
   const id=nid('rsmc'),rect=sv('rect',{x:L,y:0,width:W-L-R,height:Hh,fill:'#fff',style:'transform-box:fill-box;transform-origin:0 50%'});
-  const fcP=sv('path',{d,fill:'none',stroke:'#F7F7F8','stroke-width':2,'stroke-linejoin':'round',pathLength:1,'stroke-dasharray':1,'stroke-dashoffset':0}),trace=sv('g',null,fcP);let cl=null,fcA=null;
+  const fcP=sv('path',{d,fill:'none',class:'rs-fc','stroke-width':2,'stroke-linejoin':'round',pathLength:1,'stroke-dasharray':1,'stroke-dashoffset':0}),trace=sv('g',null,fcP);let cl=null,fcA=null;
   if(c&&c.fc_max!=null&&c.fc_max>lo&&c.fc_max<hi){const idc=nid('rscc');
     trace.append(sv('clipPath',{id:idc},sv('rect',{x:L,y:0,width:W-L-R,height:y(c.fc_max)})),fcA=sv('path',{d,fill:'none',stroke:'#CA8A04','stroke-width':2.5,'stroke-linejoin':'round','clip-path':`url(#${idc})`,pathLength:1,'stroke-dasharray':1,'stroke-dashoffset':0}));
     cl=sv('line',{x1:L,x2:W-R,y1:y(c.fc_max),y2:y(c.fc_max),class:'rs-cible'});}
-  const legF=cl?h('p',{class:'rs-leg'},h('i'),`Cible ≤ ${c.fc_max} bpm`,h('i',{class:'rs-ambre'}),'au-dessus'):null;
+  const legF=cl?h('p',{class:'rs-leg'},h('i',{class:'rs-fcl'}),'Ta FC',h('i',{class:'rs-apres'}),`Cible ≤ ${c.fc_max} bpm`,h('i',{class:'rs-ambre'}),'au-dessus'):null;
   const mi=Math.round((tN-t0)/60);
   const ax=sv('g',null,sv('text',{x:L,y:Hh-6,class:'rs-ax'},'0 min'),sv('text',{x:x(t0+(tN-t0)/2),y:Hh-6,class:'rs-ax','text-anchor':'middle'},Math.round(mi/2)+' min'),sv('text',{x:W-R,y:Hh-6,class:'rs-ax','text-anchor':'end'},mi+' min'));
   const g=sv('svg',{viewBox:`0 0 ${W} ${Hh}`,class:'rs-g',role:'img','aria-label':`Fréquence cardiaque de ${mn} à ${mx} bpm sur tes zones`},sv('defs',null,sv('mask',{id,maskUnits:'userSpaceOnUse',x:0,y:0,width:W,height:Hh},rect)),bandes,trace,cl,ax);
@@ -4925,8 +4925,12 @@ function img8(se,a){
   const p=se.prochaine,maj=s=>s.charAt(0).toUpperCase()+s.slice(1);
   const cons=carte('',h('span',{class:'ico-t'},ico(I_FL,16)),'Pour la prochaine séance',C.conseil?maj(C.conseil)
     :(p?`${p.titre}, ${leJour(p.date)} : ${[p.distance,p.allure,p.fc?'FC '+p.fc:null].filter(Boolean).join(', ')}. (Séance suivante au plan : la revue ne donne pas de conseil.)`:'La revue ne donne pas de conseil.'));
-  const btns=h('div',{class:'rs-rangee'},h('button',{class:'rs-btn second',type:'button',onclick:()=>LECT.precedente()},'Précédent'),se.revue_html?h('button',{class:'rs-btn second',type:'button',onclick:()=>REVUE.ouvre(se)},'Lire la revue complète'):null,h('button',{class:'rs-btn',type:'button',onclick:()=>LECT.suivante()},'Continuer',ico(I_FL,16)));
-  return {el:h('div',{class:'rs-coach'},kick,ti,tab,note,v,ctx,bien,corr,cons,btns),titre:'L\'analyse du coach terrain',manuel:true,defile:true,joue(){
+  /* le texte défile seul ; Précédent et Continuer restent en bas, hors de la zone qui défile
+     (sur iPhone, un toucher pendant l'élan du défilement ne déclenche pas le bouton) */
+  const revue=se.revue_html?h('button',{class:'rs-raccourci',type:'button',onclick:()=>REVUE.ouvre(se)},'Lire la revue complète',ico(I_FL,16)):null;
+  const corps=h('div',{class:'rs-defile'},h('div',{class:'rs-defile-in'},kick,ti,tab,note,v,ctx,bien,corr,cons,revue));
+  const btns=h('div',{class:'rs-rangee rs-dock'},h('button',{class:'rs-btn second',type:'button',onclick:()=>LECT.precedente()},'Précédent'),h('button',{class:'rs-btn',type:'button',onclick:()=>LECT.suivante()},'Continuer',ico(I_FL,16)));
+  return {el:h('div',{class:'rs-coach'},corps,btns),titre:'L\'analyse du coach terrain',manuel:true,defile:true,joue(){
     apparait([kick,ti]);
     if(!RM())icones.forEach((ic,i)=>{const path=ic.querySelector('path');if(!path)return;const L=path.getTotalLength();path.style.strokeDasharray=L;
       path.animate([{strokeDashoffset:L},{strokeDashoffset:0}],{duration:D_ECRAN,delay:4*D_PRESS+i*D_PRESS,easing:EASE,fill:'backwards'});});}};
@@ -4942,7 +4946,7 @@ function img9(se,a){
     const ligne=sv('path',{d:prev.length?'M'+prev.map((o,i)=>x(i).toFixed(1)+','+y(o.p).toFixed(1)).join('L'):'M0,0',fill:'none',stroke:'#FBB089','stroke-width':2,pathLength:1,'stroke-dasharray':1,'stroke-dashoffset':0});
     const dots=prev.map((o,i)=>sv('circle',{cx:x(i),cy:y(o.p),r:4,fill:'#FCCDB0'})),tl=sv('line',{x1:L,x2:W-R,y1:y(tend),y2:y(tend),class:'rs-cible'});
     legT=h('p',{class:'rs-leg'},h('i'),`Ta tendance : ${fA(tend)}/km, moyenne de tes ${Math.min(5,prev.length)} sorties comparables précédentes`);
-    const nouveau=sv('g',null,sv('circle',{cx:x(k),cy:y(cur.p),r:11,fill:'rgba(244,86,29,.16)'}),sv('circle',{cx:x(k),cy:y(cur.p),r:6.5,fill:'#F7F7F8'}),sv('text',{x:x(k),y:y(cur.p)+(dlt<0?-14:24),class:'rs-ax rs-ax-fort','text-anchor':'end'},fA(cur.p)));
+    const nouveau=sv('g',null,sv('circle',{cx:x(k),cy:y(cur.p),r:11,fill:'rgba(244,86,29,.16)'}),sv('circle',{cx:x(k),cy:y(cur.p),r:6.5,class:'rs-nouveau'}),sv('text',{x:x(k),y:y(cur.p)+(dlt<0?-14:24),class:'rs-ax rs-ax-fort','text-anchor':'end'},fA(cur.p)));
     const xl=sv('g',null,sv('text',{x:x(0),y:Hh-6,class:'rs-ax'},court(pts[0].x.date)),sv('text',{x:x(k),y:Hh-6,class:'rs-ax','text-anchor':'end'},court(cur.x.date)));
     g=sv('svg',{viewBox:`0 0 ${W} ${Hh}`,class:'rs-g',role:'img','aria-label':`Allure à 145 bpm de tes ${pts.length} dernières sorties faciles comparables`},grille,tl,ligne,...dots,nouveau,xl);
     const verdict=Math.abs(dlt)<=5?'dans ta tendance':dlt<0?`${Math.round(-dlt)} s/km plus efficace que ta tendance`:`${Math.round(dlt)} s/km moins efficace que ta tendance`;
@@ -5005,7 +5009,7 @@ LECT=(function(){
     const sg=prog.children[k],dur=DUREES[k];void sg.offsetWidth;
     if(!AUTO||!dur||im.manuel||RM())sg.classList.add('manuel');
     else{sg.style.setProperty('--dur',dur+'ms');sg.classList.add('en-cours');sg.firstChild.onanimationend=()=>{if(cour===el&&!box.hidden)suivante();};}
-    pied.textContent=im.manuel?'Fais défiler pour tout lire, puis « Continuer »':(RM()||!AUTO)?'Touche à droite pour avancer, à gauche pour revenir':'Touche à droite pour avancer, à gauche pour revenir · maintiens pour mettre en pause';}
+    pied.textContent=im.manuel?'Fais défiler pour tout lire':(RM()||!AUTO)?'Touche à droite pour avancer, à gauche pour revenir':'Touche à droite pour avancer, à gauche pour revenir · maintiens pour mettre en pause';}
   const suivante=()=>va(i+1),precedente=()=>va(i-1);
   let enPause=[];function pause(on){box.classList.toggle('pause',on);if(on){enPause=document.getAnimations().filter(an=>{const t=an.effect&&an.effect.target;return an.playState==='running'&&t&&box.contains(t);});enPause.forEach(an=>an.pause());}else{enPause.forEach(an=>{try{an.play();}catch(e){}});enPause=[];}}
   return {ouvre,ferme,va,suivante,precedente,ouvert:()=>!!box&&!box.hidden};

@@ -1983,8 +1983,16 @@ svg.tr-go .tr-b{animation:trBarre var(--d-ecran) var(--ease) both;animation-dela
 .rs-pied{flex:none;margin:0;min-height:30px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:var(--t-data);letter-spacing:.04em;color:var(--texte-trois)}
 .rs-sl{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:safe center;overflow-y:auto;overscroll-behavior:contain;padding-bottom:6px}
 .rs-sl>div{display:flex;flex-direction:column;gap:14px;flex:none;min-height:min-content}
-.rs-sl.defile{display:block}
-.rs-sl.defile{justify-content:flex-start;overflow-y:scroll;touch-action:pan-y;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding-bottom:24px;-webkit-user-select:text;user-select:text}
+.rs-sl.defile{justify-content:flex-start;overflow:hidden;padding-bottom:0}
+.rs-sl.defile>.rs-coach{flex:1 1 auto;min-height:0;gap:10px!important}
+.rs-defile{flex:1 1 auto;min-height:0;overflow-y:auto;touch-action:pan-y;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;-webkit-user-select:text;user-select:text}
+.rs-defile::before,.rs-defile::after{content:"";display:block;position:sticky;z-index:1;height:18px;pointer-events:none}
+.rs-defile::before{top:0;margin-bottom:-18px;background:linear-gradient(var(--rs-fond),transparent)}
+.rs-defile::after{bottom:0;margin-top:-18px;background:linear-gradient(transparent,var(--rs-fond))}
+.rs-defile-in{display:flex;flex-direction:column;gap:12px;padding:14px 0 22px}
+.rs-dock{flex:none;flex-wrap:nowrap}
+.rs-dock .rs-btn.second{flex:0 1 auto}
+.rs-dock .rs-btn:not(.second){flex:1 1 auto}
 .rs-kick{margin:0;font-size:var(--t-data);font-weight:800;letter-spacing:.2em;text-transform:uppercase;color:var(--primary-deux)}
 .rs-titre{margin:0;font-family:inherit;font-size:var(--t-title);font-weight:700;line-height:1.2;text-wrap:balance;color:var(--rs-encre)}
 .rs-cap{margin:0;font-size:var(--t-callout);line-height:1.55;color:var(--texte-deux)}
@@ -2005,12 +2013,16 @@ svg.tr-go .tr-b{animation:trBarre var(--d-ecran) var(--ease) both;animation-dela
 .rs-g .rs-ax-fort{fill:var(--rs-encre);font-weight:700}
 .rs-g .rs-grille{stroke:var(--gris-clair);stroke-width:1}
 .rs-g .rs-cible{stroke:var(--rs-encre);stroke-width:1.5;stroke-dasharray:4 4;opacity:.8}
+.rs-g .rs-fc{stroke:var(--texte-trois)}
+.rs-g .rs-nouveau{fill:var(--primary)}
 .rs-g-trace{max-width:320px;margin:0 auto}
 .rs-legende{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:10px;font-size:var(--t-data);color:var(--texte-trois);font-variant-numeric:tabular-nums}
 .rs-legende i{height:6px;border-radius:99px;background:linear-gradient(90deg,var(--allure-1),var(--allure-2),var(--allure-3),var(--allure-4),var(--allure-5))}
 .rs-leg{margin:0;display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:var(--t-caption);color:var(--texte-deux)}
 .rs-leg i{flex:none;width:22px;border-top:2px dashed var(--rs-encre)}
 .rs-leg i.rs-ambre{border-top:2.5px solid var(--rs-ambre);margin-left:8px}
+.rs-leg i.rs-fcl{border-top:2px solid var(--texte-trois)}
+.rs-leg i.rs-apres{margin-left:8px}
 .rs-zbar{display:flex;gap:2px;height:10px;border-radius:99px;overflow:hidden}
 .rs-zbar i{display:block;height:100%}
 .rs-zleg{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:var(--t-caption);color:var(--texte-deux);font-variant-numeric:tabular-nums}
@@ -2765,7 +2777,7 @@ svg.tr-go .tr-b{animation:trBarre var(--d-ecran) var(--ease) both;animation-dela
 <div id="boot-err" role="alert" hidden><p>Données indisponibles. Vérifie ta connexion puis réessaie.</p><button type="button" class="btn-nav" onclick="location.reload()">Réessayer</button></div>
 <script>
 (function(){
-var V="280",EAGER=["plan", "seances", "historique", "meta"];
+var V="281",EAGER=["plan", "seances", "historique", "meta"];
 function get(f){return fetch("data/"+f+".json?v="+V).then(function(r){if(!r.ok)throw new Error(f+" "+r.status);return r.json();});}
 function fail(){var l=document.getElementById("boot-load");if(l)l.hidden=true;var e=document.getElementById("boot-err");if(e)e.hidden=false;}
 var cl=null;
