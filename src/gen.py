@@ -2727,6 +2727,10 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":278,"date":"29 octobre 2026","sha":"","tag":"Blanc et orange (7/8) : Courses, dossiers et Rewinds de semaine","items":[
+    "COURSES : titre de la vue, « Ta saison en chiffres », courses à venir (J-N, dossier de course), courses passées (totaux en grand, temps et allure, puces, chaussures, bilan à déplier) ; plus de liseré de couleur ni d'emoji.",
+    "DOSSIER DE COURSE : sections blanches comme la fiche (chiffres, profil, déroulé, plan d'exécution, nutrition, zones, terrain, erreurs, checklist J-7), un seul accent orange.",
+    "REWIND DE SEMAINE et SAISON EN CHIFFRES sur fond blanc, icônes au trait, bouton « Terminer » orange."]},
   {"build":277,"date":"29 octobre 2026","sha":"","tag":"Blanc et orange (6/8) : Cockpit","items":[
     "COCKPIT : titre et quatre onglets (Aujourd'hui, Progression, Records, Analyse).",
     "AUJOURD'HUI comme la maquette : forme du jour en grand anneau et ses quatre indicateurs, carte Charge (ACWR du jour, zone et repère sur la barre), VO2max estimée, les N dernières semaines (distance, effort relatif, cadence et kilomètres par semaine sur 12 semaines), dernière sortie analysée.",

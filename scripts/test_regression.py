@@ -826,6 +826,24 @@ def run():
                   ck["onglets"] == ["Aujourd'hui", "Progression", "Records", "Analyse"] and ck["sel"] == 1 and ck["ind"] == 4 and ck["puce"] and ck["pt"]
                   and ck["acwr"] and ck["vo2"] and ck["barres"] == 12 and ck["ou"] >= 3 and ck["rec"] == ck["recAtt"] > 0 and ck["dash"]
                   and not ck["emo"] and not ck["vide"], str(ck))
+            # Courses, dossier de course, Rewind de semaine, saison en chiffres (lot 5, partie B) : fond blanc, aucun emoji d'interface
+            pf.evaluate("showTab('palmares')")
+            pf.wait_for_timeout(300)
+            cr = pf.evaluate("(function(){" + CHROME_JS + """var v=document.getElementById('vue-palmares');return {titre:(v.querySelector('.vue-titre')||{}).textContent,
+                passees:v.querySelectorAll('.crs-p').length,attendu:(typeof PALMARES!=='undefined'?PALMARES.length:0),emo:chrome(v)};})()""")
+            pf.evaluate("ouvrirDossier('nice')")
+            pf.wait_for_timeout(400)
+            dos = pf.evaluate("(function(){" + CHROME_JS + """var c=document.getElementById('contenu');return {sec:c.querySelectorAll('.dos .fs-sec').length,emo:chrome(c)};})()""")
+            pf.evaluate("fermer()")
+            pf.evaluate("rwOpen(REWINDS[REWINDS.length-1].id)")
+            pf.wait_for_timeout(300)
+            rw = pf.evaluate("""(function(){var c=document.getElementById('rwcard');var bg=getComputedStyle(c).backgroundColor;rwClose();return bg;})()""")
+            pf.evaluate("openWrapped()")
+            pf.wait_for_timeout(300)
+            wr = pf.evaluate("""(function(){var st=document.querySelector('.wr-stage');var r=[getComputedStyle(st).backgroundColor,/\\p{Extended_Pictographic}/u.test(document.getElementById('wrapped-ov').innerText)];_wrappedClose();return r;})()""")
+            check("T29 Courses, dossier de course, Rewind de semaine et saison en chiffres : blancs, sans emoji d'interface",
+                  cr["titre"] == "Courses" and cr["passees"] == cr["attendu"] and not cr["emo"] and dos["sec"] >= 8 and not dos["emo"]
+                  and rw == "rgb(255, 255, 255)" and wr[0] == "rgb(255, 255, 255)" and not wr[1], f"{cr} {dos} {rw} {wr}")
             ctxf.close()
         except Exception as e:
             check("T24 police des chiffres embarquee", False, str(e)[:160])
