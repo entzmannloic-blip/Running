@@ -90,7 +90,7 @@ function showTab(t){
     var _tb=document.getElementById('tab-'+id);
     if(t===id)_tb.setAttribute('aria-current','page');else _tb.removeAttribute('aria-current');
   });
-  if(t==='cockpit'){renderCockpit();renderDash();_ckFreshness();if(typeof _compte==='function')_compte(document.getElementById('ck-hero-num'),'ck-forme');setTimeout(()=>{if(typeof _vo2Reveal==='function')_vo2Reveal();if(typeof _effRender==='function')_effRender();if(typeof _heatRender==='function')_heatRender();if(typeof _saisonRender==='function')_saisonRender();if(typeof _decoupRender==='function')_decoupRender();if(typeof _profilRender==='function')_profilRender();},250);}
+  if(t==='cockpit'){renderCockpit();renderDash();if(typeof _ckTabsA11y==='function')_ckTabsA11y();_ckFreshness();if(typeof _compte==='function')_compte(document.getElementById('ck-hero-num'),'ck-forme');setTimeout(()=>{if(typeof _vo2Reveal==='function')_vo2Reveal();if(typeof _effRender==='function')_effRender();if(typeof _heatRender==='function')_heatRender();if(typeof _saisonRender==='function')_saisonRender();if(typeof _decoupRender==='function')_decoupRender();if(typeof _profilRender==='function')_profilRender();},250);}
   if(t==='palmares')renderPalmares();
   /* Le saut vers la semaine en cours ne se faisait qu'a la PREMIERE ouverture
      de l'onglet : toute visite suivante repartait en haut, c'est-a-dire en
@@ -628,7 +628,7 @@ function _coachNudge(){
     }
     // Priorité aux signaux de risque, puis de relance
     if(acwr>1.5)
-      return {tone:'warn',icon:'',mot:'r\u00e9cup',txt:'Ton ACWR est \u00e0 '+acwr.toFixed(2)+' \u2014 charge aigu\u00eb \u00e9lev\u00e9e. Priorise la r\u00e9cup ces prochains jours.'};
+      return {tone:'warn',icon:'',mot:'r\u00e9cup',txt:'Ton ACWR est \u00e0 '+_acNb(acwr,2)+' \u2014 charge aigu\u00eb \u00e9lev\u00e9e. Priorise la r\u00e9cup ces prochains jours.'};
     // Phase "Maintien — Road trip USA" (S36-39) : le plan prévoit peu de course, on n'alarme pas sur l'inactivité.
     const _inUSA=cur>=36&&cur<=39;
     if(_inUSA&&daysSinceAny>=4&&daysSinceAny<900)
@@ -636,7 +636,7 @@ function _coachNudge(){
     if(daysSinceAny>=5&&daysSinceAny<900&&!_inUSA)
       return {tone:'info',icon:'',mot:'relance',txt:daysSinceAny+' jours sans sortie logg\u00e9e. Tout va bien ? Une sortie facile relancerait la machine.'};
     if(acwr<0.7&&daysSinceAny<5)
-      return {tone:'info',icon:'',mot:'marge',txt:'Charge basse (ACWR '+acwr.toFixed(2)+') \u2014 de la marge pour ajouter du volume si la forme suit.'};
+      return {tone:'info',icon:'',mot:'marge',txt:'Charge basse (ACWR '+_acNb(acwr,2)+') \u2014 de la marge pour ajouter du volume si la forme suit.'};
     if(daysSinceQ>=10&&daysSinceQ<900)
       return {tone:'info',icon:'',mot:'qualit\u00e9 ?',txt:daysSinceQ+' jours sans s\u00e9ance qualit\u00e9. Un seuil ou un tempo ferait progresser ton chrono.'};
     if(forme.score>=85)
@@ -804,7 +804,8 @@ function _acForme(F,nudge){
     +'<span class="ac-forme-v" aria-hidden="true">'+F.score+'</span></span>'
     +'<span class="ac-min"><span class="ac-lb">Forme du jour <span class="sr-only">: '+F.score+' sur 100</span></span>'
     +'<span class="ac-forme-s">'+_acEsc(titre)+'</span>'
-    +(sous.length?'<span class="ac-forme-c">'+_acEsc(sous.join(' · '))+'</span>':'')+'</span></button>';
+    +(sous.length?'<span class="ac-forme-c">'+_acEsc(sous.join(' · '))+'</span>':'')
+    +(nudge&&nudge.txt?'<span class="ac-nudge ac-nudge-'+(nudge.tone==='warn'?'warn':'info')+'"><span class="sr-only">Conseil du jour : </span>'+_acEsc(nudge.txt)+'</span>':'')+'</span></button>';
 }
 function _acSemaine(sc){
   var arr=(SEANCES_BY_WEEK[sc.num]||SEANCES_BY_WEEK[String(sc.num)]||[]).filter(function(s){return s.date;});
@@ -856,7 +857,7 @@ function _acAnnee(SA){
   if(dp>=8849)rec.push(_acNb(dp/8849,1)+' fois l’Everest');else if(dp>0)rec.push(Math.round(dp/8849*100)+' % de l’Everest');
   var j=_JALONS.filter(function(x){return SA.km>=x.km&&!x.ar;}).pop();
   if(j)rec.push((rec.length?'et déjà ':'déjà ')+'la distance de Lyon à '+j.nom);
-  return '<section class="ac-carte" aria-labelledby="ac-annee-t"><h2 class="ac-h2" id="ac-annee-t">Ton année '+new Date().getFullYear()+'</h2>'
+  return '<section class="ac-carte" aria-labelledby="ac-annee-t"><h2 class="ac-h2" id="ac-annee-t">Ton année '+(SA.annee||2026)+'</h2>'
     +'<div class="ac-chiffres ac-annee">'
     +'<div><p class="ac-n ac-n28">'+_acNb(SA.km)+'</p><p class="ac-lb">km</p></div>'
     +'<div><p class="ac-n ac-n28">'+_acNb(SA.sorties)+'</p><p class="ac-lb">sorties</p></div>'
@@ -1582,9 +1583,17 @@ let _scrollLockY=0;
 let _viderTimer=null;
 const overlay=document.getElementById('overlay'),boite=document.getElementById('boite'),topbar=document.getElementById('topbar'),contenu=document.getElementById('contenu');
 let segActif=null;
-function ouvrir(){if(_viderTimer){clearTimeout(_viderTimer);_viderTimer=null;}var _dejaOuv=overlay.classList.contains('ouverte');overlay.classList.add('ouverte');if(!_dejaOuv)_scrollLockY=window.scrollY||document.documentElement.scrollTop||0;document.documentElement.style.overflow='hidden';document.body.style.overflow='hidden';document.body.style.position='fixed';document.body.style.top=(-_scrollLockY)+'px';document.body.style.left='0';document.body.style.right='0';overlay.scrollTop=0;boite.scrollTop=0;}
-function fermer(){if(typeof _bbHold==='function')_bbHold(600);if(typeof ttsStop==='function')ttsStop();overlay.classList.remove('ouverte');document.documentElement.style.overflow='';document.body.style.overflow='';document.body.style.position='';document.body.style.top='';document.body.style.left='';document.body.style.right='';window.scrollTo(0,_scrollLockY||0);if(_viderTimer)clearTimeout(_viderTimer);_viderTimer=setTimeout(()=>{contenu.innerHTML='';topbar.innerHTML='';_viderTimer=null;},300);}
+function ouvrir(){if(_viderTimer){clearTimeout(_viderTimer);_viderTimer=null;}var _dejaOuv=overlay.classList.contains('ouverte');_ovDialogue(true,_dejaOuv);overlay.classList.add('ouverte');if(!_dejaOuv)_scrollLockY=window.scrollY||document.documentElement.scrollTop||0;document.documentElement.style.overflow='hidden';document.body.style.overflow='hidden';document.body.style.position='fixed';document.body.style.top=(-_scrollLockY)+'px';document.body.style.left='0';document.body.style.right='0';overlay.scrollTop=0;boite.scrollTop=0;}
+function fermer(){_ovDialogue(false);if(typeof closeCkHelp==='function')closeCkHelp();if(typeof _bbHold==='function')_bbHold(600);if(typeof ttsStop==='function')ttsStop();overlay.classList.remove('ouverte');document.documentElement.style.overflow='';document.body.style.overflow='';document.body.style.position='';document.body.style.top='';document.body.style.left='';document.body.style.right='';window.scrollTo(0,_scrollLockY||0);if(_viderTimer)clearTimeout(_viderTimer);_viderTimer=setTimeout(()=>{contenu.innerHTML='';topbar.innerHTML='';_viderTimer=null;},300);}
 overlay.addEventListener('click',e=>{if(e.target===overlay)fermerAnime()});
+var _ovRetour=null;
+function _ovDialogue(on,deja){try{
+  var m=document.getElementById('main'),b=document.getElementById('botbar');
+  overlay.setAttribute('role','dialog');overlay.setAttribute('aria-modal','true');
+  if(on){if(!deja)_ovRetour=document.activeElement;if(m)m.inert=true;if(b)b.inert=true;
+    setTimeout(function(){var f=document.querySelector('#topbar button');if(f&&overlay.classList.contains('ouverte'))f.focus({preventScroll:true});},0);}
+  else{if(m)m.inert=false;if(b)b.inert=false;var r=_ovRetour;_ovRetour=null;if(r&&r.isConnected&&typeof r.focus==='function')r.focus({preventScroll:true});}
+}catch(e){}}
 (function(){const to=document.getElementById('theoOverlay');if(to)to.addEventListener('click',e=>{if(e.target===to)closeTheory();});})();
 document.addEventListener('keydown',e=>{if(e.key!=='Escape')return;
   // Ferme l'overlay actuellement ouvert (priorité au plus au-dessus)
@@ -1592,6 +1601,8 @@ document.addEventListener('keydown',e=>{if(e.key!=='Escape')return;
   if(wr){_wrappedClose();return;}
   var rp=document.getElementById('replay-ov');
   if(rp){_replayClose();return;}
+  var rwo=document.getElementById('rwoverlay');
+  if(rwo&&rwo.classList.contains('on')){if(typeof rwClose==='function')rwClose();return;}
   var help=document.getElementById('ck-help-ov');
   if(help&&help.classList.contains('open')){if(typeof closeCkHelp==='function')closeCkHelp();return;}
   var ver=document.getElementById('version-ov');
@@ -1859,7 +1870,7 @@ function ouvrirSemaine(num){const s=SEMAINES.find(x=>x.num===num);const ph=PHASE
     const isDone=r.statut==='fait'||r.statut==='partiel';
     const _today=new Date();_today.setHours(0,0,0,0);
     const loggable=!isDone&&!isSkipped&&se.date&&new Date(se.date+'T00:00:00')<=_today;
-    const tags=[stChip(isSkipped?'skipped':r.statut),`<span class="seance-tag">${se.type}</span>`,catBadge(se.cat),`<span class="seance-tag">Effort ${se.rpe}/10</span>`];
+    const tags=[stChip(isSkipped?'skipped':r.statut),`<span class="seance-tag">${se.type}</span>`,catBadge(se.cat),(((se.metriques||{}).RPE||se.rpe)!=null?`<span class="seance-tag">Effort ${String((se.metriques||{}).RPE||se.rpe).replace('.',',')}/10</span>`:'')].filter(Boolean);
     if(se.chaussure)tags.push(`<span class="seance-tag">${_acIco('chaussure',14)}${se.chaussure.replace("ASICS ","").replace("HOKA ","").replace("Brooks ","")}</span>`);
     if(se.fit)tags.push(`<span class="seance-tag">${_acIco('montre',14)}.fit</span>`);
     if(se.opt)tags.push('<span class="seance-tag tag-opt">Optionnelle</span>');
@@ -2231,7 +2242,7 @@ function _ckCtxBlock(key){
       if(acwr===null)return '';
       var col=acwr>1.3?'#DC2626':acwr<0.8?'#F4561D':'#16a34a';
       var label=acwr>1.5?'en surcharge':acwr>1.3?'charge \u00e9lev\u00e9e':acwr<0.8?'sous-entra\u00een\u00e9':'dans la zone optimale';
-      var txt='Ton ACWR est \u00e0 <strong style="color:'+col+'">'+acwr.toFixed(2)+'</strong> \u2014 tu es <strong>'+label+'</strong>.';
+      var txt='Ton ACWR est \u00e0 <strong style="color:'+col+'">'+_acNb(acwr,2)+'</strong> \u2014 tu es <strong>'+label+'</strong>.';
       if(acwr>1.3&&jrace<=21)txt+=' J-'+jrace+' avant '+rname+'\u00a0: c\u2019est le moment de lever le pied. R\u00e9duis le volume de 20\u201330\u00a0% cette semaine, garde 2\u20133 acc\u00e9l\u00e9rations courtes, dors bien. Tu arriveras plus frais que si tu pushs.';
       else if(acwr>1.3)txt+=' Surveille les signaux de fatigue (jambes lourdes, sommeil perturb\u00e9, FC matin \u00e9lev\u00e9e). Si un 2\u1d49\u1d49 indicateur clignote, all\u00e8ge la semaine.';
       else if(acwr<0.8)txt+=' Tu peux relancer le volume progressivement. Pas de rattrapage brutal \u2014 +10\u00a0% max par semaine.';
@@ -2279,7 +2290,7 @@ function initCkHelp(){
 <div id="ck-help-ov">
   <div class="ckh-topbar">
     <div class="ckh-title" id="ck-help-title"></div>
-    <button class="ckh-close" onclick="closeCkHelp()">✕</button>
+    <button class="ckh-close" onclick="closeCkHelp()" aria-label="Fermer l'aide">✕</button>
   </div>
   <div class="ckh-body" id="ck-help-body"></div>
 </div>`);}
@@ -2813,7 +2824,7 @@ function _ckRenderAll(win){
   _av.style.color=_tc(_acol);_av.classList.remove('warn');
   var _alab=al>1.5?'surcharge':al>1.3?'\u00e9lev\u00e9':al<0.8?'frais / all\u00e8gement':'ma\u00eetris\u00e9';
   var _akd=_av.parentElement.querySelector('.ck-kd');if(_akd){_akd.textContent=_alab;_akd.style.color=_tc(_acol);_akd.classList.remove('warn');}
-  var _av2=document.getElementById('ck-acwr-val2');if(_av2){_av2.textContent=al.toFixed(2);_av2.style.color=_tc(_acol);}
+  var _av2=document.getElementById('ck-acwr-val2');if(_av2){_av2.textContent=_acNb(al,2);_av2.style.color=_tc(_acol);}
   _ckBar('ckDP','ckDPW','ckDPT','ckDPX',D.DPLUS[W],{col:'#A1A1AA',unit:' m',h:75});
   _ckLine('ckZ2','ckZ2W','ckZ2T','ckZ2X',D.Z2[W].w,[{v:D.Z2[W].v,color:'#F4561D',lbl:'/km'}],_ckSmin,{h:85});
   var _z2v=D.Z2[W].v.filter(function(x){return x!=null;});
@@ -3155,7 +3166,7 @@ function _saisonRender(){
   el.innerHTML=`
     <div class="sais-head"><span class="sais-gain">${gainSec>=3?'▲ '+gainSec+' s/km':gainSec<=-3?'▼ '+Math.abs(gainSec)+' s/km':'→ stable'}</span><span class="sais-gain-sub">${gainSec>=3?"plus rapide à effort égal depuis l'hiver (+"+gainPct.toFixed(1)+"%)":gainSec<=-3?"plus lent à effort égal qu'en hiver ("+gainPct.toFixed(1)+"%)":"à effort égal, comparable à l'hiver ("+(gainPct>0?'+':'')+gainPct.toFixed(1)+"%)"}</span></div>
     <div class="sais-chart">${bars}</div>
-    <div class="sais-note">${SAISON_EFF.note||''} L'été (🌡️) est corrigé de la chaleur par estimation.</div>`;
+    <div class="sais-note">${SAISON_EFF.note||''} L'été est corrigé de la chaleur par estimation.</div>`;
 }
 function _decoupRuns(){
   // Sorties eligibles avec un KPI decouplage valide (calcule au log, jamais recalcule ici)
@@ -3191,14 +3202,14 @@ function _decoupRender(){
   var fdate=function(iso){var M=['janv.','f\u00e9vr.','mars','avr.','mai','juin','juil.','ao\u00fbt','sept.','oct.','nov.','d\u00e9c.'];
     var x=new Date(iso+'T12:00:00');return isNaN(x)?iso:(x.getDate()+' '+M[x.getMonth()]);};
   var num=function(n){return n.toFixed(1).replace('.',',');};
-  if(src)src.innerHTML=fdate(last.date)+' \u00b7 '+last.km+' km<br>'+d.fen_min+' min analys\u00e9es';
+  if(src)src.innerHTML=fdate(last.date)+' \u00b7 '+_acNb(+last.km,2)+' km<br>'+d.fen_min+' min analys\u00e9es';
   var posC=Math.max(0,Math.min(100,d.pct/MAXG*100)),posA=Math.max(0,Math.min(100,d.attendu/MAXG*100));
   var sousDessus=d.pct<d.attendu?'<strong style="color:'+_tc(v.c)+'">tu es en dessous</strong>':'<strong style="color:'+_tc(v.c)+'">tu es au-dessus</strong>';
   var rows=runs.slice().reverse().slice(0,8).map(function(r){
     var vv=_decoupVerdict(r.d);
     return '<div class="dc-row"><div class="dc-dot" style="background:'+vv.c+'"></div>'+
       '<div class="dc-main"><div class="dc-t">'+r.titre+'</div>'+
-      '<div class="dc-s">'+fdate(r.date)+' \u00b7 '+r.km+' km \u00b7 '+r.d.temp+' \u00b0C \u00b7 attendu ~'+r.d.attendu+' %</div></div>'+
+      '<div class="dc-s">'+fdate(r.date)+' \u00b7 '+_acNb(+r.km,2)+' km \u00b7 '+r.d.temp+' \u00b0C \u00b7 attendu ~'+r.d.attendu+' %</div></div>'+
       '<div class="dc-track"><div class="dc-fill" style="width:'+Math.min(100,r.d.pct/MAXG*100)+'%;background:'+vv.c+'"></div></div>'+
       '<div class="dc-v" style="color:'+vv.c+'">'+num(r.d.pct)+' %</div></div>';
   }).join('');
@@ -3503,12 +3514,23 @@ function _ckAujourdhui(){
   var lg=document.getElementById('ck-sem-leg');if(lg)lg.textContent='Barre pâle : semaine en cours ('+_acNb(ws[ws.length-1].km,1)+' km).';
 }
 var _ckZoneActive=1;
+function _ckTabsA11y(){
+  var tl=document.querySelector('#vue-cockpit .ck-zones');if(!tl)return;
+  tl.querySelectorAll('.ck-z').forEach(function(t){var z=t.dataset.zone;t.id='ck-tab-'+z;t.setAttribute('aria-controls','ck-zone-'+z);
+    t.tabIndex=t.getAttribute('aria-selected')==='true'?0:-1;});
+  document.querySelectorAll('#vue-cockpit .ck-zone').forEach(function(p){var z=p.dataset.zone;p.id='ck-zone-'+z;p.setAttribute('role','tabpanel');p.setAttribute('aria-labelledby','ck-tab-'+z);});
+  if(!tl._kb){tl._kb=1;tl.addEventListener('keydown',function(e){
+    var ts=[].slice.call(tl.querySelectorAll('.ck-z')),i=ts.indexOf(document.activeElement);if(i<0)return;
+    var j=e.key==='ArrowRight'?(i+1)%ts.length:e.key==='ArrowLeft'?(i-1+ts.length)%ts.length:e.key==='Home'?0:e.key==='End'?ts.length-1:-1;
+    if(j<0)return;e.preventDefault();ts[j].focus();ts[j].click();});}
+}
 function _ckZone(n,el){
   _ckZoneActive=n;
   document.querySelectorAll('#vue-cockpit .ck-zone').forEach(function(z){
     z.style.display=(+z.dataset.zone===n)?'':'none';});
   document.querySelectorAll('#vue-cockpit .ck-z').forEach(function(b){b.classList.remove('ck-z-on');b.setAttribute('aria-selected','false');});
   var b=el||document.querySelector('#vue-cockpit .ck-z[data-zone="'+n+'"]');if(b){b.classList.add('ck-z-on');b.setAttribute('aria-selected','true');}
+  _ckTabsA11y();
   var v=document.getElementById('vue-cockpit');if(v)v.scrollTop=0;
   window.scrollTo(0,0);
 }
@@ -3644,7 +3666,7 @@ ${_v?`<section class="ck-c" aria-labelledby="ckv-h">
 ${card('ckVol','Volume hebdomadaire','',null,null,90,'<div style="font-size:var(--t-data);color:var(--texte-trois);text-align:center;margin-top:4px">touche une barre · ■ prévu</div>','vol')}
 <div class="ck-cs" id="ck-vol-sub" style="margin:-4px 0 8px;padding:0 2px"></div>
 ${card('ckRE','Relative Effort / sem.','charge Strava réelle',null,null,80,'<div style="font-size:var(--t-data);color:var(--texte-trois);text-align:center;margin-top:4px">glisse →</div>','re')}
-<div class="ck-card"><div class="ck-ch"><div><div class="ck-ct">ACWR — risque blessure<button class="ck-help" onclick="event.stopPropagation();openCkHelp('acwr')">?</button></div><div class="ck-cs">ratio charge aiguë / chronique</div></div><div style="font-size:26px;font-weight:700;line-height:1" id="ck-acwr-val2">0.69</div></div><div class="ck-cw" id="ckACWRW"><svg id="ckACWR" height="65" style="display:block;width:100%"></svg><div class="ck-tt" id="ckACWRT"></div></div><div class="ck-xl" id="ckACWRX"></div></div>
+<div class="ck-card"><div class="ck-ch"><div><div class="ck-ct">ACWR — risque blessure<button class="ck-help" onclick="event.stopPropagation();openCkHelp('acwr')">?</button></div><div class="ck-cs">ratio charge aiguë / chronique</div></div><div style="font-size:26px;font-weight:700;line-height:1" id="ck-acwr-val2">—</div></div><div class="ck-cw" id="ckACWRW"><svg id="ckACWR" height="65" style="display:block;width:100%"></svg><div class="ck-tt" id="ckACWRT"></div></div><div class="ck-xl" id="ckACWRX"></div></div>
 ${card('ckDP','Dénivelé D+','',null,'m',75,'','dp')}
 </div>
 <div class="ck-sec ck-sec-tg" data-open="0" onclick="_ckToggleSec(this)">Moteur aérobie<span class="ck-sec-chev">▸</span></div>
@@ -4320,7 +4342,7 @@ function _fsKm(sp,c,src){
     +(cr?'<div class="fs-km-leg"><p><span class="fs-km-sw ok"></span>Dans la cible</p>'+(vite?'<p><span class="fs-km-sw vite"></span>Trop rapide</p>':'')+(lent?'<p><span class="fs-km-sw lent"></span>Trop lent</p>':'')+'</div>':'')
     +'<p class="fs-note fs-note-2">Le plus rapide : km '+rap.n+' en '+_fsAll(rap.p)+'. Le plus lent : km '+len.n+' en '+_fsAll(len.p)+'. Écart de '+Math.round(len.p-rap.p)+' s/km.</p>';
 }
-function ficheFaite(num,se){
+function ficheFaite(num,se,tts){
   var r=se.realise||{},cle=num+'-'+se.id,rw=typeof RS!=='undefined'&&RS.dispo(cle),c=(typeof RS!=='undefined'&&RS.cibleFiche)?RS.cibleFiche(cle):null;
   var t0=String(se.titre||'').replace(/\s*\((non planifie|non planifié)\)\s*/i,'').trim(),mt=t0.match(/^(.*?)\s*\(([^)]+)\)\s*$/);
   var titre=mt?mt[1]:t0,note=mt?_acCap(mt[2]):'',d=se.date?new Date(se.date+'T12:00:00'):null;
@@ -4372,13 +4394,15 @@ function ficheFaite(num,se){
     +(cc?'<p class="fs-kick">Conseil : '+_acEsc(String(cc.titre||'').replace(/^./,function(x){return x.toLowerCase();}))+'</p><p class="fs-para fs-gris">'+cc.texte+'</p>':'')
     +(bv?'<details class="fs-revue"><summary>Bénéfices et vigilance'+_acIco('fleche',18)+'</summary>'+bv+'</details>':'')
     +(se.chaussure?'<p class="fs-note">Chaussure conseillée : '+_acEsc(se.chaussure)+'</p>':'')
+    +(typeof RICH_THEORY!=='undefined'&&RICH_THEORY[seanceTag(se)]?'<button type="button" class="theo-btn theo-btn-rich" onclick="openTheory('+num+','+se.id+')">La théorie de cette séance <span class="theo-btn-arr" aria-hidden="true">›</span></button>':'')
+    +(tts||'')
     +'<div class="fs-modif" id="modifier">'+logForm(num,se)+'</div></section>'
     +'</div>';
 }
 function ouvrirSeance(num,id){const se=(SEANCES_BY_WEEK[num]||[]).find(x=>x.id===id);if(!se)return;segActif=null;if(typeof ttsStop==='function')ttsStop();
   const ttsBarSeance=(typeof window!=='undefined'&&'speechSynthesis' in window)?`<div class="tts-bar tts-bar-seance" id="ttsBarSeance"><button class="tts-btn tts-play" onclick="ttsPlaySeance(${num},${se.id})"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5v5h3.5L12 19V5L7.5 9.5z"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/></svg>Écouter la séance</button><span class="tts-hint">lecture vocale de la fiche, de haut en bas</span></div>`:'';
   topbar.innerHTML=`<button class="btn-nav" onclick="ouvrirSemaine(${num})">‹ Retour semaine ${num}</button>${btnFermer}`;
-  {const _r=se.realise||{};if(_r.statut==='fait'||_r.statut==='partiel'){contenu.innerHTML=ficheFaite(num,se);ouvrir();
+  {const _r=se.realise||{};if(_r.statut==='fait'||_r.statut==='partiel'){contenu.innerHTML=ficheFaite(num,se,ttsBarSeance);ouvrir();
     try{if(typeof RS!=='undefined'&&RS.dispo(num+'-'+se.id))RS.ficheDetail(num+'-'+se.id);}catch(e){console.warn('fiche',e);}return;}}
   const metr=Object.entries(se.metriques).map(([k,v])=>`<div class="metrique"><div class="metrique-l">${k}</div><div class="metrique-v">${v}</div></div>`).join('');
   const struct=se.struct.map((b,i)=>{const c=(i===0||i===se.struct.length-1)?'#16a34a':se.accent;return `<div class="struct-ligne"><div class="struct-puce" style="background:${c}"></div><div class="struct-nom">${b.nom}</div><div class="struct-txt">${b.txt}</div></div>`;}).join('');

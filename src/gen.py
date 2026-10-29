@@ -2562,7 +2562,7 @@ MONTHLY = _MOIS_CLOS + _mois_courants()
 _TOT_KM  = sum(_m["km"] for _m in MONTHLY)
 _TOT_EL  = sum(_m["elev"] for _m in MONTHLY)
 _TOT_SO  = sum(_m["sorties"] for _m in MONTHLY)
-SAISON2026 = {"km":_TOT_KM, "elev":_TOT_EL, "sorties":_TOT_SO, "mois":len(MONTHLY),
+SAISON2026 = {"annee":2026, "km":_TOT_KM, "elev":_TOT_EL, "sorties":_TOT_SO, "mois":len(MONTHLY),
   "note":"Course à pied uniquement (Run + Trail) · randonnées, raquettes et vélo exclus · mois en cours recalculé automatiquement à chaque build"}
 # Records Strava (pr_count, Run + Trail) du 1er janvier au 14 juin 2026, AVANT le plan de preparation
 # (releves sur Strava le 15/10/2026 : 109 sorties, 1537 records). Le plan en ajoute ensuite, seance par
@@ -2727,6 +2727,12 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":280,"date":"29 octobre 2026","sha":"","tag":"Blanc et orange : corrections de la relecture indépendante","items":[
+    "ACCUEIL : le conseil du jour (affûtage avant une course, surcharge, relance) réapparaît dans la carte Forme ; « Ton année » prend l'année des données.",
+    "FICHE D'UNE SÉANCE FAITE : lecture vocale et théorie de la séance rétablies.",
+    "FICHES : vraie boîte de dialogue (le focus va dans la fiche, le fond est inerte, le focus revient au bouton d'origine à la fermeture).",
+    "CHIFFRES À LA FRANÇAISE : km et ACWR du Cockpit avec une virgule ; effort de la semaine identique à la fiche, masqué s'il manque (plus de « undefined »).",
+    "ACCESSIBILITÉ : onglets du Cockpit complets (panneaux, flèches du clavier), cibles tactiles de 44 px, croix de l'aide nommée ; Échap ferme le Rewind de semaine ; dernier emoji d'interface retiré."]},
   {"build":279,"date":"29 octobre 2026","sha":"","tag":"Blanc et orange (8/8) : panneaux et finitions","items":[
     "PANNEAUX : météo, records de la saison, versions, aides du Cockpit, théorie, menu et log rapide aux jetons ; croix de fermeture rétablies ; icônes météo au trait.",
     "PLUS D'EMOJI dans l'interface (trophées et cadenas au trait, chips météo « vent » et « pluie », menus) ; les textes du coach gardent les leurs.",

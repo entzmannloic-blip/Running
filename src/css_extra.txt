@@ -2223,7 +2223,7 @@ svg.tr-go .tr-b{animation:trBarre var(--d-ecran) var(--ease) both;animation-dela
 .tts-bar,.tts-bar-seance{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:12px 0 0;padding:0;border:0;background:none;box-shadow:none}
 .tts-btn,.tts-btn.tts-play,.tts-btn.tts-stop{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:0 18px;border:0;border-radius:14px;background:var(--bg-card);box-shadow:inset 0 0 0 1.5px var(--gris-clair);color:var(--texte);font:inherit;font-size:16px;font-weight:650;cursor:pointer}
 .tts-bar-seance .tts-btn.tts-play{width:100%}
-.tts-hint{flex-basis:100%;margin:0;text-align:center;font-size:12px;font-weight:600;font-style:normal;color:var(--texte-trois)}
+.tts-hint{flex-basis:100%;margin:0;text-align:center;font-size:13px;font-weight:600;font-style:normal;color:var(--texte-trois)}
 /* comprendre la séance, théorie */
 .cc-block{margin:8px 0 0;padding:0;border:0;background:none}
 .cc-item{margin-top:12px}
@@ -2534,3 +2534,11 @@ svg.tr-go .tr-b{animation:trBarre var(--d-ecran) var(--ease) both;animation-dela
 .dc-bar,.dcb .dc-bar{background:linear-gradient(90deg,var(--ok) 0%,var(--ok) 42.86%,var(--warn) 42.86%,var(--warn) 57.14%,var(--danger) 57.14%,var(--danger) 100%)!important}
 .ckf-r{grid-template-columns:22px auto minmax(0,1fr)}
 .ckf-d{min-width:0}
+
+/* ═══ LOT 5 — relecture indépendante (build 280) ═══ */
+.ac-nudge{display:block;margin-top:8px;padding:8px 10px;border-radius:10px;font-size:14px;line-height:1.4;font-weight:600;color:var(--primary-deux);background:var(--primary-fond)}
+.ac-nudge-warn{color:var(--warn-deux);background:var(--warn-fond)}
+.ck-sec-tg,.dnav-chip,.ck-rst{min-height:44px}
+.ckh-close,.wr-close,.rw-close{min-width:44px;min-height:44px}
+.ck-help,#build-badge{position:relative}
+.ck-help::after,#build-badge::after{content:"";position:absolute;left:50%;top:50%;width:max(100%,44px);height:max(100%,44px);transform:translate(-50%,-50%)}
