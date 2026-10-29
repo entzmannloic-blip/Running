@@ -61,9 +61,9 @@ Une **bottom bar fixe** `#botbar` (frostée, marge de sécurité iOS), **4 items
 Accueil · Séances · Cockpit · Courses
 ```
 - **Accueil** (`#vue-accueil`, id `accueil`) — lot 5 (`_acProchaine`, `_acForme`, `_acSemaine`, `_acCourses`, `_acAnnee` + `RS.carte`) : en-tête (semaine, date, prochaine course), analyse du coach sur la dernière séance (moins de 8 jours), prochaine séance, météo, forme du jour, semaine jour par jour, courses, année.
-- **Séances** (`#vue-plan`, id `plan`) — le plan par phase et par semaine.
-- **Cockpit** (`#vue-cockpit`, id `cockpit`) — analytique. `showTab('cockpit')` rend `renderCockpit()` ET `renderDash()`.
-- **Courses** (`#vue-palmares`, id interne **toujours `palmares`**) — À venir (`RACES`) + Passées (`PALMARES`).
+- **Séances** (`#vue-plan`, id `plan`) — le plan par phase et par semaine (lot 5 : phases sans couleur, cartes blanches) ; fiche semaine `ouvrirSemaine`, fiche à faire `fichePrevue`, fiche faite `ficheFaite`.
+- **Cockpit** (`#vue-cockpit`, id `cockpit`) — analytique en 4 onglets (`_ckZone(n)`, `data-zone` 1 Aujourd'hui, 2 Progression, 4 Records, 3 Analyse) ; `showTab('cockpit')` rend `renderCockpit()` ET `renderDash()` ; le tableau de bord (`#dash-contenu`) vit dans l'onglet Analyse ; « Où j'en suis » en ligne par `RS.ouCarte()`.
+- **Courses** (`#vue-palmares`, id interne **toujours `palmares`**) — saison en chiffres (`openWrapped`), À venir (`RACES`, dossiers `ouvrirDossier`) + Passées (`PALMARES`).
 
 **Pièges :**
 - ⚠️ L'onglet « Suivi » n'existe plus (dissous dans Cockpit) ; ne pas chercher `#vue-dash`.

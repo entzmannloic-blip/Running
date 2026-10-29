@@ -844,6 +844,27 @@ def run():
             check("T29 Courses, dossier de course, Rewind de semaine et saison en chiffres : blancs, sans emoji d'interface",
                   cr["titre"] == "Courses" and cr["passees"] == cr["attendu"] and not cr["emo"] and dos["sec"] >= 8 and not dos["emo"]
                   and rw == "rgb(255, 255, 255)" and wr[0] == "rgb(255, 255, 255)" and not wr[1], f"{cr} {dos} {rw} {wr}")
+            # Panneaux (lot 5, partie B) : aucun emoji dans les titres, étiquettes, puces et boutons, croix de fermeture présentes
+            pf.evaluate("localStorage.setItem('meteo_cache',JSON.stringify({temp:18,app:17,code:2,wind:12,rain:20,precip:.4,tomorrow_max:21,hourly_today:[[18,16],[19,15]],hourly_tomorrow:[[8,12],[9,13]]}))")
+            pf.evaluate("showTab('accueil');renderHeader()")
+            pan = {}
+            ouvertures = [("météo", "_ouvrirMeteo()"), ("records", "_ouvrirRecords()"), ("versions", "openVersionPanel()"),
+                          ("aide forme", "openCkHelp('forme')"), ("aide acwr", "openCkHelp('acwr')"), ("aide cadence", "openCkHelp('cad')"),
+                          ("théorie", "(function(){for(var w in SEANCES_BY_WEEK){var a=SEANCES_BY_WEEK[w];for(var i=0;i<a.length;i++){if(typeof RICH_THEORY!=='undefined'&&RICH_THEORY[seanceTag(a[i])]){openTheory(w,a[i].id);return;}}}})()"),
+                          ("menu séance", "openSM(44,'4')"), ("log rapide", "ouvrirQuickLog(44,4)")]
+            for nom, code in ouvertures:
+                try:
+                    pf.evaluate(code)
+                    pf.wait_for_timeout(350)
+                    pan[nom] = pf.evaluate("(function(){" + CHROME_JS + "return chrome(document.body);})()")
+                except Exception as e:
+                    pan[nom] = ["erreur " + str(e)[:60]]
+                pf.evaluate("['fermer','closeCkHelp','closeTheory','closeVersionPanel','closeSM','closeQuickLog'].forEach(function(f){try{if(typeof window[f]==='function')window[f]();}catch(e){}})")
+                pf.keyboard.press("Escape")
+                pf.wait_for_timeout(200)
+            vides = pf.evaluate("[...document.querySelectorAll('button')].filter(function(b){return /fermer|close/i.test((b.getAttribute('onclick')||'')+(b.getAttribute('aria-label')||''))&&!(b.textContent||'').trim()&&!b.querySelector('svg');}).length")
+            check("T30 panneaux (météo, records, versions, aides, théorie, menu, log rapide) : sans emoji d'interface, croix de fermeture présentes",
+                  all(not v for v in pan.values()) and vides == 0, f"{ {k: v for k, v in pan.items() if v} } vides={vides}")
             ctxf.close()
         except Exception as e:
             check("T24 police des chiffres embarquee", False, str(e)[:160])
