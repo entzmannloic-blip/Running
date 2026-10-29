@@ -2212,7 +2212,7 @@ COUL={p["id"]:p["c"] for p in PHASES}
 # Derniere resynchronisation : 28/08/2026.
 GEAR=[
   {"marque":"HOKA","modele":"Clifton 10","km":1284},
-  {"marque":"ASICS","modele":"Novablast 5 J","km":877},
+  {"marque":"ASICS","modele":"Novablast 5 J","km":887},
   {"marque":"ASICS","modele":"Novablast 5 V","km":202},
   {"marque":"ASICS","modele":"Gel Pulse 16","km":240},
   {"marque":"Brooks","modele":"Cascadia 19","km":259},
@@ -2727,6 +2727,9 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":282,"date":"29 octobre 2026","sha":"","tag":"Log S44 seance 5 : 10 km un peu plus vite que l'allure marathon (renforcement remplacé) du 29/10","items":[
+    "SEANCE : S44 seance 5 loggee depuis Strava : 10 km un peu plus vite que l'allure marathon (renforcement remplacé), 10,02 km en 52:02 (5:12/km), FC 150/172, D+ 36 m, 11 °C, Novablast 5 J.",
+    "CHAUSSURES : Novablast 5 J a 887 km."]},
   {"build":281,"date":"29 octobre 2026","sha":"","tag":"Rewind de séance : deux corrections après le premier test sur l'iPhone","items":[
     "LE CŒUR : la courbe de FC sous la cible était tracée presque en blanc (reste du fond sombre) et semblait coupée ; elle est maintenant grise, en entier, avec la partie au-dessus de la cible en ocre et une légende « Ta FC ».",
     "L'ANALYSE DU COACH : seul le texte défile, avec un fondu en haut et en bas ; « Précédent » et « Continuer » restent toujours visibles en bas, hors de la zone qui défile (sur iPhone, un toucher pendant l'élan du défilement ne déclenchait pas le bouton) ; « Lire la revue complète » passe à la fin du texte.",

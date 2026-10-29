@@ -1,0 +1,78 @@
+{
+ "seance": {
+  "chaussure_realise": "ASICS Novablast 5 J",
+  "titre": "10 km un peu plus vite que l'allure marathon (renforcement remplacé)",
+  "sous": "Sortie libre à la place du renforcement : 10 km sur les quais, autour de l'allure marathon."
+ },
+ "realise": {
+  "statut": "fait",
+  "temp": 11,
+  "km": 10.02,
+  "temps": "52:02",
+  "allure": "5:12/km",
+  "fc_moy": 150,
+  "fc_max": 172,
+  "re": 88,
+  "cadence": 87,
+  "elevation_gain": 36,
+  "kcal": 723,
+  "terrain": "route",
+  "commentaire": "Realise : 10,02 km en 52:02 de deplacement, 5:12/km, FC 150 moy / 172 max, D+ 36 m, 11 °C, ASICS Novablast 5 J.",
+  "pr": 2,
+  "ach": 2,
+  "pr_detail": [],
+  "splits": [
+   {
+    "km": 1,
+    "allure": "5:10",
+    "fc": 143
+   },
+   {
+    "km": 2,
+    "allure": "5:04",
+    "fc": 153
+   },
+   {
+    "km": 3,
+    "allure": "5:21",
+    "fc": 151
+   },
+   {
+    "km": 4,
+    "allure": "5:13",
+    "fc": 148
+   },
+   {
+    "km": 5,
+    "allure": "5:13",
+    "fc": 147
+   },
+   {
+    "km": 6,
+    "allure": "5:15",
+    "fc": 147
+   },
+   {
+    "km": 7,
+    "allure": "5:07",
+    "fc": 150
+   },
+   {
+    "km": 8,
+    "allure": "5:10",
+    "fc": 152
+   },
+   {
+    "km": 9,
+    "allure": "5:10",
+    "fc": 153
+   },
+   {
+    "km": 10,
+    "allure": "5:14",
+    "fc": 152
+   }
+  ],
+  "strava_id": "20781498344"
+ }
+}
