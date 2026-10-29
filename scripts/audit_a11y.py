@@ -144,6 +144,18 @@ def main():
                 rows.append((name, r))
             p.evaluate("fermer()")
             p.wait_for_timeout(250)
+        # Rewind de seance sur fond blanc (lot 5) : les 9 images, contrastes et tailles
+        cle = p.evaluate("(window.REWIND_SEANCE||[]).slice(-1)[0]||null")
+        if cle:
+            p.evaluate(f"rsOuvrir('{cle}',0)")
+            p.wait_for_selector(".rs:not([hidden]) .rs-sl", timeout=8000)
+            for i in range(9):
+                p.wait_for_timeout(400)
+                for r in p.evaluate(JS, {"view": f"rewind {i + 1}", "sel": ".rs", "isView": False}):
+                    rows.append((f"rewind image {i + 1}", r))
+                p.keyboard.press("ArrowRight")
+            p.keyboard.press("Escape")
+            p.wait_for_timeout(300)
         p.evaluate("""(function(){var d=document.createElement('div');d.id='a11y-probe';d.style.padding='12px';
           d.innerHTML='<div class="wdg-alert">Chaleur — pars avant 8h, hydrate-toi</div>'
             +'<div class="wdg-alert wdg-alert-soft">Temps chaud — surveille ta FC</div>'

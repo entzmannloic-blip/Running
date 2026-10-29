@@ -25,8 +25,8 @@
   /* ===== SURFACES : cartes blanches sans ombre sur fond gris ===== */
   --bg-page:#F4F4F6;--bg-card:#fff;--bord-card:#E7E7EA;
   --gris-pale:#F4F4F5;
-  /* Rewind de séance (P4) : ardoise profonde, encre claire, ambre de dépassement (passe au blanc dans la PR 4 du lot 5) */
-  --rs-fond:#0b1424;--rs-fond-2:#14293f;--rs-encre:#f8fafc;--rs-ambre:#fbbf24;
+  /* Rewind de séance (lot 5) : fond blanc, encre, ocre de dépassement de cible */
+  --rs-fond:#fff;--rs-fond-2:#F4F4F6;--rs-encre:#18181B;--rs-ambre:#CA8A04;
   --primary-fill:#C2410C;   /* fond de bouton a petit texte blanc (5,2:1) */
   --rayon:12px;--rayon-lg:18px;
   --ombre:0 1px 2px rgba(24,24,27,.05),0 4px 12px -6px rgba(24,24,27,.08);

@@ -4850,8 +4850,9 @@ function img1(se,a){
     tu('Température',m.temperature!=null?fN(m.temperature,0):'—',m.temperature!=null?'°C':null,METEO[m.condition]||null),
     tu('Chaussure',se.chaussure.replace(/^(HOKA|ASICS|Brooks)\s+/,'')||'—',null,se.chaussure_km!=null?`${fN(se.chaussure_km)} km au compteur aujourd'hui`:null));
   const go=h('button',{class:'rs-raccourci',type:'button',onclick:e=>{e.stopPropagation();LECT.va(IMG.indexOf(img8));}},'Aller à l\'analyse du coach',ico(I_FL,16));
-  const kick=h('p',{class:'rs-kick'},'La séance en chiffres'),ti=h('h2',{class:'rs-titre'},titreSeance(se));
-  return {el:h('div',null,kick,ti,big,t,go),titre:'La séance en chiffres',joue(){compte(km,r.km,v=>fN(v,2));apparait([kick,ti,big,...t.children,go]);}};
+  const t0=titreSeance(se),mt=t0.match(/^(.*?)\s*\(([^)]+)\)\s*$/),note=mt?h('p',{class:'rs-note-t'},mt[2].charAt(0).toUpperCase()+mt[2].slice(1)):null;
+  const kick=h('p',{class:'rs-kick'},'La séance en chiffres'),ti=h('h2',{class:'rs-titre'},mt?mt[1]:t0);
+  return {el:h('div',null,kick,ti,note,big,t,go),titre:'La séance en chiffres',joue(){compte(km,r.km,v=>fN(v,2));apparait([kick,ti,note,big,...t.children,go]);}};
 }
 function img2(se,a){
   const P=se.trace,W=320,Hh=320,pd=16,xs=P.map(p=>p[0]),ys=P.map(p=>p[1]);
@@ -4865,13 +4866,13 @@ function img2(se,a){
   for(let i=1;i<pt.length;i++){const p=a.pl[a.idxD((cum[i]+cum[i-1])/2/tot*dTot)];
     segs.append(sv('line',{x1:pt[i-1][0].toFixed(1),y1:pt[i-1][1].toFixed(1),x2:pt[i][0].toFixed(1),y2:pt[i][1].toFixed(1),stroke:a.couleurDe(p)}));}
   const[x0,y0]=pt[0],[x1,y1]=pt[pt.length-1],boucle=Math.hypot(x1-x0,y1-y0)<14;
-  const dep=sv('circle',{cx:x0,cy:y0,r:6,fill:'#0b1424',stroke:'#F7F7F8','stroke-width':2.5}),arr=sv('circle',{cx:x1,cy:y1,r:boucle?3:6,fill:'#F7F7F8'});
+  const dep=sv('circle',{cx:x0,cy:y0,r:6,fill:'#fff',stroke:'#18181B','stroke-width':2.5}),arr=sv('circle',{cx:x1,cy:y1,r:boucle?3:6,fill:'#18181B'});
   const g=sv('svg',{viewBox:`0 0 ${W} ${Hh}`,class:'rs-g rs-g-trace',role:'img','aria-label':`Tracé de la sortie (${fN(se.realise.km,2)} km), coloré selon l'allure`},
     sv('defs',null,sv('mask',{id,maskUnits:'userSpaceOnUse',x:0,y:0,width:W,height:Hh},mk)),
     sv('path',{d:dPath,fill:'none',stroke:'rgba(255,255,255,.1)','stroke-width':9,'stroke-linecap':'round','stroke-linejoin':'round'}),segs,dep,arr);
   const leg=h('div',{class:'rs-legende'},h('span',null,`${fA(a.dom.lent)} /km`),h('i'),h('span',null,`${fA(a.dom.rapide)} /km`));
   const kick=h('p',{class:'rs-kick'},'Le tracé'),ti=h('h2',{class:'rs-titre'},String(se.lieu||'').replace(/,\s*France$/,'')||'Ton parcours');
-  const cap=h('p',{class:'rs-cap'},'La couleur suit ton allure : plus le trait est clair, plus tu allais vite. ',boucle?'Départ et arrivée au même endroit.':'Rond creux : départ ; point plein : arrivée.');
+  const cap=h('p',{class:'rs-cap'},'La couleur suit ton allure : plus le trait est foncé, plus tu allais vite. ',boucle?'Départ et arrivée au même endroit.':'Rond creux : départ ; point plein : arrivée.');
   return {el:h('div',null,kick,ti,g,leg,cap),titre:'Le tracé',joue(){apparait([kick,ti]);if(!RM()){const L=segs.children.length;[...segs.children].forEach((l,i)=>l.animate([{opacity:0},{opacity:1}],{duration:D_PRESS,delay:D_ETAT+i/L*6*D_ECRAN,fill:'backwards'}));}apparait([arr,leg,cap],6*D_ECRAN+D_ETAT);}};
 }
 function img3(se,a){
@@ -4885,7 +4886,7 @@ function img3(se,a){
   const kmLab=[0,Math.round(dTot/2000),dTot/1000];
   const axes=sv('g',null,[amin,amax].map(v=>[sv('line',{x1:L,x2:W-R,y1:y(v),y2:y(v),class:'rs-grille'}),sv('text',{x:L-6,y:y(v)+4,class:'rs-ax','text-anchor':'end'},Math.round(v)+' m')]),
     kmLab.map((k,i)=>sv('text',{x:x(k*1000),y:Hh-6,class:'rs-ax','text-anchor':i===0?'start':i===2?'end':'middle'},i===2?fN(k,2)+' km':k+' km')));
-  let aireP;const point=sv('g',null,sv('circle',{r:11,fill:'rgba(153,246,228,.22)'}),sv('circle',{r:5.5,fill:'#F7F7F8'}));
+  let aireP;const point=sv('g',null,sv('circle',{r:11,fill:'rgba(244,86,29,.18)'}),sv('circle',{r:5.5,fill:'#18181B'}));
   point.setAttribute('transform',`translate(${pts[n-1][0].toFixed(1)},${pts[n-1][1].toFixed(1)})`);
   const g=sv('svg',{viewBox:`0 0 ${W} ${Hh}`,class:'rs-g',role:'img','aria-label':`Profil d'altitude de ${Math.round(amin)} à ${Math.round(amax)} mètres`},
     sv('defs',null,sv('mask',{id,maskUnits:'userSpaceOnUse',x:0,y:0,width:W,height:Hh},rect)),axes,sv('g',null,aireP=sv('path',{d:aire,fill:'rgba(244,86,29,.2)'}),lignes),point);
@@ -4927,14 +4928,14 @@ function img5(se,a){
   const mn=Math.min(...f.fc),mx=Math.max(...f.fc),lo=Math.floor((mn-4)/10)*10,hi=Math.max(160,Math.ceil((mx+6)/10)*10);
   const t0=f.t[0],tN=f.t[n-1],x=t=>L+(t-t0)/((tN-t0)||1)*(W-L-R),y=v=>T+(hi-v)/(hi-lo)*(Hh-T-B),bandes=sv('g',null);
   zb.forEach((z,i)=>{const a1=Math.max(lo,z.lo),b1=Math.min(hi,z.hi);if(b1<=a1)return;
-    bandes.append(sv('rect',{x:L,y:y(b1),width:W-L-R,height:y(a1)-y(b1),fill:i%2?'rgba(255,255,255,.07)':'rgba(255,255,255,.025)'}));
+    bandes.append(sv('rect',{x:L,y:y(b1),width:W-L-R,height:y(a1)-y(b1),fill:i%2?'rgba(24,24,27,.045)':'rgba(24,24,27,.015)'}));
     if(y(a1)-y(b1)>=14)bandes.append(sv('text',{x:W-R+6,y:(y(a1)+y(b1))/2+4,class:'rs-ax'},z.z));
     if(z.lo>lo&&z.lo<hi)bandes.append(sv('text',{x:L-6,y:y(z.lo)+4,class:'rs-ax','text-anchor':'end'},z.lo));});
   const sm=f.fc.map((v,i)=>(f.fc[Math.max(0,i-1)]+v+f.fc[Math.min(n-1,i+1)])/3),d='M'+sm.map((v,i)=>x(f.t[i]).toFixed(1)+','+y(v).toFixed(1)).join('L');
   const id=nid('rsmc'),rect=sv('rect',{x:L,y:0,width:W-L-R,height:Hh,fill:'#fff',style:'transform-box:fill-box;transform-origin:0 50%'});
   const fcP=sv('path',{d,fill:'none',stroke:'#F7F7F8','stroke-width':2,'stroke-linejoin':'round',pathLength:1,'stroke-dasharray':1,'stroke-dashoffset':0}),trace=sv('g',null,fcP);let cl=null,fcA=null;
   if(c&&c.fc_max!=null&&c.fc_max>lo&&c.fc_max<hi){const idc=nid('rscc');
-    trace.append(sv('clipPath',{id:idc},sv('rect',{x:L,y:0,width:W-L-R,height:y(c.fc_max)})),fcA=sv('path',{d,fill:'none',stroke:'#E3B94C','stroke-width':2.5,'stroke-linejoin':'round','clip-path':`url(#${idc})`,pathLength:1,'stroke-dasharray':1,'stroke-dashoffset':0}));
+    trace.append(sv('clipPath',{id:idc},sv('rect',{x:L,y:0,width:W-L-R,height:y(c.fc_max)})),fcA=sv('path',{d,fill:'none',stroke:'#CA8A04','stroke-width':2.5,'stroke-linejoin':'round','clip-path':`url(#${idc})`,pathLength:1,'stroke-dasharray':1,'stroke-dashoffset':0}));
     cl=sv('line',{x1:L,x2:W-R,y1:y(c.fc_max),y2:y(c.fc_max),class:'rs-cible'});}
   const legF=cl?h('p',{class:'rs-leg'},h('i'),`Cible ≤ ${c.fc_max} bpm`,h('i',{class:'rs-ambre'}),'au-dessus'):null;
   const mi=Math.round((tN-t0)/60);
@@ -5013,10 +5014,10 @@ function img9(se,a){
     const lo=Math.floor((Math.min(...pts.map(o=>o.p),tend)-6)/10)*10,hi=Math.ceil((Math.max(...pts.map(o=>o.p),tend)+6)/10)*10;
     const x=i=>L+i/((pts.length-1)||1)*(W-L-R),y=p=>T+(p-lo)/(hi-lo)*(Hh-T-B),k=pts.length-1;
     const grille=sv('g',null);for(let p=lo;p<=hi;p+=10)grille.append(sv('line',{x1:L,x2:W-R,y1:y(p),y2:y(p),class:'rs-grille'}),sv('text',{x:L-6,y:y(p)+4,class:'rs-ax','text-anchor':'end'},fA(p)));
-    const ligne=sv('path',{d:prev.length?'M'+prev.map((o,i)=>x(i).toFixed(1)+','+y(o.p).toFixed(1)).join('L'):'M0,0',fill:'none',stroke:'rgba(153,246,228,.55)','stroke-width':2,pathLength:1,'stroke-dasharray':1,'stroke-dashoffset':0});
+    const ligne=sv('path',{d:prev.length?'M'+prev.map((o,i)=>x(i).toFixed(1)+','+y(o.p).toFixed(1)).join('L'):'M0,0',fill:'none',stroke:'#FBB089','stroke-width':2,pathLength:1,'stroke-dasharray':1,'stroke-dashoffset':0});
     const dots=prev.map((o,i)=>sv('circle',{cx:x(i),cy:y(o.p),r:4,fill:'#FCCDB0'})),tl=sv('line',{x1:L,x2:W-R,y1:y(tend),y2:y(tend),class:'rs-cible'});
     legT=h('p',{class:'rs-leg'},h('i'),`Ta tendance : ${fA(tend)}/km, moyenne de tes ${Math.min(5,prev.length)} sorties comparables précédentes`);
-    const nouveau=sv('g',null,sv('circle',{cx:x(k),cy:y(cur.p),r:11,fill:'rgba(248,250,252,.16)'}),sv('circle',{cx:x(k),cy:y(cur.p),r:6.5,fill:'#F7F7F8'}),sv('text',{x:x(k),y:y(cur.p)+(dlt<0?-14:24),class:'rs-ax rs-ax-fort','text-anchor':'end'},fA(cur.p)));
+    const nouveau=sv('g',null,sv('circle',{cx:x(k),cy:y(cur.p),r:11,fill:'rgba(244,86,29,.16)'}),sv('circle',{cx:x(k),cy:y(cur.p),r:6.5,fill:'#F7F7F8'}),sv('text',{x:x(k),y:y(cur.p)+(dlt<0?-14:24),class:'rs-ax rs-ax-fort','text-anchor':'end'},fA(cur.p)));
     const xl=sv('g',null,sv('text',{x:x(0),y:Hh-6,class:'rs-ax'},court(pts[0].x.date)),sv('text',{x:x(k),y:Hh-6,class:'rs-ax','text-anchor':'end'},court(cur.x.date)));
     g=sv('svg',{viewBox:`0 0 ${W} ${Hh}`,class:'rs-g',role:'img','aria-label':`Allure à 145 bpm de tes ${pts.length} dernières sorties faciles comparables`},grille,tl,ligne,...dots,nouveau,xl);
     const verdict=Math.abs(dlt)<=5?'dans ta tendance':dlt<0?`${Math.round(-dlt)} s/km plus efficace que ta tendance`:`${Math.round(dlt)} s/km moins efficace que ta tendance`;
@@ -5031,8 +5032,8 @@ function img9(se,a){
     const grille=sv('g',null);for(let v=0;v<=hi;v+=20)grille.append(sv('line',{x1:L,x2:W-R,y1:y(v),y2:y(v),class:'rs-grille'}),sv('text',{x:L-6,y:y(v)+4,class:'rs-ax','text-anchor':'end'},v));
     const bar=(x,top,bot,fill,rond)=>{const r=rond?Math.min(4,Math.max(0,(bot-top)/2)):0;return sv('path',{d:`M${x},${bot}V${top+r}Q${x},${top} ${x+r},${top}H${x+bw-r}Q${x+bw},${top} ${x+bw},${top+r}V${bot}Z`,fill,style:'transform-box:fill-box;transform-origin:50% 100%'});};
     const barres=[],labs=sv('g',null);
-    ws.forEach((w,i)=>{const x=L+xw*i+(xw-bw)/2;if(i<ws.length-1)barres.push(bar(x,y(w.km),base,'rgba(153,246,228,.35)',true));labs.append(sv('text',{x:x+bw/2,y:Hh-6,class:'rs-ax','text-anchor':'middle'},w.sem));});
-    const x=L+xw*(ws.length-1)+(xw-bw)/2,avant=Math.max(0,cur.km-k),b1=bar(x,y(avant),base,'#F4561D',false),b2=bar(x,y(cur.km),y(avant)-2,'#FFF1EA',true);
+    ws.forEach((w,i)=>{const x=L+xw*i+(xw-bw)/2;if(i<ws.length-1)barres.push(bar(x,y(w.km),base,'#FCCDB0',true));labs.append(sv('text',{x:x+bw/2,y:Hh-6,class:'rs-ax','text-anchor':'middle'},w.sem));});
+    const x=L+xw*(ws.length-1)+(xw-bw)/2,avant=Math.max(0,cur.km-k),b1=bar(x,y(avant),base,'#FCCDB0',false),b2=bar(x,y(cur.km),y(avant)-2,'#F4561D',true);
     const lab=sv('text',{x:x+bw/2,y:y(cur.km)-8,class:'rs-ax rs-ax-fort','text-anchor':'middle'},fN(cur.km,1));
     g=sv('svg',{viewBox:`0 0 ${W} ${Hh}`,class:'rs-g',role:'img','aria-label':`Volume par semaine, ${cur.sem} : ${fN(cur.km,1)} km dont ${fN(k,2)} km pour cette sortie`},grille,...barres,b1,b2,labs,lab);
     ti=h('h2',{class:'rs-titre'},`Semaine ${se.sem} : ${fN(cur.km,1)} km`);
