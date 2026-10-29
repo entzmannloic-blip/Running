@@ -766,7 +766,7 @@ def run():
         # ── T32 : fond de carte du tracé (build 283) : avec tuiles, sans accès, mode avion, réduire les animations ──
         import math
         import re as _re
-        TUILE_URL = _re.compile(r"^https://[a-d]\.basemaps\.cartocdn\.com/light_all/(\d+)/(\d+)/(\d+)@2x\.png$")
+        TUILE_URL = _re.compile(r"^https://tile\.openstreetmap\.org/(\d+)/(\d+)/(\d+)\.png$")
 
         def page_carte(mode, reduce=False):
             ctx = b.new_context(viewport={"width": 390, "height": 844}, service_workers="block",
@@ -783,9 +783,9 @@ def run():
                 m = TUILE_URL.match(r.request.url)
                 z, x, y = m.groups() if m else ("?", "?", "?")
                 r.fulfill(status=200, content_type="image/svg+xml",
-                          body=(f'<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512"><rect width="512" height="512" fill="#e9ecee"/>'
+                          body=(f'<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256"><rect width="256" height="256" fill="#e9ecee"/>'
                                 f'<text x="16" y="40" font-size="28">{z}/{x}/{y}</text></svg>').encode())
-            ctx.route("**/*basemaps.cartocdn.com/**", tuile)
+            ctx.route("**/tile.openstreetmap.org/**", tuile)
             pg = ctx.new_page()
             errs = []
             pg.on("pageerror", lambda e: errs.append(str(e)[:160]))
@@ -800,7 +800,7 @@ def run():
 
         LIRE_CARTE = """(()=>{const c=document.querySelector('.rs-sl:last-child .rs-carte'),a=c.querySelector('.rs-attrib');
             return {imgs:[...c.querySelectorAll('.rs-fond img')].map(i=>({src:i.getAttribute('src'),left:parseFloat(i.style.left),top:parseFloat(i.style.top),w:parseFloat(i.style.width)})),
-              attrib:getComputedStyle(a).display!=='none'?a.innerText.trim():null,attribPx:parseFloat(getComputedStyle(a).fontSize),
+              attrib:getComputedStyle(a).display!=='none'?a.innerText.trim():null,attribPx:parseFloat(getComputedStyle(a).fontSize),href:a.href,
               casing:c.querySelector('svg > path').getAttribute('d'),lignes:c.querySelectorAll('svg g > line').length,
               box:c.getBoundingClientRect().width,legende:!!document.querySelector('.rs-sl:last-child .rs-legende'),
               cap:document.querySelector('.rs-sl:last-child .rs-cap').innerText,aria:c.querySelector('svg').getAttribute('aria-label')}})()"""
@@ -819,7 +819,7 @@ def run():
             px, py = nums[2 * i], nums[2 * i + 1]
             ecart = None
             for im in r["imgs"]:
-                z, tx, ty = (int(v) for v in TUILE_URL.match("https://a.basemaps.cartocdn.com/" + im["src"].split("basemaps.cartocdn.com/")[1]).groups())
+                z, tx, ty = (int(v) for v in TUILE_URL.match(im["src"]).groups())
                 n = 2 ** z
                 fx = (lng + 180) / 360 * n
                 fy = (1 - math.log(math.tan(math.radians(lat)) + 1 / math.cos(math.radians(lat))) / math.pi) / 2 * n
@@ -827,15 +827,15 @@ def run():
                     X = (im["left"] + (fx - tx) * im["w"]) * 3.2
                     Y = (im["top"] + (fy - ty) * im["w"]) * 3.2
                     ecart = max(abs(X - px), abs(Y - py))
-            check("T32 fond de carte : tuiles CARTO Positron @2x demandées, posées en Web Mercator (le tracé tombe sur la tuile, écart < 0,2 px de 320)",
+            check("T32 fond de carte : tuiles OpenStreetMap demandées, posées en Web Mercator (le tracé tombe sur la tuile, écart < 0,2 px de 320)",
                   len(r["imgs"]) >= 2 and ok_urls and ecart is not None and ecart < 0.2 and len(urls) == len(r["imgs"]) and not errs,
                   f"imgs={len(r['imgs'])} urls={len(urls)} ok_urls={ok_urls} ecart={ecart} {errs[:1]}")
-            check("T32 fond de carte : attribution « © OpenStreetMap © CARTO » visible en petit (12 px minimum), tracé coloré par-dessus, légende et mention des 300 m",
-                  r["attrib"] == "© OpenStreetMap © CARTO" and r["attribPx"] >= 12 and r["lignes"] > 100 and r["legende"]
+            check("T32 fond de carte : attribution « © OpenStreetMap contributors » (lien openstreetmap.org/copyright) visible en petit (12 px minimum), tracé coloré par-dessus, légende et mention des 300 m",
+                  r["attrib"] == "© OpenStreetMap contributors" and r["href"] == "https://www.openstreetmap.org/copyright" and r["attribPx"] >= 12 and r["lignes"] > 100 and r["legende"]
                   and "300 premiers" in r["cap"] and "300" in r["aria"], f"{r['attrib']} {r['attribPx']} lignes={r['lignes']} {r['cap'][:60]}")
             sw = open(os.path.join(SITE, "sw.js"), encoding="utf-8").read()
             check("T32 pas de tuiles dans le pré-cache ; le service worker ne prend pas les requêtes d'un autre domaine",
-                  "cartocdn" not in sw and "url.origin!==location.origin" in sw.replace(" ", ""), "")
+                  "openstreetmap" not in sw and "url.origin!==location.origin" in sw.replace(" ", ""), "")
             ctx.close()
         except Exception as e:
             check("T32 fond de carte avec tuiles", False, str(e)[:200])

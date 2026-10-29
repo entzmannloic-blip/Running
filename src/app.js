@@ -4779,28 +4779,36 @@ function img1(se,a){
   const kick=h('p',{class:'rs-kick'},'La séance en chiffres'),ti=h('h2',{class:'rs-titre'},mt?mt[1]:t0);
   return {el:h('div',null,kick,ti,note,big,t,go),titre:'La séance en chiffres',joue(){compte(km,r.km,v=>fN(v,2));apparait([kick,ti,note,big,...t.children,go]);}};
 }
-/* Fond de carte du tracé (build 283) : tuiles CARTO « Positron » @2x posées sous le tracé en Web Mercator exact
-   (l'ancrage EPSG:3857 est dans le fichier du Rewind). Le tracé coloré reste par-dessus.
-   Réseau seulement : hors connexion, ou si une tuile échoue, le tracé reste seul, sans case vide, et l'attribution
-   n'apparaît qu'une fois une tuile affichée. Les tuiles sont d'un autre domaine : le service worker ne les prend pas
-   et le pré-cache n'en contient aucune. */
-const CARTE_ATTRIB='© OpenStreetMap © CARTO',CARTE_C=40075016.68557849;
+/* Fond de carte du tracé (build 284) : tuiles OpenStreetMap (tile.openstreetmap.org, 256 px) posées sous le tracé en Web Mercator
+   exact (l'ancrage EPSG:3857 est dans le fichier du Rewind) ; le tracé coloré reste par-dessus. Le zoom est choisi un cran
+   au-dessus de la taille d'affichage pour rester net sur écran Retina, et le fond est passé en gris clair par CSS (.rs-fond).
+   Politique d'usage des tuiles OSM (operations.osmfoundation.org/policies/tiles) : seulement les tuiles de la vue, demandées
+   quand l'image s'affiche (charge() depuis joue(), jamais au précalcul des 9 images), l'en-tête Referer du navigateur n'est
+   jamais retiré, attribution « © OpenStreetMap contributors » en lien vers openstreetmap.org/copyright, aucun préchargement
+   ni usage hors ligne.
+   Réseau seulement : hors connexion, ou si une tuile échoue, le tracé reste seul, sans case vide, et l'attribution n'apparaît
+   qu'une fois une tuile affichée. Les tuiles sont d'un autre domaine : le service worker ne les prend pas et le pré-cache
+   n'en contient aucune. */
+const CARTE_C=40075016.68557849;
 function fondCarte(se,G){
-  const fond=h('div',{class:'rs-fond','aria-hidden':'true'}),att=h('span',{class:'rs-attrib'},CARTE_ATTRIB),A=se.ancrage;
-  if(!A||navigator.onLine===false)return {fond,att};
-  const z=Math.max(1,Math.min(18,Math.round(Math.log(G.sc*CARTE_C/256)/Math.LN2))),tm=CARTE_C/Math.pow(2,z),nz=Math.pow(2,z);
-  const ax=X=>A.x+G.mnx+(X-G.ox)/G.sc,ay=Y=>A.y+G.mny+(G.Hh-G.oy-Y)/G.sc;
-  const x0=Math.floor((ax(0)+CARTE_C/2)/tm),x1=Math.floor((ax(G.W)+CARTE_C/2)/tm),y0=Math.floor((CARTE_C/2-ay(0))/tm),y1=Math.floor((CARTE_C/2-ay(G.Hh))/tm);
-  if((x1-x0+1)*(y1-y0+1)>16)return {fond,att};
-  for(let ty=y0;ty<=y1;ty++)for(let tx=x0;tx<=x1;tx++){
-    if(tx<0||ty<0||tx>=nz||ty>=nz)continue;
-    const L=(G.ox+((-CARTE_C/2+tx*tm)-A.x-G.mnx)*G.sc)/G.W*100,T=(G.Hh-G.oy-((CARTE_C/2-ty*tm)-A.y-G.mny)*G.sc)/G.Hh*100,S=tm*G.sc/G.W*100,im=new Image();
-    im.alt='';im.decoding='async';im.draggable=false;im.style.cssText=`left:${L.toFixed(3)}%;top:${T.toFixed(3)}%;width:${S.toFixed(3)}%;height:${S.toFixed(3)}%`;
-    /* la tuile n'entre dans la page qu'une fois chargée : une tuile en échec ne laisse rien (ni case vide ni image cassée) */
-    im.onload=()=>{fond.append(im);att.classList.add('on');if(!RM())im.animate([{opacity:0},{opacity:1}],{duration:D_ETAT,easing:EASE});};
-    im.src=`https://${'abcd'.charAt((tx+ty)%4)}.basemaps.cartocdn.com/light_all/${z}/${tx}/${ty}@2x.png`;
-  }
-  return {fond,att};
+  const fond=h('div',{class:'rs-fond','aria-hidden':'true'}),att=h('a',{class:'rs-attrib',href:'https://www.openstreetmap.org/copyright',target:'_blank',rel:'noopener'},'© OpenStreetMap contributors'),A=se.ancrage;
+  let fait=false;
+  const charge=()=>{
+    if(fait||!A||navigator.onLine===false)return;fait=true;
+    const z=Math.max(1,Math.min(19,Math.round(Math.log(G.sc*CARTE_C/128)/Math.LN2))),tm=CARTE_C/Math.pow(2,z),nz=Math.pow(2,z);
+    const ax=X=>A.x+G.mnx+(X-G.ox)/G.sc,ay=Y=>A.y+G.mny+(G.Hh-G.oy-Y)/G.sc;
+    const x0=Math.floor((ax(0)+CARTE_C/2)/tm),x1=Math.floor((ax(G.W)+CARTE_C/2)/tm),y0=Math.floor((CARTE_C/2-ay(0))/tm),y1=Math.floor((CARTE_C/2-ay(G.Hh))/tm);
+    if((x1-x0+1)*(y1-y0+1)>30)return;
+    for(let ty=y0;ty<=y1;ty++)for(let tx=x0;tx<=x1;tx++){
+      if(tx<0||ty<0||tx>=nz||ty>=nz)continue;
+      const L=(G.ox+((-CARTE_C/2+tx*tm)-A.x-G.mnx)*G.sc)/G.W*100,T=(G.Hh-G.oy-((CARTE_C/2-ty*tm)-A.y-G.mny)*G.sc)/G.Hh*100,S=tm*G.sc/G.W*100,im=new Image();
+      im.alt='';im.decoding='async';im.draggable=false;im.style.cssText=`left:${L.toFixed(3)}%;top:${T.toFixed(3)}%;width:${S.toFixed(3)}%;height:${S.toFixed(3)}%`;
+      /* la tuile n'entre dans la page qu'une fois chargée : une tuile en échec ne laisse rien (ni case vide ni image cassée) */
+      im.onload=()=>{fond.append(im);att.classList.add('on');if(!RM())im.animate([{opacity:0},{opacity:1}],{duration:D_ETAT,easing:EASE});};
+      im.src=`https://tile.openstreetmap.org/${z}/${tx}/${ty}.png`;
+    }
+  };
+  return {fond,att,charge};
 }
 function img2(se,a){
   const P=se.trace,W=320,Hh=320,pd=16,xs=P.map(p=>p[0]),ys=P.map(p=>p[1]);
@@ -4818,12 +4826,12 @@ function img2(se,a){
   const g=sv('svg',{viewBox:`0 0 ${W} ${Hh}`,class:'rs-g rs-g-trace',role:'img','aria-label':`Tracé de la sortie (${fN(se.realise.km,2)} km), coloré selon l'allure${se.masque?`, sans les ${se.masque} premiers et derniers mètres`:''}`},
     sv('defs',null,sv('mask',{id,maskUnits:'userSpaceOnUse',x:0,y:0,width:W,height:Hh},mk)),
     sv('path',{d:dPath,fill:'none',stroke:'rgba(255,255,255,.9)','stroke-width':9,'stroke-linecap':'round','stroke-linejoin':'round'}),segs,dep,arr);
-  const {fond,att}=fondCarte(se,{W,Hh,sc,ox,oy,mnx,mny}),carte=h('div',{class:'rs-carte'},fond,g,att);
+  const {fond,att,charge}=fondCarte(se,{W,Hh,sc,ox,oy,mnx,mny}),carte=h('div',{class:'rs-carte'},fond,g,att);
   const leg=h('div',{class:'rs-legende'},h('span',null,`${fA(a.dom.lent)} /km`),h('i'),h('span',null,`${fA(a.dom.rapide)} /km`));
   const kick=h('p',{class:'rs-kick'},'Le tracé'),ti=h('h2',{class:'rs-titre'},String(se.lieu||'').replace(/,\s*France$/,'')||'Ton parcours');
   const cap=h('p',{class:'rs-cap'},'La couleur suit ton allure : plus le trait est foncé, plus tu allais vite. ',
     se.masque?`Les ${se.masque} premiers et les ${se.masque} derniers mètres sont masqués, pour ne pas montrer d'où tu pars.`:boucle?'Départ et arrivée au même endroit.':'Rond creux : départ ; point plein : arrivée.');
-  return {el:h('div',null,kick,ti,carte,leg,cap),titre:'Le tracé',joue(){apparait([kick,ti]);if(!RM()){const L=segs.children.length;[...segs.children].forEach((l,i)=>l.animate([{opacity:0},{opacity:1}],{duration:D_PRESS,delay:D_ETAT+i/L*6*D_ECRAN,fill:'backwards'}));}apparait([arr,leg,cap],6*D_ECRAN+D_ETAT);}};
+  return {el:h('div',null,kick,ti,carte,leg,cap),titre:'Le tracé',joue(){charge();apparait([kick,ti]);if(!RM()){const L=segs.children.length;[...segs.children].forEach((l,i)=>l.animate([{opacity:0},{opacity:1}],{duration:D_PRESS,delay:D_ETAT+i/L*6*D_ECRAN,fill:'backwards'}));}apparait([arr,leg,cap],6*D_ECRAN+D_ETAT);}};
 }
 function img3(se,a){
   const f=se.flux,n=f.t.length,W=340,Hh=200,L=40,R=10,T=14,B=26,dTot=f.d[n-1],amin=Math.min(...f.alt),amax=Math.max(...f.alt);

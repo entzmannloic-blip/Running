@@ -2010,9 +2010,9 @@ svg.tr-go .tr-b{animation:trBarre var(--d-ecran) var(--ease) both;animation-dela
 .rs-g{width:100%;height:auto;display:block;overflow:visible}
 .rs-carte{position:relative;aspect-ratio:1;border-radius:var(--rayon);overflow:hidden}
 .rs-carte .rs-g{position:absolute;inset:0;height:100%}
-.rs-fond{position:absolute;inset:0}
+.rs-fond{position:absolute;inset:0;filter:grayscale(1) brightness(1.12) contrast(.85)}
 .rs-fond img{position:absolute;display:block;max-width:none;pointer-events:none;-webkit-user-drag:none;user-select:none}
-.rs-attrib{display:none;position:absolute;right:0;bottom:0;padding:2px 6px;border-top-left-radius:6px;font-size:var(--t-data);line-height:1.3;color:var(--texte-deux);background:color-mix(in srgb,var(--blanc) 85%,transparent)}
+.rs-attrib{display:none;position:absolute;right:0;bottom:0;padding:2px 6px;border-top-left-radius:6px;font-size:var(--t-data);line-height:1.3;color:var(--texte-deux);text-decoration:none;background:color-mix(in srgb,var(--blanc) 85%,transparent)}
 .rs-attrib.on{display:block}
 .rs-g text{font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
 .rs-g .rs-ax{font-size:12px;fill:var(--texte-trois);font-variant-numeric:tabular-nums}
@@ -2783,7 +2783,7 @@ svg.tr-go .tr-b{animation:trBarre var(--d-ecran) var(--ease) both;animation-dela
 <div id="boot-err" role="alert" hidden><p>Données indisponibles. Vérifie ta connexion puis réessaie.</p><button type="button" class="btn-nav" onclick="location.reload()">Réessayer</button></div>
 <script>
 (function(){
-var V="283",EAGER=["plan", "seances", "historique", "meta"];
+var V="284",EAGER=["plan", "seances", "historique", "meta"];
 function get(f){return fetch("data/"+f+".json?v="+V).then(function(r){if(!r.ok)throw new Error(f+" "+r.status);return r.json();});}
 function fail(){var l=document.getElementById("boot-load");if(l)l.hidden=true;var e=document.getElementById("boot-err");if(e)e.hidden=false;}
 var cl=null;
