@@ -1369,7 +1369,7 @@ function calHTML(){
       cells+='<div class="cal-cell'+tdy+'"><span class="cal-num cal-muted">'+day+'</span></div>';
     }
   }
-  const _emptyCal=_mLogged?'':'<div class="empty-note"><span class="en-ic">🗓️</span><span>Aucune séance loguée sur ce mois pour l\'instant — les jours se colorent en <strong>vert</strong> dès que tu réalises une séance. Dis-moi « j\'ai fait la séance X de la semaine Y » et le mois prend vie.</span></div>';
+  const _emptyCal=_mLogged?'':'<div class="empty-note"><span class="en-ic" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 9h18M8 3v4M16 3v4"/></svg></span><span>Aucune séance loguée sur ce mois pour l\'instant — les jours se colorent en <strong>vert</strong> dès que tu réalises une séance. Dis-moi « j\'ai fait la séance X de la semaine Y » et le mois prend vie.</span></div>';
   return '<div class="cal-head"><button class="cal-nav" onclick="calNav(-1)" aria-label="Mois précédent">‹</button><div class="cal-title">'+MN[m]+' '+y+'</div><button class="cal-nav" onclick="calNav(1)" aria-label="Mois suivant">›</button></div>'+
     '<div class="cal-grid">'+cells+'</div>'+
     '<div class="cal-legend"><span><i class="cal-lg cal-g"></i>Réalisé</span><span><i class="cal-lg cal-o"></i>Non réalisé</span><span><i class="cal-lg cal-x"></i>À venir</span><span style="opacity:.45;margin-left:auto">build '+((typeof CHANGELOG!=='undefined'&&CHANGELOG.length)?CHANGELOG[0].build:'')+'</span></div>'+_emptyCal;
@@ -1456,14 +1456,17 @@ const DASH_GROUPS=[
   {id:'profil',ic:'⛰️',t:'Profil & matériel'},
 ];
 function dashGrpOpen(id){try{const v=localStorage.getItem('dash_grp_'+id);if(v===null)return id==='cal';return v==='1';}catch(e){return id==='cal';}}
-function dashNav(){return `<div class="dash-nav" id="dash-nav">${DASH_GROUPS.map(g=>`<button class="dnav-chip" data-g="${g.id}" onclick="dashJump('${g.id}')">${g.ic} ${g.t}</button>`).join('')}</div>`;}
-function dashApplyState(){DASH_GROUPS.forEach(g=>{const s=document.getElementById('grp-'+g.id);if(s)s.classList.toggle('open',dashGrpOpen(g.id));});}
-function dashToggle(id){const s=document.getElementById('grp-'+id);if(!s)return;const open=!s.classList.contains('open');s.classList.toggle('open',open);try{localStorage.setItem('dash_grp_'+id,open?'1':'0');}catch(e){}}
+function dashNav(){return `<div class="dash-nav" id="dash-nav">${DASH_GROUPS.map(g=>`<button class="dnav-chip" data-g="${g.id}" onclick="dashJump('${g.id}')">${g.t}</button>`).join('')}</div>`;}
+function dashApplyState(){DASH_GROUPS.forEach(g=>{const s=document.getElementById('grp-'+g.id);if(s){const o=dashGrpOpen(g.id);s.classList.toggle('open',o);const b=s.querySelector('.dgrp-head');if(b)b.setAttribute('aria-expanded',o);}});}
+function dashToggle(id){const s=document.getElementById('grp-'+id);if(!s)return;const open=!s.classList.contains('open');s.classList.toggle('open',open);{const b=s.querySelector('.dgrp-head');if(b)b.setAttribute('aria-expanded',open);}try{localStorage.setItem('dash_grp_'+id,open?'1':'0');}catch(e){}}
 function dashJump(id){if(typeof _bbHold==='function')_bbHold(1400);const s=document.getElementById('grp-'+id);if(!s)return;if(!s.classList.contains('open')){s.classList.add('open');try{localStorage.setItem('dash_grp_'+id,'1');}catch(e){}}
   const nav=document.getElementById('dash-nav');nav&&nav.querySelectorAll('.dnav-chip').forEach(c=>c.classList.toggle('actif',c.dataset.g===id));
   const ab=document.getElementById('appbar');const abh=ab?ab.offsetHeight:0;
   const y=s.getBoundingClientRect().top+window.scrollY-(abh+(nav?nav.offsetHeight:0)+10);window.scrollTo({top:y,behavior:_reduceMotion()?'auto':'smooth'});}
-function dgrpHead(id,ic,t){return `<section class="dgrp" id="grp-${id}"><button class="dgrp-head" onclick="dashToggle('${id}')"><span class="dgrp-ic">${ic}</span><span class="dgrp-t">${t}</span><span class="dgrp-arr">▾</span></button><div class="dgrp-body">`;}
+var _DGRP_I={cal:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 9h18M8 3v4M16 3v4"/>',coach:'<path d="M4 18v-5a8 8 0 0 1 16 0v5"/><path d="M4 15h3v5H4zM17 15h3v5h-3z"/>',
+  annee:'<path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 6H4a3 3 0 0 0 3 4M17 6h3a3 3 0 0 1-3 4"/>',saison:'<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',
+  charge:'<path d="M3 12h4l2-5 4 10 2-5h6"/>',perf:'<circle cx="12" cy="15" r="5.5"/><path d="M8.5 10.5 6 3h4l2 4 2-4h4l-2.5 7.5"/>',profil:'<path d="m3 20 6.5-11 4 6.5 2.5-3.5L21 20z"/>'};
+function dgrpHead(id,ic,t){return `<section class="dgrp" id="grp-${id}"><button class="dgrp-head" onclick="dashToggle('${id}')" aria-expanded="false"><span class="dgrp-ic" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${_DGRP_I[id]||''}</svg></span><span class="dgrp-t">${t}</span><span class="dgrp-arr" aria-hidden="true">›</span></button><div class="dgrp-body">`;}
 function _reduceMotion(){return window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;}
 function jumpToWeek(num,instant){if(typeof _bbHold==='function')_bbHold(1400);if(document.getElementById('vue-plan').style.display==='none')showTab('plan');
   const el=document.getElementById('wk-'+num);if(!el)return;
@@ -1585,20 +1588,20 @@ function renderDash(){const el=document.getElementById('dash-contenu');const _SP
   const maxShKm=Math.max(...GEAR.map(g=>g.km));
   const shoes=GEAR.slice().sort((a,b)=>b.km-a.km).map(g=>{
     const col=g.km>900?'#DC2626':g.km>700?'#CA8A04':'#16a34a';
-    const al=g.km>900?`<div class="shoe-alert">⚠ ${g.km} km — remplacement à envisager</div>`:'';
+    const al=g.km>900?`<div class="shoe-alert">${g.km} km — remplacement à envisager</div>`:'';
     return `<div><div class="shoe-row"><div class="shoe-name">${g.marque} ${g.modele}</div><div class="shoe-track"><div class="shoe-fill" style="width:${g.km/maxShKm*100}%;background:${col}"></div></div><div class="shoe-km">${g.km} km</div></div>${al}</div>`;}).join('');
 
-  el.innerHTML=dashNav()+dgrpHead('cal','📅',"Aujourd'hui & calendrier")+`
+  el.innerHTML=dashNav()+dgrpHead('cal','',"Aujourd'hui & calendrier")+`
   <!-- 0. Calendrier -->
   <div class="kpi cal-block">
-    <div class="kpi-t">🗓️ Calendrier d'entraînement</div>
+    <div class="kpi-t">Calendrier d'entraînement</div>
     <div class="kpi-r">Clique un jour coloré pour ouvrir la séance. Vert : réalisé · Orange : prévu non réalisé · Gris : à venir.</div>
     <div id="cal-inner">${calHTML()}</div>
   </div>
-  </div></section>`+dgrpHead('coach','🧠','Analyse du coach')+`
+  </div></section>`+dgrpHead('coach','','Analyse du coach')+`
   <!-- 3. Analyse du coach : zone grise + consignes + journal -->
   <div class="kpi">
-    <div class="kpi-t">🧠 L'analyse du coach</div>
+    <div class="kpi-t">L'analyse du coach</div>
     <div class="kpi-r">Ta répartition d'intensité réelle ${POLAR.periode||'sur les 6 derniers mois'} — le diagnostic central de ta préparation.</div>
     <div class="donut-wrap">${svgDonut(pol)}<div class="donut-leg">${pol.map(p=>`<div><i style="background:${p.color}"></i>${p.label} — <strong>${p.val}%</strong></div>`).join('')}</div></div>
     <div class="rev-coach" style="margin-top:14px">
@@ -1608,14 +1611,14 @@ function renderDash(){const el=document.getElementById('dash-contenu');const _SP
       ② <strong>Qualité = 2 séances/semaine max</strong>, distinctes et délibérées (seuil, AM, côtes).<br>
       ③ <strong>Facile vraiment facile, dur vraiment dur</strong> — la polarisation, c'est ça.
     </div>
-    <div style="margin-top:14px"><div class="kpi-t" style="font-size:.88rem;margin-bottom:10px">📓 Journal du coach</div>
+    <div style="margin-top:14px"><div class="kpi-t" style="font-size:.88rem;margin-bottom:10px">Journal du coach</div>
     ${JOURNAL.map(j=>`<div class="jour-item"><div class="jour-h">${j.sem} — ${j.theme}</div><div class="jour-x">${j.texte}</div></div>`).join('')}</div>
   </div>
 
-  </div></section>`+dgrpHead('annee','🔥','Année & trophées')+`
+  </div></section>`+dgrpHead('annee','','Année & trophées')+`
   <!-- 0b. Heatmap annuelle -->
   <div class="kpi">
-    <div class="kpi-t">🔥 Ton année en un coup d'oeil</div>
+    <div class="kpi-t">Ton année en un coup d'oeil</div>
     <div class="kpi-r" style="margin-bottom:12px">${hmStats()}</div>
     <div class="hm-scroll">${renderHeatmap()}</div>
     <div id="hm-cap" class="hm-cap">Touche une case pour le détail du jour.</div>
@@ -1623,13 +1626,13 @@ function renderDash(){const el=document.getElementById('dash-contenu');const _SP
   </div>
   <!-- 0c. Trophees -->
   <div class="kpi">
-    <div class="kpi-t">🏆 Tes trophées 2026</div>
+    <div class="kpi-t">Tes trophées 2026</div>
     ${renderTrophees()}
   </div>
-  </div></section>`+dgrpHead('saison','📊','2026 en chiffres')+`
+  </div></section>`+dgrpHead('saison','','2026 en chiffres')+`
   <!-- 1. 2026 en chiffres (depuis le 1er janvier) -->
   <div class="kpi">
-    <div class="kpi-t">📅 Ta saison 2026 en chiffres</div>
+    <div class="kpi-t">Ta saison 2026 en chiffres</div>
     <div class="kpi-r">Depuis le 1er janvier 2026 · <strong>Run + Trail uniquement</strong>, aligné sur Strava (${SAISON2026.sorties} activités). Hikes et raquettes non inclus dans le compteur Strava running.</div>
     <div class="dash-stats" style="margin-bottom:18px">
       <div class="dstat" style="--accent:#F4561D"><div class="dstat-l">Sorties</div><div class="dstat-v">${SAISON2026.sorties}</div><div class="dstat-s">en ${SAISON2026.mois} mois</div></div>
@@ -1647,10 +1650,10 @@ function renderDash(){const el=document.getElementById('dash-contenu');const _SP
     ${svgMonthly('sorties','#F4561D',v=>v)}</div>
   </div>
 
-  </div></section>`+dgrpHead('charge','❤️','Charge & physiologie')+`
+  </div></section>`+dgrpHead('charge','','Charge & physiologie')+`
 <!-- 6. Zones FC + allures -->
   <div class="kpi">
-    <div class="kpi-t">❤️ Zones FC & allures correspondantes</div>
+    <div class="kpi-t">Zones FC & allures correspondantes</div>
     <div class="kpi-r">Calculées sur ta FC max réelle (192 bpm). Les allures sont indicatives <strong>à plat</strong> — la FC reste le juge en côte ou par forte chaleur.</div>
     <div class="zfc">${ZONES_FC.map(z=>`<div class="zfc-row"><span class="zfc-z" style="background:${z.col}">${z.z}</span><span class="zfc-n">${z.nom}</span><span class="zfc-b">${z.bpm} bpm</span><span class="zfc-p">${z.pct}</span><span class="zfc-a">${z.allure}</span></div>`).join('')}</div>
   </div>
@@ -1658,7 +1661,7 @@ function renderDash(){const el=document.getElementById('dash-contenu');const _SP
   
   <!-- 4. Charge & fraîcheur -->
   <div class="kpi">
-    <div class="kpi-t">❤️ Charge & fraîcheur</div>
+    <div class="kpi-t">Charge & fraîcheur</div>
     <div class="kpi-r">Ratio aigu/chronique calculé en <strong>fenêtres glissantes réelles</strong> (charge 7 jours vs moyenne sur 28 jours). Au-dessus de 1,5 : risque de blessure. En-dessous de 0,8 : allègement.</div>
     <div class="dash-stats">
       <div class="dstat" style="--accent:${acwrCol}"><div class="dstat-l">Charge 7 jours</div><div class="dstat-v">${ACWR_DATA.charge7j}</div><div class="dstat-s">RE (Relative Effort)</div></div>
@@ -1670,15 +1673,15 @@ function renderDash(){const el=document.getElementById('dash-contenu');const _SP
   </div>
 
   <!-- 5. Volume hebdo -->
-  <div class="kpi"><div class="kpi-t">📈 Ton volume — historique 28 semaines</div><div class="kpi-r">Tes vraies semaines Strava. Le plan prend le relais à la S25.</div>${delta(histKm)} ${chartLine(histKm,{color:'#F4561D',labels:histLab,fmtY:v=>Math.round(v)+'km',annotate:true,h:150})}</div>
+  <div class="kpi"><div class="kpi-t">Ton volume — historique 28 semaines</div><div class="kpi-r">Tes vraies semaines Strava. Le plan prend le relais à la S25.</div>${delta(histKm)} ${chartLine(histKm,{color:'#F4561D',labels:histLab,fmtY:v=>Math.round(v)+'km',annotate:true,h:150})}</div>
 
-  </div></section>`+dgrpHead('perf','🏆','Performances & objectifs')+renderCrystalBall()+`
+  </div></section>`+dgrpHead('perf','','Performances & objectifs')+renderCrystalBall()+`
   <!-- 7. Allures d'entraînement -->
-  <div class="kpi"><div class="kpi-t">⏱️ Tes allures d'entraînement</div><div class="kpi-r">Dont le <strong>seuil 30</strong> (proche 10 km) et le <strong>seuil 60</strong> (proche semi).</div><div class="allure-grid">${ALLURES.map(a=>`<div class="allure"><div class="allure-v">${a.val}</div><div class="allure-n">${a.nom}</div><div class="allure-s">${a.sub}</div></div>`).join('')}</div></div>
+  <div class="kpi"><div class="kpi-t">Tes allures d'entraînement</div><div class="kpi-r">Dont le <strong>seuil 30</strong> (proche 10 km) et le <strong>seuil 60</strong> (proche semi).</div><div class="allure-grid">${ALLURES.map(a=>`<div class="allure"><div class="allure-v">${a.val}</div><div class="allure-n">${a.nom}</div><div class="allure-s">${a.sub}</div></div>`).join('')}</div></div>
 
   <!-- 8. Allures de course + records -->
   <div class="kpi">
-    <div class="kpi-t">🏆 Performances & projections</div>
+    <div class="kpi-t">Performances & projections</div>
     <div class="kpi-r">Meilleurs efforts réels depuis ton Strava · à comparer avec tes projections actuelles. Le semi Run In Lyon 2026 (1h52:30, couru malade) est ta référence de course ; la colonne « Projeté aujourd'hui » vient de la projection marathon en direct.</div>
     <table style="width:100%;border-collapse:collapse;font-size:.84rem">
       <thead><tr style="color:var(--texte-trois);font-size:var(--t-data);font-weight:800;text-transform:uppercase;letter-spacing:.06em">
@@ -1700,7 +1703,7 @@ function renderDash(){const el=document.getElementById('dash-contenu');const _SP
 
   <!-- 9. Objectifs course -->
   <div class="kpi">
-    <div class="kpi-t">🎯 Objectifs course</div>
+    <div class="kpi-t">Objectifs course</div>
     <div class="kpi-r">Trois objectifs, trois logiques différentes.</div>
     <div class="dash-stats">
       <div class="dstat" style="--accent:#F4561D"><div class="dstat-l">Run In Lyon</div><div class="dstat-v">Fait ✓</div><div class="dstat-s">Semi 21,1 km · 4 oct. · test de discipline d'allure</div></div>
@@ -1715,13 +1718,13 @@ function renderDash(){const el=document.getElementById('dash-contenu');const _SP
     <div class="rev-coach" style="margin-top:14px">La stratégie : <strong>cibler 3h45 (5:20/km)</strong> et laisser le corps aller chercher ${_PJ?'~'+_s2hm(_PJ.sec):'mieux'} si tout va bien le jour J. L'erreur classique sur un premier marathon avec objectif ambitieux = partir sur la projection et exploser aux 35 km. Ici on part prudent et on accélère si le corps l'autorise.</div>
   </div>
 
-  </div></section>`+dgrpHead('profil','⛰️','Profil & matériel')+`
+  </div></section>`+dgrpHead('profil','','Profil & matériel')+`
 <!-- 2. Profil de saison -->
-  <div class="kpi"><div class="kpi-t">⛰️ Le profil de ta saison — plan S25→S53</div><div class="kpi-r">Ta périodisation vue comme une ascension : montée vers le pic 88 km (S42), la vallée USA, puis Nice et la SaintExpress. Touche un sommet pour ouvrir la semaine.</div>${svgMountain()}</div>
+  <div class="kpi"><div class="kpi-t">Le profil de ta saison — plan S25→S53</div><div class="kpi-r">Ta périodisation vue comme une ascension : montée vers le pic 88 km (S42), la vallée USA, puis Nice et la SaintExpress. Touche un sommet pour ouvrir la semaine.</div>${svgMountain()}</div>
 
   
   <!-- 10. Chaussures -->
-  <div class="kpi"><div class="kpi-t">🥁 Rotation chaussures</div><div class="kpi-r">Rotation conseillée : récup/easy → Clifton & Gel Pulse (rare), longues → Novablast, qualité → Magic Speed, trail → Cascadia. Chaque séance du plan porte sa paire conseillée.</div>${shoes}</div>
+  <div class="kpi"><div class="kpi-t">Rotation chaussures</div><div class="kpi-r">Rotation conseillée : récup/easy → Clifton & Gel Pulse (rare), longues → Novablast, qualité → Magic Speed, trail → Cascadia. Chaque séance du plan porte sa paire conseillée.</div>${shoes}</div>
 
   </div></section>
   <p class="note-foot">Dashboard alimenté par ta vraie donnée Strava · Mis à jour à chaque séance logée</p>`;
@@ -3010,10 +3013,10 @@ function _ckRenderAll(win){
   _ckBar('ckRE','ckREW','ckRET','ckREX',D.RE[W],{col:'#F4561D',h:80});
   _ckLine('ckACWR','ckACWRW','ckACWRT','ckACWRX',D.ACWR[W].w,[{v:D.ACWR[W].v,color:'#CA8A04',lbl:''}],v=>v.toFixed(2),{h:65,fill:false,zones:[[0,0.8,'#F4561D'],[0.8,1.3,'#16a34a'],[1.3,2,'#DC2626']]});
   var _av0=D.ACWR[W].v.filter(function(x){return x!=null;});/* La tuile affiche l'ACWR DU JOUR (meme source que le resume et la carte Charge) ; la serie hebdomadaire ne sert qu'au graphe. */var _alive=null;try{_alive=_acwrCompute();}catch(e){_alive=null;}const al=(_alive&&typeof _alive.acwr==='number')?_alive.acwr:(_av0.length?_av0[_av0.length-1]:1.0);
-  var _av=document.getElementById('ck-acwr-val');_av.textContent=al.toFixed(2);if(typeof _compte==='function')_compte(_av,'ck-acwr');
+  var _av=document.getElementById('ck-acwr-val');_av.dataset.fin=al.toFixed(2);_av.textContent=al.toFixed(2).replace('.',',');if(typeof _compte==='function')_compte(_av,'ck-acwr');
   var _acol=al>1.5?'#DC2626':al>1.3?'#CA8A04':al<0.8?'#F4561D':'#16a34a';
   _av.style.color=_tc(_acol);_av.classList.remove('warn');
-  var _alab=al>1.5?'\u{1F534} surcharge':al>1.3?'\u26a0 \u00e9lev\u00e9':al<0.8?'frais / all\u00e8gement':'ma\u00eetris\u00e9';
+  var _alab=al>1.5?'surcharge':al>1.3?'\u00e9lev\u00e9':al<0.8?'frais / all\u00e8gement':'ma\u00eetris\u00e9';
   var _akd=_av.parentElement.querySelector('.ck-kd');if(_akd){_akd.textContent=_alab;_akd.style.color=_tc(_acol);_akd.classList.remove('warn');}
   var _av2=document.getElementById('ck-acwr-val2');if(_av2){_av2.textContent=al.toFixed(2);_av2.style.color=_tc(_acol);}
   _ckBar('ckDP','ckDPW','ckDPT','ckDPX',D.DPLUS[W],{col:'#A1A1AA',unit:' m',h:75});
@@ -3025,7 +3028,7 @@ function _ckRenderAll(win){
   var _z2d=(_z2v.length>=2)?(_z2v[0]-_z2v[_z2v.length-1]):null;
   var _z2e=document.getElementById('ck-z2-delta');
   if(_z2d===null){_z2e.textContent='pas assez de donn\u00e9es';_z2e.style.color=_tc('#A1A1AA');}
-  else if(_z2d>2){_z2e.textContent='\u2193 \u2212'+_ckSmin(_z2d)+'/km \u00b7 le moteur grossit 💪';_z2e.style.color=_tc('#16a34a');}
+  else if(_z2d>2){_z2e.textContent='\u2193 \u2212'+_ckSmin(_z2d)+'/km \u00b7 le moteur grossit';_z2e.style.color=_tc('#16a34a');}
   else if(_z2d>=-2){_z2e.textContent='stable';_z2e.style.color=_tc('#6B6B74');}
   else {_z2e.textContent='\u2191 +'+_ckSmin(-_z2d)+'/km \u00b7 \u00e0 surveiller';_z2e.style.color=_tc('#DC2626');}
   const dcLast=D.DC[W].v.filter(x=>x!=null).pop();_ckLine('ckDC','ckDCW','ckDCT','ckDCX',D.DC[W].w,[{v:D.DC[W].v,color:'#16a34a',lbl:'%'}],v=>v.toFixed(1)+'%',{h:75,zones:[[0,5,'#16a34a'],[5,8,'#CA8A04'],[8,15,'#DC2626']]});
@@ -3110,7 +3113,7 @@ function debugCockpit(opt){
   var acwr=c28>0?+(c7/(c28/4)).toFixed(2):null;
   var live=_acwrCompute();chk('ACWR du jour',live.acwr,acwr);chk('Charge 7 j',live.c7,c7);chk('Charge 28 j',live.c28,c28);
   chk('ACWR_DATA = ACWR du jour',ACWR_DATA.acwr,acwr);
-  var elA=document.getElementById('ck-acwr-val');if(elA&&elA.textContent)chk('ACWR affiche (carte)',+(elA.dataset.fin||elA.textContent),acwr);
+  var elA=document.getElementById('ck-acwr-val');if(elA&&elA.textContent)chk('ACWR affiche (carte)',+String(elA.dataset.fin||elA.textContent).replace(',','.'),acwr);
   /* --- 2. Series hebdo de la fenetre 12 --- */
   var W=(_CK.VOL&&_CK.VOL[12])?_CK.VOL[12].w.map(function(l){return +String(l).replace('S','');}):[];
   var j4=new Date(2026,0,4),mon1=new Date(j4.getTime()-((j4.getDay()+6)%7)*DAY);
@@ -3184,7 +3187,7 @@ if(typeof window!=='undefined')window.debugCockpit=debugCockpit;
 function _vo2Reveal(force){
   const v=_estimVO2();if(!v)return;
   const arc=document.getElementById('vo2-arc'),val=document.getElementById('vo2-val'),foot=document.getElementById('vo2-foot');
-  if(!arc||!val)return;
+  if(!arc||!val)return; /* lot 5 : plus de jauge, la carte VO2max est écrite d'emblée */
   const lo=30,hi=60,frac=Math.max(0,Math.min(1,(v.vo2-lo)/(hi-lo)));
   const LEN=251;
   const reduce=(typeof _reduceMotion==='function')&&_reduceMotion();
@@ -3298,7 +3301,7 @@ async function _effRender(){
     <svg viewBox="0 0 ${W} ${H}" class="eff-spark"><polyline points="${pts}" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round"/><circle cx="${W}" cy="${H-4-((cur.ef-mn)/rg)*(H-10)}" r="3.5" fill="var(--primary)"/></svg>
     <div class="eff-weeks">${series.map(s=>'S'+s.wk).join(' · ')}</div>
     <div class="eff-delta" style="color:${deltaCol}">${deltaTxt}</div>
-    ${corrected?'':'<div class="eff-warn">⚠️ Météo historique indisponible — courbe non corrigée de la chaleur, à lire avec prudence.</div>'}`;
+    ${corrected?'':'<div class="eff-warn">Météo historique indisponible — courbe non corrigée de la chaleur, à lire avec prudence.</div>'}`;
 }
 async function _heatRender(){
   const el=document.getElementById('heat-body');if(!el)return;
@@ -3326,7 +3329,7 @@ async function _heatRender(){
     if(t===null)return;
     total++;if(t>=25)hot++;
   });
-  if(!ok||total===0){el.innerHTML='<div class="eff-warn">⚠️ Météo historique indisponible — score non calculable pour le moment.</div>';return;}
+  if(!ok||total===0){el.innerHTML='<div class="eff-warn">Météo historique indisponible — score non calculable pour le moment.</div>';return;}
   const pct=Math.min(100,Math.round(hot/8*100));
   const deriveBase=15,deriveNow=Math.round(deriveBase*(1-0.35*pct/100));
   let msg;
@@ -3349,10 +3352,10 @@ function _saisonRender(){
   const gainPct=((cur.eff/base.eff)-1)*100;
   // barres : plus l'allure est basse (rapide), plus la barre est haute → on inverse
   const paces=pts.map(p=>p.pace_s),mn=Math.min(...paces),mx=Math.max(...paces),rg=(mx-mn)||1;
-  const cols=['#A1A1AA','#38bdf8','#F4561D','#C2410C'];
+  const cols=['#FCCDB0','#F9A070','#F4561D','#C2410C'];
   const bars=pts.map((p,i)=>{
     const h=30+((mx-p.pace_s)/rg)*70; // 30-100%
-    return `<div class="sais-col"><div class="sais-bar-wrap"><div class="sais-pace">${paceStr(p.pace_s)}</div><div class="sais-bar" style="height:${h}%;background:${cols[i]||'#F4561D'}"></div></div><div class="sais-lbl">${p.saison}</div><div class="sais-mois">${p.mois}${p.corr?' 🌡️':''}</div></div>`;
+    return `<div class="sais-col"><div class="sais-bar-wrap"><div class="sais-pace">${paceStr(p.pace_s)}</div><div class="sais-bar" style="height:${h}%;background:${cols[i]||'#F4561D'}"></div></div><div class="sais-lbl">${p.saison}</div><div class="sais-mois">${p.mois}${p.corr?'':''}</div></div>`;
   }).join('');
   el.innerHTML=`
     <div class="sais-head"><span class="sais-gain">${gainSec>=3?'▲ '+gainSec+' s/km':gainSec<=-3?'▼ '+Math.abs(gainSec)+' s/km':'→ stable'}</span><span class="sais-gain-sub">${gainSec>=3?"plus rapide à effort égal depuis l'hiver (+"+gainPct.toFixed(1)+"%)":gainSec<=-3?"plus lent à effort égal qu'en hiver ("+gainPct.toFixed(1)+"%)":"à effort égal, comparable à l'hiver ("+(gainPct>0?'+':'')+gainPct.toFixed(1)+"%)"}</span></div>
@@ -3617,7 +3620,7 @@ function _profilRender(){
     svg+='<text class="pr-lbl" x="'+p[0].toFixed(1)+'" y="'+p[1].toFixed(1)+'" text-anchor="'+an+'">'+court+'</text>';
     svg+='<text class="pr-val" x="'+p[0].toFixed(1)+'" y="'+(p[1]+11).toFixed(1)+'" text-anchor="'+an+'" fill="'+_profilCouleur(a.v)+'">'+a.v+'</text>';});
   var tri=A.slice().sort(function(x,y){return y.v-x.v;});
-  var scelle=!_profilDejaOuvert();
+  var scelle=false; /* lot 5 : la carte de profil s'affiche d'emblée (plus de sceau ni d'animation en boucle) */
   var rangs=[[90,'Élite'],[80,'Compétiteur'],[65,'Affûté'],[50,'Régulier'],[0,'Coureur']];
   var rang=rangs.filter(function(r){return P.nice>=r[0];})[0][1];
   var faible=tri[N-1];
@@ -3638,7 +3641,7 @@ function _profilRender(){
         '<div class="pr-d">'+a.d+'</div>';}).join('')+'</div>'+
     '<div class="dc-note">Échelle amateur : <strong>1 = débutant, 99 = très bon amateur</strong>. '+
     'L\'indice Nice pondère les axes selon leur importance pour le marathon — la montagne y compte pour zéro. '+
-    '<button class="pr-rejouer" onclick="_profilRejouer()">Refermer et rouvrir</button></div>';
+    '</div>';
 
   el.innerHTML=
     '<div class="pr-pack'+(scelle?'':' ouvert')+'" id="profil-pack"'+
@@ -3647,7 +3650,7 @@ function _profilRender(){
       '<svg class="pr-ecg" viewBox="0 0 300 76" aria-hidden="true">'+
         '<path d="M0 38 H54 l7-19 l7 38 l6-26 l5 14 h30 l7-32 l7 52 l6-30 l5 12 h48 l7-22 l7 40 l6-26 l5 12 H300"/></svg>'+
       '<div class="pr-sceau">'+
-        '<div class="pr-sigle">🏃</div>'+
+        '<div class="pr-sigle"></div>'+
         '<div class="pr-sceau-t">Ton profil de coureur</div>'+
         '<div class="pr-sceau-s">Sept qualités, mesurées sur tes séances. Scellé jusqu\'à maintenant.</div>'+
         '<div class="pr-appui">Appuie pour déchirer</div>'+
@@ -3677,14 +3680,40 @@ function _profilRender(){
    Avant ce decoupage, le Cockpit faisait 5318 px (6,3 ecrans) : tout ce qui
    se trouvait au-dela du 2e ecran n'etait jamais consulte, y compris le
    resume executif qui est pourtant l'information la plus actionnable. */
+/* ===== COCKPIT — lot 5 « blanc et orange » (maquette validée le 28/10/2026) ===== */
+function _vo2Qual(v){return {qual:v>=55?'niveau performant':v>=48?'très bon niveau':v>=42?'bon niveau amateur':v>=38?'coureur régulier':'en construction',
+  mara:v>=46?'entre 3h20 et 3h35':v>=42?'entre 3h35 et 3h50':v>=38?'entre 3h50 et 4h10':'au-delà de 4h10'};}
+/* carte Charge (ACWR du jour, même source que le reste de l'app) et barres des kilomètres par semaine */
+function _ckAujourdhui(){
+  var a=null;try{a=_dynamicACWR();}catch(e){}
+  var v=document.getElementById('ck-acwr-val');if(v)v.style.color='';
+  if(typeof a==='number'&&isFinite(a)){
+    var z=a<0.8?['ne','Sous-charge','La charge récente est en dessous de ton habitude des quatre dernières semaines.']:a<=1.3?['ok','Zone optimale','La charge récente est cohérente avec ton habitude des quatre dernières semaines.']
+      :a<=1.5?['wa','Vigilance','La charge récente dépasse ton habitude : surveille la récupération.']:['da','Surcharge','La charge récente dépasse nettement ton habitude : risque de blessure, allège.'];
+    var pu=document.getElementById('ckc-puce');if(pu){pu.className='ac-puce '+z[0];pu.textContent=z[1];}
+    var pos=Math.max(0,Math.min(100,(a-0.5)/1.5*100)),pt=document.getElementById('ckc-pt');if(pt)pt.style.left='calc('+pos.toFixed(1)+'% - 11px)';
+    var b=document.getElementById('ckc-barre');if(b)b.setAttribute('aria-label','ACWR '+_acNb(a,2)+' : '+z[1].toLowerCase()+' (zone optimale de 0,8 à 1,3)');
+    var ph=document.getElementById('ckc-phrase');if(ph)ph.textContent=z[2];
+  }
+  var box=document.getElementById('ck-sem-barres'),PW=(typeof _CK!=='undefined'&&_CK)?_CK._PW:null;if(!box||!PW||!PW.VOL)return;
+  var cur=_curWeek(),ws=[];for(var w=cur-11;w<=cur;w++)ws.push({w:w,km:+(PW.VOL[w]||0)});
+  var mx=Math.max(20,Math.ceil(Math.max.apply(null,ws.map(function(o){return o.km;}))/20)*20),W=358,H=170,L=30,R=4,T=12,B=22,bw=(W-L-R)/ws.length,y=function(k){return T+(H-T-B)*(1-k/mx);};
+  var g='<g stroke="#ECECEF" stroke-width="1">',lab='';for(var t=0;t<=mx;t+=20){g+='<line x1="'+L+'" x2="'+(W-R)+'" y1="'+y(t).toFixed(1)+'" y2="'+y(t).toFixed(1)+'"'+(t===0?' stroke="#D4D4D8"':'')+'/>';lab+='<text x="'+(L-6)+'" y="'+(y(t)+4).toFixed(1)+'">'+t+'</text>';}
+  g+='</g>';var bars='',xl='';
+  ws.forEach(function(o,i){var x=L+i*bw+bw*0.18,ww=bw*0.64,enc=o.w===cur;
+    bars+=o.km>0?'<rect class="tr-b" style="--i:'+i+'" x="'+x.toFixed(1)+'" y="'+y(o.km).toFixed(1)+'" width="'+ww.toFixed(1)+'" height="'+(y(0)-y(o.km)).toFixed(1)+'" rx="3"'+(enc?' fill-opacity=".35"':'')+'/>':'<rect x="'+x.toFixed(1)+'" y="'+(y(0)-2).toFixed(1)+'" width="'+ww.toFixed(1)+'" height="2" fill="#D4D4D8"/>';
+    if((cur-o.w)%2===0)xl+='<text x="'+(x+ww/2).toFixed(1)+'" y="'+(H-6)+'"'+(enc?' fill="#C2410C"':'')+'>S'+o.w+'</text>';});
+  box.innerHTML='<svg viewBox="0 0 '+W+' '+H+'" width="100%" class="ck-semsvg" role="img" aria-label="Kilomètres par semaine de S'+ws[0].w+' à S'+cur+' : '+ws.map(function(o){return _acNb(o.km);}).join(', ')+' (en cours)">'+g
+    +'<g class="ck-ax" text-anchor="end">'+lab+'</g><g fill="var(--primary)">'+bars+'</g><g class="ck-ax" text-anchor="middle">'+xl+'</g></svg>';
+  var lg=document.getElementById('ck-sem-leg');if(lg)lg.textContent='Barre pâle : semaine en cours ('+_acNb(ws[ws.length-1].km,1)+' km).';
+}
 var _ckZoneActive=1;
 function _ckZone(n,el){
   _ckZoneActive=n;
   document.querySelectorAll('#vue-cockpit .ck-zone').forEach(function(z){
     z.style.display=(+z.dataset.zone===n)?'':'none';});
-  document.querySelectorAll('#vue-cockpit .ck-z').forEach(function(b){b.classList.remove('ck-z-on');});
-  if(el)el.classList.add('ck-z-on');
-  else{var b=document.querySelector('#vue-cockpit .ck-z:nth-child('+n+')');if(b)b.classList.add('ck-z-on');}
+  document.querySelectorAll('#vue-cockpit .ck-z').forEach(function(b){b.classList.remove('ck-z-on');b.setAttribute('aria-selected','false');});
+  var b=el||document.querySelector('#vue-cockpit .ck-z[data-zone="'+n+'"]');if(b){b.classList.add('ck-z-on');b.setAttribute('aria-selected','true');}
   var v=document.getElementById('vue-cockpit');if(v)v.scrollTop=0;
   window.scrollTo(0,0);
 }
@@ -3711,7 +3740,7 @@ function _ckFreshness(){
 }
 function renderCockpit(){
   const el=document.getElementById('cockpit-contenu');
-  if(el.innerHTML.trim()){_ckRenderAll(_ckWin);return;}
+  if(el.innerHTML.trim()){_ckRenderAll(_ckWin);_ckAujourdhui();return;}
   const FC_RANGE={'Z1':'<134 bpm','Z2':'134-154','Z3':'154-167','Z4+':'>167 bpm'};
   function card(id,title,sub,valId,valSuffix,chartH,extra,helpKey){
     const hb=helpKey?`<button class="ck-help" onclick="event.stopPropagation();openCkHelp('${helpKey}')">?</button>`:'';
@@ -3722,45 +3751,63 @@ function renderCockpit(){
   const _ftrend=_f.trend||'→';
   const _now=new Date();
   const _hh=String(_now.getHours()).padStart(2,'0'),_mm=String(_now.getMinutes()).padStart(2,'0');
+  const _sig=String(_f.signal||'').split(/\s+·\s+/),_ck=(x)=>x?x.charAt(0).toUpperCase()+x.slice(1):'';
+  const _ind=(_f.components||[]).map(function(c){var lab=c.label==='ACWR'?'Charge':c.label,det=String(c.detail||'').replace(/(\d+)\/(\d+) séances échues/,'$1 séances sur $2 échues').replace(/(\d)\.(\d)/g,'$1,$2').replace(/\s*[↑↓→]+\s*$/,'').replace(/^ACWR\s*/,'');
+    var etat=c.score>=65?'ok':c.score>=50?'ne':'wa',ico=etat==='ok'?_acIco('check',20):etat==='ne'?'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M6 12h12"/></svg>':'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 7l12 12M17 11v8H9"/></svg>';
+    return '<div class="ckf-r '+etat+'"><span class="ckf-i">'+ico+'</span><p class="ckf-l">'+lab+'</p><p class="ckf-d">'+det+'</p></div>';}).join('');
+  const _v=_estimVO2(),_vq=_v?_vo2Qual(_v.vo2):null;
   el.innerHTML=`
-<div style="padding:var(--sp-3) var(--sp-3) var(--sp-10)">
-<h1 class="lt-title" style="margin-bottom:2px">Cockpit</h1>
-<div style="font-size:var(--t-caption);color:var(--texte-deux);margin-bottom:var(--sp-4)">Glisse sur les courbes · touche une barre · tap une sortie</div>
-<div class="ck-zones" role="tablist"><button class="ck-z ck-z-on" role="tab" onclick="_ckZone(1,this)">Aujourd'hui</button><button class="ck-z" role="tab" onclick="_ckZone(2,this)">Progression</button><button class="ck-z" role="tab" onclick="_ckZone(3,this)">Analyse</button></div>
+<div class="ck-page">
+<header class="vue-tete"><p class="ac-lb">Au ${_acJour(_now,true)}</p><h1 class="vue-titre">Cockpit</h1></header>
+<div class="ck-zones" role="tablist" aria-label="Rubriques du Cockpit"><button class="ck-z ck-z-on" role="tab" aria-selected="true" data-zone="1" onclick="_ckZone(1,this)">Aujourd'hui</button><button class="ck-z" role="tab" aria-selected="false" data-zone="2" onclick="_ckZone(2,this)">Progression</button><button class="ck-z" role="tab" aria-selected="false" data-zone="4" onclick="_ckZone(4,this)">Records</button><button class="ck-z" role="tab" aria-selected="false" data-zone="3" onclick="_ckZone(3,this)">Analyse</button></div>
 <div class="ck-zone" data-zone="1">
-<div class="ck-hero" role="button" tabindex="0" onclick="openCkHelp('forme')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openCkHelp('forme');}">
-  <div class="ck-hero-l">
-    <div class="ck-hero-lbl">Forme du jour</div>
-    <div class="ck-hero-val"><span class="ck-hero-num" id="ck-hero-num" style="color:${_fcol}">${_f.score}</span><span class="ck-hero-tr">${_ftrend}</span></div>
-    <div class="ck-hero-sig">${_f.signal||''}</div>
-    <div class="ck-hero-fresh"><span class="ck-fresh-dot"></span>Recalculé aujourd\u2019hui à ${_hh}:${_mm}</div>
+<section class="ck-c" aria-labelledby="ckf-h">
+  <h2 class="ac-h2" id="ckf-h">Forme du jour</h2>
+  <div class="ckf-t">
+    <button type="button" class="ckf-anneau" onclick="openCkHelp('forme')" aria-label="Forme du jour : ${_f.score} sur 100. Comment elle est calculée">
+      <svg width="120" height="120" viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="52" class="ckf-bg"/><circle cx="60" cy="60" r="52" class="ckf-fg" stroke="${_f.score<52?'var(--danger)':'var(--primary)'}" transform="rotate(-90 60 60)" stroke-dasharray="326.7" stroke-dashoffset="${(326.7*(1-_f.score/100)).toFixed(1)}"/></svg>
+      <span class="ckf-v" aria-hidden="true"><span class="ac-n" id="ck-hero-num">${_f.score}</span><span class="ac-lb">sur 100</span></span>
+    </button>
+    <div class="ac-min"><p class="ckf-sig">${_ck(_sig[0])}</p>${_sig[1]?`<p class="ckf-sous">${_ck(_sig.slice(1).join(' · '))}</p>`:''}<p class="ac-lb ckf-fresh">Recalculée aujourd’hui à ${_hh}:${_mm}</p></div>
   </div>
-</div>
-${(function(){const v=_estimVO2();if(!v)return '';return `<div class="vo2-card">
-  <div class="vo2-top"><span class="vo2-lbl">VO\u2082max estimé <button class="vo2-help" onclick="event.stopPropagation();openCkHelp('vo2')" aria-label="Qu'est-ce que le VO2max ?">?</button></span><span class="vo2-src">d'après tes 3 records (5/10/semi)</span></div>
-  <div class="vo2-gauge" onclick="_vo2Reveal(true)" role="button" tabindex="0"><svg viewBox="0 0 200 110" class="vo2-svg"><path d="M20,100 A80,80 0 0,1 180,100" fill="none" stroke="#E7E7EA" stroke-width="12" stroke-linecap="round"/><path id="vo2-arc" d="M20,100 A80,80 0 0,1 180,100" fill="none" stroke="#F4561D" stroke-width="12" stroke-linecap="round" stroke-dasharray="251" stroke-dashoffset="251"/></svg>
-    <div class="vo2-num"><span id="vo2-val">${v.vo2}</span><span class="vo2-unit">ml/kg/min</span></div></div>
-  <div class="vo2-foot" id="vo2-foot"></div>
-</div>`;})()}
-<div class="ck-summary" id="ck-summary"></div>
-<div class="ck-toggle ck-tgl-sync" data-tgl="1">
-  <button class="ck-tg" onclick="ckWin(2,this)">2 sem.</button>
-  <button class="ck-tg" onclick="ckWin(4,this)">4 sem.</button>
-  <button class="ck-tg ck-on" onclick="ckWin(8,this)">8 sem.</button>
-  <button class="ck-tg" onclick="ckWin(12,this)">12 sem.</button>
-</div>
-<div class="ck-kpis">
-  <div class="ck-kpi"><div class="ck-kv" id="ck-km-val">—<span class="ck-ku">km</span></div><div class="ck-kl" id="ck-km-lbl">fenêtre</div><div class="ck-kd" id="ck-km-trend">—</div></div>
-  <div class="ck-kpi"><div class="ck-kv" id="ck-re-val">—</div><div class="ck-kl" id="ck-re-lbl">Effort</div><div class="ck-kd" id="ck-re-trend">—</div></div>
-  <div class="ck-kpi"><div class="ck-kv" id="ck-acwr-val">0.69</div><div class="ck-kl">ACWR</div><div class="ck-kd">frais</div></div>
-  <div class="ck-kpi"><div class="ck-kv" id="ck-cad-kpi">—<span class="ck-ku">spm</span></div><div class="ck-kl">Cadence</div><div class="ck-kd" id="ck-cad-trend">—</div><div class="ck-kd" id="ck-cad-d">moy.</div></div>
-</div>
-
-<div class="eff-card" id="decoup-card">
-  <div class="vo2-top"><span class="vo2-lbl">Dernière sortie analysée <button class="vo2-help" onclick="openCkHelp('decoup')" aria-label="Comment lire le découplage ?">?</button></span><span class="vo2-src" id="decoup-src"></span></div>
+  <div class="ckf-ind">${_ind}</div>
+</section>
+<section class="ck-c" aria-labelledby="ckc-h">
+  <div class="ck-c-t"><div><h2 class="ac-h2" id="ckc-h">Charge</h2><p class="ac-lb">Rapport aiguë / chronique (ACWR)</p></div><span class="ac-puce" id="ckc-puce"></span></div>
+  <p class="ckc-v ac-n" id="ck-acwr-val">—</p>
+  <div class="ckc-barre" id="ckc-barre" role="img" aria-label="ACWR"><div class="ckc-zones" aria-hidden="true"><i class="z0"></i><i class="z1"></i><i class="z2"></i><i class="z3"></i></div><span class="ckc-pt" id="ckc-pt" aria-hidden="true"></span></div>
+  <div class="ckc-labs" aria-hidden="true"><span style="left:20%">0,8</span><span style="left:53.3%">1,3</span><span style="left:66.7%">1,5</span></div>
+  <p class="ck-phrase" id="ckc-phrase"></p>
+</section>
+${_v?`<section class="ck-c" aria-labelledby="ckv-h">
+  <div class="ck-c-t ck-c-b"><div><h2 class="ac-h2" id="ckv-h">VO₂max estimée <button class="vo2-help" onclick="openCkHelp('vo2')" aria-label="Qu'est-ce que la VO2max ?">?</button></h2><p class="ac-lb">D’après tes records 5 km, 10 km et semi</p></div>
+  <p class="ck-vo2 ac-n"><span id="vo2-val">${_v.vo2}</span><span class="ac-u">ml/kg/min</span></p></div>
+  <p class="ck-phrase" id="vo2-foot">Fourchette ${_v.lo}–${_v.hi} · ${_vq.qual} · marathon théorique ${_vq.mara}.</p>
+</section>`:''}
+<section class="ck-c" aria-labelledby="ck-fen-t">
+  <h2 class="ac-h2" id="ck-fen-t">${_ckWin} dernières semaines</h2>
+  <div class="ck-toggle ck-tgl-sync" data-tgl="1" role="group" aria-label="Nombre de semaines">
+    <button class="ck-tg" onclick="ckWin(2,this)">2 sem.</button><button class="ck-tg" onclick="ckWin(4,this)">4 sem.</button><button class="ck-tg ck-on" onclick="ckWin(8,this)">8 sem.</button><button class="ck-tg" onclick="ckWin(12,this)">12 sem.</button>
+  </div>
+  <div class="ck-kpis3">
+    <div><p class="ac-lb">Distance</p><p class="ac-n ac-n28"><span id="ck-km-val">—</span><span class="ac-u">km</span></p><p class="ck-kd" id="ck-km-trend">—</p></div>
+    <div><p class="ac-lb">Effort relatif</p><p class="ac-n ac-n28" id="ck-re-val">—</p><p class="ck-kd" id="ck-re-trend">—</p></div>
+    <div><p class="ac-lb">Cadence</p><p class="ac-n ac-n28" id="ck-cad-kpi">—</p><p class="ck-kd" id="ck-cad-trend">—</p></div>
+  </div>
+  <p class="ac-lb ck-sous-t">Kilomètres par semaine</p><div id="ck-sem-barres"></div><p class="ac-lb ck-leg" id="ck-sem-leg"></p>
+</section>
+<section class="ck-c eff-card" id="decoup-card" aria-labelledby="ckd-h">
+  <div class="ck-c-t"><div><h2 class="ac-h2" id="ckd-h">Dernière sortie analysée <button class="vo2-help" onclick="openCkHelp('decoup')" aria-label="Comment lire le découplage ?">?</button></h2><p class="ac-lb" id="decoup-src"></p></div></div>
   <div class="eff-body" id="decoup-body"></div>
-</div>
-</div><div class="ck-zone" data-zone="2" style="display:none">
+</section>
+</div><div class="ck-zone" data-zone="4" style="display:none">
+<section class="ck-c" aria-labelledby="ckr-h"><h2 class="ac-h2" id="ckr-h">Records</h2><div class="ckr-liste">${(typeof RECORDS_PERF!=='undefined'?RECORDS_PERF:[]).map(function(r){var sous=r.temps_act&&r.temps_act!==r.temps_rec?'Meilleur 2026 : '+r.temps_act:(r.record_sub?_ck(r.record_sub):'');
+    return '<div class="ckr-r"><p class="ckr-d">'+String(r.dist).replace(/^Semi.*/,'Semi')+'</p><p class="ckr-s">'+sous+'</p><p class="ac-n ckr-t">'+(r.temps_rec||r.record)+'</p></div>';}).join('')}</div>
+  <button type="button" class="ac-btn ac-btn-2 ckr-btn" onclick="_ouvrirRecords()">Les records de la saison</button></section>
+</div>`+`
+<div class="ck-zone" data-zone="2" style="display:none">
+<section class="ck-c" id="ck-ou" aria-labelledby="ck-ou-h"><h2 class="ac-h2" id="ck-ou-h">Où j’en suis</h2><p class="ck-phrase ck-ou-s">5 courbes, un verdict calculé pour chacune.</p><div class="ck-ou-liste" id="ck-ou-liste"><p class="ac-lb">Calcul en cours…</p></div>
+<button type="button" class="ac-btn ac-btn-2 ck-ou-btn" onclick="ouJenSuis()">Voir les 5 courbes en détail</button><p class="ac-lb ck-leg">Plus haut, c’est mieux : les allures et la dérive sont inversées. Point creux : estimation d’été corrigée de la chaleur.</p></section>
 <div class="ck-toggle ck-tgl-sync" data-tgl="2">
   <button class="ck-tg" onclick="ckWin(2,this)">2 sem.</button>
   <button class="ck-tg" onclick="ckWin(4,this)">4 sem.</button>
@@ -3773,11 +3820,11 @@ ${(function(){const v=_estimVO2();if(!v)return '';return `<div class="vo2-card">
 </div>
 <div class="eff-card" id="eff-card">
   <div class="vo2-top"><span class="vo2-lbl">Efficience aérobie <button class="vo2-help" onclick="openCkHelp('eff')" aria-label="Qu'est-ce que l'efficience aérobie ?">?</button></span><span class="vo2-src">allure à 145 bpm · corrigée température</span></div>
-  <div class="eff-body" id="eff-body"><div class="eff-loading">⏳ Analyse des conditions météo de tes séances…</div></div>
+  <div class="eff-body" id="eff-body"><div class="eff-loading">Analyse des conditions météo de tes séances…</div></div>
 </div>
 <div class="eff-card" id="heat-card">
   <div class="vo2-top"><span class="vo2-lbl">Acclimatation chaleur <button class="vo2-help" onclick="openCkHelp('heat')" aria-label="Qu'est-ce que l'acclimatation chaleur ?">?</button></span><span class="vo2-src">expositions &gt;25°C · 21 derniers jours</span></div>
-  <div class="eff-body" id="heat-body"><div class="eff-loading">⏳ Calcul de tes expositions à la chaleur…</div></div>
+  <div class="eff-body" id="heat-body"><div class="eff-loading">Calcul de tes expositions à la chaleur…</div></div>
 </div>
 <div class="eff-card" id="saison-card">
   <div class="vo2-top"><span class="vo2-lbl">Progression par saison <button class="vo2-help" onclick="openCkHelp('saison')" aria-label="Comment lire la progression par saison ?">?</button></span><span class="vo2-src">allure à 145 bpm · corrigée chaleur</span></div>
@@ -3795,31 +3842,31 @@ ${(function(){const v=_estimVO2();if(!v)return '';return `<div class="vo2-card">
   <button class="ck-tg" onclick="ckWin(12,this)">12 sem.</button>
 </div>
 
-<div class="ck-sec ck-sec-tg" data-open="1" onclick="_ckToggleSec(this)">📊 Volume &amp; charge<span class="ck-sec-chev">▾</span></div>
+<div class="ck-sec ck-sec-tg" data-open="1" onclick="_ckToggleSec(this)">Volume &amp; charge<span class="ck-sec-chev">▾</span></div>
 <div class="ck-sec-body" data-sec="1">
-<div class="ck-sec">📈 Performance Management Chart</div>
+<div class="ck-sec">Performance Management Chart</div>
 <div class="ck-card"><div class="ck-ch"><div><div class="ck-ct">CTL · ATL · TSB<button class="ck-help" onclick="event.stopPropagation();openCkHelp('pmc')">?</button></div><div class="ck-cs" id="ckPMC-sub">Fitness · Fatigue · Forme</div></div></div><div class="ck-cw" id="ckPMCW"><svg id="ckPMC" height="90" style="display:block;width:100%"></svg><div class="ck-tt" id="ckPMCT">glisse pour voir les valeurs</div></div><div style="display:flex;gap:14px;font-size:var(--t-data);color:var(--texte-deux);margin-top:6px;padding:0 2px"><span><span style="color:var(--primary-deux)">●</span> CTL fitness</span><span><span style="color:var(--warn)">●</span> ATL fatigue</span><span><span style="color:var(--ok-deux)">▌</span> TSB forme</span></div></div>
 ${card('ckVol','Volume hebdomadaire','',null,null,90,'<div style="font-size:var(--t-data);color:var(--texte-trois);text-align:center;margin-top:4px">touche une barre · ■ prévu</div>','vol')}
 <div class="ck-cs" id="ck-vol-sub" style="margin:-4px 0 8px;padding:0 2px"></div>
-${card('ckRE','⚡ Relative Effort / sem.','charge Strava réelle',null,null,80,'<div style="font-size:var(--t-data);color:var(--texte-trois);text-align:center;margin-top:4px">glisse →</div>','re')}
-<div class="ck-card"><div class="ck-ch"><div><div class="ck-ct">🩹 ACWR — risque blessure<button class="ck-help" onclick="event.stopPropagation();openCkHelp('acwr')">?</button></div><div class="ck-cs">ratio charge aiguë / chronique</div></div><div style="font-size:26px;font-weight:700;line-height:1" id="ck-acwr-val2">0.69</div></div><div class="ck-cw" id="ckACWRW"><svg id="ckACWR" height="65" style="display:block;width:100%"></svg><div class="ck-tt" id="ckACWRT"></div></div><div class="ck-xl" id="ckACWRX"></div></div>
-${card('ckDP','⛰ Dénivelé D+','',null,'m',75,'','dp')}
+${card('ckRE','Relative Effort / sem.','charge Strava réelle',null,null,80,'<div style="font-size:var(--t-data);color:var(--texte-trois);text-align:center;margin-top:4px">glisse →</div>','re')}
+<div class="ck-card"><div class="ck-ch"><div><div class="ck-ct">ACWR — risque blessure<button class="ck-help" onclick="event.stopPropagation();openCkHelp('acwr')">?</button></div><div class="ck-cs">ratio charge aiguë / chronique</div></div><div style="font-size:26px;font-weight:700;line-height:1" id="ck-acwr-val2">0.69</div></div><div class="ck-cw" id="ckACWRW"><svg id="ckACWR" height="65" style="display:block;width:100%"></svg><div class="ck-tt" id="ckACWRT"></div></div><div class="ck-xl" id="ckACWRX"></div></div>
+${card('ckDP','Dénivelé D+','',null,'m',75,'','dp')}
 </div>
-<div class="ck-sec ck-sec-tg" data-open="0" onclick="_ckToggleSec(this)">🔋 Moteur aérobie<span class="ck-sec-chev">▸</span></div>
+<div class="ck-sec ck-sec-tg" data-open="0" onclick="_ckToggleSec(this)">Moteur aérobie<span class="ck-sec-chev">▸</span></div>
 <div class="ck-sec-body" data-sec="0" style="display:none">
 <div class="ck-card"><div class="ck-ch"><div><div class="ck-ct">Z2 pace — allure EF (zone 134-154)<button class="ck-help" onclick="event.stopPropagation();openCkHelp('z2')">?</button></div><div class="ck-cs">indicateur n°1 du développement</div></div><div style="text-align:right"><div style="font-size:22px;font-weight:700;color:var(--primary-deux)" id="ck-z2-val">5:54</div><div class="ck-cs">/km</div></div></div><div style="font-size:var(--t-data);font-weight:600;margin:4px 0 6px" id="ck-z2-delta"></div><div class="ck-cw" id="ckZ2W"><svg id="ckZ2" height="85" style="display:block;width:100%"></svg><div class="ck-tt" id="ckZ2T"></div></div><div class="ck-xl" id="ckZ2X"></div></div>
-<div class="ck-card"><div class="ck-ch"><div><div class="ck-ct">💓 Découplage cardiaque<button class="ck-help" onclick="event.stopPropagation();openCkHelp('dc')">?</button></div><div class="ck-cs">dérive FC sortie longue · &lt;5% idéal</div></div><div style="font-size:22px;font-weight:700" id="ck-dc-val">—</div></div><div class="ck-cw" id="ckDCW"><svg id="ckDC" height="75" style="display:block;width:100%"></svg><div class="ck-tt" id="ckDCT"></div></div><div class="ck-xl" id="ckDCX"></div></div>
+<div class="ck-card"><div class="ck-ch"><div><div class="ck-ct">Découplage cardiaque<button class="ck-help" onclick="event.stopPropagation();openCkHelp('dc')">?</button></div><div class="ck-cs">dérive FC sortie longue · &lt;5% idéal</div></div><div style="font-size:22px;font-weight:700" id="ck-dc-val">—</div></div><div class="ck-cw" id="ckDCW"><svg id="ckDC" height="75" style="display:block;width:100%"></svg><div class="ck-tt" id="ckDCT"></div></div><div class="ck-xl" id="ckDCX"></div></div>
 </div>
-<div class="ck-sec ck-sec-tg" data-open="0" onclick="_ckToggleSec(this)">📈 Allure &amp; vitesse<span class="ck-sec-chev">▸</span></div>
+<div class="ck-sec ck-sec-tg" data-open="0" onclick="_ckToggleSec(this)">Allure &amp; vitesse<span class="ck-sec-chev">▸</span></div>
 <div class="ck-sec-body" data-sec="0" style="display:none">
 <div class="ck-card"><div class="ck-ch"><div><div class="ck-ct">Progression allure par type<button class="ck-help" onclick="event.stopPropagation();openCkHelp('pace')">?</button></div><div class="ck-cs">EF · marathon · seuil</div></div></div><div class="ck-cw" id="ckPACEW"><svg id="ckPACE" height="95" style="display:block;width:100%"></svg><div class="ck-tt" id="ckPACET"></div></div><div class="ck-xl" id="ckPACEX"></div><div style="display:flex;gap:12px;font-size:var(--t-data);color:var(--texte-deux);margin-top:8px"><span><span style="color:var(--ok-deux)">●</span> EF</span><span><span style="color:var(--primary-deux)">●</span> AM</span><span><span style="color:var(--warn)">●</span> Seuil</span></div></div>
 </div>
-<div class="ck-sec ck-sec-tg" data-open="0" onclick="_ckToggleSec(this)">❤️ Cardiaque &amp; cadence<span class="ck-sec-chev">▸</span></div>
+<div class="ck-sec ck-sec-tg" data-open="0" onclick="_ckToggleSec(this)">Cardiaque &amp; cadence<span class="ck-sec-chev">▸</span></div>
 <div class="ck-sec-body" data-sec="0" style="display:none">
 <div class="ck-card"><div class="ck-ch"><div><div class="ck-ct">Zones FC<button class="ck-help" onclick="event.stopPropagation();openCkHelp('fc')">?</button></div><div class="ck-cs" id="ck-fc-sub"></div></div></div><div class="ck-cw" id="ckFCW"><svg id="ckFC" height="100" style="display:block;width:100%"></svg><div class="ck-tt" id="ckFCT"></div></div><div style="font-size:var(--t-data);color:var(--texte-deux);text-align:center;margin-top:6px;min-height:14px" id="ck-fc-info">touche une zone</div></div>
-<div class="ck-card"><div class="ck-ch"><div><div class="ck-ct">🦶 Cadence<button class="ck-help" onclick="event.stopPropagation();openCkHelp('cad')">?</button></div><div class="ck-cs">route ~172 spm · trail ~146 spm</div></div><div><div style="font-size:22px;font-weight:700;color:var(--texte)" id="ck-cad-val">172</div><div class="ck-cs">spm</div></div></div><div class="ck-cw" id="ckCADW"><svg id="ckCAD" height="70" style="display:block;width:100%"></svg><div class="ck-tt" id="ckCADT"></div></div><div class="ck-xl" id="ckCADX"></div></div>
+<div class="ck-card"><div class="ck-ch"><div><div class="ck-ct">Cadence<button class="ck-help" onclick="event.stopPropagation();openCkHelp('cad')">?</button></div><div class="ck-cs">route ~172 spm · trail ~146 spm</div></div><div><div style="font-size:22px;font-weight:700;color:var(--texte)" id="ck-cad-val">172</div><div class="ck-cs">spm</div></div></div><div class="ck-cw" id="ckCADW"><svg id="ckCAD" height="70" style="display:block;width:100%"></svg><div class="ck-tt" id="ckCADT"></div></div><div class="ck-xl" id="ckCADX"></div></div>
 </div>
-<div class="ck-sec ck-sec-tg" data-open="0" onclick="_ckToggleSec(this)">🔍 Analyse par sortie<span class="ck-sec-chev">▸</span></div>
+<div class="ck-sec ck-sec-tg" data-open="0" onclick="_ckToggleSec(this)">Analyse par sortie<span class="ck-sec-chev">▸</span></div>
 <div class="ck-sec-body" data-sec="0" style="display:none">
 <div id="ck-runs"></div>
 </div>
@@ -3843,14 +3890,15 @@ ${card('ckDP','⛰ Dénivelé D+','',null,'m',75,'','dp')}
 </div>
 </div>
 `;
-  _ckRenderAll(_ckWin);
+  {const dz=el.querySelector('.ck-zone[data-zone="3"]'),dc=document.getElementById('dash-contenu');if(dz&&dc)dz.appendChild(dc);}
+  _ckRenderAll(_ckWin);_ckAujourdhui();try{RS.ouCarte();}catch(e){console.warn('Où j\'en suis',e);}
 }
 /* Le selecteur de fenetre existe en 3 exemplaires, un par zone. Avant, il
    n'etait present qu'en zone Analyse mais pilotait aussi le contenu de la
    zone Progression : un effet a distance desorientant, ou un chiffre change
    sans qu'aucun controle visible ne l'explique. On synchronise desormais
    l'etat actif sur les trois selecteurs. */
-function ckWin(w,el){_ckWin=w;document.querySelectorAll('.ck-tg').forEach(function(b){b.classList.remove('ck-on');});document.querySelectorAll('.ck-tgl-sync').forEach(function(t){t.querySelectorAll('.ck-tg').forEach(function(b){if(parseInt(b.textContent,10)===w)b.classList.add('ck-on');});});_ckRenderAll(w);if(typeof _effRender==='function'){try{_effRender();}catch(e){}}}
+function ckWin(w,el){var _ft=document.getElementById('ck-fen-t');if(_ft)_ft.textContent=w+' dernières semaines';_ckWin=w;document.querySelectorAll('.ck-tg').forEach(function(b){b.classList.remove('ck-on');});document.querySelectorAll('.ck-tgl-sync').forEach(function(t){t.querySelectorAll('.ck-tg').forEach(function(b){if(parseInt(b.textContent,10)===w)b.classList.add('ck-on');});});_ckRenderAll(w);if(typeof _effRender==='function'){try{_effRender();}catch(e){}}}
 /* ===== Déplacer / Skipper séance ===== */
 const SM_REASONS=['Fatigue / récupération','Contrainte agenda','Météo défavorable','Repos actif choisi'];
 let _smWk=null,_smId=null,_smReason=null;
@@ -4077,7 +4125,7 @@ function _decoupBloc(r){
     ? 'Tu es <strong>en dessous de l\'attendu</strong> \u2014 tu as bien tenu ton effort.'
     : 'Tu es <strong>au-dessus de l\'attendu</strong> \u2014 la fin de sortie t\'a co\u00fbt\u00e9 plus cher.';
   return '<div class="dcb">'+
-    '<div class="dcb-top"><span class="dcb-t">📉 D\u00e9couplage cardiaque '+
+    '<div class="dcb-top"><span class="dcb-t">D\u00e9couplage cardiaque '+
       '<button class="vo2-help" onclick="event.stopPropagation();openCkHelp(\'decoup\')" aria-label="Comment lire le d\u00e9couplage ?">?</button></span>'+
       '<span class="dcb-chip" style="color:'+_tc(v.c)+';background:'+v.f+'">'+v.t+'</span></div>'+
     '<div class="dcb-row"><span class="dcb-val" style="color:'+_tc(v.c)+'">'+num(d.pct)+' %</span>'+
@@ -5158,7 +5206,8 @@ const REVUE=(function(){const f=feuille('Revue du coach');
 
 function verdict(delta,seuil,sens){if(delta==null||isNaN(delta))return {cle:'attente',txt:'À confirmer'};if(Math.abs(delta)<seuil)return {cle:'stable',txt:'Stable'};return delta*sens>0?{cle:'progresse',txt:'Progresse'}:{cle:'recule',txt:'Recule'};}
 const I_V={progresse:'<path d="M5 17 17 5M9 5h8v8"/>',stable:'<path d="M5 12h14M13 6l6 6-6 6"/>',recule:'<path d="M5 7l12 12M17 11v8H9"/>',attente:'<path d="M6 12h.01M12 12h.01M18 12h.01"/>',hausse:'<path d="M5 17 17 5M9 5h8v8"/>',baisse:'<path d="M5 7l12 12M17 11v8H9"/>'};
-function carteOu(titre,v,lecture,svg,regle,note,replie){const lect=h('p',{class:'rs-ou-lect'});lect.innerHTML=lecture;
+let _ouRec=null,_ouSer=[];
+function carteOu(titre,v,lecture,svg,regle,note,replie){if(_ouRec){_ouRec.push({titre,v,lecture,s:_ouSer[0]||null});_ouSer=[];}const lect=h('p',{class:'rs-ou-lect'});lect.innerHTML=lecture;
   const el=h('section',{class:'rs-ou-carte'},h('header',null,h('h3',null,titre),h('span',{class:'rs-verd '+v.cle},ico(I_V[v.cle],14),v.txt)),lect,svg,h('p',{class:'rs-ou-regle'},regle),
     note?(replie?h('details',{class:'rs-ou-note'},h('summary',null,'Note du calcul'),h('p',null,note)):h('p',{class:'rs-ou-note'},note)):null);el._lect=lect;return el;}
 function lecteur(svg,xs,textes,lect,W,T,Hb){const cur=sv('line',{class:'rs-curseur',x1:0,x2:0,y1:T,y2:Hb,visibility:'hidden'});svg.append(cur);const defaut=lect.innerHTML;
@@ -5166,7 +5215,7 @@ function lecteur(svg,xs,textes,lect,W,T,Hb){const cur=sv('line',{class:'rs-curse
     cur.setAttribute('x1',xs[k]);cur.setAttribute('x2',xs[k]);cur.setAttribute('visibility','visible');lect.innerHTML=textes[k];};
   svg.addEventListener('pointerdown',montre);svg.addEventListener('pointermove',e=>{if(e.buttons||e.pointerType==='mouse')montre(e);});
   svg.addEventListener('pointerleave',()=>{cur.setAttribute('visibility','hidden');lect.innerHTML=defaut;});}
-function courbe({vals,labs,W=340,Hh=150,L=40,R=14,T=14,B=24,inverse=false,fmt,fmtPt,pas,creux=[],anims}){
+function courbe({vals,labs,W=340,Hh=150,L=40,R=14,T=14,B=24,inverse=false,fmt,fmtPt,pas,creux=[],anims}){if(_ouRec)_ouSer.push({t:'l',vals,inverse,creux});
   const ok=vals.map((v,i)=>[v,i]).filter(([v])=>v!=null),vs=ok.map(o=>o[0]);let lo=Math.floor(Math.min(...vs)/pas)*pas,hi=Math.ceil(Math.max(...vs)/pas)*pas;if(hi===lo)hi=lo+pas;
   const x=i=>L+i/((vals.length-1)||1)*(W-L-R),y=v=>inverse?T+(v-lo)/(hi-lo)*(Hh-T-B):T+(hi-v)/(hi-lo)*(Hh-T-B),g=sv('svg',{viewBox:`0 0 ${W} ${Hh}`,class:'rs-go'});
   for(let v=lo;v<=hi+1e-9;v+=pas)g.append(sv('line',{x1:L,x2:W-R,y1:y(v),y2:y(v),class:'rs-grille'}),sv('text',{x:L-6,y:y(v)+4,'text-anchor':'end'},fmt(v)));
@@ -5177,7 +5226,7 @@ function courbe({vals,labs,W=340,Hh=150,L=40,R=14,T=14,B=24,inverse=false,fmt,fm
   [0,vals.length-1].forEach(i=>g.append(sv('text',{x:x(i),y:Hh-6,'text-anchor':i?'end':'start'},labs[i])));
   anims.push(()=>{dessine(ligne,4*D_ECRAN);if(!RM())aire.animate([{opacity:0},{opacity:1}],{duration:D_ECRAN,delay:3*D_ECRAN,easing:EASE,fill:'backwards'});});
   return {g,xs:vals.map((_,i)=>x(i)),Hh,B,T,W};}
-function barres({vals,labs,W=340,Hh=140,L=40,R=14,T=14,B=24,max,pas,fmt,pale=[]}){
+function barres({vals,labs,W=340,Hh=140,L=40,R=14,T=14,B=24,max,pas,fmt,pale=[]}){if(_ouRec)_ouSer.push({t:'b',vals,max,pale});
   const hi=max!=null?max:Math.max(pas,Math.ceil(Math.max(...vals.filter(v=>v!=null))/pas)*pas),n=vals.length,xw=(W-L-R)/n,bw=Math.min(18,xw*.62),y=v=>T+(hi-v)/hi*(Hh-T-B),base=Hh-B;
   const g=sv('svg',{viewBox:`0 0 ${W} ${Hh}`,class:'rs-go'}),bs=[];
   for(let v=0;v<=hi;v+=pas)g.append(sv('line',{x1:L,x2:W-R,y1:y(v),y2:y(v),class:'rs-grille'}),sv('text',{x:L-6,y:y(v)+4,'text-anchor':'end'},fmt(v)));
@@ -5310,13 +5359,24 @@ function carte(){const el=document.getElementById('ac-coach');if(!el)return;cons
       ?`<span class="ac-puce ok">${_acIco('check',13)}${x.nom} dans la cible</span>`
       :`<span class="ac-puce wa">${x.nom==='FC'&&se.realise.fc_moy?`FC ${se.realise.fc_moy} · ${x.ecart}`:`${x.nom} ${x.ecart}`}</span>`).join('');}})
   .catch(e=>{console.warn('carte du coach',e);const v=document.getElementById('ac-coach-verdict');if(v)v.remove();});}
-/* entrée « Où j'en suis » en tête du Cockpit */
-function cockpitEntree(){const c=document.getElementById('cockpit-contenu');if(!c||c.querySelector('.rs-ou-entree'))return;
-  c.insertBefore(h('button',{class:'rs-ou-entree',type:'button',onclick:()=>OU.ouvre()},h('b',null,'Où j\'en suis'),h('span',null,'5 courbes, un verdict calculé pour chacune'),ico('<path d="m9 6 6 6-6 6"/>',20)),c.firstChild);}
-return {ouvrir,bouton,carte,prevuDe,cibleFiche,ficheDetail,cockpitEntree,ou:()=>OU.ouvre(),dispo};
+/* « Où j'en suis » dans le Cockpit (lot 5) : les 5 courbes de la feuille, en une ligne chacune avec leur verdict et une mini-courbe */
+function spark(o){if(!o||!o.vals||!o.vals.length)return '';const W=96,Hh=34,p=3,v=o.vals.map(x=>x==null?null:+x),ok=v.filter(x=>x!=null);if(!ok.length)return '';
+  if(o.t==='b'){const mx=o.max||Math.max(...ok,1),n=v.length,bw=(W-2)/n;return `<svg width="${W}" height="${Hh}" viewBox="0 0 ${W} ${Hh}" aria-hidden="true"><g fill="var(--primary)">`
+    +v.map((x,i)=>{const h=x?Math.max(1.5,x/mx*Hh):1.5,pale=(o.pale||[]).includes(i);return `<rect x="${(1+i*bw+bw*.15).toFixed(1)}" y="${(Hh-h).toFixed(1)}" width="${(bw*.7).toFixed(1)}" height="${h.toFixed(1)}" rx="1.5"${x?'':' fill="#D4D4D8"'}${pale?' fill-opacity=".35"':''}/>`;}).join('')+'</g></svg>';}
+  const mn=Math.min(...ok),mx=Math.max(...ok),pts=[];v.forEach((x,i)=>{if(x==null)return;let t=(x-mn)/((mx-mn)||1);if(o.inverse)t=1-t;pts.push([p+i*(W-2*p)/Math.max(1,v.length-1),Hh-p-t*(Hh-2*p),i]);});
+  const d='M'+pts.map(q=>q[0].toFixed(1)+','+q[1].toFixed(1)).join('L'),der=pts[pts.length-1];
+  return `<svg width="${W}" height="${Hh}" viewBox="0 0 ${W} ${Hh}" aria-hidden="true"><path d="${d}" fill="none" stroke="var(--primary)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"${pts.length<3?' stroke-dasharray="3 3"':''}/>`
+    +pts.filter(q=>(o.creux||[]).includes(q[2])&&q!==der).map(q=>`<circle cx="${q[0].toFixed(1)}" cy="${q[1].toFixed(1)}" r="3" fill="#fff" stroke="var(--primary)" stroke-width="1.6"/>`).join('')
+    +`<circle cx="${der[0].toFixed(1)}" cy="${der[1].toFixed(1)}" r="3.2" fill="var(--primary)"/></svg>`;}
+function ouCarte(){const box=document.getElementById('ck-ou-liste');if(!box)return Promise.resolve();
+  return textesPrets().then(()=>{_ouRec=[];_ouSer=[];try{construitOu(document.createElement('div'));}catch(e){console.warn('Où j\'en suis',e);}const R=_ouRec||[];_ouRec=null;_ouSer=[];
+    if(!R.length){box.innerHTML='<p class="ac-lb">Pas encore assez de séances pour un verdict.</p>';return;}
+    const cl={progresse:'ok',recule:'wa'};
+    box.innerHTML=R.map(o=>`<button type="button" class="ck-ou-r" onclick="ouJenSuis()"><span class="ac-min"><span class="ck-ou-t"><span class="ck-ou-n">${o.titre.replace(/ par semaine$/,'').replace(/ des sorties longues$/,'')}</span><span class="ac-puce ${cl[o.v.cle]||'ne'}">${o.v.txt}</span></span>`
+      +`<span class="ck-ou-l">${o.lecture}</span></span>${spark(o.s)}</button>`).join('');});}
+return {ouvrir,bouton,carte,prevuDe,cibleFiche,ficheDetail,ouCarte,ou:()=>OU.ouvre(),dispo};
 })();
 function rsOuvrir(cle,depuis,ouvreur){return RS.ouvrir(cle,depuis,ouvreur);}
 function rsBouton(num,id){return RS?RS.bouton(num,id):'';}
 function ouJenSuis(){RS.ou();}
-(function(){const rc=renderCockpit;renderCockpit=function(){const r=rc.apply(this,arguments);try{RS.cockpitEntree();}catch(e){console.warn('Où j\'en suis',e);}return r;};})();
 try{RS.carte();}catch(e){console.warn('carte du coach',e);}

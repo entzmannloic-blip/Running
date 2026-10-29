@@ -25,7 +25,7 @@
   --warn:#CA8A04;--warn-deux:#8F5A07;--warn-clair:#F1DFA6;--warn-fond:#FDF5DB;
   --danger:#DC2626;--danger-deux:#B91C1C;--danger-clair:#FECACA;--danger-fond:#FDECEC;
   /* ===== NEUTRES — zinc (sans bleu) ===== */
-  --gris:#A1A1AA;--gris-clair:#E7E7EA;--gris-fond:#F4F4F6;--ligne-forte:#D4D4D8;
+  --gris:#A1A1AA;--gris-clair:#E7E7EA;--gris-fond:#F4F4F6;--ligne-forte:#D4D4D8;--piste:#E9E9EC;
   --texte:#18181B;--texte-deux:#52525B;--texte-trois:#6B6B74;--blanc:#fff;
   /* ===== POLICES : systeme pour le texte, Barlow Semi Condensed (embarquee) pour les chiffres ===== */
   --f-texte:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,system-ui,sans-serif;
@@ -2465,6 +2465,121 @@ svg.tr-go .tr-b{animation:trBarre var(--d-ecran) var(--ease) both;animation-dela
 .rev-coach{background:none;border:0;border-radius:0;padding:0;font-size:16px;line-height:1.55;color:var(--texte-deux)}
 .rev-coach p+p{margin-top:10px}
 .prc .ac-puce.or{background:var(--bg-card)}
+
+/* ===== LOT 5 partie B — COCKPIT (maquette validée le 28/10/2026) ===== */
+.ck-page{max-width:480px;margin:0 auto;padding:0 0 40px}
+#vue-cockpit .ck-zone{display:flex;flex-direction:column;gap:12px}
+#vue-cockpit .ck-zone[style*="none"]{display:none!important}
+.ck-zones{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;margin:12px 0 14px;padding:4px;border-radius:13px;background:var(--piste)}
+.ck-z{min-height:44px;padding:0 2px;border:0;border-radius:10px;background:none;font:inherit;font-size:13.5px;font-weight:650;color:var(--texte-deux);cursor:pointer}
+.ck-z-on{background:var(--bg-card);color:var(--texte);box-shadow:0 1px 3px rgba(24,24,27,.12)}
+.ck-c,#vue-cockpit .eff-card,#vue-cockpit .ck-card,#vue-cockpit .kpi{margin:0;padding:18px;border:0!important;border-radius:18px;background:var(--bg-card);box-shadow:none!important}
+.ck-c p{margin:0}
+.ck-c-t{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.ck-c-t .ac-lb{margin-top:3px}
+.ck-c-b{align-items:flex-end}
+.ck-phrase{margin-top:10px!important;font-size:15px;line-height:1.5;color:var(--texte-deux)}
+.ckf-t{display:flex;align-items:center;gap:18px;margin-top:14px}
+.ckf-anneau{position:relative;width:120px;height:120px;flex:none;padding:0;border:0;background:none;cursor:pointer}
+.ckf-anneau svg{display:block}
+.ckf-bg{fill:none;stroke:var(--primary-fond);stroke-width:10}
+.ckf-fg{fill:none;stroke-width:10;stroke-linecap:round}
+.ckf-v{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.ckf-v .ac-n{font-size:44px;font-weight:800}
+.ckf-v .ac-lb{margin-top:2px}
+.ckf-sig{font-size:18px;font-weight:700;line-height:1.25}
+.ckf-sous{margin-top:4px!important;font-size:15px;color:var(--texte-deux)}
+.ckf-fresh{margin-top:8px!important;font-weight:500}
+.ckf-ind{margin-top:14px}
+.ckf-r{display:grid;grid-template-columns:22px minmax(0,1fr) auto;gap:10px;align-items:center;padding:11px 0;border-top:1px solid var(--gris-clair)}
+.ckf-i{display:grid;place-items:center;color:var(--texte-trois)}
+.ckf-r.ok .ckf-i{color:var(--ok-deux)}.ckf-r.wa .ckf-i,.ckf-r.wa .ckf-d{color:var(--warn-deux)}
+.ckf-r.wa .ckf-d{font-weight:650}
+.ckf-l{font-size:15px;font-weight:650}
+.ckf-d{font-size:14px;color:var(--texte-deux);text-align:right}
+.ac-puce.ne{background:var(--gris-fond);color:var(--texte-deux)}
+.ac-puce.da{background:var(--danger-fond);color:var(--danger-deux)}
+.ckc-v{margin-top:14px!important;font-size:48px;font-weight:800}
+.ckc-barre{position:relative;height:22px;margin-top:16px}
+.ckc-zones{position:absolute;left:0;right:0;top:7px;height:8px;display:flex;gap:3px}
+.ckc-zones i{display:block;height:100%}
+.ckc-zones .z0{width:20%;border-radius:99px 0 0 99px;background:var(--ligne-forte)}
+.ckc-zones .z1{width:33.3%;background:var(--ok)}
+.ckc-zones .z2{width:13.4%;background:var(--warn)}
+.ckc-zones .z3{flex:1;border-radius:0 99px 99px 0;background:var(--danger)}
+.ckc-pt{position:absolute;top:0;width:22px;height:22px;border-radius:50%;background:var(--texte);box-shadow:0 0 0 3px #fff}
+.ckc-labs{position:relative;height:18px;margin-top:6px}
+.ckc-labs span{position:absolute;transform:translateX(-50%);font-size:12px;font-weight:600;color:var(--texte-trois)}
+.ck-vo2{font-size:44px;font-weight:800;white-space:nowrap}
+.ck-vo2 .ac-u{font-size:15px}
+#vue-cockpit .vo2-help{width:44px;height:44px;margin:-10px -10px -10px -6px;border:0;border-radius:50%;background:radial-gradient(circle,var(--gris-fond) 0 13px,transparent 13.5px);color:var(--texte-deux);font-size:13px;font-weight:700;vertical-align:middle;cursor:pointer}
+.ck-kpis3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:14px}
+.ck-kpis3 .ac-n28 .ck-ku{font-size:max(12px,.5em);font-weight:600;color:var(--texte-deux);margin-left:3px}
+.ck-kd{margin-top:4px!important;font-size:13px;font-weight:650;color:var(--texte-deux)}
+#vue-cockpit .ck-toggle{position:static;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;margin:12px 0 0;padding:4px;border-radius:12px;background:var(--gris-fond)}
+#vue-cockpit .ck-tg{min-height:44px;border:0;border-radius:9px;background:none;font-size:13px;font-weight:650;color:var(--texte-deux);box-shadow:none}
+#vue-cockpit .ck-tg.ck-on{background:var(--bg-card);color:var(--texte);box-shadow:0 1px 3px rgba(24,24,27,.12)}
+.ck-sous-t{margin-top:20px!important}
+.ck-semsvg{display:block;margin-top:6px}
+.ck-semsvg .ck-ax text{font-size:12px;font-weight:600;fill:var(--texte-trois)}
+.ck-leg{margin-top:6px!important;font-weight:500}
+.ckr-liste{display:flex;flex-direction:column;margin-top:8px}
+.ckr-r{display:grid;grid-template-columns:64px minmax(0,1fr) auto;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--gris-clair)}
+.ckr-r:last-child{border-bottom:0}
+.ckr-d{font-size:15px;font-weight:700}
+.ckr-s{font-size:13px;line-height:1.35;color:var(--texte-deux)}
+.ckr-t{font-size:26px}
+.ckr-btn,.ck-ou-btn{width:100%;margin-top:14px;font-size:16px;min-height:48px}
+.ck-ou-s{margin-top:3px!important;font-size:14px}
+.ck-ou-liste{margin-top:4px}
+.ck-ou-r{display:grid;grid-template-columns:minmax(0,1fr) 96px;gap:14px;align-items:center;width:100%;padding:16px 0;border:0;border-top:1px solid var(--gris-clair);background:none;font:inherit;text-align:left;color:inherit;cursor:pointer}
+.ck-ou-t{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.ck-ou-n{font-size:15px;font-weight:700}
+.ck-ou-l{display:block;margin-top:5px;font-size:14px;line-height:1.4;color:var(--texte-deux)}
+.ck-ou-l b{font-weight:650;color:var(--texte)}
+/* cartes existantes du Cockpit (Progression, Analyse) et du tableau de bord : même grammaire */
+#vue-cockpit .vo2-top{align-items:flex-start;margin-bottom:10px}
+#vue-cockpit .vo2-lbl{font-size:20px;font-weight:700;letter-spacing:-.01em;line-height:1.2;white-space:normal}
+#vue-cockpit .vo2-src{font-size:12px;font-weight:600;color:var(--texte-trois)}
+#vue-cockpit .ck-ct{font-size:15px;font-weight:700;letter-spacing:0;text-transform:none;color:var(--texte)}
+#vue-cockpit .ck-cs{font-size:12px;font-weight:600;color:var(--texte-trois)}
+#vue-cockpit .ck-sec{margin:8px 4px 0;font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--primary-deux)}
+#vue-cockpit .ck-help{width:24px;height:24px;border:0;background:var(--gris-fond);color:var(--texte-deux)}
+#dash-contenu{display:flex;flex-direction:column;gap:12px}
+.dash-nav{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;background:none;border:0;box-shadow:none;position:static}
+.dnav-chip{min-height:32px;padding:4px 12px;border:0;border-radius:99px;background:var(--bg-card);font:inherit;font-size:13px;font-weight:650;color:var(--texte-deux);box-shadow:none}
+.dgrp{margin:0;border-radius:18px;background:var(--bg-card);overflow:hidden}
+.dgrp-head{display:flex;align-items:center;gap:12px;width:100%;min-height:60px;padding:14px 18px;border:0!important;border-radius:0;background:none;box-shadow:none!important;font:inherit;text-align:left;cursor:pointer}
+.dgrp-ic{width:36px;height:36px;border-radius:11px;background:var(--primary-fond);color:var(--primary);display:grid;place-items:center;flex:none;font-size:0}
+.dgrp-t{flex:1;font-size:17px;font-weight:700;color:var(--texte)}
+.dgrp-arr{font-size:22px;line-height:1;color:var(--texte-trois);transform:none;transition:transform var(--d-etat) var(--ease)}
+.dgrp.open .dgrp-arr{transform:rotate(90deg)}
+.dgrp-body{padding:0 18px 6px;border:0!important;border-radius:0;background:none}
+.dgrp .kpi{padding:16px 0;border-radius:0;border-top:1px solid var(--gris-clair)!important;background:none}
+.kpi-t{font-size:17px;font-weight:700;color:var(--texte)}
+.kpi-r{font-size:14px;line-height:1.45;color:var(--texte-deux)}
+.dstat{border:0!important;border-radius:14px;background:var(--gris-fond);box-shadow:none}
+.dstat::before{display:none}
+.dstat-v{font-family:var(--f-num);font-weight:700}
+/* profil de coureur : carte claire, affichée d'emblée */
+.pr-moitie,.pr-ecg,.pr-sceau,.pr-appui{display:none!important}
+.pr-pack,.pr-pack.ouvert{position:relative;min-height:0}
+.pr-carte,.pr-pack.ouvert .pr-carte{position:relative;inset:auto;opacity:1;transform:none;padding:0;border-radius:0;background:none;box-shadow:none;color:var(--texte);transition:none}
+.pr-carte::before{display:none}
+.pr-carte .pr-glob{color:var(--texte)}
+.pr-carte .pr-gnum{font-family:var(--f-num);font-size:52px;color:var(--texte)}
+.pr-carte .pr-gs{color:var(--texte-trois)}
+.pr-rang{background:var(--primary-fond);color:var(--primary-deux);border:0;letter-spacing:.06em}
+.pr-carte .pr-grid,.pr-carte .pr-grid.mid,.pr-carte .pr-ax{stroke:var(--gris-clair)}
+.pr-carte .pr-shape,.pr-pack.ouvert .pr-carte .pr-shape{fill:rgba(244,86,29,.16);stroke:var(--primary);filter:none;stroke-dasharray:none;stroke-dashoffset:0;animation:none}
+.pr-carte .pr-pt{fill:var(--primary);stroke:#fff}
+.pr-carte .pr-lbl{fill:var(--texte-trois)}
+.pr-carte .pr-list{border-top-color:var(--gris-clair)}
+.pr-carte .pr-n{color:var(--texte-deux)!important}
+.pr-carte .pr-track{background:var(--primary-fond)}
+.pr-carte .pr-d{color:var(--texte-trois)}
+.pr-carte .dc-note{border-top-color:var(--gris-clair);color:var(--texte-deux)}
+.pr-carte .dc-note strong{color:var(--texte)}
 #boot-load,#boot-err{position:fixed;inset:0;z-index:500;display:flex;flex-direction:column;gap:14px;align-items:center;justify-content:center;padding:24px;text-align:center;background:var(--gris-fond);color:var(--texte-trois);font-size:var(--t-callout)}
 #boot-err{color:var(--texte)}#boot-load[hidden],#boot-err[hidden]{display:none}</style></head>
 <body>
@@ -2494,7 +2609,7 @@ svg.tr-go .tr-b{animation:trBarre var(--d-ecran) var(--ease) both;animation-dela
 <div id="boot-err" role="alert" hidden><p>Données indisponibles. Vérifie ta connexion puis réessaie.</p><button type="button" class="btn-nav" onclick="location.reload()">Réessayer</button></div>
 <script>
 (function(){
-var V="276",EAGER=["plan", "seances", "historique", "meta"];
+var V="277",EAGER=["plan", "seances", "historique", "meta"];
 function get(f){return fetch("data/"+f+".json?v="+V).then(function(r){if(!r.ok)throw new Error(f+" "+r.status);return r.json();});}
 function fail(){var l=document.getElementById("boot-load");if(l)l.hidden=true;var e=document.getElementById("boot-err");if(e)e.hidden=false;}
 var cl=null;

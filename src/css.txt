@@ -14,7 +14,7 @@
   --warn:#CA8A04;--warn-deux:#8F5A07;--warn-clair:#F1DFA6;--warn-fond:#FDF5DB;
   --danger:#DC2626;--danger-deux:#B91C1C;--danger-clair:#FECACA;--danger-fond:#FDECEC;
   /* ===== NEUTRES — zinc (sans bleu) ===== */
-  --gris:#A1A1AA;--gris-clair:#E7E7EA;--gris-fond:#F4F4F6;--ligne-forte:#D4D4D8;
+  --gris:#A1A1AA;--gris-clair:#E7E7EA;--gris-fond:#F4F4F6;--ligne-forte:#D4D4D8;--piste:#E9E9EC;
   --texte:#18181B;--texte-deux:#52525B;--texte-trois:#6B6B74;--blanc:#fff;
   /* ===== POLICES : systeme pour le texte, Barlow Semi Condensed (embarquee) pour les chiffres ===== */
   --f-texte:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,system-ui,sans-serif;

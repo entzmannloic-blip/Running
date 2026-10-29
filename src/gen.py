@@ -2727,6 +2727,12 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":277,"date":"29 octobre 2026","sha":"","tag":"Blanc et orange (6/8) : Cockpit","items":[
+    "COCKPIT : titre et quatre onglets (Aujourd'hui, Progression, Records, Analyse).",
+    "AUJOURD'HUI comme la maquette : forme du jour en grand anneau et ses quatre indicateurs, carte Charge (ACWR du jour, zone et repère sur la barre), VO2max estimée, les N dernières semaines (distance, effort relatif, cadence et kilomètres par semaine sur 12 semaines), dernière sortie analysée.",
+    "PROGRESSION : « Où j'en suis » en ligne (5 courbes, verdict et mini-courbe, détail à un toucher), profil de coureur affiché d'emblée en clair (plus de sceau ni d'animation en boucle), progression par saison en orange.",
+    "RECORDS : 5 km, 10 km et semi, meilleurs temps 2026, et les records de la saison à un toucher. ANALYSE : les graphes et le tableau de bord, groupes avec icônes au trait.",
+    "Plus d'emoji dans le Cockpit ; valeurs en virgule décimale."]},
   {"build":276,"date":"29 octobre 2026","sha":"","tag":"Blanc et orange (5/8) : Séances et fiches","items":[
     "SÉANCES : titre de la vue, phases sans pastille de couleur, semaines en cartes blanches (volume en grand, progression des séances en orange, semaine en cours entourée).",
     "FICHE DE LA SEMAINE : chiffres (volume prévu, réalisé, séances faites), objectif, séances en liste avec le jour, bilan du coach ; « Revoir la semaine ».",
