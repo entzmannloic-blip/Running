@@ -2727,6 +2727,8 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":289,"date":"30 octobre 2026","sha":"","tag":"La semaine en haut de l'Accueil","items":[
+    "SEMAINE EN HAUT : la carte « Semaine » (km, sorties faites sur prévues, jour par jour) remonte sous la date, avant l'analyse de la dernière séance. Elle remplace la ligne « Cette semaine » du build 288, retirée."]},
   {"build":288,"date":"30 octobre 2026","sha":"","tag":"Le réalisé de la semaine en haut de l'Accueil","items":[
     "RÉALISÉ DE LA SEMAINE : sous la date, avant l'analyse de la dernière séance, une ligne « Cette semaine » donne le nombre de sorties faites sur les sorties prévues et les kilomètres déjà courus."]},
   {"build":287,"date":"30 octobre 2026","sha":"","tag":"Ouverture plus marquée : écran de démarrage et entrées plus amples","items":[

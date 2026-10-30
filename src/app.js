@@ -809,17 +809,6 @@ function _acForme(F,nudge){
     +(sous.length?'<span class="ac-forme-c">'+_acEsc(sous.join(' · '))+'</span>':'')
     +(nudge&&nudge.txt?'<span class="ac-nudge ac-nudge-'+(nudge.tone==='warn'?'warn':'info')+'"><span class="sr-only">Conseil du jour : </span>'+_acEsc(nudge.txt)+'</span>':'')+'</span></button>';
 }
-/* bilan de la semaine en cours pour l'en-tete de l'Accueil : sorties faites (course a pied), prevues, km realises */
-function _acBilan(sc){
-  var arr=(SEANCES_BY_WEEK[sc.num]||SEANCES_BY_WEEK[String(sc.num)]||[]).filter(function(s){return s.date;});
-  var km=0,faites=0,prevues=0;
-  arr.forEach(function(s){if(!_acEstPPG(s)&&_acKmPrevu(s)!=null)prevues++;if(_acFait(s)&&s.realise.km){km+=+s.realise.km;faites++;}});
-  prevues=Math.max(prevues,faites);
-  return '<p class="ac-bilan" aria-label="Réalisé de la semaine : '+faites+' sortie'+(faites>1?'s':'')+' sur '+prevues+', '+_acNb(km,1)+' kilomètres">'
-    +'<span class="ac-lb" aria-hidden="true">Cette semaine</span>'
-    +'<span class="ac-bilan-v" aria-hidden="true"><span class="ac-n">'+faites+'</span><span class="ac-u">/ '+prevues+' sortie'+(prevues>1?'s':'')+'</span>'
-    +'<span class="ac-bilan-sep"></span><span class="ac-n">'+_acNb(km,1)+'</span><span class="ac-u">km</span></span></p>';
-}
 function _acSemaine(sc){
   var arr=(SEANCES_BY_WEEK[sc.num]||SEANCES_BY_WEEK[String(sc.num)]||[]).filter(function(s){return s.date;});
   var t=new Date();t.setHours(0,0,0,0);
@@ -902,12 +891,11 @@ function renderHeader(){
     +'<header class="ac-tete"><div class="ac-tete-l"><p class="ac-lb">Semaine '+sc.num+(_ph?' · '+_acEsc(_ph.nom):'')+'</p>'
     +(_rc0_?'<span class="ac-puce or">'+_acEsc(_acCourtCourse(_rc0_))+' J-'+_rc0_.dn+'</span>':'')+'</div>'
     +'<p class="ac-date">'+_acCap(_acJour(new Date(),true))+'</p></header>'
-    +_acBilan(sc)
+    +_acSemaine(sc)
     +'<section class="ac-carte ac-coach" id="ac-coach" aria-labelledby="ac-coach-h" hidden></section>'
     +_acProchaine(_ps)
     +'<div id="wdg-meteo-slot">'+_wMeteo()+'</div>'
     +_acForme(_FORME_,_nudge)+_formeDetail
-    +_acSemaine(sc)
     +_acCourses(_COURSES_,_PCT_,_NB_)
     +_acAnnee(_SA_)+'</div>'
     +'<div id="canicule-banner" style="display:none!important"></div>'
