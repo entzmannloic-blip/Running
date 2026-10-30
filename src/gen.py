@@ -2727,6 +2727,8 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":288,"date":"30 octobre 2026","sha":"","tag":"Le réalisé de la semaine en haut de l'Accueil","items":[
+    "RÉALISÉ DE LA SEMAINE : sous la date, avant l'analyse de la dernière séance, une ligne « Cette semaine » donne le nombre de sorties faites sur les sorties prévues et les kilomètres déjà courus."]},
   {"build":287,"date":"30 octobre 2026","sha":"","tag":"Ouverture plus marquée : écran de démarrage et entrées plus amples","items":[
     "ÉCRAN DE DÉMARRAGE : « Chargement… » est remplacé par un tracé orange qui se dessine avec « Saison 2026 », puis s'efface en fondu pendant que l'Accueil entre.",
     "ENTRÉES PLUS VISIBLES : les cartes de l'Accueil et les sections d'une fiche de séance arrivent de plus loin et plus lentement (24 px, 80 ms d'écart, une demi-seconde chacune) ; les chiffres comptent en 0,7 s ; l'icône d'onglet se dessine plus lentement.",
