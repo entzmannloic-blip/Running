@@ -2586,3 +2586,4 @@ svg.tr-go .tr-b{animation:trBarre var(--d-ecran) var(--ease) both;animation-dela
   ::view-transition-group(bb-pill){animation-duration:var(--d-ecran);animation-timing-function:var(--ease)}
 }
 @media (prefers-reduced-motion:reduce){.bb-pill{transition:none}}
+.ac-tete .ac-date{margin:0!important;font-size:23px}

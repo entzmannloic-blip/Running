@@ -888,9 +888,8 @@ function renderHeader(){
   try{Object.keys(SEANCES_BY_WEEK).forEach(function(w){(SEANCES_BY_WEEK[w]||[]).forEach(function(s){var r=s.realise;if(r&&(r.statut==='fait'||r.statut==='partiel')&&r.km)_NB_++;});});}catch(e){}
   var _SA_=(typeof SAISON2026!=='undefined')?SAISON2026:null,_rc0_=_COURSES_[0],_ph=(PHASES||[]).filter(function(p){return p.id===sc.phase;})[0];
   document.getElementById('hero-plan').innerHTML='<div class="ac">'
-    +'<header class="ac-tete"><div class="ac-tete-l"><p class="ac-lb">Semaine '+sc.num+(_ph?' · '+_acEsc(_ph.nom):'')+'</p>'
-    +(_rc0_?'<span class="ac-puce or">'+_acEsc(_acCourtCourse(_rc0_))+' J-'+_rc0_.dn+'</span>':'')+'</div>'
-    +'<p class="ac-date">'+_acCap(_acJour(new Date(),true))+'</p></header>'
+    +'<header class="ac-tete"><div class="ac-tete-l"><p class="ac-date">'+_acCap(_acJour(new Date(),true))+'</p>'
+    +(_rc0_?'<span class="ac-puce or">'+_acEsc(_acCourtCourse(_rc0_))+' J-'+_rc0_.dn+'</span>':'')+'</div></header>'
     +_acSemaine(sc)
     +'<section class="ac-carte ac-coach" id="ac-coach" aria-labelledby="ac-coach-h" hidden></section>'
     +_acProchaine(_ps)

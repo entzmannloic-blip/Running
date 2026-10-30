@@ -2780,6 +2780,7 @@ svg.tr-go .tr-b{animation:trBarre var(--d-ecran) var(--ease) both;animation-dela
   ::view-transition-group(bb-pill){animation-duration:var(--d-ecran);animation-timing-function:var(--ease)}
 }
 @media (prefers-reduced-motion:reduce){.bb-pill{transition:none}}
+.ac-tete .ac-date{margin:0!important;font-size:23px}
 #boot-load,#boot-err{position:fixed;inset:0;z-index:500;display:flex;flex-direction:column;gap:14px;align-items:center;justify-content:center;padding:24px;text-align:center;background:var(--gris-fond);color:var(--texte-trois);font-size:var(--t-callout)}
 #boot-err{color:var(--texte)}#boot-load[hidden],#boot-err[hidden]{display:none}
 #boot-load .boot-mark{width:132px;height:66px;overflow:visible}
@@ -2823,7 +2824,7 @@ svg.tr-go .tr-b{animation:trBarre var(--d-ecran) var(--ease) both;animation-dela
 <div id="boot-err" role="alert" hidden><p>Données indisponibles. Vérifie ta connexion puis réessaie.</p><button type="button" class="btn-nav" onclick="location.reload()">Réessayer</button></div>
 <script>
 (function(){
-var V="289",EAGER=["plan", "seances", "historique", "meta"];
+var V="290",EAGER=["plan", "seances", "historique", "meta"];
 function get(f){return fetch("data/"+f+".json?v="+V).then(function(r){if(!r.ok)throw new Error(f+" "+r.status);return r.json();});}
 function fail(){var l=document.getElementById("boot-load");if(l)l.hidden=true;var e=document.getElementById("boot-err");if(e)e.hidden=false;}
 var cl=null;
