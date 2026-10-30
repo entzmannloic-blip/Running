@@ -186,6 +186,12 @@ Ne jamais soustraire `new Date('YYYY-MM-DD')` à une date locale. Une course don
 - **Garde-fou mécanisé.** Le test prend le lendemain de la dernière sortie de la référence. `pr_scope.py` range aussi
   `src/rewind/` dans les PR de données (le dossier manquait, alors qu'ENRICHISSEMENT.md § 6 l'y place).
 
+## L15 — CI rouge sans lien avec le changement : T22 attendait 400 ms après la molette (30/10)
+- **Symptôme** : PR #37 (écran « Le parcours ») rouge sur T22 (« barre d'onglets : se retracte en descendant… »), alors que rien ne touche la barre ; en local, le même test passait une fois sur deux, avec des échecs en sens opposés (cachée sans revenir, puis revenue sans s'être cachée).
+- **Cause** : le test lisait l'état 400 ms après `mouse.wheel`. Le défilement à la molette et le gestionnaire (sous `requestAnimationFrame`) n'y tiennent pas toujours sur une machine chargée.
+- **Correction** : attendre l'état (`wait_for_function`, 2,5 s au plus) au lieu d'un délai fixe.
+- **Règle** : un test d'interface attend une condition, jamais une durée ; un échec qui change de sens d'un passage à l'autre est un test instable, pas une régression.
+
 ## Quirks Strava MCP (non mécanisables, à connaître)
 
 - Les activités **privées** n'apparaissent pas dans `list_activities`, quelle que soit

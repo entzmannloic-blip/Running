@@ -584,12 +584,19 @@ def run():
             # barre d'onglets : cachee en descendant, revient en remontant
             pm.evaluate("window.scrollTo(0,0)")
             pm.wait_for_timeout(1600)
+            # attente sur l'etat plutot qu'un delai fixe : le defilement a la molette et le rAF du gestionnaire
+            # ne tombent pas toujours dans les 400 ms sur une machine chargee (CI, L15)
+            def _attend(js):
+                try:
+                    pm.wait_for_function(js, timeout=2500)
+                    return True
+                except Exception:
+                    return False
             pm.mouse.wheel(0, 700)
-            pm.wait_for_timeout(400)
-            cache = pm.evaluate("document.getElementById('botbar').classList.contains('bb-cache')")
+            cache = _attend("document.getElementById('botbar').classList.contains('bb-cache')")
+            pm.wait_for_timeout(250)
             pm.mouse.wheel(0, -260)
-            pm.wait_for_timeout(400)
-            revient = not pm.evaluate("document.getElementById('botbar').classList.contains('bb-cache')")
+            revient = _attend("!document.getElementById('botbar').classList.contains('bb-cache')")
             check("T22 barre d'onglets : se retracte en descendant, revient en remontant", cache and revient, f"cachee={cache} revient={revient}")
             # carte -> fiche -> carte
             pm.click("#tab-accueil")
