@@ -2727,6 +2727,8 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":285,"date":"30 octobre 2026","sha":"","tag":"Rewind : les cartes de l'analyse du coach ne sont plus coupées","items":[
+    "ANALYSE DU COACH : depuis le build 283, la carte « Le verdict » (et les suivantes) apparaissait carrée et tronquée, avec un grand vide au-dessus du texte. Le fond de carte du tracé avait pris le même nom de classe CSS que ces cartes ; il porte maintenant le sien. Un test de régression vérifie que les cartes gardent leur hauteur naturelle."]},
   {"build":284,"date":"30 octobre 2026","sha":"","tag":"Fond de carte du Rewind : passage à OpenStreetMap (CARTO exige maintenant une clé)","items":[
     "LE TRACÉ : les tuiles CARTO affichaient un filigrane « API KEY REQUIRED » (CARTO réclame désormais une clé). Le fond vient maintenant d'OpenStreetMap (tile.openstreetmap.org), passé en gris clair pour que le tracé coloré reste lisible, avec l'attribution « © OpenStreetMap contributors » en lien vers openstreetmap.org/copyright (lien dans une ligne de texte, pour l'audit d'accessibilité).",
     "TUILES : elles ne sont demandées qu'au moment où l'image « Le tracé » s'affiche (plus au chargement du Rewind), comme l'exige la politique d'usage d'OpenStreetMap ; hors connexion ou en cas d'échec, le tracé s'affiche seul comme avant."]},
