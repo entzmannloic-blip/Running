@@ -991,11 +991,11 @@ def run():
             pf.evaluate("showTab('accueil')")
             pf.wait_for_timeout(300)
             ac = pf.evaluate("""(function(){var v=document.getElementById('vue-accueil'),ids=[...v.querySelectorAll('.ac > *')].map(function(e){
-                return e.id||e.className.split(' ').filter(function(c){return /^ac-(tete|bilan|coach|pro|forme|carte)$/.test(c)||c==='forme-detail';}).pop()||e.tagName;});
+                return e.id||e.className.split(' ').filter(function(c){return /^ac-(tete|coach|pro|forme|carte)$/.test(c)||c==='forme-detail';}).pop()||e.tagName;});
               return {ordre:ids.join(','),records:/records/i.test(v.innerText),emoji:/\\p{Extended_Pictographic}/u.test(v.innerText),
                 semaine:v.querySelectorAll('.ac-jour').length,jn:(v.querySelector('.ac-jn .cnt')||{}).textContent};})()""")
-            check("T25 Accueil : en-tête, réalisé de la semaine, analyse du coach, prochaine séance, météo, forme, semaine (7 jours), courses, année ; sans records ni emoji",
-                  ac["ordre"].startswith("ac-tete,ac-bilan,ac-coach,ac-pro,wdg-meteo-slot,ac-forme,forme-detail,ac-carte,ac-carte,ac-carte")
+            check("T25 Accueil : en-tête, semaine (7 jours), analyse du coach, prochaine séance, météo, forme, courses, année ; sans records ni emoji",
+                  ac["ordre"].startswith("ac-tete,ac-carte,ac-coach,ac-pro,wdg-meteo-slot,ac-forme,forme-detail,ac-carte,ac-carte")
                   and not ac["records"] and not ac["emoji"] and ac["semaine"] == 7 and (ac["jn"] or "").isdigit(), str(ac))
             # Fiche d'une seance faite (lot 5, PR 3) : chiffres, analyse du coach, trace et zones, km par km, seance prevue
             pf.evaluate("ouvrirSeance('44',3)")
