@@ -2727,6 +2727,11 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":286,"date":"30 octobre 2026","sha":"","tag":"Plus de mouvement : ouverture de l'app, ouverture d'une séance, barre d'onglets","items":[
+    "OUVERTURE DE L'APP : l'en-tête puis les cartes de l'Accueil arrivent en cascade, la barre d'onglets monte, l'anneau de forme se remplit, la barre de préparation se remplit et les jours de la semaine apparaissent un à un. Une fois par lancement, moins d'une seconde.",
+    "OUVERTURE D'UNE SÉANCE : pendant que la carte s'agrandit, les sections de la fiche arrivent en cascade, la coche « Faite » se dessine et la distance, la FC et le dénivelé comptent jusqu'à leur valeur.",
+    "BARRE D'ONGLETS : une pastille orange clair se place sous l'onglet actif et glisse d'un onglet à l'autre ; l'icône choisie se dessine.",
+    "Tout est coupé sous « réduire les animations » (Réglages de l'iPhone > Accessibilité > Mouvement)."]},
   {"build":285,"date":"30 octobre 2026","sha":"","tag":"Rewind : les cartes de l'analyse du coach ne sont plus coupées","items":[
     "ANALYSE DU COACH : depuis le build 283, la carte « Le verdict » (et les suivantes) apparaissait carrée et tronquée, avec un grand vide au-dessus du texte. Le fond de carte du tracé avait pris le même nom de classe CSS que ces cartes ; il porte maintenant le sien. Un test de régression vérifie que les cartes gardent leur hauteur naturelle."]},
   {"build":284,"date":"30 octobre 2026","sha":"","tag":"Fond de carte du Rewind : passage à OpenStreetMap (CARTO exige maintenant une clé)","items":[

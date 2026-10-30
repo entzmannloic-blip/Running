@@ -82,6 +82,7 @@ function delta(series,good){const v=series.filter(x=>x!=null);if(v.length<2)retu
 /* Couleurs de TEXTE : les teintes de marque nues (graphiques) sont remplacees par leurs variantes profondes (contraste AA). */
 function _tc(c){return({'#dc2626':'var(--danger-deux)','#16a34a':'var(--ok-deux)','#f4561d':'var(--primary-deux)','#ca8a04':'var(--warn-deux)','#a1a1aa':'var(--texte-trois)','#65a30d':'var(--ok-deux)','#8f5a07':'var(--warn-deux)','#b91c1c':'var(--danger-deux)'})[String(c).toLowerCase()]||c;}
 function showTab(t){
+  const _avantT=typeof _ongletActif==='function'?_ongletActif():null;
   const _dir=Math.sign(['accueil','plan','cockpit','palmares'].indexOf(t)-['accueil','plan','cockpit','palmares'].indexOf(typeof _ongletActif==='function'?_ongletActif():t));
   if(typeof _bbHold==='function')_bbHold(1400);
   ['accueil','plan','cockpit','palmares'].forEach(id=>{
@@ -111,6 +112,7 @@ function showTab(t){
   const _vw=document.getElementById('vue-'+t);
   if(_vw&&!document.documentElement.dataset.vt){_vw.style.setProperty('--vt-dx',(_dir*8)+'px');_vw.classList.remove('vue-in');void _vw.offsetWidth;_vw.classList.add('vue-in');}
   else if(_vw)_vw.classList.remove('vue-in');
+  if(typeof _bbPill==='function'){_bbPill(true);if(_avantT&&_avantT!==t)_dessineSvg(document.querySelector('#tab-'+t+' svg'),0);}
   const _fab=document.getElementById('fab-jump-week');
   if(_fab)_fab.classList.toggle('tab-plan-active',t==='plan');
   if(t==='plan'&&typeof _initJumpFabWatch==='function')_initJumpFabWatch();
@@ -909,6 +911,21 @@ function renderHeader(){
     if(_fv&&_rg&&!(_comptes&&_comptes.has('forme'))&&!_reduceMotion())_rg.classList.add('vr-anim');
     _compte(_fv,'forme');_compte(document.querySelector('.ac-jn .cnt'),'jn');
   }
+  _acEntree();
+}
+/* Ouverture de l'app (build 286) : l'en-tête puis les cartes de l'Accueil arrivent en cascade (50 ms d'écart,
+   plafonné à 300 ms), la barre d'onglets monte, la barre de préparation se remplit et les jours de la semaine
+   apparaissent un à un. Une seule fois, au premier rendu ; tout est en CSS sous prefers-reduced-motion:
+   no-preference (animations « backwards » : sans support, tout est visible). La classe est retirée ensuite
+   pour qu'un retour sur l'onglet Accueil ne rejoue pas l'entrée. */
+var _acEntreeFaite=false;
+function _acEntree(){
+  if(_acEntreeFaite)return;_acEntreeFaite=true;
+  var ac=document.querySelector('#hero-plan .ac'),v=document.getElementById('vue-accueil'),root=document.documentElement;
+  if(!ac||!v||v.style.display==='none')return;
+  [].forEach.call(ac.children,function(e,i){e.style.setProperty('--i',Math.min(i,6));});
+  ac.classList.add('ac-entree');root.classList.add('app-entree');
+  setTimeout(function(){ac.classList.remove('ac-entree');root.classList.remove('app-entree');},1200);
 }
 
 /* ===== Widget météo (accueil) — Open-Meteo, lieu fixé Lyon quai des Bons Enfants ===== */
@@ -4350,7 +4367,7 @@ function ficheFaite(num,se,tts){
   var C=[['Distance',km>0?_acNb(km,2):null,'km'],['Allure moyenne',al?al[1]:null,'/km'],['Temps',r.temps||null,''],
     ['FC moyenne',r.fc_moy||null,'bpm'],['Dénivelé',r.elevation_gain!=null&&r.elevation_gain!==''?r.elevation_gain:null,'m'],['Météo',r.temp!=null&&r.temp!==''?r.temp:null,'°C']]
     .filter(function(x){return x[1]!=null;});
-  var chif=C.map(function(x,i){return '<div class="fs-st'+(i>=3?' fs-st2':'')+'"><p class="ac-lb">'+x[0]+'</p><p class="ac-n">'+_acEsc(x[1])+(x[2]?'<span class="ac-u">'+x[2]+'</span>':'')+'</p></div>';}).join('');
+  var chif=C.map(function(x,i){var v=_acEsc(x[1]);return '<div class="fs-st'+(i>=3?' fs-st2':'')+'"><p class="ac-lb">'+x[0]+'</p><p class="ac-n">'+(/^\d+(,\d+)?$/.test(v)?'<span class="cnt">'+v+'</span>':v)+(x[2]?'<span class="ac-u">'+x[2]+'</span>':'')+'</p></div>';}).join('');
   var sh=se.chaussure_realise||'',g=(window.GEAR||[]).filter(function(x){return (x.marque+' '+x.modele)===sh;})[0];
   var shoe=sh?'<div class="fs-shoe">'+_acIco('chaussure',26)+'<p>'+_acEsc(sh)+'</p>'+(g&&g.km!=null?'<p class="ac-n">'+_acNb(g.km)+'<span class="ac-u">km</span></p>':'')+'</div>':'';
   var rev=rw?'<button type="button" class="ac-btn ac-btn-o fs-revoir" onclick="rsOuvrir(\''+cle+'\',0,this)">'+_acIco('play',20)+'Revoir ma séance</button><p class="ac-lb fs-revoir-l">Rewind animé : tracé, allure, cœur, analyse du coach</p>'
@@ -4402,7 +4419,7 @@ function ficheFaite(num,se,tts){
 function ouvrirSeance(num,id){const se=(SEANCES_BY_WEEK[num]||[]).find(x=>x.id===id);if(!se)return;segActif=null;if(typeof ttsStop==='function')ttsStop();
   const ttsBarSeance=(typeof window!=='undefined'&&'speechSynthesis' in window)?`<div class="tts-bar tts-bar-seance" id="ttsBarSeance"><button class="tts-btn tts-play" onclick="ttsPlaySeance(${num},${se.id})"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5v5h3.5L12 19V5L7.5 9.5z"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/></svg>Écouter la séance</button><span class="tts-hint">lecture vocale de la fiche, de haut en bas</span></div>`:'';
   topbar.innerHTML=`<button class="btn-nav" onclick="ouvrirSemaine(${num})">‹ Retour semaine ${num}</button>${btnFermer}`;
-  {const _r=se.realise||{};if(_r.statut==='fait'||_r.statut==='partiel'){contenu.innerHTML=ficheFaite(num,se,ttsBarSeance);ouvrir();
+  {const _r=se.realise||{};if(_r.statut==='fait'||_r.statut==='partiel'){contenu.innerHTML=ficheFaite(num,se,ttsBarSeance);_ficheEntree();ouvrir();
     try{if(typeof RS!=='undefined'&&RS.dispo(num+'-'+se.id))RS.ficheDetail(num+'-'+se.id);}catch(e){console.warn('fiche',e);}return;}}
   const metr=Object.entries(se.metriques).map(([k,v])=>`<div class="metrique"><div class="metrique-l">${k}</div><div class="metrique-v">${v}</div></div>`).join('');
   const struct=se.struct.map((b,i)=>{const c=(i===0||i===se.struct.length-1)?'#16a34a':se.accent;return `<div class="struct-ligne"><div class="struct-puce" style="background:${c}"></div><div class="struct-nom">${b.nom}</div><div class="struct-txt">${b.txt}</div></div>`;}).join('');
@@ -4411,7 +4428,7 @@ function ouvrirSeance(num,id){const se=(SEANCES_BY_WEEK[num]||[]).find(x=>x.id==
   const coach=se.coach.map(c=>`<div class="coach-carte"><div class="coach-titre">${c.titre}</div><p class="coach-texte">${c.texte}</p></div>`).join('');
   const viz=se.segments?`<div class="sd-section">Visualisation chronologique</div><div class="viz-wrap"><div class="viz-entete"><span class="viz-label">Structure de la séance</span><span class="viz-hint">Clique un segment</span></div><div class="barre-scroll"><div class="barre-piste" id="piste"></div></div><div class="detail-panneau" id="dpan"><div class="detail-nom" id="dnom"></div><div class="detail-role" id="drole"></div><div class="detail-grille" id="dgr"></div></div></div>`:'';
   contenu.innerHTML=fichePrevue(num,se,leg,viz,ttsBarSeance);
-  ouvrir();if(se.segments&&se.segments.length)initBarre(se);
+  _ficheEntree();ouvrir();if(se.segments&&se.segments.length)initBarre(se);
 }
 function initBarre(se){const piste=document.getElementById('piste');if(!piste)return;if(!se.segments||!se.segments.length)return;const pan=document.getElementById('dpan'),dnom=document.getElementById('dnom'),drole=document.getElementById('drole'),dgr=document.getElementById('dgr');const total=se.segments[se.segments.length-1].fin;
   se.segments.forEach(seg=>{const e=document.createElement('div');e.className=`seg seg-${seg.couleur}`;e.style.width=`${(seg.duree/total)*100}%`;e.style.height=`${seg.hauteur}%`;e.title=seg.nom;
@@ -4513,7 +4530,45 @@ function _bbInit(){
   var tic=false;
   window.addEventListener('scroll',function(){if(tic)return;tic=true;requestAnimationFrame(function(){tic=false;_bbTick();});},{passive:true});
   el.addEventListener('focusin',_bbShow);
+  _bbPill(false);
+  window.addEventListener('resize',function(){_bbPill(false);});
+  try{document.fonts.ready.then(function(){_bbPill(false);});}catch(e){}
   try{window.matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change',_bbShow);}catch(e){}
+}
+/* Barre d'onglets (build 286) : une pastille lavis orange se place sous l'icône de l'onglet actif et glisse
+   d'un onglet à l'autre (transition CSS ; pendant une transition de vue, c'est la transition de vue qui la
+   déplace, sous le nom bb-pill). anime=false : posée sans mouvement (démarrage, rotation, polices). */
+function _bbPill(anime){
+  var nav=document.getElementById('botbar'),p=nav&&nav.querySelector('.bb-pill'),b=nav&&nav.querySelector('.bi.actif'),s=b&&b.querySelector('svg');
+  if(!p||!s)return;
+  var nr=nav.getBoundingClientRect(),sr=s.getBoundingClientRect();
+  if(!sr.width)return;
+  var x=sr.left-nr.left+sr.width/2-p.offsetWidth/2,y=sr.top-nr.top+sr.height/2-p.offsetHeight/2;
+  if(!anime)p.classList.add('bb-pill-fixe');
+  p.style.transform='translate('+x.toFixed(1)+'px,'+y.toFixed(1)+'px)';
+  if(!anime){void p.offsetWidth;p.classList.remove('bb-pill-fixe');}
+  p.classList.add('on');
+}
+/* Icône au trait qui se dessine (onglet choisi, coche « Faite » de la fiche). Rien sous réduire les animations. */
+function _dessineSvg(svg,delai){
+  if(!svg||_reduceMotion()||!svg.animate)return;
+  svg.querySelectorAll('path,circle,line,polyline,rect').forEach(function(p){
+    try{var L=p.getTotalLength();if(!(L>0))return;
+      p.animate([{strokeDasharray:L+' '+L,strokeDashoffset:L},{strokeDasharray:L+' '+L,strokeDashoffset:0}],{duration:360,delay:delai||0,easing:'cubic-bezier(.25,1,.5,1)',fill:'backwards'});}catch(e){}
+  });
+}
+/* Ouverture d'une séance (build 286) : pendant que la carte s'agrandit, les sections de la fiche arrivent en
+   cascade, la coche « Faite » se dessine et les chiffres purs (distance, FC, dénivelé) comptent jusqu'à leur
+   valeur (une fois par fiche et par session). CSS sous prefers-reduced-motion: no-preference. */
+function _ficheEntree(){
+  var fs=contenu&&contenu.querySelector('.fs');if(!fs)return;
+  [].forEach.call(fs.children,function(e,i){e.style.setProperty('--i',Math.min(i,5));});
+  fs.classList.add('fs-entree');
+  setTimeout(function(){fs.classList.remove('fs-entree');},1100);
+  if(_reduceMotion())return;
+  var cle=fs.dataset.cle||'';
+  fs.querySelectorAll('.fs-chif .cnt').forEach(function(el,i){_compte(el,'fs-'+cle+'-'+i);});
+  _dessineSvg(fs.querySelector('.fs-tete .ac-puce.ok svg'),240);
 }
 /* Graphes du Cockpit : la courbe se trace de gauche à droite et les barres montent quand le graphe
    entre à l'écran, une seule fois par graphe. Sans IntersectionObserver ou sous réduire les animations :
