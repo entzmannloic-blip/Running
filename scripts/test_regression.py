@@ -794,11 +794,11 @@ def run():
             pg.wait_for_timeout(600)
             pg.evaluate("var o=document.getElementById('rwoverlay');if(o)o.classList.remove('on');")
             pg.evaluate("rsOuvrir('44-5',1)")
-            pg.wait_for_selector(".rs-sl:last-child .rs-carte svg", timeout=6000)
+            pg.wait_for_selector(".rs-sl:last-child .rs-tracecarte svg", timeout=6000)
             pg.wait_for_timeout(900)
             return ctx, pg, errs, urls
 
-        LIRE_CARTE = """(()=>{const c=document.querySelector('.rs-sl:last-child .rs-carte'),a=c.querySelector('.rs-attrib');
+        LIRE_CARTE = """(()=>{const c=document.querySelector('.rs-sl:last-child .rs-tracecarte'),a=c.querySelector('.rs-attrib');
             return {imgs:[...c.querySelectorAll('.rs-fond img')].map(i=>({src:i.getAttribute('src'),left:parseFloat(i.style.left),top:parseFloat(i.style.top),w:parseFloat(i.style.width)})),
               attrib:getComputedStyle(a).display!=='none'?a.innerText.trim():null,attribPx:parseFloat(getComputedStyle(a).fontSize),href:a.querySelector('a').href,
               casing:c.querySelector('svg > path').getAttribute('d'),lignes:c.querySelectorAll('svg g > line').length,
@@ -839,6 +839,25 @@ def run():
             ctx.close()
         except Exception as e:
             check("T32 fond de carte avec tuiles", False, str(e)[:200])
+
+        try:  # les cartes de l'analyse du coach ne partagent aucun style avec le fond de carte du tracé (build 285)
+            ctx = b.new_context(viewport={"width": 390, "height": 844}, service_workers="block")
+            ctx.route("**/tile.openstreetmap.org/**", lambda r: r.abort())
+            pc = ctx.new_page()
+            pc.goto(HTML, wait_until="load", timeout=20000)
+            pc.wait_for_function("typeof showTab==='function'&&!document.getElementById('boot-load')", timeout=10000)
+            pc.wait_for_timeout(600)
+            pc.evaluate("var o=document.getElementById('rwoverlay');if(o)o.classList.remove('on');")
+            pc.evaluate("rsOuvrir('44-5',7)")
+            pc.wait_for_selector(".rs-carte.verdict", timeout=6000)
+            pc.wait_for_timeout(500)
+            r = pc.evaluate("""(()=>{const c=document.querySelector('.rs-carte.verdict'),s=getComputedStyle(c),r=c.getBoundingClientRect();
+                return {ar:s.aspectRatio,ov:s.overflow,w:r.width,h:r.height,sh:c.scrollHeight}})()""")
+            check("T32 cartes du coach : hauteur naturelle (ni carrées ni tronquées)",
+                  r["ar"] == "auto" and r["ov"] == "visible" and r["h"] < r["w"] * 0.8 and r["sh"] <= r["h"] + 1, str(r))
+            ctx.close()
+        except Exception as e:
+            check("T32 cartes du coach", False, str(e)[:200])
 
         try:
             ctx, pc, errs, urls = page_carte("echec")

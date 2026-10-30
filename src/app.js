@@ -4826,7 +4826,7 @@ function img2(se,a){
   const g=sv('svg',{viewBox:`0 0 ${W} ${Hh}`,class:'rs-g rs-g-trace',role:'img','aria-label':`Tracé de la sortie (${fN(se.realise.km,2)} km), coloré selon l'allure${se.masque?`, sans les ${se.masque} premiers et derniers mètres`:''}`},
     sv('defs',null,sv('mask',{id,maskUnits:'userSpaceOnUse',x:0,y:0,width:W,height:Hh},mk)),
     sv('path',{d:dPath,fill:'none',stroke:'rgba(255,255,255,.9)','stroke-width':9,'stroke-linecap':'round','stroke-linejoin':'round'}),segs,dep,arr);
-  const {fond,att,charge}=fondCarte(se,{W,Hh,sc,ox,oy,mnx,mny}),carte=h('div',{class:'rs-carte'},fond,g,att);
+  const {fond,att,charge}=fondCarte(se,{W,Hh,sc,ox,oy,mnx,mny}),carte=h('div',{class:'rs-tracecarte'},fond,g,att);
   const leg=h('div',{class:'rs-legende'},h('span',null,`${fA(a.dom.lent)} /km`),h('i'),h('span',null,`${fA(a.dom.rapide)} /km`));
   const kick=h('p',{class:'rs-kick'},'Le tracé'),ti=h('h2',{class:'rs-titre'},String(se.lieu||'').replace(/,\s*France$/,'')||'Ton parcours');
   const cap=h('p',{class:'rs-cap'},'La couleur suit ton allure : plus le trait est foncé, plus tu allais vite. ',
