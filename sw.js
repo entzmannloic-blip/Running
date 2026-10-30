@@ -1,4 +1,4 @@
-/* Service worker — genere par src/build.py (ne pas copier a la main : 285 et [
+/* Service worker — genere par src/build.py (ne pas copier a la main : 286 et [
  "./",
  "./index.html",
  "./manifest.json",
@@ -21,7 +21,7 @@
 ]
    sont remplaces). Le nom du cache suit le numero de build : un nouveau build = nouveau cache,
    les anciens (dont plan-v34) sont supprimes a l'activation. */
-const BUILD='285';
+const BUILD='286';
 const CACHE='plan-'+BUILD;
 const SHELL=[
  "./",

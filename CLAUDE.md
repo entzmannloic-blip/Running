@@ -18,7 +18,7 @@
 
 ## Règles absolues (voir docs/TECHNICAL.md §14 pour le détail historique)
 
-1. **POC avant prod** — Toute feature visuelle = artifact POC → validation Loïc → code prod
+1. **Directement en production** (décision de Loïc, 30/10/2026 : les maquettes coûtaient trop de tokens) — une feature visuelle part directement en code, dans une PR annoncée (règle 6) ; on ajuste sur l'iPhone après fusion si besoin. Plus d'artifact POC sauf demande explicite
 2. **Build** : `python src/build.py` (gen + assemble + `node --check`). Un échec = STOP, ne jamais pousser
 3. **CHANGELOG obligatoire** — Incrémenter le build ET ajouter une entrée en tête de `CHANGELOG` dans `src/gen.py` avant chaque push
 4. **Fichiers générés** — `index.html`, `sw.js` et `data/*.json` sont **produits par le build** : ne jamais les éditer à la main, toujours les committer avec les sources modifiées (le job `verify` refuse un décalage)
@@ -78,7 +78,7 @@ Accueil · Séances · Cockpit · Courses
 - `sw.js` (généré) : cache `plan-<build>`, pré-cache de tout le site, réseau d'abord avec repli cache après 3 s ou hors-ligne. `_checkNewVersion()` affiche le bandeau « Nouvelle version prête » au retour au premier plan.
 
 ## Design system
-Voir **DESIGN.md** (« Blanc et orange », lot 5) et `src/css.txt :root`. **1 primaire** `--primary:#F4561D` (orange vif ; `--primary-deux:#C2410C` orange encre pour le petit texte) ; états `--ok` `--warn` (ocre) `--danger` ; neutres zinc ; chiffres en Barlow Semi Condensed (`--f-num`, `src/fonts/`, licence OFL, pré-cachée) ; aucun emoji dans l'interface (icônes au trait) ; échelle typo `--t-display…--t-data`. Ne pas réintroduire de couleurs ad hoc. Dégradés par course (dossiers) préservés exprès. Mouvement (P3, build 268) : 120/240/360 ms, transitions de vue (onglets par `goTab`, carte → fiche par `ouvrirCarte`/`fermerAnime`), apparitions au scroll en CSS, barre d'onglets rétractable, graphes tracés, chiffres qui comptent, célébrations par tracé, pas d'haptique ; tout sous `prefers-reduced-motion` (détail dans DESIGN.md « Mouvement »).
+Voir **DESIGN.md** (« Blanc et orange », lot 5) et `src/css.txt :root`. **1 primaire** `--primary:#F4561D` (orange vif ; `--primary-deux:#C2410C` orange encre pour le petit texte) ; états `--ok` `--warn` (ocre) `--danger` ; neutres zinc ; chiffres en Barlow Semi Condensed (`--f-num`, `src/fonts/`, licence OFL, pré-cachée) ; aucun emoji dans l'interface (icônes au trait) ; échelle typo `--t-display…--t-data`. Ne pas réintroduire de couleurs ad hoc. Dégradés par course (dossiers) préservés exprès. Mouvement (P3, build 268) : 120/240/360 ms, transitions de vue (onglets par `goTab`, carte → fiche par `ouvrirCarte`/`fermerAnime`), apparitions au scroll en CSS, barre d'onglets rétractable, graphes tracés, chiffres qui comptent, célébrations par tracé, pas d'haptique ; build 286 : entrée de l'Accueil en cascade à l'ouverture (`_acEntree`), fiche de séance en cascade avec chiffres qui comptent (`_ficheEntree`), pastille qui glisse sous l'onglet actif (`_bbPill`, `.bb-pill`) ; tout sous `prefers-reduced-motion` (détail dans DESIGN.md « Mouvement »).
 
 ## Données clés gen.py
 - Plan : S25→S53 (30 semaines, 141 séances)

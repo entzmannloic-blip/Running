@@ -92,7 +92,7 @@ Densité moyenne : la décision du jour se lit sans défiler, le détail est un 
 - Cartes blanches de 18 px de rayon sur fond `#F4F4F6`, séparateurs d'un pixel, pas d'ombres.
 - Chiffres en Barlow Semi Condensed, étiquette au-dessus en 12 px semi-gras.
 - Mobile d'abord (390 px), barre d'onglets givrée en bas avec zone de sécurité iOS.
-- Mouvement du build 268 inchangé, tout coupé sous « réduire les animations ».
+- Mouvement du build 268, complété au build 286 (ouverture de l'app, ouverture d'une séance, pastille de la barre d'onglets) ; tout coupé sous « réduire les animations ».
 
 ## Colors
 
@@ -143,8 +143,11 @@ Colonne unique, largeur maximale 480 px pour l'Accueil, le Cockpit et Courses, 1
 À plat : pas d'ombre sur les cartes, la séparation vient du blanc sur le fond gris. Les séparateurs font un pixel (`--gris-clair`). Seules les feuilles et la fiche gardent une ombre douce (`--ombre-lg`) parce qu'elles passent au-dessus de la page. La barre d'onglets est givrée (blanc à 92 %, flou 18 px, filet d'un pixel en haut).
 
 ### Mouvement
-Inchangé depuis le build 268. Trois durées et une seule courbe : **120 ms** pour une pression (`--d-press`), **240 ms** pour un changement d'état (`--d-etat`), **360 ms** pour un changement d'écran (`--d-ecran`), décélération exponentielle (`--ease`, `cubic-bezier(.25,1,.5,1)`), jamais de rebond ni d'élasticité. Tout mouvement et toute animation infinie ont une alternative sous `prefers-reduced-motion` (CSS et `_reduceMotion()` en JS) ; chaque effet a un repli quand le navigateur ne le gère pas, et le contenu n'est jamais masqué en attendant une animation.
+Posé au build 268, complété au build 286. Trois durées et une seule courbe : **120 ms** pour une pression (`--d-press`), **240 ms** pour un changement d'état (`--d-etat`), **360 ms** pour un changement d'écran (`--d-ecran`), décélération exponentielle (`--ease`, `cubic-bezier(.25,1,.5,1)`), jamais de rebond ni d'élasticité. Tout mouvement et toute animation infinie ont une alternative sous `prefers-reduced-motion` (CSS et `_reduceMotion()` en JS) ; chaque effet a un repli quand le navigateur ne le gère pas, et le contenu n'est jamais masqué en attendant une animation.
 
+- **Ouverture de l'app** (`_acEntree`, une fois par lancement) : l'en-tête puis les cartes de l'Accueil arrivent en cascade (fondu et 12 px, 50 ms d'écart, plafonné à 300 ms), la barre d'onglets monte, l'anneau de forme se remplit à l'arrivée de sa carte, la barre de préparation se remplit et les jours de la semaine apparaissent un à un. Un retour sur l'onglet ne la rejoue pas.
+- **Ouverture d'une séance** (`_ficheEntree`) : pendant que la carte s'agrandit, les sections de la fiche arrivent en cascade, la coche « Faite » se dessine, la distance, la FC et le dénivelé comptent jusqu'à leur valeur (une fois par fiche et par session).
+- **Pastille de la barre d'onglets** (`_bbPill`) : un fond lavis orange de 56 × 32 px sous l'icône de l'onglet actif, qui glisse d'un onglet à l'autre ; l'icône choisie se dessine. Pendant une transition de vue, c'est elle qui déplace la pastille (`bb-pill`).
 - **Onglets** (barre du bas, `goTab`) : transition de vue, fondu et glissement de 8 px dans le sens de la barre ; barre et en-tête immobiles. Sans l'API (iOS < 18) : la même chose en CSS (`.vue-in`). Les appels de code à `showTab` changent de vue sans transition de vue (seul le repli `.vue-in` joue).
 - **Carte → fiche** (`ouvrirCarte`, `fermerAnime`) : la carte de séance ou de semaine s'agrandit jusqu'à devenir la fiche et s'y referme. `fermer()` reste synchrone pour le code.
 - **Apparitions au scroll** : en CSS (`animation-timeline: view()`, Safari 26), sur `opacity` et `translate` pour ne pas gêner l'enfoncement au toucher. Sans support : cartes visibles d'emblée.

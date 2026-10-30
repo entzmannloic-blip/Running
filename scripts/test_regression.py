@@ -886,6 +886,76 @@ def run():
         except Exception as e:
             check("T32 fond de carte sous réduire les animations", False, str(e)[:200])
 
+        # ── T33 : mouvement du build 286 : ouverture de l'app, ouverture d'une séance, pastille de la barre ──
+        def page_mvt(reduce):
+            ctx = b.new_context(viewport={"width": 390, "height": 844}, service_workers="block",
+                                reduced_motion="reduce" if reduce else "no-preference")
+            ctx.route("**/*open-meteo.com/**", lambda r: r.abort())
+            ctx.route("**/tile.openstreetmap.org/**", lambda r: r.abort())
+            pg = ctx.new_page()
+            errs = []
+            pg.on("pageerror", lambda e: errs.append(str(e)[:160]))
+            pg.goto(HTML, wait_until="load", timeout=20000)
+            pg.wait_for_function("typeof showTab==='function'&&!document.getElementById('boot-load')", timeout=10000)
+            return ctx, pg, errs
+        ENTREE = """(()=>{const ac=document.querySelector('#hero-plan .ac'),k=[...ac.children].filter(e=>e.offsetParent);
+            return {cls:ac.classList.contains('ac-entree'),anim:k.filter(e=>e.getAnimations().some(a=>a.animationName==='acEntree')).length,
+              bar:document.getElementById('botbar').getAnimations().some(a=>a.animationName==='bbEntree'),n:k.length,
+              op:Math.min(...k.map(e=>+getComputedStyle(e).opacity))}})()"""
+        PILL = """(t=>{const p=document.querySelector('#botbar .bb-pill'),s=document.querySelector('#tab-'+t+' svg'),a=p.getBoundingClientRect(),b=s.getBoundingClientRect();
+            return {on:p.classList.contains('on'),dx:Math.abs(a.left+a.width/2-(b.left+b.width/2)),dy:Math.abs(a.top+a.height/2-(b.top+b.height/2)),tr:getComputedStyle(p).transitionDuration}})"""
+        FICHE = """(()=>{const fs=document.querySelector('#contenu .fs'),c=fs.querySelector('.fs-chif .cnt'),k=[...fs.children].filter(e=>e.offsetParent);
+            return {cls:fs.classList.contains('fs-entree'),anim:k.filter(e=>e.getAnimations().some(a=>a.animationName==='acEntree')).length,
+              num:c?c.textContent:null,unite:c?c.parentElement.querySelector('.ac-u')?.textContent:null,
+              op:Math.min(...k.map(e=>+getComputedStyle(e).opacity))}})()"""
+        try:
+            ctx, pm, errs = page_mvt(False)
+            a = pm.evaluate(ENTREE)
+            pm.wait_for_timeout(1400)
+            z = pm.evaluate(ENTREE)
+            check("T33 ouverture de l'app : en-tête et cartes de l'Accueil en cascade, barre d'onglets qui monte, puis tout visible et la classe retirée",
+                  a["cls"] and a["anim"] >= 4 and a["bar"] and not z["cls"] and z["anim"] == 0 and z["op"] == 1 and not errs, f"{a} {z} {errs[:1]}")
+            p0 = pm.evaluate(PILL, "accueil")
+            pm.evaluate("goTab('plan')")
+            pm.wait_for_timeout(700)
+            p1 = pm.evaluate(PILL, "plan")
+            pm.evaluate("goTab('palmares')")
+            pm.wait_for_timeout(700)
+            p2 = pm.evaluate(PILL, "palmares")
+            check("T33 pastille de la barre d'onglets : sous l'icône de l'onglet actif, elle suit Accueil → Séances → Courses",
+                  p0["on"] and all(p["dx"] < 1.5 and p["dy"] < 1.5 for p in (p0, p1, p2)) and p0["tr"] != "0s", f"{p0} {p1} {p2}")
+            pm.evaluate("showTab('accueil')")
+            pm.wait_for_timeout(300)
+            r = pm.evaluate(ENTREE)
+            check("T33 retour sur l'Accueil : l'entrée ne se rejoue pas", not r["cls"] and r["anim"] == 0, str(r))
+            pm.evaluate("ouvrirSeance(44,5)")
+            pm.wait_for_selector("#contenu .fs", state="attached", timeout=6000)
+            f0 = pm.evaluate(FICHE)
+            pm.wait_for_timeout(1300)
+            f1 = pm.evaluate(FICHE)
+            check("T33 ouverture d'une séance : sections en cascade, la distance compte jusqu'à 10,02 sans perdre l'unité, puis tout visible",
+                  f0["cls"] and f0["anim"] >= 3 and not f1["cls"] and f1["anim"] == 0 and f1["op"] == 1
+                  and f1["num"] == "10,02" and f1["unite"] == "km" and not errs, f"{f0} {f1} {errs[:1]}")
+            ctx.close()
+        except Exception as e:
+            check("T33 mouvement (animations actives)", False, str(e)[:200])
+
+        try:
+            ctx, pm, errs = page_mvt(True)
+            a = pm.evaluate(ENTREE)
+            p0 = pm.evaluate(PILL, "accueil")
+            pm.evaluate("goTab('cockpit')")
+            p1 = pm.evaluate(PILL, "cockpit")
+            pm.evaluate("ouvrirSeance(44,5)")
+            pm.wait_for_selector("#contenu .fs", state="attached", timeout=6000)
+            f0 = pm.evaluate(FICHE)
+            check("T33 sous réduire les animations : aucune entrée ni cascade, pastille posée sans glissement, chiffres finaux d'emblée",
+                  a["anim"] == 0 and not a["bar"] and a["op"] == 1 and p0["on"] and p1["dx"] < 1.5 and p1["tr"] in ("0s", "1e-05s")
+                  and f0["anim"] == 0 and f0["op"] == 1 and f0["num"] == "10,02" and not errs, f"{a} {p1} {f0} {errs[:1]}")
+            ctx.close()
+        except Exception as e:
+            check("T33 mouvement sous réduire les animations", False, str(e)[:200])
+
         # ── T24 : direction blanc et orange (lot 5) : police des chiffres embarquee, jetons orange ──
         try:
             ctxf = b.new_context(viewport={"width": 390, "height": 844}, service_workers="block")
