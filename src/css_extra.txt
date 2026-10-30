@@ -2562,25 +2562,27 @@ svg.tr-go .tr-b{animation:trBarre var(--d-ecran) var(--ease) both;animation-dela
 .ck-help,#build-badge{position:relative}
 .ck-help::after,#build-badge::after{content:"";position:absolute;left:50%;top:50%;width:max(100%,44px);height:max(100%,44px);transform:translate(-50%,-50%)}
 
-/* ── Mouvement, build 286 : ouverture de l'app, ouverture d'une séance, pastille de la barre d'onglets ── */
+/* ── Mouvement, builds 286-287 : ouverture de l'app, ouverture d'une séance, pastille de la barre d'onglets ──
+   Entrées plus amples que le reste (--d-entree, 24 px, 80 ms d'écart) : c'est le moment où l'app « s'ouvre ». */
+:root{--d-entree:520ms}
 .botbar .bi{position:relative}
 .bb-pill{position:absolute;left:0;top:0;width:56px;height:32px;border-radius:16px;background:var(--primary-fond);opacity:0;pointer-events:none;transition:transform var(--d-ecran) var(--ease)}
 .bb-pill.on{opacity:1}
 .bb-pill.bb-pill-fixe,:root[data-vt] .bb-pill{transition:none}
 :root[data-vt="fwd"] .bb-pill,:root[data-vt="back"] .bb-pill{view-transition-name:bb-pill}
-@keyframes acEntree{from{opacity:0;translate:0 12px}}
+@keyframes acEntree{from{opacity:0;translate:0 24px}}
 @keyframes acBarre{from{scale:0 1}}
-@keyframes acPoint{from{opacity:0;scale:.6}}
+@keyframes acPoint{from{opacity:0;scale:.4}}
 @keyframes bbEntree{from{translate:0 100%}}
 .ac-prog i{transform-origin:left center}
 .ac-jours>:nth-child(2){--j:1}.ac-jours>:nth-child(3){--j:2}.ac-jours>:nth-child(4){--j:3}.ac-jours>:nth-child(5){--j:4}.ac-jours>:nth-child(6){--j:5}.ac-jours>:nth-child(7){--j:6}
 @media (prefers-reduced-motion:no-preference){
-  .ac.ac-entree>*{animation:acEntree var(--d-ecran) var(--ease) backwards;animation-delay:calc(var(--i,0) * 50ms)}
-  .ac.ac-entree .ac-anneau-fg.vr-anim{animation-delay:calc(var(--i,0) * 50ms + 60ms)}
-  .ac.ac-entree .ac-prog i{animation:acBarre calc(var(--d-ecran) * 2) var(--ease) backwards;animation-delay:calc(var(--i,0) * 50ms + 120ms)}
-  .ac.ac-entree .ac-jour{animation:acPoint var(--d-etat) var(--ease) backwards;animation-delay:calc(var(--i,0) * 50ms + var(--j,0) * 40ms + 120ms)}
-  :root.app-entree .botbar{animation:bbEntree var(--d-ecran) var(--ease) 120ms backwards}
-  .fs.fs-entree>*{animation:acEntree var(--d-ecran) var(--ease) backwards;animation-delay:calc(60ms + var(--i,0) * 50ms)}
+  .ac.ac-entree>*{animation:acEntree var(--d-entree) var(--ease) backwards;animation-delay:calc(100ms + var(--i,0) * 80ms)}
+  .ac.ac-entree .ac-anneau-fg.vr-anim{animation-duration:900ms;animation-delay:calc(250ms + var(--i,0) * 80ms)}
+  .ac.ac-entree .ac-prog i{animation:acBarre 900ms var(--ease) backwards;animation-delay:calc(300ms + var(--i,0) * 80ms)}
+  .ac.ac-entree .ac-jour{animation:acPoint var(--d-ecran) var(--ease) backwards;animation-delay:calc(300ms + var(--i,0) * 80ms + var(--j,0) * 60ms)}
+  :root.app-entree .botbar{animation:bbEntree var(--d-entree) var(--ease) 200ms backwards}
+  .fs.fs-entree>*{animation:acEntree var(--d-entree) var(--ease) backwards;animation-delay:calc(100ms + var(--i,0) * 80ms)}
   ::view-transition-group(bb-pill){animation-duration:var(--d-ecran);animation-timing-function:var(--ease)}
 }
 @media (prefers-reduced-motion:reduce){.bb-pill{transition:none}}

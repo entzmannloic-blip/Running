@@ -121,22 +121,49 @@ window.loadChangelog=function(){
   if(!cl)cl=get("changelog").then(function(o){window.CHANGELOG=o.CHANGELOG;return o.CHANGELOG;}).catch(function(e){cl=null;throw e;});
   return cl;
 };
+var T0=(window.performance&&performance.now)?performance.now():0;
+/* Écran de démarrage (build 287) : le tracé orange se dessine ; quand l'app est prête (et au plus tôt 900 ms
+   après le début du démarrage, le temps que le tracé finisse), l'événement boot-sortie lance l'entrée de
+   l'Accueil et l'écran s'efface en fondu. Sous réduire les animations : rien n'attend, l'écran disparaît. */
+function sortie(){
+  var l=document.getElementById("boot-load");if(!l)return;
+  var rm=window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches,now=(window.performance&&performance.now)?performance.now():0;
+  setTimeout(function(){
+    try{document.dispatchEvent(new Event("boot-sortie"));}catch(e){}
+    if(rm){l.remove();return;}
+    l.classList.add("sortie");setTimeout(function(){l.remove();},420);
+  },rm?0:Math.max(0,T0+900-now));
+}
 Promise.all(EAGER.map(get)).then(function(all){
   all.forEach(function(o){Object.assign(window,o);});
   var s=document.createElement("script");
   s.src="src/app.js?v="+V;
-  s.onload=function(){var l=document.getElementById("boot-load");if(l)l.remove();};
+  s.onload=sortie;
   s.onerror=fail;
   document.body.appendChild(s);
 }).catch(fail);
 })();
 </script>"""
 
-BOOT_UI = """<div id="boot-load" role="status">Chargement…</div>
+BOOT_UI = """<div id="boot-load" role="status"><svg class="boot-mark" viewBox="0 0 132 66" aria-hidden="true"><path pathLength="1" d="M8 50C24 50 28 16 46 16S68 52 86 44 108 14 122 18"/><circle cx="122" cy="18" r="7"/></svg><p class="boot-lb" aria-hidden="true">Saison 2026</p><span class="sr-only">Chargement…</span></div>
 <div id="boot-err" role="alert" hidden><p>Données indisponibles. Vérifie ta connexion puis réessaie.</p><button type="button" class="btn-nav" onclick="location.reload()">Réessayer</button></div>"""
 
 BOOT_CSS = """#boot-load,#boot-err{position:fixed;inset:0;z-index:500;display:flex;flex-direction:column;gap:14px;align-items:center;justify-content:center;padding:24px;text-align:center;background:var(--gris-fond);color:var(--texte-trois);font-size:var(--t-callout)}
-#boot-err{color:var(--texte)}#boot-load[hidden],#boot-err[hidden]{display:none}"""
+#boot-err{color:var(--texte)}#boot-load[hidden],#boot-err[hidden]{display:none}
+#boot-load .boot-mark{width:132px;height:66px;overflow:visible}
+#boot-load .boot-mark path{fill:none;stroke:var(--primary);stroke-width:7;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:0}
+#boot-load .boot-mark circle{fill:var(--primary);transform-box:fill-box;transform-origin:center}
+#boot-load .boot-lb{margin:0;font-family:var(--f-num);font-weight:800;font-size:22px;letter-spacing:.01em;color:var(--texte)}
+@media (prefers-reduced-motion:no-preference){
+  #boot-load .boot-mark path{animation:bootTrace 720ms cubic-bezier(.25,1,.5,1) 60ms both}
+  #boot-load .boot-mark circle{animation:bootPoint 240ms cubic-bezier(.25,1,.5,1) 620ms both}
+  #boot-load .boot-lb{animation:bootLb 360ms cubic-bezier(.25,1,.5,1) 280ms both}
+  #boot-load.sortie{opacity:0;pointer-events:none;transition:opacity 400ms cubic-bezier(.25,1,.5,1)}
+  #boot-load.sortie .boot-mark{scale:1.08;transition:scale 400ms cubic-bezier(.25,1,.5,1)}
+}
+@keyframes bootTrace{from{stroke-dashoffset:1}}
+@keyframes bootPoint{from{transform:scale(0)}}
+@keyframes bootLb{from{opacity:0;transform:translateY(6px)}}"""
 
 HTML = f"""<!DOCTYPE html>
 <html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">

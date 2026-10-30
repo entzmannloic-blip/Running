@@ -908,24 +908,33 @@ function renderHeader(){
   if(typeof _compte==='function'){
     /* Forme du jour : la jauge se remplit pendant que le chiffre compte, a la premiere apparition seulement */
     var _fv=document.querySelector('.ac-forme-v'),_rg=document.querySelector('.ac-anneau-fg');
-    if(_fv&&_rg&&!(_comptes&&_comptes.has('forme'))&&!_reduceMotion())_rg.classList.add('vr-anim');
-    _compte(_fv,'forme');_compte(document.querySelector('.ac-jn .cnt'),'jn');
+    /* au premier rendu, l'anneau attend l'entrée de l'Accueil (_acEntree) pour se remplir avec sa carte */
+    if(_fv&&_rg&&!(_comptes&&_comptes.has('forme'))&&!_reduceMotion()&&_acEntreeFaite)_rg.classList.add('vr-anim');
+    _compte(_fv,'forme',450);_compte(document.querySelector('.ac-jn .cnt'),'jn',650);
   }
   _acEntree();
 }
-/* Ouverture de l'app (build 286) : l'en-tête puis les cartes de l'Accueil arrivent en cascade (50 ms d'écart,
-   plafonné à 300 ms), la barre d'onglets monte, la barre de préparation se remplit et les jours de la semaine
-   apparaissent un à un. Une seule fois, au premier rendu ; tout est en CSS sous prefers-reduced-motion:
-   no-preference (animations « backwards » : sans support, tout est visible). La classe est retirée ensuite
-   pour qu'un retour sur l'onglet Accueil ne rejoue pas l'entrée. */
+/* Ouverture de l'app (builds 286-287) : quand l'écran de démarrage s'efface (événement boot-sortie), l'en-tête
+   puis les cartes de l'Accueil arrivent en cascade (24 px, 80 ms d'écart, plafonné à 480 ms), la barre d'onglets
+   monte, l'anneau de forme et la barre de préparation se remplissent, les jours de la semaine apparaissent un à un.
+   Une seule fois, au premier rendu ; tout est en CSS sous prefers-reduced-motion: no-preference (animations
+   « backwards » : sans support, tout est visible). Les classes sont retirées ensuite pour qu'un retour sur
+   l'onglet Accueil ne rejoue pas l'entrée. */
 var _acEntreeFaite=false;
+function _apresDemarrage(f){
+  if(document.getElementById('boot-load'))document.addEventListener('boot-sortie',function(){f();},{once:true});else f();
+}
 function _acEntree(){
   if(_acEntreeFaite)return;_acEntreeFaite=true;
   var ac=document.querySelector('#hero-plan .ac'),v=document.getElementById('vue-accueil'),root=document.documentElement;
   if(!ac||!v||v.style.display==='none')return;
-  [].forEach.call(ac.children,function(e,i){e.style.setProperty('--i',Math.min(i,6));});
-  ac.classList.add('ac-entree');root.classList.add('app-entree');
-  setTimeout(function(){ac.classList.remove('ac-entree');root.classList.remove('app-entree');},1200);
+  _apresDemarrage(function(){
+    if(!ac.isConnected)return;
+    [].forEach.call(ac.children,function(e,i){e.style.setProperty('--i',Math.min(i,6));});
+    var rg=ac.querySelector('.ac-anneau-fg');if(rg&&!_reduceMotion())rg.classList.add('vr-anim');
+    ac.classList.add('ac-entree');root.classList.add('app-entree');
+    setTimeout(function(){ac.classList.remove('ac-entree');root.classList.remove('app-entree');},1600);
+  });
 }
 
 /* ===== Widget météo (accueil) — Open-Meteo, lieu fixé Lyon quai des Bons Enfants ===== */
@@ -4554,7 +4563,7 @@ function _dessineSvg(svg,delai){
   if(!svg||_reduceMotion()||!svg.animate)return;
   svg.querySelectorAll('path,circle,line,polyline,rect').forEach(function(p){
     try{var L=p.getTotalLength();if(!(L>0))return;
-      p.animate([{strokeDasharray:L+' '+L,strokeDashoffset:L},{strokeDasharray:L+' '+L,strokeDashoffset:0}],{duration:360,delay:delai||0,easing:'cubic-bezier(.25,1,.5,1)',fill:'backwards'});}catch(e){}
+      p.animate([{strokeDasharray:L+' '+L,strokeDashoffset:L},{strokeDasharray:L+' '+L,strokeDashoffset:0}],{duration:520,delay:delai||0,easing:'cubic-bezier(.25,1,.5,1)',fill:'backwards'});}catch(e){}
   });
 }
 /* Ouverture d'une séance (build 286) : pendant que la carte s'agrandit, les sections de la fiche arrivent en
@@ -4564,11 +4573,11 @@ function _ficheEntree(){
   var fs=contenu&&contenu.querySelector('.fs');if(!fs)return;
   [].forEach.call(fs.children,function(e,i){e.style.setProperty('--i',Math.min(i,5));});
   fs.classList.add('fs-entree');
-  setTimeout(function(){fs.classList.remove('fs-entree');},1100);
+  setTimeout(function(){fs.classList.remove('fs-entree');},1300);
   if(_reduceMotion())return;
   var cle=fs.dataset.cle||'';
   fs.querySelectorAll('.fs-chif .cnt').forEach(function(el,i){_compte(el,'fs-'+cle+'-'+i);});
-  _dessineSvg(fs.querySelector('.fs-tete .ac-puce.ok svg'),240);
+  _dessineSvg(fs.querySelector('.fs-tete .ac-puce.ok svg'),300);
 }
 /* Graphes du Cockpit : la courbe se trace de gauche à droite et les barres montent quand le graphe
    entre à l'écran, une seule fois par graphe. Sans IntersectionObserver ou sous réduire les animations :
@@ -4587,7 +4596,7 @@ function _traceGo(svg){
 }
 /* Chiffres clés (forme, ACWR, J-N) : ils comptent jusqu'à leur valeur à leur première apparition, une fois
    par session. Le texte final est toujours celui écrit par l'app ; si l'app le change entre-temps, on s'arrête. */
-function _compte(el,cle){
+function _compte(el,cle,delai){
   if(!el)return;
   if(!_comptes)_comptes=new Set();
   if(_comptes.has(cle))return;
@@ -4601,7 +4610,7 @@ function _compte(el,cle){
     if(!es.some(function(e){return e.isIntersecting;}))return;
     io.disconnect();
     if(el.textContent!==fin)return;
-    var t0=performance.now(),D=360,dernier=ecrit(0);
+    var t0=performance.now(),D=700,dernier=ecrit(0);
     el.textContent=dernier;el.classList.add('cnt-on');el.dataset.fin=fin;
     function pas(now){
       if(!el.isConnected||el.textContent!==dernier){el.classList.remove('cnt-on');delete el.dataset.fin;return;}
@@ -4612,7 +4621,8 @@ function _compte(el,cle){
     }
     requestAnimationFrame(pas);
   },{threshold:.5});
-  io.observe(el);
+  /* à l'ouverture de l'app, on attend que l'écran de démarrage s'efface (puis le délai de la carte) */
+  _apresDemarrage(function(){setTimeout(function(){if(el.isConnected)io.observe(el);},delai||0);});
 }
 _bbInit();hydrateLogs();hydrateOverrides();try{_ckRebuild();}catch(e){console.warn('_ckRebuild',e);}initQuickLog();initCreneaux();initSessionMenu();initInstall();initFormeHelp();initCkHelp();renderHeader();renderPlan();rwAuto();setTimeout(checkAutoSync,800);
 /* Nouvelle version : l'app installee sur iPhone reste en memoire des jours. Au retour au premier

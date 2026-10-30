@@ -2727,6 +2727,10 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":287,"date":"30 octobre 2026","sha":"","tag":"Ouverture plus marquée : écran de démarrage et entrées plus amples","items":[
+    "ÉCRAN DE DÉMARRAGE : « Chargement… » est remplacé par un tracé orange qui se dessine avec « Saison 2026 », puis s'efface en fondu pendant que l'Accueil entre.",
+    "ENTRÉES PLUS VISIBLES : les cartes de l'Accueil et les sections d'une fiche de séance arrivent de plus loin et plus lentement (24 px, 80 ms d'écart, une demi-seconde chacune) ; les chiffres comptent en 0,7 s ; l'icône d'onglet se dessine plus lentement.",
+    "Toujours coupé sous « réduire les animations »."]},
   {"build":286,"date":"30 octobre 2026","sha":"","tag":"Plus de mouvement : ouverture de l'app, ouverture d'une séance, barre d'onglets","items":[
     "OUVERTURE DE L'APP : l'en-tête puis les cartes de l'Accueil arrivent en cascade, la barre d'onglets monte, l'anneau de forme se remplit, la barre de préparation se remplit et les jours de la semaine apparaissent un à un. Une fois par lancement, moins d'une seconde.",
     "OUVERTURE D'UNE SÉANCE : pendant que la carte s'agrandit, les sections de la fiche arrivent en cascade, la coche « Faite » se dessine et la distance, la FC et le dénivelé comptent jusqu'à leur valeur.",
