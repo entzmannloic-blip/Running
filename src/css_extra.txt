@@ -2586,3 +2586,8 @@ svg.tr-go .tr-b{animation:trBarre var(--d-ecran) var(--ease) both;animation-dela
   ::view-transition-group(bb-pill){animation-duration:var(--d-ecran);animation-timing-function:var(--ease)}
 }
 @media (prefers-reduced-motion:reduce){.bb-pill{transition:none}}
+.ac-bilan{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:0;padding:10px 8px 2px}
+.ac-bilan-v{display:flex;align-items:baseline;gap:3px;margin:0}
+.ac-bilan .ac-n{display:inline;font-size:22px;margin:0}
+.ac-bilan .ac-u{margin-left:2px}
+.ac-bilan-sep{width:1px;height:14px;margin:0 8px;align-self:center;background:var(--ligne-forte)}
