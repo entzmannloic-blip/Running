@@ -911,7 +911,7 @@ def run():
         try:
             ctx, pm, errs = page_mvt(False)
             a = pm.evaluate(ENTREE)
-            pm.wait_for_timeout(1400)
+            pm.wait_for_timeout(1800)
             z = pm.evaluate(ENTREE)
             check("T33 ouverture de l'app : en-tête et cartes de l'Accueil en cascade, barre d'onglets qui monte, puis tout visible et la classe retirée",
                   a["cls"] and a["anim"] >= 4 and a["bar"] and not z["cls"] and z["anim"] == 0 and z["op"] == 1 and not errs, f"{a} {z} {errs[:1]}")
@@ -931,7 +931,7 @@ def run():
             pm.evaluate("ouvrirSeance(44,5)")
             pm.wait_for_selector("#contenu .fs", state="attached", timeout=6000)
             f0 = pm.evaluate(FICHE)
-            pm.wait_for_timeout(1300)
+            pm.wait_for_timeout(1700)
             f1 = pm.evaluate(FICHE)
             check("T33 ouverture d'une séance : sections en cascade, la distance compte jusqu'à 10,02 sans perdre l'unité, puis tout visible",
                   f0["cls"] and f0["anim"] >= 3 and not f1["cls"] and f1["anim"] == 0 and f1["op"] == 1
@@ -939,6 +939,22 @@ def run():
             ctx.close()
         except Exception as e:
             check("T33 mouvement (animations actives)", False, str(e)[:200])
+
+        try:  # écran de démarrage : le tracé orange, tenu au moins 900 ms, puis fondu (build 287)
+            ctx = b.new_context(viewport={"width": 390, "height": 844}, service_workers="block")
+            ctx.route("**/*open-meteo.com/**", lambda r: r.abort())
+            pb = ctx.new_page()
+            pb.goto(HTML, wait_until="commit", timeout=20000)
+            pb.wait_for_selector("#boot-load .boot-mark path", state="attached", timeout=8000)
+            t0 = pb.evaluate("performance.now()")
+            mk = pb.evaluate("(()=>{const p=document.querySelector('#boot-load .boot-mark path');return {anim:getComputedStyle(p).animationName,sr:document.querySelector('#boot-load').innerText.includes('Chargement')}})()")
+            pb.wait_for_function("!document.getElementById('boot-load')", timeout=10000)
+            t1 = pb.evaluate("performance.now()")
+            check("T33 écran de démarrage : le tracé se dessine, l'écran reste au moins le temps du tracé puis s'efface",
+                  mk["anim"] == "bootTrace" and (t1 - t0) > 700, f"{mk} duree={t1 - t0:.0f} ms")
+            ctx.close()
+        except Exception as e:
+            check("T33 écran de démarrage", False, str(e)[:200])
 
         try:
             ctx, pm, errs = page_mvt(True)

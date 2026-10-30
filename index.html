@@ -2756,30 +2756,46 @@ svg.tr-go .tr-b{animation:trBarre var(--d-ecran) var(--ease) both;animation-dela
 .ck-help,#build-badge{position:relative}
 .ck-help::after,#build-badge::after{content:"";position:absolute;left:50%;top:50%;width:max(100%,44px);height:max(100%,44px);transform:translate(-50%,-50%)}
 
-/* ── Mouvement, build 286 : ouverture de l'app, ouverture d'une séance, pastille de la barre d'onglets ── */
+/* ── Mouvement, builds 286-287 : ouverture de l'app, ouverture d'une séance, pastille de la barre d'onglets ──
+   Entrées plus amples que le reste (--d-entree, 24 px, 80 ms d'écart) : c'est le moment où l'app « s'ouvre ». */
+:root{--d-entree:520ms}
 .botbar .bi{position:relative}
 .bb-pill{position:absolute;left:0;top:0;width:56px;height:32px;border-radius:16px;background:var(--primary-fond);opacity:0;pointer-events:none;transition:transform var(--d-ecran) var(--ease)}
 .bb-pill.on{opacity:1}
 .bb-pill.bb-pill-fixe,:root[data-vt] .bb-pill{transition:none}
 :root[data-vt="fwd"] .bb-pill,:root[data-vt="back"] .bb-pill{view-transition-name:bb-pill}
-@keyframes acEntree{from{opacity:0;translate:0 12px}}
+@keyframes acEntree{from{opacity:0;translate:0 24px}}
 @keyframes acBarre{from{scale:0 1}}
-@keyframes acPoint{from{opacity:0;scale:.6}}
+@keyframes acPoint{from{opacity:0;scale:.4}}
 @keyframes bbEntree{from{translate:0 100%}}
 .ac-prog i{transform-origin:left center}
 .ac-jours>:nth-child(2){--j:1}.ac-jours>:nth-child(3){--j:2}.ac-jours>:nth-child(4){--j:3}.ac-jours>:nth-child(5){--j:4}.ac-jours>:nth-child(6){--j:5}.ac-jours>:nth-child(7){--j:6}
 @media (prefers-reduced-motion:no-preference){
-  .ac.ac-entree>*{animation:acEntree var(--d-ecran) var(--ease) backwards;animation-delay:calc(var(--i,0) * 50ms)}
-  .ac.ac-entree .ac-anneau-fg.vr-anim{animation-delay:calc(var(--i,0) * 50ms + 60ms)}
-  .ac.ac-entree .ac-prog i{animation:acBarre calc(var(--d-ecran) * 2) var(--ease) backwards;animation-delay:calc(var(--i,0) * 50ms + 120ms)}
-  .ac.ac-entree .ac-jour{animation:acPoint var(--d-etat) var(--ease) backwards;animation-delay:calc(var(--i,0) * 50ms + var(--j,0) * 40ms + 120ms)}
-  :root.app-entree .botbar{animation:bbEntree var(--d-ecran) var(--ease) 120ms backwards}
-  .fs.fs-entree>*{animation:acEntree var(--d-ecran) var(--ease) backwards;animation-delay:calc(60ms + var(--i,0) * 50ms)}
+  .ac.ac-entree>*{animation:acEntree var(--d-entree) var(--ease) backwards;animation-delay:calc(100ms + var(--i,0) * 80ms)}
+  .ac.ac-entree .ac-anneau-fg.vr-anim{animation-duration:900ms;animation-delay:calc(250ms + var(--i,0) * 80ms)}
+  .ac.ac-entree .ac-prog i{animation:acBarre 900ms var(--ease) backwards;animation-delay:calc(300ms + var(--i,0) * 80ms)}
+  .ac.ac-entree .ac-jour{animation:acPoint var(--d-ecran) var(--ease) backwards;animation-delay:calc(300ms + var(--i,0) * 80ms + var(--j,0) * 60ms)}
+  :root.app-entree .botbar{animation:bbEntree var(--d-entree) var(--ease) 200ms backwards}
+  .fs.fs-entree>*{animation:acEntree var(--d-entree) var(--ease) backwards;animation-delay:calc(100ms + var(--i,0) * 80ms)}
   ::view-transition-group(bb-pill){animation-duration:var(--d-ecran);animation-timing-function:var(--ease)}
 }
 @media (prefers-reduced-motion:reduce){.bb-pill{transition:none}}
 #boot-load,#boot-err{position:fixed;inset:0;z-index:500;display:flex;flex-direction:column;gap:14px;align-items:center;justify-content:center;padding:24px;text-align:center;background:var(--gris-fond);color:var(--texte-trois);font-size:var(--t-callout)}
-#boot-err{color:var(--texte)}#boot-load[hidden],#boot-err[hidden]{display:none}</style></head>
+#boot-err{color:var(--texte)}#boot-load[hidden],#boot-err[hidden]{display:none}
+#boot-load .boot-mark{width:132px;height:66px;overflow:visible}
+#boot-load .boot-mark path{fill:none;stroke:var(--primary);stroke-width:7;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:0}
+#boot-load .boot-mark circle{fill:var(--primary);transform-box:fill-box;transform-origin:center}
+#boot-load .boot-lb{margin:0;font-family:var(--f-num);font-weight:800;font-size:22px;letter-spacing:.01em;color:var(--texte)}
+@media (prefers-reduced-motion:no-preference){
+  #boot-load .boot-mark path{animation:bootTrace 720ms cubic-bezier(.25,1,.5,1) 60ms both}
+  #boot-load .boot-mark circle{animation:bootPoint 240ms cubic-bezier(.25,1,.5,1) 620ms both}
+  #boot-load .boot-lb{animation:bootLb 360ms cubic-bezier(.25,1,.5,1) 280ms both}
+  #boot-load.sortie{opacity:0;pointer-events:none;transition:opacity 400ms cubic-bezier(.25,1,.5,1)}
+  #boot-load.sortie .boot-mark{scale:1.08;transition:scale 400ms cubic-bezier(.25,1,.5,1)}
+}
+@keyframes bootTrace{from{stroke-dashoffset:1}}
+@keyframes bootPoint{from{transform:scale(0)}}
+@keyframes bootLb{from{opacity:0;transform:translateY(6px)}}</style></head>
 <body>
 <a href="#main" class="skip-link">Aller au contenu</a>
 <div class="accueil" style="padding-top:0">
@@ -2803,11 +2819,11 @@ svg.tr-go .tr-b{animation:trBarre var(--d-ecran) var(--ease) both;animation-dela
 <div class="modale-overlay" id="overlay"><div class="modale-boite" id="boite"><div class="modale-topbar" id="topbar"></div><div id="contenu"></div></div></div>
 <div class="theo-overlay" id="theoOverlay"><div class="theo-sheet" id="theoSheet"></div></div>
 
-<div id="boot-load" role="status">Chargement…</div>
+<div id="boot-load" role="status"><svg class="boot-mark" viewBox="0 0 132 66" aria-hidden="true"><path pathLength="1" d="M8 50C24 50 28 16 46 16S68 52 86 44 108 14 122 18"/><circle cx="122" cy="18" r="7"/></svg><p class="boot-lb" aria-hidden="true">Saison 2026</p><span class="sr-only">Chargement…</span></div>
 <div id="boot-err" role="alert" hidden><p>Données indisponibles. Vérifie ta connexion puis réessaie.</p><button type="button" class="btn-nav" onclick="location.reload()">Réessayer</button></div>
 <script>
 (function(){
-var V="286",EAGER=["plan", "seances", "historique", "meta"];
+var V="287",EAGER=["plan", "seances", "historique", "meta"];
 function get(f){return fetch("data/"+f+".json?v="+V).then(function(r){if(!r.ok)throw new Error(f+" "+r.status);return r.json();});}
 function fail(){var l=document.getElementById("boot-load");if(l)l.hidden=true;var e=document.getElementById("boot-err");if(e)e.hidden=false;}
 var cl=null;
@@ -2820,11 +2836,24 @@ window.loadChangelog=function(){
   if(!cl)cl=get("changelog").then(function(o){window.CHANGELOG=o.CHANGELOG;return o.CHANGELOG;}).catch(function(e){cl=null;throw e;});
   return cl;
 };
+var T0=(window.performance&&performance.now)?performance.now():0;
+/* Écran de démarrage (build 287) : le tracé orange se dessine ; quand l'app est prête (et au plus tôt 900 ms
+   après le début du démarrage, le temps que le tracé finisse), l'événement boot-sortie lance l'entrée de
+   l'Accueil et l'écran s'efface en fondu. Sous réduire les animations : rien n'attend, l'écran disparaît. */
+function sortie(){
+  var l=document.getElementById("boot-load");if(!l)return;
+  var rm=window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches,now=(window.performance&&performance.now)?performance.now():0;
+  setTimeout(function(){
+    try{document.dispatchEvent(new Event("boot-sortie"));}catch(e){}
+    if(rm){l.remove();return;}
+    l.classList.add("sortie");setTimeout(function(){l.remove();},420);
+  },rm?0:Math.max(0,T0+900-now));
+}
 Promise.all(EAGER.map(get)).then(function(all){
   all.forEach(function(o){Object.assign(window,o);});
   var s=document.createElement("script");
   s.src="src/app.js?v="+V;
-  s.onload=function(){var l=document.getElementById("boot-load");if(l)l.remove();};
+  s.onload=sortie;
   s.onerror=fail;
   document.body.appendChild(s);
 }).catch(fail);
