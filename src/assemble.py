@@ -98,6 +98,19 @@ for chemin in sorted(glob.glob(os.path.join('rewind', '*.json'))):
     rewinds.append(cle)
 assert rewinds == data['REWIND_SEANCE'], 'index des Rewinds (gen.py) different des fichiers publies'
 
+# Carte d'une course (écran « Le parcours ») : trace rééchantillonnée par scripts/carto_course.py dans
+# src/carto/<id>.json, publiée en data/carto-<id>.json ; chaque dossier qui en déclare une doit l'avoir.
+cartos = []
+for chemin in sorted(glob.glob(os.path.join('carto', '*.json'))):
+    cle = os.path.basename(chemin)[:-5]
+    tr = json.load(open(chemin, encoding='utf-8'))
+    assert tr.get('id') == cle and len(tr['lat']) == len(tr['lon']) == len(tr['ele']) == tr['n'], f'carto {cle} : trace incoherente'
+    write(f'site/data/carto-{cle}.json', dump(tr))
+    cartos.append(cle)
+for _id, _d in data['DOSSIERS'].items():
+    _t = (_d.get('carto') or {}).get('trace')
+    assert not _t or _t in cartos, f'dossier {_id} : trace {_t} absente de src/carto/'
+
 # data/*.json : un objet {NOM_GLOBAL: valeur} par fichier (voir datamap.py)
 for fname, pairs in GROUPS.items():
     write(f'site/data/{fname}.json', dump({name: data[key] for name, key in pairs}))
