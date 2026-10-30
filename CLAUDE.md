@@ -52,6 +52,7 @@ python scripts/release.py      # porte complète (audits Strava, Cockpit…) —
 - `src/sw.js` — **modèle** du service worker (`__BUILD__`, `__SHELL__` remplacés par le build)
 - `src/rewind/<sem>-<n>.json` — données du Rewind de séance (écrites par `scripts/rewind_seance.py` ou `log_seance.py --rewind` ; tracé masqué de 300 m à chaque bout et ancré en Web Mercator pour le fond de carte, voir docs/ENRICHISSEMENT.md) ; publiées en `data/rewind-<sem>-<n>.json` avec l'analyse du coach tirée de la revue ; index `REWIND_SEANCE` dans `data/seances.json`
 - `src/build.py`, `src/paths.py` — build et chemins ; `src/strava_reference.json` — référentiel Strava lu par les audits
+- `src/carto/<id>.json` — trace d'une course pour l'écran « Le parcours » (carte 3D, pentes, sol OSM, heures de passage ; `CP` dans app.js), écrite par `scripts/carto_course.py`, publiée en `data/carto-<id>.json` ; réglages dans `DOSSIERS[id].carto` ; `src/vendor/` — MapLibre GL, chargé à la demande, hors pré-cache (voir docs/ENRICHISSEMENT.md)
 - `scripts/` — preflight, release, tests, audits ; `.github/workflows/verify.yml` — vérification automatique
 - `tests/reference/` — captures de référence des 4 vues (390 px)
 

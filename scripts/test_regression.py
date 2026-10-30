@@ -1091,6 +1091,166 @@ def run():
         except Exception as e:
             check("T24 police des chiffres embarquee", False, str(e)[:160])
 
+        # ── T34-T38 : écran « Le parcours » (build 292) — carte MapLibre, profil, pentes, sol OSM ──
+        # Tuiles, relief et Overpass sont servis par le test (le sandbox n'atteint pas ces serveurs) ; la carte
+        # tourne en WebGL logiciel (SwiftShader). Le rendu réel des tuiles ne se voit que sur l'iPhone.
+        try:
+            import struct as _st, zlib as _zl
+
+            def _png(r, g, bl):
+                raw = b"".join(b"\x00" + bytes([r, g, bl]) * 256 for _ in range(256))
+                def ch(t, d):
+                    c = _st.pack(">I", len(d)) + t + d
+                    return c + _st.pack(">I", _zl.crc32(t + d) & 0xffffffff)
+                return (b"\x89PNG\r\n\x1a\n" + ch(b"IHDR", _st.pack(">IIBBBBB", 256, 256, 8, 2, 0, 0, 0))
+                        + ch(b"IDAT", _zl.compress(raw)) + ch(b"IEND", b""))
+            T_TUILE, T_DEM = _png(228, 228, 232), _png(129, 244, 0)  # relief : 500 m partout (terrarium)
+            tr = json.load(open(os.path.join(SITE, "data", "carto-saintexpress.json"), encoding="utf-8"))
+
+            def _dec(a):
+                o, v = [], 0
+                for x in a:
+                    v += x
+                    o.append(v)
+                return o
+            tlat, tlon = [v / 1e5 for v in _dec(tr["lat"])], [v / 1e5 for v in _dec(tr["lon"])]
+
+            def _way(a, z, tags):  # chemin OSM posé à ~4 m de la trace, un nœud tous les 50 m
+                return {"type": "way", "tags": tags, "geometry": [{"lat": tlat[i] + 0.00004, "lon": tlon[i]} for i in range(a, z + 1, 2)]}
+            OSM = {"elements": [_way(0, 200, {"highway": "track", "tracktype": "grade2"}), _way(400, 700, {"highway": "path"}),
+                                _way(1600, tr["n"] - 1, {"highway": "residential"}), _way(1500, 1506, {"highway": "steps"})]}
+            bgl = pw.chromium.launch(args=["--enable-unsafe-swiftshader", "--use-angle=swiftshader"])
+
+            def page_parcours(course, avion=False, reduce=False):
+                ctx = bgl.new_context(viewport={"width": 390, "height": 844}, service_workers="block",
+                                      reduced_motion="reduce" if reduce else "no-preference")
+                if avion:
+                    ctx.add_init_script("Object.defineProperty(navigator,'onLine',{get:()=>false});")
+                req = []
+
+                def tuile(r):
+                    u = r.request.url
+                    req.append(u.split("/")[2])
+                    if avion:
+                        return r.abort()
+                    r.fulfill(status=200, content_type="image/png", body=T_DEM if "elevation" in u else T_TUILE)
+                for pat in ["**/tile.openstreetmap.org/**", "**/*.tile.opentopomap.org/**", "**/server.arcgisonline.com/**",
+                            "**/elevation-tiles-prod.s3.amazonaws.com/**"]:
+                    ctx.route(pat, tuile)
+
+                def ovp(r):
+                    req.append("overpass")
+                    if avion:
+                        return r.abort()
+                    r.fulfill(status=200, content_type="application/json", body=json.dumps(OSM))
+                ctx.route("**/overpass-api.de/**", ovp)
+                ctx.route("**/overpass.kumi.systems/**", ovp)
+                pg = ctx.new_page()
+                errs = []
+                pg.on("pageerror", lambda e: errs.append(str(e)[:160]))
+                pg.goto(HTML, wait_until="load", timeout=20000)
+                pg.wait_for_function("typeof showTab==='function'&&!document.getElementById('boot-load')", timeout=10000)
+                pg.evaluate("var o=document.getElementById('rwoverlay');if(o)o.classList.remove('on');")
+                pg.evaluate(f"ouvrirDossier('{course}')")
+                pg.wait_for_selector(".dos-carte", timeout=5000)
+                pg.click(".dos-carte")
+                pg.wait_for_function("CP._etat()&&document.querySelector('#cp-prof svg')", timeout=10000)
+                return ctx, pg, errs, req
+
+            # T34 : SaintExpress en ligne
+            ctx, pg, errs, req = page_parcours("saintexpress")
+            pg.wait_for_function("CP._etat().carte&&CP._etat().sol", timeout=30000)
+            pg.wait_for_timeout(1500)
+            e = pg.evaluate("CP._etat()")
+            info = pg.evaluate("""(()=>{const c=document.querySelector('#cp-map canvas'),m=document.querySelector('#cp-map');
+              return {canvas:c?c.clientHeight:0,map:m.clientHeight,mk:document.querySelectorAll('#cp-map .cp-mk').length,
+                cur:document.querySelectorAll('#cp-map .cp-cur').length,chif:document.getElementById('cp-chif').textContent,
+                attrib:(document.querySelector('#cp .maplibregl-ctrl-attrib-inner')||{}).textContent||'',
+                pts:document.querySelectorAll('#cp-pts .cp-pt').length,src:document.getElementById('cp-src').textContent}})()""")
+            rav = [p_ for p_ in e["points"] if p_["k"] == "ravito"]
+            arr = [p_ for p_ in e["points"] if p_["k"] == "arrivee"][0]
+            mont = [p_ for p_ in e["points"] if p_["k"] == "montee"]
+            check("T34 parcours SaintExpress : carte MapLibre dessinée (tracé, 7 étiquettes, curseur), 46,3 km, D+ mesuré, attribution OSM et relief",
+                  info["canvas"] > 250 and info["map"] > 250 and info["mk"] == 7 and info["cur"] == 1 and info["chif"].startswith("46,3 km")
+                  and 950 <= e["dp"] <= 1100 and "OpenStreetMap" in info["attrib"] and "AWS Terrain Tiles" in info["attrib"],
+                  f"{info} dp={e['dp']:.0f}")
+            check("T34 points clés : 3 ravitos aux heures du dossier (≈ 0 h 45, 2 h 20, 3 h 10), arrivée 5 h 00, au moins 4 montées détectées",
+                  [r["h"] for r in rav] == ["0 h 43", "2 h 20", "3 h 12"] and arr["h"] == "5 h 00" and len(mont) >= 4
+                  and info["pts"] == len(e["points"]), f"{[r['h'] for r in rav]} {arr['h']} montees={len(mont)}")
+            sol = e["sol"]
+            hosts = sorted(set(req))
+            check("T34 sol OpenStreetMap : piste → chemin large, sentier, escaliers, rue → route ; une seule requête Overpass ; tuiles du fond « Plan » et relief seulement",
+                  sol and sol[100] == "c" and sol[550] == "s" and sol[1503] == "e" and sol[1700] == "b" and sol[1200] == "x"
+                  and req.count("overpass") == 1 and "tile.openstreetmap.org" in hosts
+                  and set(hosts) <= {"elevation-tiles-prod.s3.amazonaws.com", "overpass", "tile.openstreetmap.org"},
+                  f"{sol and (sol[100], sol[550], sol[1503], sol[1700], sol[1200])} {hosts} ovp={req.count('overpass')}")
+            # T35 : interactions
+            avant = pg.inner_text("#cp-lect")
+            bx = pg.locator("#cp-prof").bounding_box()
+            pg.mouse.move(bx["x"] + bx["width"] * 0.5, bx["y"] + bx["height"] / 2)
+            pg.mouse.down()
+            pg.mouse.move(bx["x"] + bx["width"] * 0.6, bx["y"] + bx["height"] / 2)
+            pg.mouse.up()
+            pg.wait_for_timeout(300)
+            e2 = pg.evaluate("CP._etat()")
+            apres = pg.inner_text("#cp-lect")
+            pg.evaluate("CP.mode('sol')")
+            leg = pg.inner_text("#cp-leg")
+            pg.evaluate("CP.fond('topo');CP.relief(2.5);CP.vue('haut')")
+            pg.wait_for_timeout(1200)
+            e3 = pg.evaluate("CP._etat()")
+            pr = pg.evaluate("[...document.querySelectorAll('#cp [aria-pressed=true]')].map(b=>b.textContent.trim())")
+            pg.evaluate("CP.survol()")
+            sv = pg.evaluate("[CP._etat().survol,document.getElementById('cp-survol').textContent.trim(),document.getElementById('cp-survol').getAttribute('aria-pressed')]")
+            pg.evaluate("CP.survol()")
+            check("T35 interactions : glisser sur le profil déplace le curseur (km, altitude, heure), mode Sol, fond Topo, relief ×2,5, vue de dessus, survol Pause",
+                  e2["cur"] > 1000 and avant != apres and "Chemin large" in leg and "Sentier" in leg and e3["fond"] == "topo"
+                  and e3["exa"] == 2.5 and pg.inner_text("#cp-exa") == "×2,5" and set(pr) == {"Sol", "Topo", "Dessus"}
+                  and any("opentopomap" in h for h in req) and sv == [True, "Pause", "true"],
+                  f"cur={e2['cur']} pr={pr} sv={sv} topo={any('opentopomap' in h for h in req)} leg={leg[:60]!r}")
+            pg.keyboard.press("Escape")
+            pg.wait_for_timeout(400)
+            ferme = pg.evaluate("[!document.getElementById('cp'),document.activeElement&&document.activeElement.classList.contains('dos-carte')]")
+            pg.click(".dos-carte")
+            pg.wait_for_function("CP._etat()&&CP._etat().sol", timeout=10000)
+            check("T35 Échap ferme l'écran et rend le focus au bouton ; réouverture : sol relu dans le stockage local, sans nouvelle requête Overpass",
+                  ferme == [True, True] and req.count("overpass") == 1, f"ferme={ferme} ovp={req.count('overpass')}")
+            check("T35 aucune erreur JS (SaintExpress en ligne)", not errs, "; ".join(errs[:2]))
+            ctx.close()
+            # T36 : hors connexion
+            ctx, pg, errs, req = page_parcours("saintexpress", avion=True)
+            pg.wait_for_timeout(2500)
+            r = pg.evaluate("""[CP._etat().soleEtat,(document.getElementById('cp-msgc')||{}).textContent,document.querySelectorAll('#cp-prof svg path').length,
+                document.querySelectorAll('#cp-pts .cp-pt').length]""")
+            pg.evaluate("CP.mode('sol')")
+            leg = pg.inner_text("#cp-leg")
+            check("T36 hors connexion : profil, pentes et points clés affichés, aucun appel à Overpass, sol annoncé « Hors connexion », pas d'erreur JS",
+                  r[0] == "horsligne" and r[2] > 10 and r[3] > 10 and "overpass" not in req and "Hors connexion" in leg and not errs,
+                  f"{r} req={sorted(set(req))} {errs[:1]}")
+            ctx.close()
+            # T37 : Nice, sans trace GPS, réduire les animations
+            ctx, pg, errs, req = page_parcours("nice", reduce=True)
+            pg.wait_for_timeout(800)
+            e = pg.evaluate("CP._etat()")
+            r = pg.evaluate("[!!document.querySelector('.cp-sanscarte'),!!document.getElementById('cp-map'),!!document.getElementById('cp-survol'),document.getElementById('cp-chif').textContent]")
+            pg.evaluate("CP.mode('sol')")
+            leg = pg.inner_text("#cp-leg")
+            rav = [p_["h"] for p_ in e["points"] if p_["k"] == "ravito"]
+            arr = [p_ for p_ in e["points"] if p_["k"] == "arrivee"][0]
+            check("T37 Nice sans trace : pas de carte (encart explicatif), profil du dossier (42,2 km), 8 ravitos, arrivée 11 h 45, sol 100 % bitume, aucune tuile demandée",
+                  r[:3] == [True, False, False] and r[3].startswith("42,2 km") and len(rav) == 8 and rav[0] in ("8 h 26", "8 h 27")
+                  and arr["h"] == "11 h 45" and "100 %" in leg and not req and not errs,
+                  f"{r} rav={rav[:2]} arr={arr['h']} req={req[:2]} {errs[:1]}")
+            # T38 : classement des chemins OSM (tags -> sol)
+            cas = pg.evaluate("""[['steps'],['track'],['track','asphalt'],['path'],['path','asphalt'],['path','gravel'],['footway'],['footway','dirt'],
+                ['residential'],['residential','gravel'],['primary']].map(c=>CP._solTags({highway:c[0],surface:c[1]})).join('')""")
+            check("T38 classement OSM : escaliers, chemin, route, sentier, route, chemin, route, sentier, route, chemin, route",
+                  cas == "ecbsbcbsbcb", cas)
+            ctx.close()
+            bgl.close()
+        except Exception as e:
+            check("T34 écran Le parcours", False, str(e)[:200])
+
         # ── T13 : pas d'erreur JS accumulee sur tout le parcours ──
         check("T13 zero erreur JS sur tout le parcours", len(js_errors) == 0,
               "; ".join(js_errors[:3]))

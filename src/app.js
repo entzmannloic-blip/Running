@@ -749,7 +749,9 @@ var _AC_I={
   attention:'<circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.5v.5"/>',
   suite:'<path d="M5 12h14M13 6l6 6-6 6"/>',
   coach:'<path d="M4 18v-5a8 8 0 0 1 16 0v5"/><path d="M4 15h3v5H4zM17 15h3v5h-3z"/>',
-  chaussure:'<path d="M3 16.5h15.5a2.5 2.5 0 0 0 2.5-2.5c0-1.2-.9-2-2-2.3l-4.5-1.2L11 6H8.5L8 8.5 5 8 3 13z"/><path d="M3 19h18"/>'
+  chaussure:'<path d="M3 16.5h15.5a2.5 2.5 0 0 0 2.5-2.5c0-1.2-.9-2-2-2.3l-4.5-1.2L11 6H8.5L8 8.5 5 8 3 13z"/><path d="M3 19h18"/>',
+  carte:'<path d="M9 4 3 6.5v13.5l6-2.5 6 2.5 6-2.5V4l-6 2.5z"/><path d="M9 4v13.5M15 6.5V20"/>',
+  pause:'<path d="M7.5 5h3v14h-3zM13.5 5h3v14h-3z" fill="currentColor" stroke="none"/>'
 };
 function _acIco(n,t){return '<svg width="'+(t||20)+'" height="'+(t||20)+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+_AC_I[n]+'</svg>';}
 function _acEsc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
@@ -1838,7 +1840,7 @@ function ouvrirDossier(id){
   contenu.innerHTML=`<div class="fs dos" style="--ac:${ac}">
      <header class="fs-sec fs-tete"><p class="ac-lb fs-quand">Dossier de course</p><h2 class="fs-titre">${D.nom}</h2><p class="fs-sous">${D.soustitre}</p><p class="dos-meta">${D.date} · ${D.format}<br>${D.depart}</p></header>
      <section class="fs-sec fs-chif" aria-label="La course en chiffres"><div class="fs-grille dos-stats">${stats}</div><div class="dos-intro">${D.intro}</div><div class="dos-phrase">${D.phrase}</div></section>
-     <section class="fs-sec" aria-labelledby="dos-pr"><h3 class="ac-h2" id="dos-pr">Le profil</h3>${dosProfilSVG(D,ac)}<p class="dos-p">${D.profil}</p></section>
+     <section class="fs-sec" aria-labelledby="dos-pr"><h3 class="ac-h2" id="dos-pr">Le profil</h3>${dosProfilSVG(D,ac)}${D.carto?`<button type="button" class="ac-btn ac-btn-2 dos-carte" onclick="CP.ouvrir('${id}',this)">${_acIco('carte',20)}<span class="dos-carte-t"><span>Explorer le parcours</span><span class="dos-carte-s">${D.carto.trace?'Carte 3D, pentes, type de sol, heures de passage':'Profil, pentes, ravitos, heures de passage'}</span></span></button>`:''}<p class="dos-p">${D.profil}</p></section>
      <section class="fs-sec" aria-labelledby="dos-de"><h3 class="ac-h2" id="dos-de">Le déroulé</h3>${segs}</section>
      <section class="fs-sec" aria-labelledby="dos-pl"><h3 class="ac-h2" id="dos-pl">Plan d’exécution</h3>${plan}</section>
      <section class="fs-sec" aria-labelledby="dos-nu"><h3 class="ac-h2" id="dos-nu">Nutrition</h3>
@@ -5300,3 +5302,450 @@ function rsOuvrir(cle,depuis,ouvreur){return RS.ouvrir(cle,depuis,ouvreur);}
 function rsBouton(num,id){return RS?RS.bouton(num,id):'';}
 function ouJenSuis(){RS.ou();}
 try{RS.carte();}catch(e){console.warn('carte du coach',e);}
+/* ===== LE PARCOURS (build 292) — carte 3D d'une course, profil, pentes, type de sol ==================
+   Ouvert depuis le dossier de course (« Explorer le parcours » : CP.ouvrir(id, bouton)).
+   Données : data/carto-<trace>.json (scripts/carto_course.py : trace tous les 25 m) quand le dossier en
+   déclare une ; sinon le profil du dossier (profil_pts), sans carte. Réglages : DOSSIERS[id].carto
+   (heure de départ, temps visé, ravitos en km officiels, repères en km de la trace, source du sol).
+   Pente : altitude lissée sur 175 m, pente sur 200 m (les passages de 50 m ou moins prennent la classe voisine). Heures de passage : modèle km-effort des dossiers
+   (1 km + 100 m de D+ = 1 km-effort), réparti sur le temps visé.
+   Sol « osm » : une requête Overpass depuis le téléphone au premier affichage, gardée dans localStorage
+   (cp_sol_<trace>_<n>) ; chaque point prend le chemin OpenStreetMap le plus proche et le mieux aligné
+   (30 m au plus). Sol « bitume » : déclaré par le dossier.
+   Carte : MapLibre GL 5 (src/vendor, chargé à la demande, hors pré-cache), relief AWS Terrain Tiles
+   (terrarium), fonds OpenStreetMap, OpenTopoMap, Esri. Hors connexion : tracé sur fond uni, profil,
+   pentes et points clés. Survol pas à pas sous « réduire les animations ». */
+var CP=(function(){
+  'use strict';
+  var PAS=25,DEM='https://elevation-tiles-prod.s3.amazonaws.com/terrarium/{z}/{x}/{y}.png',
+      OVERPASS=['https://overpass-api.de/api/interpreter','https://overpass.kumi.systems/api/interpreter'];
+  var M=null,ID=null,MAP=null,OUVREUR=null,MODE='pente',FOND='plan',VUE='3d',EXA=1.5,CUR=0,SURV=null,
+      MK=[],KMK=[],CURMK=null,LIB=null,SOLE='',PW=0,GLISSE=false;
+  var PENTES=[
+    {k:'d2',max:-10,l:'Descente raide',r:'au-delà de −10 %'},
+    {k:'d1',max:-3,l:'Descente',r:'−10 à −3 %'},
+    {k:'p',max:3,l:'Roulant',r:'−3 à +3 %'},
+    {k:'m1',max:7,l:'Montée',r:'+3 à +7 %'},
+    {k:'m2',max:12,l:'Raide, à marcher',r:'+7 à +12 %'},
+    {k:'m3',max:1e9,l:'Très raide',r:'au-delà de +12 %'}];
+  var SOLS=[{k:'b',l:'Route, bitume',c:'Route'},{k:'c',l:'Chemin large',c:'Chemin'},{k:'s',l:'Sentier',c:'Sentier'},
+            {k:'e',l:'Escaliers',c:'Escaliers'},{k:'x',l:'Non renseigné',c:'—'}];
+  var VAR_SOL={b:'bitume',c:'chemin',s:'sentier',e:'escalier',x:'inconnu'};
+
+  /* ---------- outils ---------- */
+  function coul(v){var c='';try{c=getComputedStyle(document.documentElement).getPropertyValue(v).trim();}catch(e){}return c||'#A1A1AA';}
+  function cPente(k){return coul('--pente-'+k);}
+  function cSol(k){return coul('--sol-'+(VAR_SOL[k]||'inconnu'));}
+  function classePente(s){for(var i=0;i<PENTES.length;i++)if(s<PENTES[i].max)return PENTES[i].k;return 'm3';}
+  function nb(v,d){return _acNb(v,d);}
+  function signe(v,d){var f=Math.pow(10,d||0),r=Math.round(v*f)/f;return (r<0?'−':r>0?'+':'')+nb(Math.abs(r),d);}
+  function hm(min){min=Math.max(0,Math.round(min));var h=Math.floor(min/60),m=min%60;return h+' h '+(m<10?'0':'')+m;}
+  function heure(dep,min){var p=String(dep||'0:00').split(':'),t=(+p[0])*60+(+p[1]||0)+Math.round(min);t=((t%1440)+1440)%1440;return hm(t);}
+  function decode(a){var o=new Array(a.length),v=0;for(var i=0;i<a.length;i++){v+=a[i];o[i]=v;}return o;}
+  function idx(m,km){return Math.max(0,Math.min(m.n-1,Math.round(km*1000/PAS)));}
+  function cl(i){return MODE==='sol'?((M.sol&&M.sol[i])||'x'):M.cls[i];}
+  function col(k){return MODE==='sol'?cSol(k):cPente(k);}
+  function solDe(k){for(var i=0;i<SOLS.length;i++)if(SOLS[i].k===k)return SOLS[i];return SOLS[4];}
+  function reduit(){return typeof _reduceMotion==='function'&&_reduceMotion();}
+
+  /* ---------- modèle : trace, pentes, D+, heures, montées, points clés ---------- */
+  function charger(id){
+    var D=DOSSIERS[id],C=D.carto||{};
+    var p=C.trace?fetch('data/carto-'+C.trace+'.json').then(function(r){if(!r.ok)throw new Error('carto '+r.status);return r.json();}):Promise.resolve(null);
+    return p.then(function(T){return construire(id,D,C,T);});
+  }
+  function construire(id,D,C,T){
+    var lat=null,lon=null,ele=[],n,L,i;
+    if(T){lat=decode(T.lat).map(function(v){return v/1e5;});lon=decode(T.lon).map(function(v){return v/1e5;});
+      ele=decode(T.ele).map(function(v){return v/10;});n=T.n;L=T.km*1000;}
+    else{var P=D.profil_pts||[0,0];L=(D.profil_dist||1)*1000;n=Math.floor(L/PAS)+1;
+      for(i=0;i<n;i++){var x=Math.min(1,i*PAS/L)*(P.length-1),j=Math.min(P.length-2,Math.floor(x)),t=x-j;ele.push(P[j]+(P[j+1]-P[j])*t);}}
+    var dist=[];for(i=0;i<n;i++)dist.push(Math.min(i*PAS,L));if(T)dist[n-1]=L;else L=dist[n-1];
+    var lisse=function(w){return ele.map(function(_,i){var s=0,c=0;for(var k=-w;k<=w;k++){var j=i+k;if(j>=0&&j<n){s+=ele[j];c++;}}return s/c;});};
+    var es=lisse(2),e3=lisse(3);
+    var pente=e3.map(function(_,i){var a=Math.max(0,i-4),b=Math.min(n-1,i+4);return dist[b]>dist[a]?(e3[b]-e3[a])/(dist[b]-dist[a])*100:0;});
+    var cls=pente.map(classePente),runs=[],r0=0;
+    for(i=1;i<=n;i++)if(i===n||cls[i]!==cls[r0]){runs.push([r0,i]);r0=i;}
+    runs.forEach(function(R,k){if(R[1]-R[0]<=2&&k>0)for(var z=R[0];z<R[1];z++)cls[z]=cls[R[0]-1];});
+    var dp=[0],dm=[0];for(i=1;i<n;i++){var d=es[i]-es[i-1];dp.push(dp[i-1]+(d>0?d:0));dm.push(dm[i-1]+(d<0?-d:0));}
+    var eff=dist.map(function(x,i){return x/1000+dp[i]/100;}),cible=C.cible_min||0;
+    var m={id:id,D:D,C:C,n:n,L:L,lat:lat,lon:lon,ele:es,dist:dist,pente:pente,dp:dp,dm:dm,
+      tps:eff.map(function(e){return cible?cible*e/eff[n-1]:0;}),cls:cls,sol:C.terrain==='bitume'?new Array(n+1).join('b'):null,solDate:''};
+    m.zmin=Math.min.apply(null,es);m.zmax=Math.max.apply(null,es);
+    m.bosses=bosses(m);
+    m.sections=(D.segments||[]).map(function(s,k){var r=/km\s*([\d,.]+)\s*→\s*([\d,.]+)/.exec(s.km||'');if(!r)return null;
+      return {n:k+1,t:_sansEmoji(s.t).replace(/^\d+\s*·\s*/,''),a:parseFloat(r[1].replace(',','.')),b:parseFloat(r[2].replace(',','.'))};}).filter(Boolean);
+    m.points=points(m);
+    return m;
+  }
+  /* Montées et descentes : on suit l'altitude lissée depuis un creux (ou une crête) et on s'arrête quand elle
+     redescend (remonte) de plus de 8 m ; on garde les montées d'au moins 40 m à 4 % de moyenne et les
+     descentes d'au moins 60 m à 5 % (12 m à 1 % sur une course plate, moins de 300 m de D+). */
+  function bosses(m){
+    var e=m.ele,d=m.dist,n=m.n,plat=m.dp[n-1]<300,out=[];
+    function cherche(sg,seuil,pmin){var i=0;
+      while(i<n-1){var s=i,pk=i,j=i;
+        while(j<n-1){j++;var v=sg*e[j];if(v>sg*e[pk])pk=j;if(sg*e[pk]-v>8)break;if(v<sg*e[s]){s=j;pk=j;}}
+        var g=sg*(e[pk]-e[s]),len=d[pk]-d[s];
+        if(g>=seuil&&len>0&&g/len*100>=pmin){var mx=0;for(var k=s;k<=pk;k++)mx=Math.max(mx,sg*m.pente[k]);
+          out.push({type:sg>0?'montee':'descente',a:s,b:pk,g:g,len:len,moy:g/len*100,max:mx});}
+        if(j>=n-1)break;i=pk>i?pk:j;}}
+    cherche(1,plat?12:40,plat?1:4);cherche(-1,plat?12:60,plat?1:5);
+    return out.sort(function(x,y){return x.a-y.a;});
+  }
+  function points(m){
+    var C=m.C,ech=C.km_officiel?(m.L/1000)/C.km_officiel:1,out=[],nm=0,nd=0;
+    out.push({k:'depart',i:0,t:'Départ',s:C.depart_nom||''});
+    (C.ravitos||[]).forEach(function(r){out.push({k:'ravito',i:idx(m,r[0]*ech),t:(r[1]&&r[1]!=='Ravito')?'Ravito de '+r[1]:'Ravito du km '+nb(r[0],0),
+      s:(r[2]||'')+(C.km_officiel?(r[2]?' · ':'')+'km '+nb(r[0],0)+' officiel':''),nom:(r[1]&&r[1]!=='Ravito')?r[1]:'R'});});
+    (C.reperes||[]).forEach(function(r){out.push({k:'repere',i:idx(m,r[0]),t:r[1],s:r[2]||'',nom:r[1]});});
+    m.bosses.forEach(function(b){var mo=b.type==='montee';
+      out.push({k:b.type,i:b.a,j:b.b,t:(mo?'Montée ':'Descente ')+(mo?++nm:++nd),
+        s:(mo?'+':'−')+nb(b.g,0)+' m sur '+nb(b.len/1000,1)+' km · '+nb(b.moy,1)+' % de moyenne, '+nb(b.max,0)+' % au plus fort'});});
+    out.push({k:'arrivee',i:m.n-1,t:'Arrivée',s:C.arrivee_nom||''});
+    var ordre={depart:0,ravito:1,repere:2,montee:3,descente:3,arrivee:9};
+    return out.sort(function(a,b){return a.i-b.i||ordre[a.k]-ordre[b.k];});
+  }
+
+  /* ---------- sol depuis OpenStreetMap (Overpass) ---------- */
+  function cleSol(m){return 'cp_sol_'+m.C.trace+'_'+m.n;}
+  function solCache(m){try{var c=JSON.parse(localStorage.getItem(cleSol(m))||'null');return c&&c.codes&&c.codes.length===m.n?c:null;}catch(e){return null;}}
+  function solTags(t){t=t||{};var h=t.highway||'',s=String(t.surface||'').toLowerCase();
+    var dur=/^(asphalt|paved|concrete|concrete:plates|concrete:lanes|paving_stones|sett|cobblestone|unhewn_cobblestone|chipseal|metal|wood)$/.test(s),
+        gravier=/^(gravel|fine_gravel|compacted|pebblestone)$/.test(s),
+        meuble=gravier||/^(unpaved|ground|dirt|earth|grass|mud|sand|rock|roots|woodchips)$/.test(s);
+    if(h==='steps')return 'e';
+    if(h==='track')return dur?'b':'c';
+    if(h==='path'||h==='bridleway')return dur?'b':gravier?'c':'s';
+    if(h==='footway'||h==='cycleway'||h==='pedestrian')return meuble?(gravier?'c':'s'):'b';
+    if(h)return meuble?'c':'b';
+    return 'x';}
+  function classer(m,ways){
+    var mid=Math.floor(m.n/2),lat0=m.lat[mid],lon0=m.lon[mid],kx=Math.cos(lat0*Math.PI/180)*111320,ky=110540,T=50,G={},segs=[];
+    function X(v){return (v-lon0)*kx;}function Y(v){return (v-lat0)*ky;}
+    (ways||[]).forEach(function(w){var g=w&&w.geometry;if(!g||g.length<2)return;var c=solTags(w.tags);
+      for(var i=1;i<g.length;i++){var a=g[i-1],b=g[i];if(!a||!b)continue;
+        var s={x1:X(a.lon),y1:Y(a.lat),x2:X(b.lon),y2:Y(b.lat),c:c},k=segs.push(s)-1;
+        var gx1=Math.floor((Math.min(s.x1,s.x2)-30)/T),gx2=Math.floor((Math.max(s.x1,s.x2)+30)/T),
+            gy1=Math.floor((Math.min(s.y1,s.y2)-30)/T),gy2=Math.floor((Math.max(s.y1,s.y2)+30)/T);
+        if((gx2-gx1)*(gy2-gy1)>4000)continue;
+        for(var gx=gx1;gx<=gx2;gx++)for(var gy=gy1;gy<=gy2;gy++)(G[gx+':'+gy]||(G[gx+':'+gy]=[])).push(k);}});
+    var out=[];
+    for(var i=0;i<m.n;i++){var px=X(m.lon[i]),py=Y(m.lat[i]),a=Math.max(0,i-1),b=Math.min(m.n-1,i+1),
+        dx=X(m.lon[b])-X(m.lon[a]),dy=Y(m.lat[b])-Y(m.lat[a]),dl=Math.sqrt(dx*dx+dy*dy)||1,
+        L=G[Math.floor(px/T)+':'+Math.floor(py/T)]||[],best=null,bs=1e9;
+      for(var q=0;q<L.length;q++){var s=segs[L[q]],vx=s.x2-s.x1,vy=s.y2-s.y1,v2=vx*vx+vy*vy,
+          t=v2?((px-s.x1)*vx+(py-s.y1)*vy)/v2:0;t=Math.max(0,Math.min(1,t));
+        var ex=px-(s.x1+t*vx),ey=py-(s.y1+t*vy),dd=Math.sqrt(ex*ex+ey*ey);if(dd>30)continue;
+        var cos=v2?Math.abs(dx*vx+dy*vy)/(dl*Math.sqrt(v2)):1,sc=dd+25*(1-cos);if(sc<bs){bs=sc;best=s;}}
+      out.push(best?best.c:'x');}
+    /* lissage : un tronçon isolé de 50 m au plus (150 m pour « non renseigné ») entre deux tronçons du même
+       sol prend ce sol ; les escaliers restent, même courts */
+    var runs=[],r0=0;for(i=1;i<=out.length;i++)if(i===out.length||out[i]!==out[r0]){runs.push([r0,i,out[r0]]);r0=i;}
+    for(var k=1;k<runs.length-1;k++){var R=runs[k],lg=R[1]-R[0];
+      if(R[2]!=='e'&&lg<=(R[2]==='x'?6:2)&&runs[k-1][2]===runs[k+1][2]){for(var z=R[0];z<R[1];z++)out[z]=runs[k-1][2];R[2]=runs[k-1][2];}}
+    return out.join('');
+  }
+  function solOSM(m){
+    var pts=[];for(var i=0;i<m.n;i+=2)pts.push(m.lat[i].toFixed(5)+','+m.lon[i].toFixed(5));
+    if((m.n-1)%2)pts.push(m.lat[m.n-1].toFixed(5)+','+m.lon[m.n-1].toFixed(5));
+    var q='[out:json][timeout:90];way(around:30,'+pts.join(',')+')[highway];out tags geom;';
+    function essai(k){
+      var ac=(typeof AbortController!=='undefined')?new AbortController():null,to=setTimeout(function(){if(ac)ac.abort();},75000);
+      return fetch(OVERPASS[k],{method:'POST',body:'data='+encodeURIComponent(q),headers:{'Content-Type':'application/x-www-form-urlencoded'},signal:ac?ac.signal:undefined})
+        .then(function(r){clearTimeout(to);if(!r.ok)throw new Error('Overpass '+r.status);return r.json();})
+        .catch(function(e){clearTimeout(to);if(k+1<OVERPASS.length)return essai(k+1);throw e;});}
+    return essai(0).then(function(j){
+      var codes=classer(m,j.elements||[]),c={codes:codes,date:new Date().toLocaleDateString('fr-FR')};
+      if(codes.replace(/x/g,'').length<m.n*.2)throw new Error('trop peu de chemins trouvés');
+      try{localStorage.setItem(cleSol(m),JSON.stringify(c));}catch(e){}return c;});
+  }
+  function chargerSol(force){
+    if(!M||M.C.terrain!=='osm'||!M.lat)return;
+    if(!force){var c=solCache(M);if(c){M.sol=c.codes;M.solDate=c.date;SOLE='';majSol();return;}}
+    if(navigator.onLine===false){SOLE='horsligne';majSol();return;}
+    SOLE='charge';majSol();var m=M;
+    solOSM(m).then(function(c){if(M!==m)return;M.sol=c.codes;M.solDate=c.date;SOLE='';majSol();})
+      .catch(function(e){if(M!==m)return;console.warn('Parcours : sol OSM',e);SOLE='erreur';majSol();});
+  }
+  function majSol(){if(!M)return;legende();lecture();if(MODE==='sol'){profil();traceCarte();}}
+
+  /* ---------- écran ---------- */
+  function squelette(D){
+    var trace=!!(D.carto&&D.carto.trace);
+    return '<header class="cp-tete"><button type="button" class="cp-fermer" aria-label="Fermer le parcours" onclick="CP.fermer()">'+_acIco('croix',20)+'</button>'
+      +'<div class="cp-titres"><p class="ac-lb">Le parcours</p><h2 id="cp-t">'+_acEsc(_sansEmoji(D.nom))+'</h2><p class="cp-chif" id="cp-chif"></p></div></header>'
+      +'<div class="cp-corps">'
+      +(trace?'<div class="cp-zone"><div id="cp-map" class="cp-map" role="region" aria-label="Carte du parcours"></div>'
+          +'<div class="cp-vue"><div class="cp-seg" role="group" aria-label="Vue de la carte">'
+          +'<button type="button" data-vue="3d" aria-pressed="true" onclick="CP.vue(\'3d\')">3D</button><button type="button" data-vue="haut" aria-pressed="false" onclick="CP.vue(\'haut\')">Dessus</button></div></div>'
+          +'<p class="cp-msgc" id="cp-msgc" role="status">Chargement de la carte…</p></div>'
+        :'<div class="cp-sanscarte"><p class="fs-kick">Pas encore de carte</p><p class="fs-para">La trace GPS de cette course n\'est pas dans l\'app : le profil, les pentes et les points clés viennent du dossier de course.</p></div>')
+      +'<div class="cp-barre">'
+      +'<div class="cp-seg" role="group" aria-label="Colorer le tracé selon"><button type="button" data-mode="pente" aria-pressed="true" onclick="CP.mode(\'pente\')">Pente</button><button type="button" data-mode="sol" aria-pressed="false" onclick="CP.mode(\'sol\')">Sol</button></div>'
+      +(trace?'<div class="cp-seg" role="group" aria-label="Fond de carte"><button type="button" data-fond="plan" aria-pressed="true" onclick="CP.fond(\'plan\')">Plan</button><button type="button" data-fond="topo" aria-pressed="false" onclick="CP.fond(\'topo\')">Topo</button><button type="button" data-fond="sat" aria-pressed="false" onclick="CP.fond(\'sat\')">Satellite</button></div>'
+          +'<label class="cp-relief"><span>Relief</span><input type="range" min="1" max="3" step="0.5" value="1.5" oninput="CP.relief(this.value)" aria-label="Exagération du relief"><output id="cp-exa">×1,5</output></label>'
+          +'<button type="button" class="cp-survol" id="cp-survol" onclick="CP.survol()" aria-pressed="false">'+_acIco('play',18)+'<span>Survol</span></button>':'')
+      +'</div>'
+      +'<div class="cp-colle"><div class="cp-lect" id="cp-lect" aria-live="off"></div>'
+      +'<div class="cp-prof" id="cp-prof" role="slider" tabindex="0" aria-label="Position sur le parcours (glisse le doigt sur le profil)" aria-valuemin="0" aria-valuemax="'+(D.profil_dist||0)+'" aria-valuenow="0"></div></div>'
+      +'<section class="cp-sec" aria-labelledby="cp-leg-t"><h3 class="ac-h2" id="cp-leg-t">Répartition</h3><div id="cp-leg"></div></section>'
+      +'<section class="cp-sec" aria-labelledby="cp-pts-t"><h3 class="ac-h2" id="cp-pts-t">Les points clés</h3><ul class="cp-pts" id="cp-pts"></ul></section>'
+      +'<p class="cp-src" id="cp-src"></p></div>';
+  }
+  function remplir(){
+    var C=M.C,n=M.n;
+    document.getElementById('cp-chif').textContent=nb(M.L/1000,1)+' km · '+(M.lat?'+'+nb(M.dp[n-1],0)+' m · −'+nb(M.dm[n-1],0)+' m · ':'')+nb(M.zmin,0)+' à '+nb(M.zmax,0)+' m d\'altitude';
+    var p=document.getElementById('cp-prof');if(p)p.setAttribute('aria-valuemax',(M.L/1000).toFixed(2));
+    profil();lecture();legende();liste();
+    document.getElementById('cp-src').innerHTML=(M.lat?'Trace GPX de la course ('+nb(M.L/1000,1)+' km). ':'Profil du dossier de course, sans carte. ')
+      +'Altitude lissée sur 125 m, pente mesurée sur 200 m'+(M.lat?' ; D+ et D− mesurés sur cette trace (les chiffres officiels font foi). ':'. ')
+      +(C.cible_min?'Heures de passage : km-effort du dossier (1 km + 100 m de D+), réparties sur '+hm(C.cible_min)+' visées, départ à '+heure(C.depart,0)+'. ':'')
+      +(C.terrain==='osm'?'Sol : © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors (ODbL). ':'Sol : dossier de course. ')
+      +(M.lat?'Fonds : OpenStreetMap, OpenTopoMap, Esri ; relief : AWS Terrain Tiles.':'');
+  }
+  function cell(lb,v,sous){return '<div class="cp-lc"><p class="ac-lb">'+lb+'</p><p class="cp-lc-v">'+v+'</p>'+(sous?'<p class="cp-lc-s">'+sous+'</p>':'')+'</div>';}
+  function lecture(){
+    var z=document.getElementById('cp-lect');if(!z||!M)return;var i=CUR,s=M.pente[i];
+    var sol=M.sol?solDe(M.sol[i]).c:(SOLE==='charge'?'…':'—');
+    z.innerHTML=cell('Km',nb(M.dist[i]/1000,1))+cell('Altitude',nb(M.ele[i],0)+'<span class="ac-u">m</span>')
+      +cell('Pente','<span class="cp-pastille" style="background:'+cPente(M.cls[i])+'"></span>'+signe(s,1)+'<span class="ac-u">%</span>')
+      +cell('Sol',_acEsc(sol))+(M.C.cible_min?cell('Passage',heure(M.C.depart,M.tps[i]),'en '+hm(M.tps[i])):cell('D+',nb(M.dp[i],0)+'<span class="ac-u">m</span>'));
+    var p=document.getElementById('cp-prof');
+    if(p){p.setAttribute('aria-valuenow',(M.dist[i]/1000).toFixed(2));
+      p.setAttribute('aria-valuetext','km '+nb(M.dist[i]/1000,1)+', altitude '+nb(M.ele[i],0)+' mètres, pente '+signe(s,1)+' %'+(M.sol?', '+solDe(M.sol[i]).l:''));}
+  }
+  /* profil : aire colorée selon la pente (ou le sol), ligne d'altitude, sections du dossier, ravitos, curseur */
+  var PH=150,PL=34,PR=8,PT=20,PB=20;
+  function px(i){return PL+(M.dist[i]/M.L)*(PW-PL-PR);}
+  function yb(){var a=M.zmin,b=M.zmax,r=Math.max(30,b-a);return [a-r*.06,b+r*.1];}
+  function py(e){var b=yb();return PT+(1-(e-b[0])/(b[1]-b[0]))*(PH-PT-PB);}
+  function profil(){
+    var z=document.getElementById('cp-prof');if(!z||!M)return;PW=Math.max(280,Math.round(z.clientWidth||358));
+    var n=M.n,base=PH-PB,s='',a=0,i,k;
+    var bornes=yb(),pasA=bornes[1]-bornes[0]>400?200:bornes[1]-bornes[0]>120?50:10;
+    for(var h=Math.ceil(bornes[0]/pasA)*pasA;h<=bornes[1];h+=pasA)s+='<line x1="'+PL+'" x2="'+(PW-PR)+'" y1="'+py(h).toFixed(1)+'" y2="'+py(h).toFixed(1)+'" class="cp-g"/><text x="'+(PL-4)+'" y="'+(py(h)+3.5).toFixed(1)+'" class="cp-ax" text-anchor="end">'+nb(h,0)+'</text>';
+    M.sections.forEach(function(S){var x=px(idx(M,S.a));if(S.a>0.05)s+='<line x1="'+x.toFixed(1)+'" x2="'+x.toFixed(1)+'" y1="'+(PT-4)+'" y2="'+base+'" class="cp-sep"/>';
+      var xm=(x+px(idx(M,Math.min(S.b,M.L/1000))))/2;s+='<text x="'+xm.toFixed(1)+'" y="'+(PT-8)+'" class="cp-secn" text-anchor="middle">'+S.n+'</text>';});
+    /* couleurs du profil : un passage plus court que 3 px prend la couleur du précédent (sinon des rayures illisibles) */
+    var dc=[],mr=Math.max(1,Math.ceil(3*(M.L/(PW-PL-PR))/PAS)),r0=0;for(i=0;i<n;i++)dc.push(cl(i));
+    for(i=1;i<=n;i++)if(i===n||dc[i]!==dc[r0]){if(i-r0<mr&&r0>0)for(k=r0;k<i;k++)dc[k]=dc[r0-1];r0=i;}
+    for(i=1;i<=n;i++){if(i===n||dc[i]!==dc[a]){var b=Math.min(i,n-1),d='M'+px(a).toFixed(1)+' '+base;
+        for(k=a;k<=b;k++)d+='L'+px(k).toFixed(1)+' '+py(M.ele[k]).toFixed(1);
+        s+='<path d="'+d+'L'+px(b).toFixed(1)+' '+base+'Z" fill="'+col(dc[a])+'"/>';a=i;}}
+    var ln='M'+px(0).toFixed(1)+' '+py(M.ele[0]).toFixed(1);for(k=1;k<n;k++)ln+='L'+px(k).toFixed(1)+' '+py(M.ele[k]).toFixed(1);
+    s+='<path d="'+ln+'" class="cp-ln"/>';
+    var pk=M.L>30000?10:5;for(k=0;k<=M.L/1000+0.01;k+=pk){var xk=px(idx(M,k));s+='<text x="'+xk.toFixed(1)+'" y="'+(PH-5)+'" class="cp-ax" text-anchor="middle">'+k+'</text>';}
+    M.points.forEach(function(p){if(p.k!=='ravito')return;var x=px(p.i);s+='<line x1="'+x.toFixed(1)+'" x2="'+x.toFixed(1)+'" y1="'+py(M.ele[p.i]).toFixed(1)+'" y2="'+base+'" class="cp-rv"/><circle cx="'+x.toFixed(1)+'" cy="'+base+'" r="3.5" class="cp-rvp"/>';});
+    s+='<line id="cp-pcl" x1="0" x2="0" y1="'+(PT-6)+'" y2="'+base+'" class="cp-pcl"/><circle id="cp-pcc" r="5.5" class="cp-pcc"/>';
+    z.innerHTML='<svg viewBox="0 0 '+PW+' '+PH+'" width="'+PW+'" height="'+PH+'" aria-hidden="true">'+s+'</svg>';
+    curseurProfil();
+  }
+  function curseurProfil(){var l=document.getElementById('cp-pcl'),c=document.getElementById('cp-pcc');if(!l||!M)return;
+    var x=px(CUR).toFixed(1);l.setAttribute('x1',x);l.setAttribute('x2',x);c.setAttribute('cx',x);c.setAttribute('cy',py(M.ele[CUR]).toFixed(1));}
+  function legende(){
+    var z=document.getElementById('cp-leg');if(!z||!M)return;
+    if(MODE==='sol'&&!M.sol){z.innerHTML=etatSol();return;}
+    var tot={},i;for(i=1;i<M.n;i++){var k=cl(i);tot[k]=(tot[k]||0)+(M.dist[i]-M.dist[i-1]);}
+    var L=MODE==='sol'?SOLS:PENTES;
+    z.innerHTML='<ul class="cp-leg">'+L.filter(function(x){return (tot[x.k]||0)>0;}).map(function(x){var km=tot[x.k]/1000;
+      return '<li><span class="cp-sw" style="background:'+col(x.k)+'"></span><span class="cp-leg-t">'+x.l+(x.r?'<span class="cp-leg-r">'+x.r+'</span>':'')+'</span>'
+        +'<span class="cp-leg-v"><b>'+nb(km,1)+'</b> km<span class="cp-leg-p">'+nb(km*1000/M.L*100,0)+' %</span></span></li>';}).join('')+'</ul>'
+      +(MODE==='sol'?'<p class="cp-note">'+(M.C.terrain==='osm'?'D\'après OpenStreetMap'+(M.solDate?', chargé le '+M.solDate:'')+' : chaque point prend le chemin cartographié le plus proche (30 m au plus). « Non renseigné » : aucun chemin trouvé, ou chemin mal tracé. '
+          +'<button type="button" class="cp-lien" onclick="CP.recharger()">Recharger</button>':'D\'après le dossier de course : route bitumée de bout en bout.')+'</p>'
+        :'<p class="cp-note">Pente mesurée sur 200 m ; les passages de moins de 50 m prennent la couleur de ce qui les entoure. Au-delà de +7 %, le dossier conseille de marcher.</p>');
+  }
+  function etatSol(){
+    if(SOLE==='horsligne')return '<p class="cp-note">Hors connexion : le type de sol sera chargé depuis OpenStreetMap au prochain affichage en ligne.</p>';
+    if(SOLE==='erreur')return '<p class="cp-note">OpenStreetMap n\'a pas répondu. <button type="button" class="cp-lien" onclick="CP.recharger()">Réessayer</button></p>';
+    return '<p class="cp-note cp-charge" role="status">Chargement des chemins depuis OpenStreetMap…</p>';
+  }
+  function liste(){
+    var z=document.getElementById('cp-pts');if(!z)return;
+    z.innerHTML=M.points.map(function(p,k){var km=M.dist[p.i]/1000,
+        kt=p.j!=null?'km '+nb(km,1)+' → '+nb(M.dist[p.j]/1000,1):'km '+nb(km,1);
+      return '<li><button type="button" class="cp-pt cp-pt-'+p.k+'" onclick="CP.aller('+k+')">'
+        +'<span class="cp-pt-b" aria-hidden="true"></span><span class="cp-pt-x"><span class="cp-pt-t">'+_acEsc(p.t)+'</span>'
+        +'<span class="cp-pt-s">'+_acEsc(kt+(p.s?' · '+p.s:''))+'</span></span>'
+        +(M.C.cible_min?'<span class="cp-pt-h"><span class="ac-lb">vers</span>'+heure(M.C.depart,M.tps[p.i])+'</span>':'')+'</button></li>';}).join('');
+  }
+  function curseur(i,o){
+    if(!M)return;o=o||{};i=Math.max(0,Math.min(M.n-1,Math.round(i)));var change=i!==CUR;CUR=i;
+    if(change||o.force){lecture();curseurProfil();if(CURMK&&M.lat)CURMK.setLngLat([M.lon[i],M.lat[i]]);}
+    if(o.voler&&MAP)MAP.easeTo({center:[M.lon[i],M.lat[i]],zoom:Math.max(MAP.getZoom(),13.5),duration:reduit()?0:700});
+  }
+
+  /* ---------- carte ---------- */
+  function msgCarte(t){var m=document.getElementById('cp-msgc');if(!m)return;m.textContent=t||'';m.hidden=!t;}
+  function webgl(){try{var c=document.createElement('canvas');return !!(c.getContext('webgl2')||c.getContext('webgl'));}catch(e){return false;}}
+  function chargerLib(){
+    if(window.maplibregl)return Promise.resolve(window.maplibregl);if(LIB)return LIB;
+    LIB=new Promise(function(ok,ko){
+      if(!document.querySelector('link[data-cp]')){var l=document.createElement('link');l.rel='stylesheet';l.href='src/vendor/maplibre-gl.css';l.setAttribute('data-cp','');document.head.appendChild(l);}
+      var s=document.createElement('script');s.src='src/vendor/maplibre-gl.js';s.async=true;
+      s.onload=function(){if(window.maplibregl)ok(window.maplibregl);else ko(new Error('MapLibre absent'));};
+      s.onerror=function(){ko(new Error('MapLibre non chargé'));};document.head.appendChild(s);
+    }).catch(function(e){LIB=null;throw e;});
+    return LIB;
+  }
+  function geo(){var f=[],n=M.n,a=0;
+    for(var i=1;i<=n;i++){if(i===n||cl(i)!==cl(a)){var co=[];for(var k=a;k<=Math.min(i,n-1);k++)co.push([M.lon[k],M.lat[k]]);
+        if(co.length>1)f.push({type:'Feature',properties:{c:col(cl(a))},geometry:{type:'LineString',coordinates:co}});a=i;}}
+    return {type:'FeatureCollection',features:f};}
+  function traceCarte(){if(MAP&&MAP.getSource&&MAP.getSource('trace'))MAP.getSource('trace').setData(geo());}
+  function bornesCarte(i0,i1){var a=i0||0,b=i1==null?M.n-1:i1,w=180,s=90,e=-180,nn=-90;
+    for(var i=a;i<=b;i++){w=Math.min(w,M.lon[i]);e=Math.max(e,M.lon[i]);s=Math.min(s,M.lat[i]);nn=Math.max(nn,M.lat[i]);}
+    return [[w,s],[e,nn]];}
+  function azimut(i,j){var a=M.lat[i]*Math.PI/180,b=M.lat[j]*Math.PI/180,dl=(M.lon[j]-M.lon[i])*Math.PI/180;
+    return (Math.atan2(Math.sin(dl)*Math.cos(b),Math.cos(a)*Math.sin(b)-Math.sin(a)*Math.cos(b)*Math.cos(dl))*180/Math.PI+360)%360;}
+  function azAt(i){return azimut(Math.max(0,Math.min(i,M.n-17)),Math.min(M.n-1,Math.max(i,0)+16));}
+  function style(){
+    var att='<a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">© OpenStreetMap</a>';
+    return {version:8,
+      sources:{
+        plan:{type:'raster',tiles:['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],tileSize:256,maxzoom:19,attribution:att},
+        topo:{type:'raster',tiles:['a','b','c'].map(function(s){return 'https://'+s+'.tile.opentopomap.org/{z}/{x}/{y}.png';}),tileSize:256,maxzoom:17,attribution:'© <a href="https://opentopomap.org" target="_blank" rel="noopener">OpenTopoMap</a> (CC-BY-SA), '+att},
+        sat:{type:'raster',tiles:['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'],tileSize:256,maxzoom:18,attribution:'Imagerie © Esri, Maxar, Earthstar Geographics'},
+        dem:{type:'raster-dem',tiles:[DEM],encoding:'terrarium',tileSize:256,maxzoom:14,attribution:'Relief : AWS Terrain Tiles'},
+        ombre:{type:'raster-dem',tiles:[DEM],encoding:'terrarium',tileSize:256,maxzoom:14},
+        trace:{type:'geojson',data:geo()}},
+      layers:[
+        {id:'cp-fond',type:'background',paint:{'background-color':coul('--gris-fond')}},
+        {id:'cp-plan',type:'raster',source:'plan',layout:{visibility:FOND==='plan'?'visible':'none'},paint:{'raster-saturation':-0.45}},
+        {id:'cp-topo',type:'raster',source:'topo',layout:{visibility:FOND==='topo'?'visible':'none'}},
+        {id:'cp-sat',type:'raster',source:'sat',layout:{visibility:FOND==='sat'?'visible':'none'}},
+        {id:'cp-ombre',type:'hillshade',source:'ombre',paint:{'hillshade-exaggeration':FOND==='sat'?0.1:0.3,'hillshade-shadow-color':coul('--texte')}},
+        {id:'cp-trace-bord',type:'line',source:'trace',layout:{'line-join':'round','line-cap':'round'},paint:{'line-color':'#ffffff','line-width':['interpolate',['linear'],['zoom'],9,4.5,15,11]}},
+        {id:'cp-trace',type:'line',source:'trace',layout:{'line-join':'round','line-cap':'round'},paint:{'line-color':['get','c'],'line-width':['interpolate',['linear'],['zoom'],9,2.5,15,6.5]}}],
+      terrain:{source:'dem',exaggeration:EXA}};
+  }
+  function carte(){
+    if(!M||!M.lat||!document.getElementById('cp-map'))return;
+    if(!webgl()){msgCarte('Ce navigateur n\'affiche pas la carte 3D (WebGL indisponible). Le profil et les points clés restent là.');return;}
+    var m=M;
+    chargerLib().then(function(gl){
+      if(M!==m||!document.getElementById('cp-map'))return;
+      MAP=new gl.Map({container:'cp-map',style:style(),bounds:bornesCarte(),fitBoundsOptions:{padding:30},attributionControl:false,
+        maxPitch:78,dragRotate:true,touchPitch:true,pitchWithRotate:true,fadeDuration:0});
+      MAP.addControl(new gl.AttributionControl({compact:true}),'bottom-right');
+      marqueurs(gl);vue(VUE,true);
+      var pret=function(){if(M!==m)return;msgCarte(navigator.onLine===false?'Hors connexion : pas de fond de carte, le tracé reste affiché.':'');};
+      MAP.once('load',pret);setTimeout(function(){if(M===m&&MAP&&!MAP.loaded())pret();},6000);
+      MAP.on('error',function(e){if(e&&e.error&&!/Failed to fetch|NetworkError|Load failed|AJAXError|404|403/.test(String(e.error.message||e.error)))console.warn('Parcours : carte',e.error);});
+      MAP.on('click','cp-trace',function(e){if(e&&e.lngLat)curseur(proche(e.lngLat.lat,e.lngLat.lng));});
+      ['dragstart','touchstart','wheel'].forEach(function(t){MAP.on(t,function(){if(SURV)stopSurvol();});});
+      MAP.on('zoom',kmVis);
+    }).catch(function(e){console.warn('Parcours : bibliothèque de carte',e);
+      msgCarte(navigator.onLine===false?'Hors connexion : la carte n\'a pas encore été chargée sur ce téléphone. Le profil et les points clés restent là.':'La carte n\'a pas pu se charger. Le profil et les points clés restent là.');});
+  }
+  function proche(la,lo){var b=0,bd=1e18,k=Math.cos(la*Math.PI/180);for(var i=0;i<M.n;i++){var dx=(M.lon[i]-lo)*k,dy=M.lat[i]-la,d=dx*dx+dy*dy;if(d<bd){bd=d;b=i;}}return b;}
+  function marqueurs(gl){
+    MK.forEach(function(x){x.remove();});MK=[];KMK=[];
+    var pose=function(el,i,anc){var mk=new gl.Marker({element:el,anchor:anc||'center'}).setLngLat([M.lon[i],M.lat[i]]).addTo(MAP);MK.push(mk);return mk;};
+    for(var k=5;k<M.L/1000-1;k+=5){var e=document.createElement('span');e.className='cp-km';e.textContent=k;e.setAttribute('aria-hidden','true');pose(e,idx(M,k));KMK.push(e);}
+    /* les repères et les bornes kilométriques n'apparaissent qu'en zoomant (au-delà de 11,6), pour ne pas charger la vue d'ensemble */
+    M.points.forEach(function(p){if(['depart','arrivee','ravito','repere'].indexOf(p.k)<0)return;
+      var el=document.createElement('span');el.className='cp-mk cp-mk-'+p.k;el.setAttribute('aria-hidden','true');
+      var nom=p.k==='depart'?'Départ':p.k==='arrivee'?'Arrivée':p.nom;
+      el.innerHTML='<span class="cp-mk-t">'+_acEsc(nom)+(M.C.cible_min&&p.k!=='repere'?' · '+heure(M.C.depart,M.tps[p.i]):'')+'</span>';
+      el.addEventListener('click',function(ev){ev.stopPropagation();stopSurvol();curseur(p.i);});
+      pose(el,p.i,'bottom');if(p.k==='repere')KMK.push(el);});
+    var c=document.createElement('span');c.className='cp-cur';c.setAttribute('aria-hidden','true');CURMK=pose(c,CUR);
+    kmVis();
+  }
+  function kmVis(){if(!MAP)return;var v=MAP.getZoom()>=11.6;KMK.forEach(function(e){e.classList.toggle('cp-cache',!v);});}
+  function presse(sel,attr,val){document.querySelectorAll('#cp '+sel).forEach(function(b){b.setAttribute('aria-pressed',b.getAttribute(attr)===val?'true':'false');});}
+  function vue(v,init){
+    VUE=v==='haut'?'haut':'3d';presse('[data-vue]','data-vue',VUE);if(!MAP||!M)return;stopSurvol();
+    var az=VUE==='3d'?azimut(0,M.n-1):0,cam=MAP.cameraForBounds(bornesCarte(),{padding:{top:56,bottom:30,left:24,right:24},bearing:az});
+    if(!cam)return;
+    MAP.easeTo({center:cam.center,zoom:cam.zoom+(VUE==='3d'?0.3:0),bearing:az,pitch:VUE==='3d'?58:0,duration:(init||reduit())?0:900});
+  }
+  function fond(f){FOND=f;presse('[data-fond]','data-fond',f);if(!MAP||!MAP.getLayer('cp-plan'))return;
+    ['plan','topo','sat'].forEach(function(x){MAP.setLayoutProperty('cp-'+x,'visibility',x===f?'visible':'none');});
+    MAP.setPaintProperty('cp-ombre','hillshade-exaggeration',f==='sat'?0.1:0.3);}
+  function relief(v){EXA=Math.max(1,Math.min(3,parseFloat(v)||1.5));var o=document.getElementById('cp-exa');if(o)o.textContent='×'+nb(EXA,1);
+    if(MAP&&MAP.getSource('dem'))MAP.setTerrain({source:'dem',exaggeration:EXA});}
+  function mode(md){MODE=md==='sol'?'sol':'pente';presse('[data-mode]','data-mode',MODE);if(!M)return;profil();legende();traceCarte();
+    var t=document.getElementById('cp-leg-t');if(t)t.textContent=MODE==='sol'?'Type de sol':'Répartition des pentes';}
+
+  /* survol : la caméra suit le tracé depuis le curseur ; pas à pas (un saut toutes les 1,5 s) sous « réduire les animations » */
+  function majSurvol(on){var b=document.getElementById('cp-survol');if(!b)return;b.setAttribute('aria-pressed',on?'true':'false');
+    b.innerHTML=_acIco(on?'pause':'play',18)+'<span>'+(on?'Pause':'Survol')+'</span>';}
+  function stopSurvol(){if(!SURV)return;cancelAnimationFrame(SURV.raf);clearTimeout(SURV.t);SURV=null;majSurvol(false);}
+  function survol(){
+    if(SURV){stopSurvol();return;}if(!MAP||!M)return;
+    if(CUR>=M.n-2)curseur(0);
+    SURV={raf:0,t:0};majSurvol(true);var pitch=VUE==='3d'?62:0;
+    if(reduit()){var N=24,k=Math.round(CUR/(M.n-1)*N);
+      var pas=function(){if(!SURV)return;var i=Math.round(k/N*(M.n-1));curseur(i);
+        MAP.jumpTo({center:[M.lon[i],M.lat[i]],zoom:13.6,pitch:pitch,bearing:VUE==='3d'?azAt(i):0});
+        if(++k>N){stopSurvol();return;}SURV.t=setTimeout(pas,1500);};
+      pas();return;}
+    var dur=Math.max(30000,Math.min(90000,M.L/1000*1600)),t0=null,br=VUE==='3d'?azAt(CUR):0,dep=CUR;
+    MAP.easeTo({center:[M.lon[CUR],M.lat[CUR]],zoom:14,pitch:pitch,bearing:br,duration:800});
+    var tick=function(ts){if(!SURV)return;if(t0==null)t0=ts;var p=dep/(M.n-1)+(ts-t0)/dur;
+      if(p>=1){curseur(M.n-1);stopSurvol();return;}
+      var i=Math.round(p*(M.n-1));if(VUE==='3d'){var a=azAt(i),d=((a-br+540)%360)-180;br=(br+d*0.035+360)%360;}
+      MAP.jumpTo({center:[M.lon[i],M.lat[i]],zoom:14,pitch:pitch,bearing:br});curseur(i);SURV.raf=requestAnimationFrame(tick);};
+    SURV.t=setTimeout(function(){if(SURV)SURV.raf=requestAnimationFrame(tick);},850);
+  }
+
+  /* ---------- interactions du profil ---------- */
+  function brancherProfil(){
+    var z=document.getElementById('cp-prof');if(!z)return;
+    var depuisX=function(ev){var r=z.getBoundingClientRect(),x=(ev.clientX-r.left)*(PW/r.width),f=(x-PL)/(PW-PL-PR);
+      curseur(Math.max(0,Math.min(1,f))*M.L/PAS);};
+    z.addEventListener('pointerdown',function(ev){if(!M)return;stopSurvol();GLISSE=true;try{z.setPointerCapture(ev.pointerId);}catch(e){}depuisX(ev);});
+    z.addEventListener('pointermove',function(ev){if(GLISSE&&M)depuisX(ev);});
+    var fin=function(){if(GLISSE&&MAP&&M)MAP.easeTo({center:[M.lon[CUR],M.lat[CUR]],duration:reduit()?0:500});GLISSE=false;};
+    z.addEventListener('pointerup',fin);z.addEventListener('pointercancel',function(){GLISSE=false;});
+    z.addEventListener('keydown',function(ev){if(!M)return;var p=Math.round(100/PAS),g=Math.round(1000/PAS),t={ArrowRight:p,ArrowUp:p,ArrowLeft:-p,ArrowDown:-p,PageUp:g,PageDown:-g}[ev.key];
+      if(ev.key==='Home')t=-CUR;if(ev.key==='End')t=M.n-1-CUR;if(t==null)return;ev.preventDefault();stopSurvol();curseur(CUR+t,{voler:true});});
+  }
+  function aller(k){
+    if(!M)return;var p=M.points[k];if(!p)return;stopSurvol();curseur(p.i);
+    var c=document.querySelector('#cp .cp-corps');if(c&&MAP)c.scrollTo({top:0,behavior:reduit()?'auto':'smooth'});
+    if(!MAP)return;
+    if(p.j!=null){var cam=MAP.cameraForBounds(bornesCarte(p.i,p.j),{padding:60,bearing:MAP.getBearing()});
+      if(cam)MAP.easeTo({center:cam.center,zoom:Math.min(cam.zoom,15.5),bearing:MAP.getBearing(),pitch:MAP.getPitch(),duration:reduit()?0:800});}
+    else MAP.easeTo({center:[M.lon[p.i],M.lat[p.i]],zoom:Math.max(MAP.getZoom(),14),duration:reduit()?0:800});
+  }
+
+  /* ---------- ouvrir / fermer ---------- */
+  function clavier(e){
+    if(e.key==='Escape'){e.preventDefault();e.stopImmediatePropagation();fermer();return;} /* la fiche du dossier, dessous, reste ouverte */
+    if(e.key!=='Tab')return;var el=document.getElementById('cp');if(!el)return;
+    var f=[].slice.call(el.querySelectorAll('button,[href],input,[tabindex="0"]')).filter(function(x){return x.offsetParent!==null&&!x.disabled;});
+    if(!f.length)return;var a=f[0],b=f[f.length-1];
+    if(e.shiftKey&&document.activeElement===a){e.preventDefault();b.focus();}else if(!e.shiftKey&&document.activeElement===b){e.preventDefault();a.focus();}
+  }
+  function ouvrir(id,btn){
+    if(!window.DOSSIERS||!DOSSIERS[id])return;
+    fermer(true);OUVREUR=btn||document.activeElement;ID=id;MODE='pente';FOND='plan';VUE='3d';EXA=1.5;CUR=0;SOLE='';
+    var D=DOSSIERS[id],el=document.createElement('div');el.id='cp';el.className='cp';
+    el.setAttribute('role','dialog');el.setAttribute('aria-modal','true');el.setAttribute('aria-labelledby','cp-t');
+    el.innerHTML=squelette(D);document.body.appendChild(el);
+    requestAnimationFrame(function(){el.classList.add('on');});
+    document.addEventListener('keydown',clavier,true);
+    try{el.querySelector('.cp-fermer').focus({preventScroll:true});}catch(e){}
+    brancherProfil();
+    return charger(id).then(function(m){if(ID!==id)return;M=m;remplir();carte();chargerSol();})
+      .catch(function(e){console.warn('Parcours',e);var l=document.getElementById('cp-lect');
+        if(l)l.innerHTML='<p class="cp-note">Le parcours n\'a pas pu se charger. Vérifie ta connexion puis réessaie.</p>';});
+  }
+  function fermer(sansFocus){
+    stopSurvol();document.removeEventListener('keydown',clavier,true);
+    if(MAP){try{MAP.remove();}catch(e){}MAP=null;}MK=[];KMK=[];CURMK=null;M=null;ID=null;
+    var el=document.getElementById('cp');
+    if(el){el.id='';el.classList.remove('on');if(reduit())el.remove();else setTimeout(function(){el.remove();},240);}
+    if(!sansFocus&&OUVREUR&&OUVREUR.focus){try{OUVREUR.focus({preventScroll:true});}catch(e){}}
+  }
+  window.addEventListener('resize',function(){if(M&&document.getElementById('cp-prof'))profil();});
+  return {ouvrir:ouvrir,fermer:function(){fermer();},vue:vue,fond:fond,relief:relief,mode:mode,survol:survol,aller:aller,
+    recharger:function(){chargerSol(true);},
+    /* tests : état courant, sans effet de bord */
+    _etat:function(){return M?{n:M.n,L:M.L,cur:CUR,mode:MODE,fond:FOND,vue:VUE,exa:EXA,sol:M.sol,soleEtat:SOLE,dp:M.dp[M.n-1],dm:M.dm[M.n-1],
+      points:M.points.map(function(p){return {k:p.k,t:p.t,i:p.i,j:p.j,h:M.C.cible_min?heure(M.C.depart,M.tps[p.i]):''};}),carte:!!MAP,survol:!!SURV}:null;},
+    _classer:function(ways){return M&&M.lat?classer(M,ways):'';},_solTags:solTags};
+})();

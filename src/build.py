@@ -43,7 +43,7 @@ def prepare():
         if os.path.isfile(p):
             shutil.copy2(p, os.path.join(WORK, name))
     # Textes (revues, Rewinds) et logs de seance lus par gen.py : copie fraiche, sans fichier perime
-    for sous in ("textes", "logs", "rewind"):
+    for sous in ("textes", "logs", "rewind", "carto"):
         cible = os.path.join(WORK, sous)
         if os.path.isdir(cible):
             shutil.rmtree(cible)
@@ -64,6 +64,12 @@ def stage_site():
     os.makedirs(os.path.join(SITE, "src", "fonts"), exist_ok=True)
     for n in polices:
         shutil.copyfile(os.path.join(SRC, "fonts", n), os.path.join(SITE, "src", "fonts", n))
+    # Bibliotheque de carte (MapLibre GL, licence BSD-3) : servie depuis src/vendor/, chargee seulement a
+    # l'ouverture de l'ecran « Le parcours ». Hors pre-cache (1 Mo) : le service worker la garde apres le 1er usage.
+    if os.path.isdir(os.path.join(SRC, "vendor")):
+        os.makedirs(os.path.join(SITE, "src", "vendor"), exist_ok=True)
+        for n in sorted(os.listdir(os.path.join(SRC, "vendor"))):
+            shutil.copyfile(os.path.join(SRC, "vendor", n), os.path.join(SITE, "src", "vendor", n))
     # sw.js : modele src/sw.js dont le nom de cache suit le numero de build
     meta = json.load(open(os.path.join(SITE, "data", "meta.json"), encoding="utf-8"))
     build = meta["CHANGELOG"][0]["build"]

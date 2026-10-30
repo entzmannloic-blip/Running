@@ -89,6 +89,14 @@ python scripts/release.py           # porte complète — ne JAMAIS utiliser --p
 
 `git revert <commit>` (fusion « squash »), nouvelle PR, même circuit. Pour une seule séance : supprimer `src/logs/S44-2.json` et sa revue, rebuild.
 
+## Carte d'une course : écran « Le parcours » (build 292)
+Le dossier de course ouvre l'écran « Le parcours » (`CP` dans `src/app.js`) quand il a une clé `carto` dans `DOSSIERS` (`src/gen.py`).
+
+1. **La trace** : `python scripts/carto_course.py <id> <fichier.gpx ou .csv>` écrit `src/carto/<id>.json` (un point tous les 25 m, entiers codés en écarts). Garder la source à côté (`src/carto/<id>-trace.csv`, colonnes `lat,lon,ele`). Le script refuse une trace avec un saut de plus d'1 km.
+2. **Le dossier** : `"carto":{"trace":"<id>","depart":"23:00","cible_min":360,"km_officiel":45.0,"terrain":"osm","ravitos":[[km_officiel,"Nom","Ce qu'on y trouve"]],"reperes":[[km_trace,"Nom","Détail"]],"depart_nom":"…","arrivee_nom":"…"}`. Sans `trace`, l'écran montre le profil du dossier (`profil_pts`) sans carte (cas de Nice tant que son GPX n'est pas fourni). `terrain` : `"osm"` (Overpass interrogé depuis le téléphone, résultat gardé dans `localStorage`, clé `cp_sol_<trace>_<n>`) ou `"bitume"` (route de bout en bout).
+3. `src/assemble.py` publie `data/carto-<id>.json` et vérifie que chaque trace déclarée existe. Pentes, montées, heures de passage (km-effort : 1 km + 100 m de D+, réparti sur `cible_min`) et sol sont calculés dans l'app.
+4. Carte : MapLibre GL 5 dans `src/vendor/` (licence BSD-3, `maplibre-gl-LICENSE.txt`), chargée à la demande et hors pré-cache. Pour la mettre à jour : `npm pack maplibre-gl@5`, copier `dist/maplibre-gl.js` (sans la ligne `sourceMappingURL`) et `dist/maplibre-gl.css`. Fonds : tile.openstreetmap.org, OpenTopoMap, Esri World Imagery ; relief : AWS Terrain Tiles (terrarium). Tests : T34 à T38 de `scripts/test_regression.py` (tuiles, relief et Overpass servis par le test).
+
 ## Règles de sécurité
 
 - **Aucun token dans le dépôt** (le preflight le vérifie). L'accès se fait par `gh`.

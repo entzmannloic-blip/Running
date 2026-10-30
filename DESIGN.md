@@ -114,6 +114,9 @@ Chaque état a un aplat (graphes, points), une encre (texte) et un fond (puces).
 - **Fond** #F4F4F6 (`--bg-page`, `--gris-fond`) : Accueil, Séances, Cockpit, Courses. **Papier** #FFFFFF (`--bg-card`) : cartes, fiche, Rewind.
 - **Ligne** #E7E7EA (`--gris-clair`) : séparateurs d'un pixel. **Ligne forte** #D4D4D8 (`--ligne-forte`) : axes, points de repos. **Gris** #A1A1AA (`--gris`) : éléments inactifs.
 
+### Données du parcours (build 292)
+Couleurs de données de l'écran « Le parcours », en jetons dans `src/css.txt` : pente `--pente-d2` (descente raide, bleu foncé), `--pente-d1` (descente, bleu clair), `--pente-p` (roulant, gris), `--pente-m1` à `--pente-m3` (montée, rampe orange jusqu'au brun). Le bleu n'existe que pour les descentes : il oppose clairement descente et montée sur la carte comme sur le profil. Sol : `--sol-bitume` (encre), `--sol-chemin` (ocre), `--sol-sentier` (vert), `--sol-escalier` (rouge), `--sol-inconnu` (gris clair). L'app lit ces jetons pour la carte (`getComputedStyle`), jamais de couleur en dur.
+
 ### Named Rules
 **The One Voice Rule.** L'orange est le seul accent de marque. Une couleur d'état n'est jamais utilisée pour décorer, et chaque état garde un seul sens.
 **The Ink Rule.** Le petit texte orange est en orange encre ; l'orange vif est réservé aux aplats, aux graphes et au grand texte.
