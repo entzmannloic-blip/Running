@@ -1325,7 +1325,9 @@ def run():
                   len(cotes) >= 4 and all(c["dur"] and c["dur"] > 0 and 210 <= c["pace"] <= 480 and 100 <= c["fc"] <= 200 for c in cotes)
                   and pg.inner_text("#cp-pts").count("/km") >= len(cotes),
                   str([(c["t"], round(c["dur"] or 0), round(c["pace"] or 0), c["fc"]) for c in cotes]))
-            # T40 : interactions
+            # T40 : interactions (le profil est amené à l'écran : sa hauteur dépend des polices du système, cf. CI)
+            pg.locator("#cp-prof").scroll_into_view_if_needed()
+            pg.wait_for_timeout(300)
             bx = pg.locator("#cp-prof").bounding_box()
             pg.mouse.move(bx["x"] + bx["width"] * 0.3, bx["y"] + bx["height"] / 2)
             pg.mouse.down()
