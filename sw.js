@@ -1,4 +1,4 @@
-/* Service worker — genere par src/build.py (ne pas copier a la main : 292 et [
+/* Service worker — genere par src/build.py (ne pas copier a la main : 295 et [
  "./",
  "./index.html",
  "./manifest.json",
@@ -16,13 +16,16 @@
  "./data/rewind-43-8.json",
  "./data/rewind-44-2.json",
  "./data/rewind-44-3.json",
+ "./data/rewind-44-4.json",
  "./data/rewind-44-5.json",
+ "./data/rewind-44-6.json",
+ "./data/rewind-45-1.json",
  "./data/seances.json",
  "./data/textes.json"
 ]
    sont remplaces). Le nom du cache suit le numero de build : un nouveau build = nouveau cache,
    les anciens (dont plan-v34) sont supprimes a l'activation. */
-const BUILD='292';
+const BUILD='295';
 const CACHE='plan-'+BUILD;
 const SHELL=[
  "./",
@@ -42,7 +45,10 @@ const SHELL=[
  "./data/rewind-43-8.json",
  "./data/rewind-44-2.json",
  "./data/rewind-44-3.json",
+ "./data/rewind-44-4.json",
  "./data/rewind-44-5.json",
+ "./data/rewind-44-6.json",
+ "./data/rewind-45-1.json",
  "./data/seances.json",
  "./data/textes.json"
 ];

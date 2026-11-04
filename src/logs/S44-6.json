@@ -1,0 +1,81 @@
+{
+ "seance": {
+  "chaussure_realise": "ASICS Novablast 5 J",
+  "segments": [
+   {
+    "nom": "Footing",
+    "role": "10 km a 6:06/km, FC 150.",
+    "duree": 3300,
+    "couleur": "vert",
+    "bloc": "—",
+    "hauteur": 40
+   }
+  ]
+ },
+ "realise": {
+  "statut": "fait",
+  "temp": 12,
+  "km": 9.02,
+  "temps": "54:59",
+  "allure": "6:06/km",
+  "fc_moy": 150,
+  "fc_max": 164,
+  "re": 96,
+  "cadence": 87,
+  "elevation_gain": 46,
+  "kcal": 720,
+  "terrain": "route",
+  "commentaire": "Realise : 9,02 km en 54:59 de deplacement (56:11 ecoulees), 6:06/km, FC 150 moy / 164 max, D+ 46 m, 12 °C, ASICS Novablast 5 J.",
+  "pr": 0,
+  "ach": 0,
+  "pr_detail": [],
+  "splits": [
+   {
+    "km": 1,
+    "allure": "5:47",
+    "fc": 148
+   },
+   {
+    "km": 2,
+    "allure": "6:06",
+    "fc": 147
+   },
+   {
+    "km": 3,
+    "allure": "6:11",
+    "fc": 146
+   },
+   {
+    "km": 4,
+    "allure": "6:15",
+    "fc": 152
+   },
+   {
+    "km": 5,
+    "allure": "6:09",
+    "fc": 151
+   },
+   {
+    "km": 6,
+    "allure": "6:07",
+    "fc": 152
+   },
+   {
+    "km": 7,
+    "allure": "6:20",
+    "fc": 151
+   },
+   {
+    "km": 8,
+    "allure": "6:16",
+    "fc": 152
+   },
+   {
+    "km": 9,
+    "allure": "5:40",
+    "fc": 150
+   }
+  ],
+  "strava_id": "20820922825"
+ }
+}

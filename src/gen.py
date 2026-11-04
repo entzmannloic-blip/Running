@@ -2173,6 +2173,19 @@ for n, arr in list(SEANCES_BY_WEEK.items()):
       "pr":0,"ach":0,"pr_detail":[],
       "splits":[{"km":1,"allure":"5:40","fc":142},{"km":2,"allure":"5:47","fc":148},{"km":3,"allure":"5:59","fc":149},{"km":4,"allure":"5:55","fc":144},{"km":5,"allure":"6:00","fc":145},{"km":6,"allure":"5:50","fc":146},{"km":7,"allure":"5:49","fc":146},{"km":8,"allure":"6:06","fc":144},{"km":9,"allure":"5:31","fc":151},{"km":10,"allure":"5:40","fc":143}],
       "revue":_REVUE_FICHIER}
+    # Dimanche 01/11 : sortie non planifiee, le lendemain de la longue avancee au samedi 31/10 (log : src/logs/S44-6.json).
+    arr.append({
+      "id":6,"date":"2026-11-01","titre":"Footing du dimanche (non planifié)","type":"EF aérobie","sport":"Course à pied","opt":False,
+      "accent":"#16a34a","fill":30,
+      "sous":"Sortie ajoutée le dimanche en fin d'après-midi, le lendemain de la sortie longue, par vent fort.",
+      "metriques":{"Distance":"9 km","Durée":"55 min","Allure":"6:06/km","FC":"150 moy / 164 max","Type":"EF"},
+      "objectif":"Sortie non planifiée : le plan prévoyait la longue ce dimanche, faite la veille.",
+      "struct":[{"nom":"Corps","txt":"9 km en footing, sans intensité."}],
+      "benefices":"Entretien, sans objectif de séance.",
+      "vigilance":"Semaine d'affûtage : une sortie ajoutée, c'est de la charge en plus avant Nice.",
+      "legende":[{"c":"#16a34a","l":"Footing"}],
+      "segments":segs([{"nom":"Footing","role":"9 km en footing.","duree":3299,"couleur":"vert","bloc":"\u2014","hauteur":32}]),
+    })
 
 
 
@@ -2212,7 +2225,7 @@ COUL={p["id"]:p["c"] for p in PHASES}
 # Derniere resynchronisation : 28/08/2026.
 GEAR=[
   {"marque":"HOKA","modele":"Clifton 10","km":1284},
-  {"marque":"ASICS","modele":"Novablast 5 J","km":887},
+  {"marque":"ASICS","modele":"Novablast 5 J","km":925},
   {"marque":"ASICS","modele":"Novablast 5 V","km":202},
   {"marque":"ASICS","modele":"Gel Pulse 16","km":240},
   {"marque":"Brooks","modele":"Cascadia 19","km":259},
@@ -2738,6 +2751,15 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":295,"date":"2 novembre 2026","sha":"","tag":"Log S45 seance 1 : Footing avec Edwige du 02/11","items":[
+    "SEANCE : S45 seance 1 loggee depuis Strava : Footing avec Edwige, 12,14 km en 1:11:53 (5:55/km), FC 142/156, D+ 25 m, 10 °C, Novablast 5 J.",
+    "CHAUSSURES : Novablast 5 J a 925 km."]},
+  {"build":294,"date":"1 novembre 2026","sha":"","tag":"Log S44 seance 6 : Footing du dimanche (non planifié) du 01/11","items":[
+    "SEANCE : S44 seance 6 loggee depuis Strava : Footing du dimanche (non planifié), 9,02 km en 54:59 (6:06/km), FC 150/164, D+ 46 m, 12 °C, Novablast 5 J.",
+    "CHAUSSURES : Novablast 5 J a 913 km."]},
+  {"build":293,"date":"31 octobre 2026","sha":"","tag":"Log S44 seance 4 : Sortie longue + allure marathon du 31/10","items":[
+    "SEANCE : S44 seance 4 loggee depuis Strava : Sortie longue + allure marathon, 17,04 km en 1:35:27 (5:36/km), FC 146/175, D+ 54 m, 7 °C, Novablast 5 J.",
+    "CHAUSSURES : Novablast 5 J a 904 km."]},
   {"build":292,"date":"30 octobre 2026","sha":"","tag":"Le parcours : carte 3D de la SaintExpress et de Nice, pentes, type de sol, heures de passage","items":[
     "NOUVEL ÉCRAN : dans le dossier de course, « Explorer le parcours » ouvre la carte du tracé en 3D (relief réglable, vues 3D et dessus, fonds Plan, Topo et Satellite) avec un survol qui suit le parcours.",
     "PENTES ET SOL : le tracé et le profil se colorent selon la pente (six classes, de la descente raide au « très raide, à marcher ») ou selon le type de sol (route, chemin large, sentier, escaliers) tiré d'OpenStreetMap ; la répartition en kilomètres est donnée pour chaque classe.",

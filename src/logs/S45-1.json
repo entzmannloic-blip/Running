@@ -1,0 +1,98 @@
+{
+ "seance": {
+  "chaussure_realise": "ASICS Novablast 5 J",
+  "titre": "Footing avec Edwige",
+  "sous": "12 km au lieu de 8, avec Edwige, deux longues pauses (1 h 29 au total pour 1 h 12 de course).",
+  "segments": [
+   {
+    "nom": "Footing",
+    "role": "13 km a 5:55/km, FC 142.",
+    "duree": 4311,
+    "couleur": "vert",
+    "bloc": "—",
+    "hauteur": 40
+   }
+  ]
+ },
+ "realise": {
+  "statut": "fait",
+  "temp": 10,
+  "km": 12.14,
+  "temps": "1:11:53",
+  "allure": "5:55/km",
+  "fc_moy": 142,
+  "fc_max": 156,
+  "re": 80,
+  "cadence": 88,
+  "elevation_gain": 25,
+  "kcal": 905,
+  "terrain": "route",
+  "commentaire": "Realise : 12,14 km en 1:11:53 de deplacement (1:29:05 ecoulees), 5:55/km, FC 142 moy / 156 max, D+ 25 m, 10 °C, ASICS Novablast 5 J.",
+  "pr": 0,
+  "ach": 0,
+  "pr_detail": [],
+  "splits": [
+   {
+    "km": 1,
+    "allure": "5:40",
+    "fc": 142
+   },
+   {
+    "km": 2,
+    "allure": "5:44",
+    "fc": 143
+   },
+   {
+    "km": 3,
+    "allure": "6:02",
+    "fc": 139
+   },
+   {
+    "km": 4,
+    "allure": "5:53",
+    "fc": 145
+   },
+   {
+    "km": 5,
+    "allure": "5:52",
+    "fc": 145
+   },
+   {
+    "km": 6,
+    "allure": "5:47",
+    "fc": 144
+   },
+   {
+    "km": 7,
+    "allure": "6:06",
+    "fc": 139
+   },
+   {
+    "km": 8,
+    "allure": "6:06",
+    "fc": 138
+   },
+   {
+    "km": 9,
+    "allure": "6:07",
+    "fc": 140
+   },
+   {
+    "km": 10,
+    "allure": "5:49",
+    "fc": 142
+   },
+   {
+    "km": 11,
+    "allure": "5:52",
+    "fc": 141
+   },
+   {
+    "km": 12,
+    "allure": "6:00",
+    "fc": 140
+   }
+  ],
+  "strava_id": "20830176735"
+ }
+}
