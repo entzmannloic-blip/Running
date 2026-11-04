@@ -1,0 +1,130 @@
+{
+ "seance": {
+  "chaussure_realise": "ASICS Novablast 5 J",
+  "date": "2026-10-31",
+  "segments": [
+   {
+    "nom": "Endurance",
+    "role": "12 km a 5:45/km, FC 143.",
+    "duree": 4139,
+    "couleur": "vert",
+    "bloc": "—",
+    "hauteur": 40
+   },
+   {
+    "nom": "Allure marathon",
+    "role": "6 km a 5:15/km, FC 156.",
+    "duree": 1589,
+    "couleur": "orange",
+    "bloc": "—",
+    "hauteur": 72
+   }
+  ]
+ },
+ "realise": {
+  "statut": "fait",
+  "temp": 7,
+  "km": 17.04,
+  "temps": "1:35:27",
+  "allure": "5:36/km",
+  "fc_moy": 146,
+  "fc_max": 175,
+  "re": 139,
+  "cadence": 88,
+  "elevation_gain": 54,
+  "kcal": 1292,
+  "terrain": "route",
+  "commentaire": "Realise : 17,04 km en 1:35:27 de deplacement, 5:36/km, FC 146 moy / 175 max, D+ 54 m, 7 °C, ASICS Novablast 5 J.",
+  "pr": 1,
+  "ach": 3,
+  "pr_detail": [],
+  "splits": [
+   {
+    "km": 1,
+    "allure": "5:46",
+    "fc": 138
+   },
+   {
+    "km": 2,
+    "allure": "5:35",
+    "fc": 139
+   },
+   {
+    "km": 3,
+    "allure": "5:48",
+    "fc": 144
+   },
+   {
+    "km": 4,
+    "allure": "5:44",
+    "fc": 140
+   },
+   {
+    "km": 5,
+    "allure": "5:48",
+    "fc": 142
+   },
+   {
+    "km": 6,
+    "allure": "5:53",
+    "fc": 141
+   },
+   {
+    "km": 7,
+    "allure": "5:46",
+    "fc": 140
+   },
+   {
+    "km": 8,
+    "allure": "5:42",
+    "fc": 143
+   },
+   {
+    "km": 9,
+    "allure": "5:56",
+    "fc": 147
+   },
+   {
+    "km": 10,
+    "allure": "5:48",
+    "fc": 144
+   },
+   {
+    "km": 11,
+    "allure": "5:41",
+    "fc": 144
+   },
+   {
+    "km": 12,
+    "allure": "5:32",
+    "fc": 149
+   },
+   {
+    "km": 13,
+    "allure": "5:42",
+    "fc": 158
+   },
+   {
+    "km": 14,
+    "allure": "4:32",
+    "fc": 162
+   },
+   {
+    "km": 15,
+    "allure": "5:22",
+    "fc": 152
+   },
+   {
+    "km": 16,
+    "allure": "5:21",
+    "fc": 153
+   },
+   {
+    "km": 17,
+    "allure": "5:19",
+    "fc": 156
+   }
+  ],
+  "strava_id": "20802144181"
+ }
+}
