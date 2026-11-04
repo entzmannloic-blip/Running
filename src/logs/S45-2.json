@@ -1,0 +1,111 @@
+{
+ "seance": {
+  "chaussure_realise": "ASICS Novablast 5 J",
+  "titre": "Allure marathon 3×1 km (décalée à mercredi)",
+  "sous": "3 × 1 km en 5:18, 5:12 et 5:19, FC 145 à 150, sur 6,5 km : le dernier rappel de l'allure avant Nice.",
+  "segments": [
+   {
+    "nom": "Échauffement",
+    "role": "2 km a 5:56/km, FC 133.",
+    "duree": 711,
+    "couleur": "vert",
+    "bloc": "—",
+    "hauteur": 40
+   },
+   {
+    "nom": "Bloc AM 1/3",
+    "role": "Km 3 a 5:18/km, FC 145.",
+    "duree": 318,
+    "couleur": "bleu",
+    "bloc": "—",
+    "hauteur": 60
+   },
+   {
+    "nom": "Récup 1",
+    "role": "Km 4 a 5:51/km, FC 139.",
+    "duree": 180,
+    "couleur": "orange",
+    "bloc": "—",
+    "hauteur": 72
+   },
+   {
+    "nom": "Bloc AM 2/3",
+    "role": "Km 5 a 5:12/km, FC 148.",
+    "duree": 312,
+    "couleur": "bleu",
+    "bloc": "—",
+    "hauteur": 60
+   },
+   {
+    "nom": "Récup 2",
+    "role": "Km 6 a 6:12/km, FC 140.",
+    "duree": 180,
+    "couleur": "orange",
+    "bloc": "—",
+    "hauteur": 72
+   },
+   {
+    "nom": "Bloc AM 3/3",
+    "role": "Km 7 a 5:19/km, FC 150.",
+    "duree": 319,
+    "couleur": "bleu",
+    "bloc": "—",
+    "hauteur": 60
+   },
+   {
+    "nom": "Retour au calme",
+    "role": "Km 8 a 5:50/km, FC 147.",
+    "duree": 164,
+    "couleur": "vert",
+    "bloc": "—",
+    "hauteur": 40
+   }
+  ]
+ },
+ "realise": {
+  "statut": "fait",
+  "temp": 9,
+  "km": 6.47,
+  "temps": "36:24",
+  "allure": "5:38/km",
+  "fc_moy": 142,
+  "fc_max": 159,
+  "re": 40,
+  "cadence": 89,
+  "elevation_gain": 14,
+  "kcal": 486,
+  "terrain": "route",
+  "commentaire": "Realise : 6,47 km en 36:24 de deplacement (37:30 ecoulees), 5:38/km, FC 142 moy / 159 max, D+ 14 m, 9 °C, ASICS Novablast 5 J.",
+  "pr": 3,
+  "ach": 3,
+  "pr_detail": [],
+  "splits": [
+   {
+    "km": 1,
+    "allure": "5:57",
+    "fc": 133
+   },
+   {
+    "km": 2,
+    "allure": "5:54",
+    "fc": 134
+   },
+   {
+    "km": 3,
+    "allure": "5:18",
+    "fc": 145
+   },
+   {
+    "km": 4,
+    "allure": "5:12",
+    "fc": 148
+   },
+   {
+    "km": 5,
+    "allure": "5:19",
+    "fc": 150
+   }
+  ],
+  "strava_id": "20858575977"
+ }
+}

@@ -2242,7 +2242,7 @@ COUL={p["id"]:p["c"] for p in PHASES}
 # Derniere resynchronisation : 28/08/2026.
 GEAR=[
   {"marque":"HOKA","modele":"Clifton 10","km":1284},
-  {"marque":"ASICS","modele":"Novablast 5 J","km":925},
+  {"marque":"ASICS","modele":"Novablast 5 J","km":931},
   {"marque":"ASICS","modele":"Novablast 5 V","km":202},
   {"marque":"ASICS","modele":"Gel Pulse 16","km":240},
   {"marque":"Brooks","modele":"Cascadia 19","km":259},
@@ -2768,6 +2768,9 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":298,"date":"4 novembre 2026","sha":"","tag":"Log S45 seance 2 : Allure marathon 3×1 km (décalée à mercredi) du 04/11","items":[
+    "SEANCE : S45 seance 2 loggee depuis Strava : Allure marathon 3×1 km (décalée à mercredi), 6,47 km en 36:24 (5:38/km), FC 142/159, D+ 14 m, 9 °C, Novablast 5 J.",
+    "CHAUSSURES : Novablast 5 J a 931 km."]},
   {"build":297,"date":"4 novembre 2026","sha":"","tag":"Ta séance en 3D","items":[
     "REWIND EN 3D : l'écran « Le parcours » s'ouvre aussi sur une séance. Bouton « Voir en 3D » sous l'image « Le tracé » du Rewind (le Rewind se met en pause et reprend à la fermeture) et dans la fiche de la séance.",
     "Le tracé se colore au choix par pente, allure, fréquence cardiaque (tes zones) ou type de sol (OpenStreetMap). Le profil se glisse au doigt et donne, à chaque point, le km, le chrono, l'altitude, la pente, ton allure et ta FC réelles.",
