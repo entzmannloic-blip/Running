@@ -119,6 +119,21 @@ def validate(d):
                     or not dist or td[0] < 300 or dist - td[1] < 300:
                 errs.append(f"rewind-{cle}.json : trace non masque (ancrage, masque >= 300 m et trace_d requis ; "
                             f"python scripts/rewind_seance.py S{cle} strava/<id>-polyline.json --retrace)")
+        # la seance en 3D (build 297) : meme activite, meme masquage de 300 m, flux complets
+        if rw.get("carto3d"):
+            p3 = os.path.join(d, f"carto-{rw['carto3d']}.json")
+            try:
+                c3 = json.load(open(p3, encoding="utf-8"))
+            except Exception as e:
+                errs.append(f"carto-{rw['carto3d']}.json absent ou illisible : {e}")
+                continue
+            n3, dist = c3.get("n") or 0, (rw.get("resume") or {}).get("distance") or 0
+            if n3 < 10 or any(len(c3.get(k) or []) != n3 for k in ("lat", "lon", "ele", "t", "v", "fc")):
+                errs.append(f"carto-{rw['carto3d']}.json : flux absents ou de longueurs differentes")
+            elif (c3.get("d0") or 0) < 300 or dist - ((c3.get("d0") or 0) + (c3.get("km") or 0) * 1000) < 299 \
+                    or str(c3.get("strava_id")) != str(rw.get("strava_id")):
+                errs.append(f"carto-{rw['carto3d']}.json : trace non masque ou activite differente du Rewind "
+                            f"(python scripts/carto_seance.py S{cle} strava/<id>-flux500.json)")
     for name, content in files.items():
         if name == "changelog":   # prose de developpement : parle legitimement de NaN / undefined
             continue

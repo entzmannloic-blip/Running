@@ -192,6 +192,12 @@ Ne jamais soustraire `new Date('YYYY-MM-DD')` à une date locale. Une course don
 - **Correction** : attendre l'état (`wait_for_function`, 2,5 s au plus) au lieu d'un délai fixe.
 - **Règle** : un test d'interface attend une condition, jamais une durée ; un échec qui change de sens d'un passage à l'autre est un test instable, pas une régression.
 
+## L16 — Séance en 3D : trois pièges trouvés en construisant l'écran (04/11)
+- **Marqueurs MapLibre focusables** : `new maplibregl.Marker({element})` pose `tabindex="0"` et « Map marker » sur l'élément, même `aria-hidden` : un focus invisible et des cibles de 20 px. L'écran « Le parcours » n'était pas dans l'audit d'accessibilité, d'où un défaut resté depuis le build 292. **Correction** : `tabindex="-1"` et `aria-hidden` sur chaque marqueur décoratif (`pose()` dans `CP`), écran ajouté à `audit_a11y.py` (séance en 3D, couleurs pente, allure, FC).
+- **Côtes introuvables sur une sortie plate** : la recherche par creux et crêtes des courses (40 m, ou 12 m à 1 % sous 300 m de D+) avale les rampes de 5 m dans de longs faux plats : zéro côte sur les 7 sorties. **Correction** : pour une séance plate, les passages où la pente sur 200 m dépasse 1,5 %, d'au moins 3 m sur 100 m (`bossesPlat`). Vérifié sur les données des 7 Rewinds avant de coder.
+- **Saut du GPS dans les flux** : S44-4 a 137 m en 1 s au km 13,2 (pont ou tunnel) ; la côte qui le contient sortait à 2:53/km. **Correction** : un tronçon à plus de 7 m/s compte au temps de l'allure voisine, comme un arrêt.
+- **Règle** : tout nouvel écran entre dans l'audit d'accessibilité et dans les tests le jour où il est livré ; un seuil de détection se règle sur les vraies données avant d'écrire le code.
+
 ## Quirks Strava MCP (non mécanisables, à connaître)
 
 - Les activités **privées** n'apparaissent pas dans `list_activities`, quelle que soit

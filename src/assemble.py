@@ -94,6 +94,9 @@ for chemin in sorted(glob.glob(os.path.join('rewind', '*.json'))):
         raise SystemExit(f'Rewind {cle} : seance absente ou non realisee')
     rw = json.load(open(chemin, encoding='utf-8'))
     rw['coach'] = coach_de(pleine['realise'].get('revue') or '')
+    # la seance en 3D (build 297, scripts/carto_seance.py) : signalee au Rewind publie, qui affiche « Voir en 3D »
+    if os.path.exists(os.path.join('carto', f'seance-{cle}.json')):
+        rw['carto3d'] = f'seance-{cle}'
     write(f'site/data/rewind-{cle}.json', dump(rw))
     rewinds.append(cle)
 assert rewinds == data['REWIND_SEANCE'], 'index des Rewinds (gen.py) different des fichiers publies'
@@ -105,6 +108,16 @@ for chemin in sorted(glob.glob(os.path.join('carto', '*.json'))):
     cle = os.path.basename(chemin)[:-5]
     tr = json.load(open(chemin, encoding='utf-8'))
     assert tr.get('id') == cle and len(tr['lat']) == len(tr['lon']) == len(tr['ele']) == tr['n'], f'carto {cle} : trace incoherente'
+    if cle.startswith('seance-'):
+        # seance en 3D : flux de meme longueur, Rewind de la meme activite, trace masque de 300 m a chaque bout
+        _r = cle[len('seance-'):]
+        assert _r in rewinds, f'carto {cle} : pas de Rewind {_r}'
+        _rw = json.load(open(os.path.join('rewind', f'{_r}.json'), encoding='utf-8'))
+        _td, _dist = _rw.get('trace_d') or [0, 0], (_rw.get('resume') or {}).get('distance') or 0
+        assert all(len(tr.get(k) or []) == tr['n'] for k in ('t', 'v', 'fc')), f'carto {cle} : flux incoherents'
+        assert str(tr.get('strava_id')) == str(_rw.get('strava_id')), f'carto {cle} : activite differente du Rewind'
+        assert tr.get('d0', 0) >= 300 and tr['d0'] >= _td[0] - 1 and _dist - (tr['d0'] + tr['km'] * 1000) >= 299, \
+            f'carto {cle} : trace non masque (300 m a chaque bout)'
     write(f'site/data/carto-{cle}.json', dump(tr))
     cartos.append(cle)
 for _id, _d in data['DOSSIERS'].items():

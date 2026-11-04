@@ -19,6 +19,7 @@ Une séance enrichie = **une petite PR de données**. Ne plus ouvrir `src/gen.py
 2. `Strava:get_activity_performance(activity_id)` : FC moyenne et max, tours (laps).
 3. `Strava:get_gear(gear_types=["Shoe"])` : kilométrage de la paire utilisée.
 4. **Pour le Rewind de séance, à chaque séance** : `Strava:list_activities` avec `include_polyline=true` (le tracé), et `Strava:get_activity_streams(activity_id, resolution=150, streams=["time","distance","altitude","velocity_smooth","heart_rate"])`. Recopier ces réponses et celle de `get_activity_performance` (trophées, segments, meilleurs efforts, tours) dans `strava/<id>-rewind.json`, au format décrit en tête de `scripts/rewind_seance.py`.
+   **Et pour la séance en 3D** (build 297) : `Strava:get_activity_streams(activity_id, resolution=500, streams=["time","distance","altitude","velocity_smooth","heart_rate"])`, réponse recopiée telle quelle dans `strava/<id>-flux500.json` sous la forme `{"id":"<id>","streams":<réponse>}`.
 5. **Seulement pour un footing, une sortie longue ou une récupération sur route** (D+ < ~15 m/km, 40 min ou plus) : `Strava:get_activity_streams(activity_id, resolution=1000, streams=["time","heart_rate","velocity_smooth"])`, pour le découplage. Jamais pour une séance d'intensité ni un trail : c'est le poste le plus coûteux du log.
 
 ## 2. Recopier l'essentiel dans `strava/<id>.json` (dossier ignoré par Git)
@@ -41,6 +42,7 @@ Champs Strava recopiés tels quels, et les tours sous forme compacte `[moving_ti
 python scripts/log_seance.py S44-2 strava/20753555995.json [--streams strava/20753555995-streams.json]
        [--blocs "1-8:Footing facile:vert,9-10:Fin:orange"] [--titre "…" --sous "…"] [--rpe 5] [--statut partiel]
        --rewind strava/20753555995-rewind.json [--cible-allure 6:10- --cible-fc 145 --cible-source "…"]
+       --flux3d strava/20753555995-flux500.json
 ```
 
 Il écrit, sans rien inventer :
@@ -49,6 +51,7 @@ Il écrit, sans rien inventer :
 - `GEAR` dans `src/gen.py` : le kilométrage de la chaussure ;
 - une entrée de `CHANGELOG` (build + 1). `--sans-changelog` pour plusieurs séances dans un même build ;
 - avec `--rewind` : `src/rewind/44-2.json` (flux réduit à 160 points, tracé masqué, tours, trophées). `--cible-*` seulement si la séance a été remplacée (ex. seuil remplacé par un footing) : la cible appliquée est gardée et sert au prévu face au réalisé. Rattrapage d'une séance déjà loguée : `python scripts/rewind_seance.py S44-2 strava/<id>-rewind.json`.
+- avec `--flux3d` (après le Rewind) : `src/carto/seance-44-2.json`, la séance en 3D (voir la section « La séance en 3D »). Rattrapage : `python scripts/carto_seance.py S44-2 strava/<id>-flux500.json`.
 
 Il refuse de réécrire un log existant (`--force`) et de logger deux fois la même activité Strava. Le commentaire factuel est produit automatiquement ; `--commentaire` le remplace. Le découplage suit `src/decouplage.py` (seuls les `fiable` servent dans l'app).
 
@@ -80,7 +83,7 @@ python scripts/release.py           # porte complète — ne JAMAIS utiliser --p
 
 ## 6. Branche, commit, pull request, fusion
 
-- Branche depuis `main` à jour : `data/S{sem}-{n}`. Fichiers : `src/logs/`, `src/rewind/`, `src/textes/`, `src/gen.py`, `src/strava_reference.json`, `index.html`, `sw.js`, `data/*.json`. Ne pas committer `strava/`.
+- Branche depuis `main` à jour : `data/S{sem}-{n}`. Fichiers : `src/logs/`, `src/rewind/`, `src/carto/seance-*.json`, `src/textes/`, `src/gen.py`, `src/strava_reference.json`, `index.html`, `sw.js`, `data/*.json`. Ne pas committer `strava/`.
 - Message et titre de PR : `data: log S44 seance 2 footing 27/10 (Strava) (build 263)` ; corps : date, km, durée, chaussure, identifiant Strava.
 - `python scripts/pr_scope.py origin/main...HEAD` doit répondre `DATA_ONLY`, puis contrôle GitHub `verify` vert : fusion sans relecture (`gh pr merge --squash --delete-branch`). Sinon c'est une PR de code : l'annoncer à Loïc.
 - Vérifier la publication : `data/meta.json` publié porte le build attendu.
@@ -96,6 +99,14 @@ Le dossier de course ouvre l'écran « Le parcours » (`CP` dans `src/app.js`) q
 2. **Le dossier** : `"carto":{"trace":"<id>","depart":"23:00","cible_min":360,"km_officiel":45.0,"terrain":"osm","ravitos":[[km_officiel,"Nom","Ce qu'on y trouve"]],"reperes":[[km_trace,"Nom","Détail"]],"depart_nom":"…","arrivee_nom":"…"}`. Sans `trace`, l'écran montre le profil du dossier (`profil_pts`) sans carte. Traces en place : SaintExpress (build 292) et Nice (build 296, `src/carto/nice-trace.gpx`, écrite avec `--lisse 1000` : altitudes entières et bruitées dans le GPX). `terrain` : `"osm"` (Overpass interrogé depuis le téléphone, résultat gardé dans `localStorage`, clé `cp_sol_<trace>_<n>`) ou `"bitume"` (route de bout en bout).
 3. `src/assemble.py` publie `data/carto-<id>.json` et vérifie que chaque trace déclarée existe. Pentes, montées, heures de passage (km-effort : 1 km + 100 m de D+, réparti sur `cible_min`) et sol sont calculés dans l'app.
 4. Carte : MapLibre GL 5 dans `src/vendor/` (licence BSD-3, `maplibre-gl-LICENSE.txt`), chargée à la demande et hors pré-cache. Pour la mettre à jour : `npm pack maplibre-gl@5`, copier `dist/maplibre-gl.js` (sans la ligne `sourceMappingURL`) et `dist/maplibre-gl.css`. Fonds : tile.openstreetmap.org, OpenTopoMap, Esri World Imagery ; relief : AWS Terrain Tiles (terrarium). Tests : T34 à T38 de `scripts/test_regression.py` (tuiles, relief et Overpass servis par le test).
+
+## La séance en 3D (build 297)
+Une séance qui a un Rewind s'ouvre dans l'écran « Le parcours » (`CP.seance(cle, bouton, apres)` dans `src/app.js`) : bouton « Voir en 3D » sous l'image « Le tracé » du Rewind (le Rewind se met en pause et reprend à la fermeture) et sous « Le tracé » de la fiche de séance.
+
+1. **Les données** : `python scripts/carto_seance.py S44-2 strava/<id>-flux500.json` (ou `log_seance.py … --rewind … --flux3d …`) écrit `src/carto/seance-44-2.json`. Le tracé est **celui du Rewind**, déjà masqué de 300 m à chaque bout, reconverti de Web Mercator en latitude et longitude : la 3D ne publie rien de plus que le Rewind. Altitude, temps, vitesse et FC viennent des flux Strava à 500 points, interpolés tous les 25 m de distance réelle (même format que `carto_course.py`, plus `t`, `v`, `fc` et `d0`, le km réel du premier point). Le script refuse un Rewind sans tracé masqué et des flux d'une autre activité.
+2. **La publication** : `src/assemble.py` publie `data/carto-seance-44-2.json`, ajoute `carto3d` au Rewind publié (c'est ce qui fait apparaître les boutons) et vérifie la même activité, les flux complets et les 300 m masqués ; `validate_data.py` et le test T43 le revérifient.
+3. **Dans l'app** : tracé coloré par pente, allure (5 classes entre les 5 % les plus rapides et les 5 % les plus lents de la sortie, rampe `--allure-*`), zone de FC (`ZONES_FC`, `--z1…--z5`) ou sol (Overpass, comme une course, clé `cp_sol_seance-44-2_<n>`). Le profil se glisse et donne km réel, chrono, altitude, pente, allure et FC. Côtes et descentes : sur une sortie de moins de 300 m de D+, passages où la pente sur 200 m dépasse 1,5 %, d'au moins 3 m sur 100 m (`bossesPlat`) ; au-delà, la recherche des courses. Temps en mouvement : arrêts (plus de 20 s à moins de 0,6 m/s) et sauts du GPS (plus de 7 m/s) remplacés par le temps à l'allure voisine.
+4. Tests : T39 à T43 de `scripts/test_regression.py` ; l'audit d'accessibilité passe sur l'écran (pente, allure, FC).
 
 ## Règles de sécurité
 

@@ -2616,7 +2616,7 @@ svg.tr-go .tr-b{animation:trBarre var(--d-ecran) var(--ease) both;animation-dela
 .cp-seg button{min-height:44px;min-width:44px;padding:0 13px;border:0;border-radius:var(--rayon-pill);background:none;font:inherit;font-size:var(--t-callout);font-weight:var(--fw-semi);color:var(--texte-deux);cursor:pointer}
 .cp-seg button[aria-pressed="true"]{background:var(--bg-card);color:var(--texte);box-shadow:var(--ombre)}
 .cp-relief{display:flex;align-items:center;gap:8px;flex:1 1 150px;min-height:44px;font-size:var(--t-callout);font-weight:var(--fw-semi);color:var(--texte-deux)}
-.cp-relief input{flex:1;min-width:80px;accent-color:var(--primary)}
+.cp-relief input{flex:1 1 0;width:0;min-width:56px;height:44px;margin:0;accent-color:var(--primary)}
 .cp-relief output{min-width:34px;font-family:var(--f-num);font-weight:700;color:var(--texte)}
 .cp-survol{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 18px;border:0;border-radius:var(--rayon-pill);background:var(--primary-fill);color:#fff;font:inherit;font-size:var(--t-callout);font-weight:var(--fw-bold);cursor:pointer}
 .cp-colle{position:sticky;top:0;z-index:3;padding:10px 12px 6px;background:var(--bg-card);border-bottom:1px solid var(--bord-card)}
@@ -2669,7 +2669,7 @@ svg.tr-go .tr-b{animation:trBarre var(--d-ecran) var(--ease) both;animation-dela
 .cp-pt-s{font-size:var(--t-caption);color:var(--texte-deux);line-height:1.35}
 .cp-pt-h{flex:none;display:flex;flex-direction:column;align-items:flex-end;font-family:var(--f-num);font-weight:700;font-size:1.0625rem}
 .cp-pt-h .ac-lb{margin:0;font-family:var(--f-texte)}
-.cp-src{margin:16px 14px 0;font-size:var(--t-data);line-height:1.5;color:var(--texte-trois)}
+.cp-src{margin:16px 14px 0;font-size:var(--t-caption);line-height:1.5;color:var(--texte-trois)}
 .cp-src a{color:var(--texte-deux)}
 /* marqueurs de la carte */
 .cp-km{display:grid;place-items:center;min-width:20px;height:20px;padding:0 4px;border-radius:99px;background:#fff;border:1.5px solid var(--texte);font:700 11px var(--f-num);color:var(--texte);pointer-events:none}
@@ -2681,5 +2681,7 @@ svg.tr-go .tr-b{animation:trBarre var(--d-ecran) var(--ease) both;animation-dela
 .cp-mk-depart .cp-mk-t::after,.cp-mk-arrivee .cp-mk-t::after{border-top-color:var(--texte)}
 .cp-mk-repere .cp-mk-t{color:var(--primary-deux)}
 .cp-cur{display:block;width:18px;height:18px;border-radius:50%;background:var(--primary);border:3px solid #fff;box-shadow:0 0 0 1.5px rgba(24,24,27,.35),0 2px 6px rgba(24,24,27,.35);pointer-events:none}
-.cp .maplibregl-ctrl-attrib{font-size:11px}
+.cp .maplibregl-ctrl-attrib{font-size:12px}
 @media (prefers-reduced-motion:reduce){.cp{transition:none;transform:none}.cp-charge::before{animation:none}}
+.rs-3d{margin-top:14px}
+.fs-3d{margin-top:var(--sp-4)}
