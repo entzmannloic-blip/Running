@@ -5,7 +5,10 @@ carto_course.py — trace d'une course (GPX, ou CSV lat,lon,ele) -> src/carto/<i
 « Le parcours » (carte 3D, profil, pentes, terrain). Voir docs/ENRICHISSEMENT.md, section « Carte d'une course ».
 
     python scripts/carto_course.py saintexpress src/carto/saintexpress-trace.csv
-    python scripts/carto_course.py nice chemin/vers/MAM2026_parcours.gpx
+    python scripts/carto_course.py nice src/carto/nice-trace.gpx --lisse 1000
+
+--lisse M : moyenne glissante de l'altitude sur M metres, pour une trace a altitudes entieres et bruitees
+(Nice : 283 m de D+ mesures sans lissage, 82 m sur 1 km, ~70 m officiels).
 
 Le fichier écrit contient la trace rééchantillonnée tous les PAS mètres (interpolation linéaire le long de
 la distance), en entiers : latitude et longitude en 1e-5 degré, altitude en décimètres, codées en écarts
@@ -70,9 +73,15 @@ def deltas(vals):
 
 
 def main():
-    if len(sys.argv) != 3:
+    args = sys.argv[1:]
+    lisse = 0
+    if "--lisse" in args:
+        k = args.index("--lisse")
+        lisse = int(args[k + 1])
+        del args[k:k + 2]
+    if len(args) != 2:
         sys.exit(__doc__)
-    cid, chemin = sys.argv[1], sys.argv[2]
+    cid, chemin = args
     pts = lire(chemin)
     if len(pts) < 10:
         sys.exit(f"{chemin} : moins de 10 points lus")
@@ -80,6 +89,10 @@ def main():
         if haversine(a, b) > 1000:
             sys.exit(f"{chemin} : saut de plus d'1 km entre deux points ({a} -> {b}) — trace incomplète ?")
     rs, total = reechantillonner(pts)
+    if lisse:
+        w = max(1, int(lisse / PAS / 2))
+        alt = [p[2] for p in rs]
+        rs = [(p[0], p[1], sum(alt[max(0, i - w):i + w + 1]) / len(alt[max(0, i - w):i + w + 1])) for i, p in enumerate(rs)]
     out = {"id": cid, "pas": PAS, "km": round(total / 1000, 3), "n": len(rs),
            "lat": deltas([round(p[0] * 1e5) for p in rs]),
            "lon": deltas([round(p[1] * 1e5) for p in rs]),
