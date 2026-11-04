@@ -1,4 +1,4 @@
-/* Service worker — genere par src/build.py (ne pas copier a la main : 296 et [
+/* Service worker — genere par src/build.py (ne pas copier a la main : 297 et [
  "./",
  "./index.html",
  "./manifest.json",
@@ -10,6 +10,13 @@
  "./src/fonts/barlow-semi-condensed-latin-800-normal.woff2",
  "./data/carto-nice.json",
  "./data/carto-saintexpress.json",
+ "./data/carto-seance-43-8.json",
+ "./data/carto-seance-44-2.json",
+ "./data/carto-seance-44-3.json",
+ "./data/carto-seance-44-4.json",
+ "./data/carto-seance-44-5.json",
+ "./data/carto-seance-44-6.json",
+ "./data/carto-seance-45-1.json",
  "./data/changelog.json",
  "./data/historique.json",
  "./data/meta.json",
@@ -26,7 +33,7 @@
 ]
    sont remplaces). Le nom du cache suit le numero de build : un nouveau build = nouveau cache,
    les anciens (dont plan-v34) sont supprimes a l'activation. */
-const BUILD='296';
+const BUILD='297';
 const CACHE='plan-'+BUILD;
 const SHELL=[
  "./",
@@ -40,6 +47,13 @@ const SHELL=[
  "./src/fonts/barlow-semi-condensed-latin-800-normal.woff2",
  "./data/carto-nice.json",
  "./data/carto-saintexpress.json",
+ "./data/carto-seance-43-8.json",
+ "./data/carto-seance-44-2.json",
+ "./data/carto-seance-44-3.json",
+ "./data/carto-seance-44-4.json",
+ "./data/carto-seance-44-5.json",
+ "./data/carto-seance-44-6.json",
+ "./data/carto-seance-45-1.json",
  "./data/changelog.json",
  "./data/historique.json",
  "./data/meta.json",

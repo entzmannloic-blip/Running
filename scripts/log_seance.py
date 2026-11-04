@@ -31,6 +31,8 @@ Options :
   --rewind FICHIER    donnees du Rewind de seance (format : scripts/rewind_seance.py) -> src/rewind/44-2.json
   --cible-allure A --cible-fc F --cible-source S
                       cible appliquee si la seance a ete remplacee (ex. 6:10- et 145), gardee dans le Rewind
+  --flux3d FICHIER    flux Strava a 500 points (format : scripts/carto_seance.py), avec --rewind :
+                      la seance en 3D -> src/carto/seance-44-2.json (bouton « Voir en 3D »)
 
 Fichier d'entree (champs Strava recopies tels quels ; laps = un tableau par tour de get_activity_performance) :
 {"id":"20753555995","start_local":"2026-10-27T17:04:11","sport_type":"Run","gear_id":"28498174",
@@ -267,6 +269,7 @@ def main(argv=None):
     p.add_argument("--cible-allure")
     p.add_argument("--cible-fc")
     p.add_argument("--cible-source")
+    p.add_argument("--flux3d")
     a = p.parse_args(argv)
     if not re.fullmatch(r"S\d+-\w+", a.seance):
         raise SystemExit("Seance attendue au format S44-2")
@@ -315,6 +318,12 @@ def main(argv=None):
         sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
         import rewind_seance
         rewind_seance.ecrire(a.seance, a.rewind, rewind_seance.cible(a.cible_allure, a.cible_fc, a.cible_source))
+    if a.flux3d:
+        if not a.rewind and not os.path.exists(os.path.join(SRC, "rewind", a.seance[1:] + ".json")):
+            raise SystemExit("--flux3d demande le Rewind de la seance (--rewind) : le trace de la 3D vient du Rewind")
+        sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+        import carto_seance
+        carto_seance.ecrire(a.seance, a.flux3d)
     if not os.path.exists(os.path.join(SRC, "textes", "seances", f"{a.seance}.html")):
         print(f"A FAIRE : ecrire la revue dans src/textes/seances/{a.seance}.html")
     return 0

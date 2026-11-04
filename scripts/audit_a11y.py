@@ -159,6 +159,20 @@ def main():
                 p.keyboard.press("ArrowRight")
             p.keyboard.press("Escape")
             p.wait_for_timeout(300)
+        # la seance en 3D (build 297) : ecran « Le parcours » ouvert sur la derniere seance qui a un Rewind 3D,
+        # en couleurs de pente, d'allure et de FC (carte, barre d'outils, lecture du profil, legende, cotes)
+        cle3 = p.evaluate("(window.REWIND_SEANCE||[]).slice(-1)[0]||null")
+        if cle3:
+            p.evaluate(f"CP.seance('{cle3}')")
+            p.wait_for_function("CP._etat()&&document.querySelector('#cp-prof svg')", timeout=10000)
+            p.wait_for_timeout(700)
+            for md in ("pente", "allure", "fc"):
+                p.evaluate(f"CP.mode('{md}')")
+                p.wait_for_timeout(200)
+                for r in p.evaluate(JS, {"view": f"seance 3D {md}", "sel": "#cp", "isView": False}):
+                    rows.append((f"seance en 3D ({md})", r))
+            p.keyboard.press("Escape")
+            p.wait_for_timeout(400)
         p.evaluate("""(function(){var d=document.createElement('div');d.id='a11y-probe';d.style.padding='12px';
           d.innerHTML='<div class="wdg-alert">Chaleur — pars avant 8h, hydrate-toi</div>'
             +'<div class="wdg-alert wdg-alert-soft">Temps chaud — surveille ta FC</div>'

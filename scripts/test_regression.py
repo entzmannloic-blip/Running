@@ -1255,6 +1255,161 @@ def run():
             check("T38 classement OSM : escaliers, chemin, route, sentier, route, chemin, route, sentier, route, chemin, route",
                   cas == "ecbsbcbsbcb", cas)
             ctx.close()
+
+            # ── T39-T43 : la séance en 3D (build 297) — l'écran « Le parcours » ouvert sur une séance qui a un Rewind ──
+            c3 = json.load(open(os.path.join(SITE, "data", "carto-seance-44-4.json"), encoding="utf-8"))
+            slat, slon, sfc = [v / 1e5 for v in _dec(c3["lat"])], [v / 1e5 for v in _dec(c3["lon"])], _dec(c3["fc"])
+            OSM3 = {"elements": [{"type": "way", "tags": {"highway": "residential"},
+                                  "geometry": [{"lat": slat[i] + 0.00003, "lon": slon[i]} for i in range(0, 300, 2)]},
+                                 {"type": "way", "tags": {"highway": "path"},
+                                  "geometry": [{"lat": slat[i] + 0.00003, "lon": slon[i]} for i in range(300, c3["n"], 2)]}]}
+
+            def page_seance(via="fiche", avion=False, reduce=False):
+                ctx = bgl.new_context(viewport={"width": 390, "height": 844}, service_workers="block",
+                                      reduced_motion="reduce" if reduce else "no-preference")
+                if avion:
+                    ctx.add_init_script("Object.defineProperty(navigator,'onLine',{get:()=>false});")
+                req = []
+
+                def tuile(r):
+                    req.append(r.request.url.split("/")[2])
+                    if avion:
+                        return r.abort()
+                    r.fulfill(status=200, content_type="image/png", body=T_DEM if "elevation" in r.request.url else T_TUILE)
+                for pat in ["**/tile.openstreetmap.org/**", "**/*.tile.opentopomap.org/**", "**/server.arcgisonline.com/**",
+                            "**/elevation-tiles-prod.s3.amazonaws.com/**"]:
+                    ctx.route(pat, tuile)
+
+                def ovp(r):
+                    req.append("overpass")
+                    if avion:
+                        return r.abort()
+                    r.fulfill(status=200, content_type="application/json", body=json.dumps(OSM3))
+                ctx.route("**/overpass-api.de/**", ovp)
+                ctx.route("**/overpass.kumi.systems/**", ovp)
+                pg = ctx.new_page()
+                errs = []
+                pg.on("pageerror", lambda e: errs.append(str(e)[:160]))
+                pg.goto(HTML, wait_until="load", timeout=20000)
+                pg.wait_for_function("typeof showTab==='function'&&!document.getElementById('boot-load')", timeout=10000)
+                pg.evaluate("var o=document.getElementById('rwoverlay');if(o)o.classList.remove('on');")
+                if via == "fiche":
+                    pg.evaluate("ouvrirSeance('44',4)")
+                    pg.wait_for_selector(".fs-3d", timeout=8000)
+                    pg.click(".fs-3d")
+                    pg.wait_for_function("CP._etat()&&document.querySelector('#cp-prof svg')", timeout=10000)
+                return ctx, pg, errs, req
+
+            # T39 : depuis la fiche de la séance (S44-4, sortie longue)
+            ctx, pg, errs, req = page_seance()
+            pg.wait_for_function("CP._etat().carte&&CP._etat().sol", timeout=30000)
+            pg.wait_for_timeout(1200)
+            e = pg.evaluate("CP._etat()")
+            info = pg.evaluate("""(()=>({chif:document.getElementById('cp-chif').textContent,lect:document.getElementById('cp-lect').innerText,
+                kick:document.querySelector('#cp .cp-titres .ac-lb').textContent,titre:document.getElementById('cp-t').textContent,
+                modes:[...document.querySelectorAll('#cp [data-mode]')].map(b=>b.textContent),src:document.getElementById('cp-src').textContent,
+                mk:[...document.querySelectorAll('#cp-map .cp-mk')].map(x=>x.textContent),
+                focusables:[...document.querySelectorAll('#cp-map .maplibregl-marker')].filter(x=>x.tabIndex>=0).length,
+                canvas:(document.querySelector('#cp-map canvas')||{}).clientHeight||0}))()""")
+            cotes = [p_ for p_ in e["points"] if p_["k"] in ("montee", "descente")]
+            check("T39 séance en 3D depuis la fiche : carte dessinée, tracé masqué (début au km 0,3), 16,4 km affichés, modes Pente, Allure, FC, Sol, marqueurs Début/Fin hors tabulation",
+                  e["k"] == "seance" and e["n"] == c3["n"] and e["off"] == c3["d0"] >= 300 and info["canvas"] > 250
+                  and info["chif"].startswith("16,4 km affichés") and "Sortie longue" in info["titre"] and info["kick"].startswith("En 3D")
+                  and info["modes"] == ["Pente", "Allure", "FC", "Sol"] and "masqués" in info["src"]
+                  and info["mk"] == ["Début", "Fin"] and info["focusables"] == 0,
+                  f"{ {k: info[k] for k in ('chif', 'kick', 'modes', 'mk', 'focusables', 'canvas')} } off={e['off']}")
+            check("T39 lecture du profil : km 0,3, chrono, altitude, pente, allure et FC réelles du premier point (pas d'heure de passage)",
+                  "Allure" in info["lect"] and f"{sfc[0]}bpm" in info["lect"].replace("\n", "") and "0,3" in info["lect"]
+                  and "Passage" not in info["lect"] and "/km" in info["lect"], info["lect"].replace("\n", " ")[:160])
+            check("T39 côtes et descentes : au moins 4, chacune avec son temps en mouvement, son allure (3:30 à 8:00 /km) et sa FC moyenne",
+                  len(cotes) >= 4 and all(c["dur"] and c["dur"] > 0 and 210 <= c["pace"] <= 480 and 100 <= c["fc"] <= 200 for c in cotes)
+                  and pg.inner_text("#cp-pts").count("/km") >= len(cotes),
+                  str([(c["t"], round(c["dur"] or 0), round(c["pace"] or 0), c["fc"]) for c in cotes]))
+            # T40 : interactions
+            bx = pg.locator("#cp-prof").bounding_box()
+            pg.mouse.move(bx["x"] + bx["width"] * 0.3, bx["y"] + bx["height"] / 2)
+            pg.mouse.down()
+            pg.mouse.move(bx["x"] + bx["width"] * 0.6, bx["y"] + bx["height"] / 2)
+            pg.mouse.up()
+            pg.wait_for_timeout(300)
+            e2 = pg.evaluate("CP._etat()")
+            vt = pg.get_attribute("#cp-prof", "aria-valuetext") or ""
+            fc_cur = sfc[e2["cur"]]
+            pg.evaluate("CP.mode('allure')")
+            legA = pg.evaluate("[...document.querySelectorAll('#cp-leg li')].map(l=>l.innerText.replace(/\\n/g,' '))")
+            pg.evaluate("CP.mode('fc')")
+            legF = pg.inner_text("#cp-leg")
+            pg.evaluate("CP.mode('sol')")
+            legS = pg.inner_text("#cp-leg")
+            lectS = pg.inner_text("#cp-lect")
+            pg.evaluate("CP.survol()")
+            sv = pg.evaluate("[CP._etat().survol,document.getElementById('cp-survol').textContent.trim()]")
+            pg.evaluate("CP.survol()")
+            check("T40 profil glissé : le curseur avance, la lecture donne l'allure et la FC réelles du point (texte d'accessibilité compris)",
+                  e2["cur"] > e["n"] * 0.5 and f"{fc_cur}bpm" in pg.inner_text("#cp-lect").replace("\n", "")
+                  and "allure" in vt and "fréquence cardiaque" in vt, f"cur={e2['cur']} fc={fc_cur} vt={vt[:120]!r}")
+            check("T40 couleurs : 3 à 5 classes d'allure en /km, zones de FC (Z2), sol OpenStreetMap (route, sentier), survol Pause",
+                  3 <= len(legA) <= 5 and all("/km" in x for x in legA) and len(set(e["clsA"][i:i + 2] for i in range(0, len(e["clsA"]), 2))) >= 3
+                  and "Z2" in legF and "Endurance" in legF and "Route" in legS and "Sentier" in legS and "Sol" in lectS
+                  and req.count("overpass") == 1 and sv == [True, "Pause"],
+                  f"legA={legA} legF={legF[:60]!r} legS={legS[:60]!r} sv={sv} ovp={req.count('overpass')}")
+            pg.keyboard.press("Escape")
+            pg.wait_for_timeout(400)
+            ferme = pg.evaluate("[!document.getElementById('cp'),!!(document.activeElement&&document.activeElement.classList.contains('fs-3d'))]")
+            check("T40 Échap ferme la vue 3D et rend le focus au bouton « Voir en 3D » ; aucune erreur JS",
+                  ferme == [True, True] and not errs, f"ferme={ferme} {errs[:2]}")
+            ctx.close()
+            # T41 : depuis l'image « Le tracé » du Rewind : pause pendant la 3D, reprise à la fermeture
+            ctx, pg, errs, req = page_seance(via="rewind")
+            pg.evaluate("rsOuvrir('44-4',1)")
+            pg.wait_for_selector(".rs:not([hidden]) .rs-3d", timeout=8000)
+            av = pg.evaluate("document.querySelector('.rs .rs-sl:last-child').getAttribute('aria-label')")
+            pg.click(".rs-3d")
+            pg.wait_for_function("CP._etat()&&document.querySelector('#cp-prof svg')", timeout=10000)
+            pause = pg.evaluate("document.querySelector('.rs').classList.contains('pause')")
+            pg.keyboard.press("ArrowRight")
+            pg.wait_for_timeout(5600)  # plus long que l'image (4,5 à 5 s) : en pause, elle ne doit pas avancer
+            pendant = pg.evaluate("document.querySelector('.rs .rs-sl:last-child').getAttribute('aria-label')")
+            pg.keyboard.press("Escape")
+            pg.wait_for_timeout(400)
+            apres = pg.evaluate("""[!document.getElementById('cp'),!document.querySelector('.rs').hidden,document.querySelector('.rs').classList.contains('pause'),
+                !!(document.activeElement&&document.activeElement.classList.contains('rs-3d'))]""")
+            check("T41 Rewind : « Voir en 3D » sur l'image « Le tracé » met le Rewind en pause (ni les touches ni le minuteur ne le font avancer), Échap revient au Rewind qui reprend",
+                  av.startswith("2 sur") and pause and pendant == av and apres == [True, True, False, True] and not errs,
+                  f"av={av} pause={pause} pendant={pendant} apres={apres} {errs[:1]}")
+            ctx.close()
+            # T42 : hors connexion, réduire les animations
+            ctx, pg, errs, req = page_seance(avion=True, reduce=True)
+            pg.wait_for_timeout(2000)
+            r = pg.evaluate("""[CP._etat().soleEtat,document.querySelectorAll('#cp-prof svg path').length,document.querySelectorAll('#cp-pts .cp-pt').length,
+                document.getElementById('cp-lect').innerText.replace(/\\n/g,' ')]""")
+            pg.evaluate("CP.mode('sol')")
+            leg = pg.inner_text("#cp-leg")
+            check("T42 séance en 3D hors connexion : profil, côtes et lecture (allure, FC) affichés, aucun appel à Overpass, sol annoncé hors connexion, pas d'erreur JS",
+                  r[0] == "horsligne" and r[1] >= 2 and r[2] >= 6 and "/km" in r[3] and "bpm" in r[3] and "Hors connexion" in leg
+                  and "overpass" not in req and not errs, f"{r} req={sorted(set(req))} {errs[:1]}")
+            ctx.close()
+            # T43 : données publiées — même activité que le Rewind, masque de 300 m gardé, tracé identique au Rewind
+            import math as _m
+            pb = []
+            for cle in json.load(open(os.path.join(SITE, "data", "seances.json"), encoding="utf-8"))["REWIND_SEANCE"]:
+                rw = json.load(open(os.path.join(SITE, "data", f"rewind-{cle}.json"), encoding="utf-8"))
+                if not rw.get("carto3d"):
+                    pb.append(f"{cle} sans 3D")
+                    continue
+                c = json.load(open(os.path.join(SITE, "data", f"carto-{rw['carto3d']}.json"), encoding="utf-8"))
+                la, lo, t, fc = _dec(c["lat"]), _dec(c["lon"]), _dec(c["t"]), _dec(c["fc"])
+                x0, y0 = rw["ancrage"]["x"] + rw["trace"][0][0], rw["ancrage"]["y"] + rw["trace"][0][1]
+                lat0 = _m.degrees(2 * _m.atan(_m.exp(y0 / 6378137.0)) - _m.pi / 2)
+                lon0 = _m.degrees(x0 / 6378137.0)
+                ecart = _m.hypot((la[0] / 1e5 - lat0) * 111320, (lo[0] / 1e5 - lon0) * 111320 * _m.cos(_m.radians(lat0)))
+                fin = c["d0"] + c["km"] * 1000
+                if not (c["d0"] >= 300 and rw["resume"]["distance"] - fin >= 299 and abs(c["d0"] - rw["trace_d"][0]) <= 1
+                        and ecart < 3 and all(b >= a for a, b in zip(t, t[1:])) and 40 <= min(fc) and max(fc) <= 230
+                        and str(c["strava_id"]) == str(rw["strava_id"])):
+                    pb.append(f"{cle} d0={c['d0']} fin={fin:.0f}/{rw['resume']['distance']} ecart={ecart:.1f}m")
+            check("T43 les 7 séances en 3D : même activité que le Rewind, 300 m masqués à chaque bout, premier point = premier point du tracé du Rewind",
+                  not pb and len(json.load(open(os.path.join(SITE, "data", "seances.json"), encoding="utf-8"))["REWIND_SEANCE"]) >= 7, "; ".join(pb[:3]))
             bgl.close()
         except Exception as e:
             check("T34 écran Le parcours", False, str(e)[:200])

@@ -2768,6 +2768,11 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":297,"date":"4 novembre 2026","sha":"","tag":"Ta séance en 3D","items":[
+    "REWIND EN 3D : l'écran « Le parcours » s'ouvre aussi sur une séance. Bouton « Voir en 3D » sous l'image « Le tracé » du Rewind (le Rewind se met en pause et reprend à la fermeture) et dans la fiche de la séance.",
+    "Le tracé se colore au choix par pente, allure, fréquence cardiaque (tes zones) ou type de sol (OpenStreetMap). Le profil se glisse au doigt et donne, à chaque point, le km, le chrono, l'altitude, la pente, ton allure et ta FC réelles.",
+    "Côtes et descentes détectées sur la sortie, avec leur dénivelé, leur pente, leur temps en mouvement, ton allure et ta FC moyenne ; survol de la sortie, vue 3D ou de dessus, fonds Plan, Topo, Satellite.",
+    "Données : le tracé du Rewind reconverti en coordonnées, toujours masqué de 300 m à chaque bout ; altitude, allure et FC des flux Strava à 500 points (nouveau script scripts/carto_seance.py, option --flux3d de log_seance.py). Les 7 Rewinds existants sont rattrapés."]},
   {"build":296,"date":"4 novembre 2026","sha":"","tag":"Le parcours de Nice en carte 3D","items":[
     "NICE : l'écran « Le parcours » du marathon passe sur la trace GPX officielle (Openrunner, 42,5 km mesurés) : carte 3D, survol de la Promenade des Anglais à la Croisette, bornes kilométriques, 8 ravitos et heures de passage pour 3 h 45, sol 100 % bitume.",
     "Le relief reste discret : le parcours monte au plus à 35 m (bosse d'Antibes)."]},
