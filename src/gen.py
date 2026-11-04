@@ -2188,6 +2188,23 @@ for n, arr in list(SEANCES_BY_WEEK.items()):
     })
 
 
+for n, arr in list(SEANCES_BY_WEEK.items()):
+    if n != "45":
+        continue
+    _S45 = {str(x["id"]): x for x in arr}
+    # Mardi 03/11 : aucune sortie sur Strava. L'allure marathon 3x1 km passe au mercredi 04/11, dans le footing du jour ;
+    # le footing de recuperation reste l'option si les jambes sont lourdes.
+    _S45["2"]["date"]="2026-11-04"
+    _S45["2"]["titre"]="Allure marathon 3×1 km (décalée à mercredi)"
+    _S45["2"]["sous"]="Pas de sortie le mardi 03/11 : le dernier rappel de l'allure passe au mercredi, dans un footing de 6 à 7 km."
+    _S45["2"]["metriques"]={"Distance":"6-7 km","Durée":"~40 min","Allure":"≈5:20/km","FC":"< 163","RPE":"5-6","Type":"Allure marathon"}
+    _S45["2"]["struct"]=[{"nom":"Échauffement","txt":"2 km faciles, au-dessus de 6:00/km."},
+      {"nom":"Corps","txt":"3 × 1 km à 5:20/km, pas plus vite, 2 min de trot entre les blocs. FC sous 163."},
+      {"nom":"Retour","txt":"1 à 2 km très faciles."}]
+    _S45["2"]["vigilance"]="Seulement si les jambes sont bonnes ; sinon, le footing de récupération seul. Aucune autre sortie avant dimanche."
+    _S45["3"]["opt"]=True
+    _S45["3"]["sous"]="Option du mercredi 04/11 si les jambes sont lourdes : à la place de l'allure marathon 3×1 km, pas en plus."
+
 
 
 
@@ -2753,7 +2770,9 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
 CHANGELOG=[
   {"build":295,"date":"2 novembre 2026","sha":"","tag":"Log S45 seance 1 : Footing avec Edwige du 02/11","items":[
     "SEANCE : S45 seance 1 loggee depuis Strava : Footing avec Edwige, 12,14 km en 1:11:53 (5:55/km), FC 142/156, D+ 25 m, 10 °C, Novablast 5 J.",
-    "CHAUSSURES : Novablast 5 J a 925 km."]},
+    "CHAUSSURES : Novablast 5 J a 925 km.",
+    "SEMAINE 44 : revue et Rewind de la semaine (57,2 km en 5 sorties, charge 512).",
+    "PLAN : l'allure marathon 3×1 km du mardi 03/11, non faite, passe au mercredi 04/11 dans un footing de 6 à 7 km ; le footing de récupération du jour devient l'option si les jambes sont lourdes."]},
   {"build":294,"date":"1 novembre 2026","sha":"","tag":"Log S44 seance 6 : Footing du dimanche (non planifié) du 01/11","items":[
     "SEANCE : S44 seance 6 loggee depuis Strava : Footing du dimanche (non planifié), 9,02 km en 54:59 (6:06/km), FC 150/164, D+ 46 m, 12 °C, Novablast 5 J.",
     "CHAUSSURES : Novablast 5 J a 913 km."]},
