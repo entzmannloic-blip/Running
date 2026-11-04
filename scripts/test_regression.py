@@ -1235,19 +1235,20 @@ def run():
                   r[0] == "horsligne" and r[2] > 10 and r[3] > 10 and "overpass" not in req and "Hors connexion" in leg and not errs,
                   f"{r} req={sorted(set(req))} {errs[:1]}")
             ctx.close()
-            # T37 : Nice, sans trace GPS, réduire les animations
+            # T37 : Nice sur sa trace GPX (build 296), sol déclaré bitume, réduire les animations
             ctx, pg, errs, req = page_parcours("nice", reduce=True)
+            pg.wait_for_function("CP._etat().carte", timeout=30000)
             pg.wait_for_timeout(800)
             e = pg.evaluate("CP._etat()")
-            r = pg.evaluate("[!!document.querySelector('.cp-sanscarte'),!!document.getElementById('cp-map'),!!document.getElementById('cp-survol'),document.getElementById('cp-chif').textContent]")
+            r = pg.evaluate("[!!document.querySelector('.cp-sanscarte'),!!document.getElementById('cp-map'),!!document.getElementById('cp-survol'),document.getElementById('cp-chif').textContent,document.querySelectorAll('#cp-map .cp-mk').length]")
             pg.evaluate("CP.mode('sol')")
             leg = pg.inner_text("#cp-leg")
             rav = [p_["h"] for p_ in e["points"] if p_["k"] == "ravito"]
             arr = [p_ for p_ in e["points"] if p_["k"] == "arrivee"][0]
-            check("T37 Nice sans trace : pas de carte (encart explicatif), profil du dossier (42,2 km), 8 ravitos, arrivée 11 h 45, sol 100 % bitume, aucune tuile demandée",
-                  r[:3] == [True, False, False] and r[3].startswith("42,2 km") and len(rav) == 8 and rav[0] in ("8 h 26", "8 h 27")
-                  and arr["h"] == "11 h 45" and "100 %" in leg and not req and not errs,
-                  f"{r} rav={rav[:2]} arr={arr['h']} req={req[:2]} {errs[:1]}")
+            check("T37 Nice sur sa trace : carte (pas d'encart), 42,5 km, 8 ravitos, arrivée 11 h 45, sol 100 % bitume sans requête Overpass",
+                  r[:3] == [False, True, True] and r[3].startswith("42,5 km") and r[4] >= 10 and len(rav) == 8
+                  and arr["h"] == "11 h 45" and "100 %" in leg and "overpass" not in req and not errs,
+                  f"{r} rav={rav[:2]} arr={arr['h']} req={sorted(set(req))} {errs[:1]}")
             # T38 : classement des chemins OSM (tags -> sol)
             cas = pg.evaluate("""[['steps'],['track'],['track','asphalt'],['path'],['path','asphalt'],['path','gravel'],['footway'],['footway','dirt'],
                 ['residential'],['residential','gravel'],['primary']].map(c=>CP._solTags({highway:c[0],surface:c[1]})).join('')""")

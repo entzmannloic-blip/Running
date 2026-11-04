@@ -2263,9 +2263,9 @@ DOSSIERS={
   "intro":"Le 2ᵉ plus grand marathon de France après Paris. <strong>42,195 km quasi plats le long de la Méditerranée</strong>, de la Promenade des Anglais à la Croisette — vue mer permanente, palmiers, soleil de novembre. Route intégralement bitumée, D+ de seulement ~70 m : pas de dénivelé à gérer, pas de marche prévue. Tout l'enjeu est <strong>la gestion d'allure sur la durée</strong>. C'est ton Objectif A de la saison.",
   "phrase":"3 h 45, soit <strong>5 min 20 / km</strong> du départ à l'arrivée. Le lièvre 3h45 est disponible — reste derrière lui jusqu'au km 35-36, puis décide selon tes jambes. Le seul piège : partir trop vite dans l'euphorie du départ.",
   "profil":"Profil réel GPX officiel (marathon06.com). Course quasi plate au niveau de la mer. Deux légères ondulations : une petite bosse vers le km 15-18 (Cagnes / Villeneuve-Loubet, ~12 m) et <strong>la seule vraie bosse du parcours vers le km 25-28 (Antibes, ~35 m)</strong>. Cette montée est modeste mais peut surprendre à mi-course si tu n'es pas calé à l'effort. Retour au niveau de la mer à partir de Juan-les-Pins.",
-  "carto":{"depart":"08:00","cible_min":225,"terrain":"bitume",
+  "carto":{"trace":"nice","depart":"08:00","cible_min":225,"km_officiel":42.195,"terrain":"bitume",
     "ravitos":[[5,"Ravito","Eau"],[10,"Ravito","Eau et boisson"],[15,"Ravito","Eau et boisson"],[20,"Ravito","Eau et boisson"],[25,"Ravito","Eau et boisson"],[30,"Ravito","Eau et boisson"],[35,"Ravito","Eau et boisson"],[40,"Ravito","Eau et boisson"]],
-    "reperes":[[21.1,"Semi-marathon","Passage visé vers 1 h 52"],[35.5,"Lièvre 3h45","Fin du plan : suivre ou partir"]],
+    "reperes":[[21.24,"Semi-marathon","Passage visé vers 1 h 52"],[35.7,"Lièvre 3h45","Fin du plan : suivre ou partir"]],
     "depart_nom":"Promenade des Anglais","arrivee_nom":"La Croisette, Cannes"},
   "profil_dist":42.195,
   "profil_pts":[11,8,9,10,14,8,9,9,9,5,6,11,11,9,5,4,4,6,7,7,3,2,5,5,4,5,4,6,12,12,10,7,4,10,7,10,11,6,4,5,3,4,3,3,4,6,3,5,5,4,3,8,15,13,7,12,6,6,6,7,7,9,9,16,7,10,7,28,33,28,19,11,6,5,4,4,5,5,5,12,8,8,10,5,2,3,4,5,3,13,16,15,22,17,19,15,14,6,5,5,8,7,3,7,4,10,7,6,4],
@@ -2768,6 +2768,9 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":296,"date":"4 novembre 2026","sha":"","tag":"Le parcours de Nice en carte 3D","items":[
+    "NICE : l'écran « Le parcours » du marathon passe sur la trace GPX officielle (Openrunner, 42,5 km mesurés) : carte 3D, survol de la Promenade des Anglais à la Croisette, bornes kilométriques, 8 ravitos et heures de passage pour 3 h 45, sol 100 % bitume.",
+    "Le relief reste discret : le parcours monte au plus à 35 m (bosse d'Antibes)."]},
   {"build":295,"date":"2 novembre 2026","sha":"","tag":"Log S45 seance 1 : Footing avec Edwige du 02/11","items":[
     "SEANCE : S45 seance 1 loggee depuis Strava : Footing avec Edwige, 12,14 km en 1:11:53 (5:55/km), FC 142/156, D+ 25 m, 10 °C, Novablast 5 J.",
     "CHAUSSURES : Novablast 5 J a 925 km.",
