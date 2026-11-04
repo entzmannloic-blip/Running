@@ -1,4 +1,4 @@
-/* Service worker — genere par src/build.py (ne pas copier a la main : 297 et [
+/* Service worker — genere par src/build.py (ne pas copier a la main : 298 et [
  "./",
  "./index.html",
  "./manifest.json",
@@ -17,6 +17,7 @@
  "./data/carto-seance-44-5.json",
  "./data/carto-seance-44-6.json",
  "./data/carto-seance-45-1.json",
+ "./data/carto-seance-45-2.json",
  "./data/changelog.json",
  "./data/historique.json",
  "./data/meta.json",
@@ -28,12 +29,13 @@
  "./data/rewind-44-5.json",
  "./data/rewind-44-6.json",
  "./data/rewind-45-1.json",
+ "./data/rewind-45-2.json",
  "./data/seances.json",
  "./data/textes.json"
 ]
    sont remplaces). Le nom du cache suit le numero de build : un nouveau build = nouveau cache,
    les anciens (dont plan-v34) sont supprimes a l'activation. */
-const BUILD='297';
+const BUILD='298';
 const CACHE='plan-'+BUILD;
 const SHELL=[
  "./",
@@ -54,6 +56,7 @@ const SHELL=[
  "./data/carto-seance-44-5.json",
  "./data/carto-seance-44-6.json",
  "./data/carto-seance-45-1.json",
+ "./data/carto-seance-45-2.json",
  "./data/changelog.json",
  "./data/historique.json",
  "./data/meta.json",
@@ -65,6 +68,7 @@ const SHELL=[
  "./data/rewind-44-5.json",
  "./data/rewind-44-6.json",
  "./data/rewind-45-1.json",
+ "./data/rewind-45-2.json",
  "./data/seances.json",
  "./data/textes.json"
 ];
