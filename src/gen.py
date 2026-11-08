@@ -2204,6 +2204,7 @@ for n, arr in list(SEANCES_BY_WEEK.items()):
     _S45["2"]["vigilance"]="Seulement si les jambes sont bonnes ; sinon, le footing de récupération seul. Aucune autre sortie avant dimanche."
     _S45["3"]["opt"]=True
     _S45["3"]["sous"]="Option du mercredi 04/11 si les jambes sont lourdes : à la place de l'allure marathon 3×1 km, pas en plus."
+    _S45["3"]["realise"]={"statut":"skipped","reason":"option non retenue : l'allure marathon 3×1 km a été faite","km":0,"temps":"—","allure":"—","fc_moy":0,"fc_max":0,"re":0,"rpe_ressenti":0,"commentaire":"Option non retenue : les jambes étaient bonnes, le rappel d'allure marathon 3×1 km a été couru à la place le 04/11.","pr":0,"ach":0,"pr_detail":[]}
 
 
 
@@ -2243,7 +2244,7 @@ COUL={p["id"]:p["c"] for p in PHASES}
 GEAR=[
   {"marque":"HOKA","modele":"Clifton 10","km":1284},
   {"marque":"ASICS","modele":"Novablast 5 J","km":931},
-  {"marque":"ASICS","modele":"Novablast 5 V","km":202},
+  {"marque":"ASICS","modele":"Novablast 5 V","km":245},
   {"marque":"ASICS","modele":"Gel Pulse 16","km":240},
   {"marque":"Brooks","modele":"Cascadia 19","km":259},
   {"marque":"ASICS","modele":"Magic Speed 4","km":93},
@@ -2768,6 +2769,9 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":299,"date":"8 novembre 2026","sha":"","tag":"Log S45 seance 4 : MARATHON DE NICE du 08/11","items":[
+    "SEANCE : S45 seance 4 loggee depuis Strava : MARATHON DE NICE, 42,65 km en 3:45:06 (5:17/km), FC 168/183, D+ 130 m, 11 °C, Novablast 5 V.",
+    "CHAUSSURES : Novablast 5 V a 245 km."]},
   {"build":298,"date":"4 novembre 2026","sha":"","tag":"Log S45 seance 2 : Allure marathon 3×1 km (décalée à mercredi) du 04/11","items":[
     "SEANCE : S45 seance 2 loggee depuis Strava : Allure marathon 3×1 km (décalée à mercredi), 6,47 km en 36:24 (5:38/km), FC 142/159, D+ 14 m, 9 °C, Novablast 5 J.",
     "CHAUSSURES : Novablast 5 J a 931 km."]},

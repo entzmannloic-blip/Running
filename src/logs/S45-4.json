@@ -1,0 +1,263 @@
+{
+ "seance": {
+  "chaussure_realise": "ASICS Novablast 5 V",
+  "sous": "42,6 km au GPS · 3h45:27 officiel (3h45:06 au Strava, arrêt toilettes au début non compté) · meneuse absente au départ, rejointe vers 1h45.",
+  "segments": [
+   {
+    "nom": "Seul calé sur 3h45",
+    "role": "20 km a 5:17/km, FC 161.",
+    "duree": 6343,
+    "couleur": "bleu",
+    "bloc": "—",
+    "hauteur": 60
+   },
+   {
+    "nom": "Avec la meneuse 3h45",
+    "role": "16 km a 5:19/km, FC 173.",
+    "duree": 5102,
+    "couleur": "orange",
+    "bloc": "—",
+    "hauteur": 72
+   },
+   {
+    "nom": "Finish en accélération",
+    "role": "7 km a 5:10/km, FC 177.",
+    "duree": 2061,
+    "couleur": "rouge",
+    "bloc": "—",
+    "hauteur": 80
+   }
+  ]
+ },
+ "realise": {
+  "statut": "fait",
+  "temp": 11,
+  "km": 42.65,
+  "temps": "3:45:06",
+  "allure": "5:17/km",
+  "fc_moy": 168,
+  "fc_max": 183,
+  "re": 748,
+  "cadence": 90,
+  "elevation_gain": 130,
+  "kcal": 3386,
+  "terrain": "route",
+  "commentaire": "Realise : 42,65 km en 3:45:06 de deplacement, 5:17/km, FC 168 moy / 183 max, D+ 130 m, 11 °C, ASICS Novablast 5 V.",
+  "pr": 12,
+  "ach": 14,
+  "pr_detail": [],
+  "splits": [
+   {
+    "km": 1,
+    "allure": "5:26",
+    "fc": 158
+   },
+   {
+    "km": 2,
+    "allure": "5:20",
+    "fc": 158
+   },
+   {
+    "km": 3,
+    "allure": "5:15",
+    "fc": 157
+   },
+   {
+    "km": 4,
+    "allure": "5:17",
+    "fc": 158
+   },
+   {
+    "km": 5,
+    "allure": "5:21",
+    "fc": 155
+   },
+   {
+    "km": 6,
+    "allure": "5:26",
+    "fc": 155
+   },
+   {
+    "km": 7,
+    "allure": "5:19",
+    "fc": 160
+   },
+   {
+    "km": 8,
+    "allure": "5:08",
+    "fc": 158
+   },
+   {
+    "km": 9,
+    "allure": "5:14",
+    "fc": 159
+   },
+   {
+    "km": 10,
+    "allure": "5:20",
+    "fc": 158
+   },
+   {
+    "km": 11,
+    "allure": "5:19",
+    "fc": 162
+   },
+   {
+    "km": 12,
+    "allure": "5:21",
+    "fc": 163
+   },
+   {
+    "km": 13,
+    "allure": "5:13",
+    "fc": 164
+   },
+   {
+    "km": 14,
+    "allure": "5:18",
+    "fc": 164
+   },
+   {
+    "km": 15,
+    "allure": "5:15",
+    "fc": 165
+   },
+   {
+    "km": 16,
+    "allure": "5:01",
+    "fc": 162
+   },
+   {
+    "km": 17,
+    "allure": "5:10",
+    "fc": 165
+   },
+   {
+    "km": 18,
+    "allure": "5:17",
+    "fc": 165
+   },
+   {
+    "km": 19,
+    "allure": "5:21",
+    "fc": 164
+   },
+   {
+    "km": 20,
+    "allure": "5:22",
+    "fc": 169
+   },
+   {
+    "km": 21,
+    "allure": "5:08",
+    "fc": 171
+   },
+   {
+    "km": 22,
+    "allure": "5:14",
+    "fc": 172
+   },
+   {
+    "km": 23,
+    "allure": "5:13",
+    "fc": 174
+   },
+   {
+    "km": 24,
+    "allure": "5:18",
+    "fc": 175
+   },
+   {
+    "km": 25,
+    "allure": "5:09",
+    "fc": 173
+   },
+   {
+    "km": 26,
+    "allure": "5:21",
+    "fc": 174
+   },
+   {
+    "km": 27,
+    "allure": "5:21",
+    "fc": 172
+   },
+   {
+    "km": 28,
+    "allure": "5:34",
+    "fc": 171
+   },
+   {
+    "km": 29,
+    "allure": "5:24",
+    "fc": 173
+   },
+   {
+    "km": 30,
+    "allure": "5:15",
+    "fc": 170
+   },
+   {
+    "km": 31,
+    "allure": "5:23",
+    "fc": 173
+   },
+   {
+    "km": 32,
+    "allure": "5:29",
+    "fc": 174
+   },
+   {
+    "km": 33,
+    "allure": "5:21",
+    "fc": 174
+   },
+   {
+    "km": 34,
+    "allure": "5:16",
+    "fc": 175
+   },
+   {
+    "km": 35,
+    "allure": "5:16",
+    "fc": 175
+   },
+   {
+    "km": 36,
+    "allure": "5:20",
+    "fc": 177
+   },
+   {
+    "km": 37,
+    "allure": "5:24",
+    "fc": 177
+   },
+   {
+    "km": 38,
+    "allure": "5:15",
+    "fc": 177
+   },
+   {
+    "km": 39,
+    "allure": "5:04",
+    "fc": 176
+   },
+   {
+    "km": 40,
+    "allure": "5:09",
+    "fc": 177
+   },
+   {
+    "km": 41,
+    "allure": "5:07",
+    "fc": 177
+   },
+   {
+    "km": 42,
+    "allure": "5:09",
+    "fc": 178
+   }
+  ],
+  "strava_id": "20906309435"
+ }
+}
