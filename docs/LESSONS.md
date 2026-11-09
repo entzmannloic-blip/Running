@@ -235,4 +235,4 @@ Les fichiers de travail `/tmp` sont volatils. Pour repartir :
 
 - Symptôme : le lendemain du Marathon de Nice, `verify` échouait sur toute PR (T21 : `textes.json` chargé au démarrage ; T22/T34 : clics en dépassement de délai), alors que `main` passait la veille.
 - Cause : le navigateur de test lit la vraie date du jour ; l'app change de comportement une fois la course passée.
-- Correctif : `scripts/test_regression.py` règle l'horloge système du navigateur au 8 novembre 2026 (minuteurs réels). À rediscuter après le 28 novembre (SaintExpress) si la date figée devient trompeuse.
+- Correctif : `scripts/test_regression.py` décale la date (`Date`) du navigateur au 8 novembre 2026, minuteurs réels (une fausse horloge complète faisait échouer les cartes T34 en CI). À rediscuter après le 28 novembre (SaintExpress) si la date figée devient trompeuse.

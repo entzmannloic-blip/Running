@@ -51,32 +51,37 @@ def check(name, cond, detail=""):
 
 
 def run():
-    from playwright.sync_api import sync_playwright, Browser
+    from playwright.sync_api import sync_playwright
     import datetime
 
     # Date figee : les tests supposent « avant le marathon de Nice » (8 nov. 2026). Sans cela, ils echouent
     # des le lendemain de la course (textes.json charge au demarrage, changements d'ecran). Voir LESSONS.md.
-    # Les minuteurs restent reels : seule l'horloge systeme (new Date) est reglee.
-    JOUR_TEST = datetime.datetime(2026, 11, 8, 10, 0, 0)
-    if not getattr(Browser, "_date_figee", False):
-        _np, _nc = Browser.new_page, Browser.new_context
+    # On decale seulement `Date` (l'heure continue de s'ecouler) ; minuteurs, animations et performance.now()
+    # restent reels. Un faux horloge complet (clock.install / set_system_time) faisait echouer les cartes T34 en CI.
+    JOUR_TEST_MS = int(datetime.datetime(2026, 11, 8, 10, 0, 0, tzinfo=datetime.timezone.utc).timestamp() * 1000)
+    DATE_DECALEE = ("(()=>{const D=Date,off=%d-D.now();"
+                    "class F extends D{constructor(...a){a.length?super(...a):super(D.now()+off);}static now(){return D.now()+off;}}"
+                    "window.Date=F;})();") % JOUR_TEST_MS
 
-        def _page(self, *a, **k):
-            pg = _np(self, *a, **k)
-            pg.clock.set_system_time(JOUR_TEST)
-            return pg
+    def figer_date(br):
+        _np, _nc = br.new_page, br.new_context
 
-        def _ctx(self, *a, **k):
-            c = _nc(self, *a, **k)
-            c.clock.set_system_time(JOUR_TEST)
+        def _page(*a, **k):
+            c = _nc(*a, **k)
+            c.add_init_script(DATE_DECALEE)
+            return c.new_page()
+
+        def _ctx(*a, **k):
+            c = _nc(*a, **k)
+            c.add_init_script(DATE_DECALEE)
             return c
 
-        Browser.new_page, Browser.new_context = _page, _ctx
-        Browser._date_figee = True
+        br.new_page, br.new_context = _page, _ctx
+        return br
 
     js_errors = []
     with sync_playwright() as pw:
-        b = pw.chromium.launch()
+        b = figer_date(pw.chromium.launch())
         p = b.new_page(viewport={"width": 390, "height": 844}, device_scale_factor=2)
         p.on("pageerror", lambda e: js_errors.append(str(e)[:200]))
         # on ignore les erreurs reseau (meteo bloquee en sandbox)
@@ -1147,7 +1152,7 @@ def run():
                 return {"type": "way", "tags": tags, "geometry": [{"lat": tlat[i] + 0.00004, "lon": tlon[i]} for i in range(a, z + 1, 2)]}
             OSM = {"elements": [_way(0, 200, {"highway": "track", "tracktype": "grade2"}), _way(400, 700, {"highway": "path"}),
                                 _way(1600, tr["n"] - 1, {"highway": "residential"}), _way(1500, 1506, {"highway": "steps"})]}
-            bgl = pw.chromium.launch(args=["--enable-unsafe-swiftshader", "--use-angle=swiftshader"])
+            bgl = figer_date(pw.chromium.launch(args=["--enable-unsafe-swiftshader", "--use-angle=swiftshader"]))
 
             def page_parcours(course, avion=False, reduce=False):
                 ctx = bgl.new_context(viewport={"width": 390, "height": 844}, service_workers="block",
