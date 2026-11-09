@@ -230,3 +230,9 @@ Les fichiers de travail `/tmp` sont volatils. Pour repartir :
 - Les captures de référence des 4 vues sont dans `tests/reference/` ; `python scripts/capture_reference.py --check`
   signale tout changement visuel (à relancer après `python src/build.py`). Un changement voulu se valide en
   réécrivant les captures (`python scripts/capture_reference.py`) dans le même commit.
+
+## Tests dépendants de la date (9 novembre 2026)
+
+- Symptôme : le lendemain du Marathon de Nice, `verify` échouait sur toute PR (T21 : `textes.json` chargé au démarrage ; T22/T34 : clics en dépassement de délai), alors que `main` passait la veille.
+- Cause : le navigateur de test lit la vraie date du jour ; l'app change de comportement une fois la course passée.
+- Correctif : `scripts/test_regression.py` décale la date (`Date`) du navigateur au 8 novembre 2026, minuteurs réels (une fausse horloge complète faisait échouer les cartes T34 en CI). À rediscuter après le 28 novembre (SaintExpress) si la date figée devient trompeuse.

@@ -2769,6 +2769,8 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":300,"date":"9 novembre 2026","sha":"","tag":"Tests : date du navigateur figee au 8 novembre","items":[
+    "TESTS : les tests de regression figent la date du navigateur au 8 novembre 2026. Sans cela ils echouaient des le lendemain du Marathon de Nice (T21, T22, T34). Aucun changement visible dans l app."]},
   {"build":299,"date":"8 novembre 2026","sha":"","tag":"Log S45 seance 4 : MARATHON DE NICE du 08/11","items":[
     "SEANCE : S45 seance 4 loggee depuis Strava : MARATHON DE NICE, 42,65 km en 3:45:06 (5:17/km), FC 168/183, D+ 130 m, 11 °C, Novablast 5 V.",
     "CHAUSSURES : Novablast 5 V a 245 km."]},
