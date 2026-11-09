@@ -51,7 +51,28 @@ def check(name, cond, detail=""):
 
 
 def run():
-    from playwright.sync_api import sync_playwright
+    from playwright.sync_api import sync_playwright, Browser
+    import datetime
+
+    # Date figee : les tests supposent « avant le marathon de Nice » (8 nov. 2026). Sans cela, ils echouent
+    # des le lendemain de la course (textes.json charge au demarrage, changements d'ecran). Voir LESSONS.md.
+    # Les minuteurs restent reels : seule l'horloge systeme (new Date) est reglee.
+    JOUR_TEST = datetime.datetime(2026, 11, 8, 10, 0, 0)
+    if not getattr(Browser, "_date_figee", False):
+        _np, _nc = Browser.new_page, Browser.new_context
+
+        def _page(self, *a, **k):
+            pg = _np(self, *a, **k)
+            pg.clock.set_system_time(JOUR_TEST)
+            return pg
+
+        def _ctx(self, *a, **k):
+            c = _nc(self, *a, **k)
+            c.clock.set_system_time(JOUR_TEST)
+            return c
+
+        Browser.new_page, Browser.new_context = _page, _ctx
+        Browser._date_figee = True
 
     js_errors = []
     with sync_playwright() as pw:
