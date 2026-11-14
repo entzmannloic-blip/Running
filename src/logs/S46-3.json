@@ -1,0 +1,110 @@
+{
+ "seance": {
+  "chaussure_realise": "ASICS Novablast 5 J",
+  "date": "2026-11-14",
+  "titre": "Vraie reprise : 11 km progressif",
+  "sous": "Prévu mercredi 11/11, couru le samedi 14/11 (J+6 après Nice) au ressenti : de 5:36 à 4:56/km, sans douleur.",
+  "segments": [
+   {
+    "nom": "Mise en route",
+    "role": "3 km a 5:31/km, FC 143.",
+    "duree": 992,
+    "couleur": "vert",
+    "bloc": "—",
+    "hauteur": 40
+   },
+   {
+    "nom": "Allure installée",
+    "role": "6 km a 5:09/km, FC 155.",
+    "duree": 1853,
+    "couleur": "orange",
+    "bloc": "—",
+    "hauteur": 72
+   },
+   {
+    "nom": "Fin rapide",
+    "role": "3 km a 4:55/km, FC 162.",
+    "duree": 603,
+    "couleur": "rouge",
+    "bloc": "—",
+    "hauteur": 80
+   }
+  ]
+ },
+ "realise": {
+  "statut": "fait",
+  "temp": 7,
+  "km": 11.04,
+  "temps": "57:29",
+  "allure": "5:12/km",
+  "fc_moy": 153,
+  "fc_max": 168,
+  "re": 111,
+  "cadence": 87,
+  "elevation_gain": 30,
+  "kcal": 824,
+  "terrain": "route",
+  "commentaire": "Realise : 11,04 km en 57:29 de deplacement (58:46 ecoulees), 5:12/km, FC 153 moy / 168 max, D+ 30 m, 7 °C, ASICS Novablast 5 J.",
+  "pr": 0,
+  "ach": 0,
+  "pr_detail": [],
+  "splits": [
+   {
+    "km": 1,
+    "allure": "5:36",
+    "fc": 141
+   },
+   {
+    "km": 2,
+    "allure": "5:33",
+    "fc": 145
+   },
+   {
+    "km": 3,
+    "allure": "5:23",
+    "fc": 142
+   },
+   {
+    "km": 4,
+    "allure": "5:02",
+    "fc": 153
+   },
+   {
+    "km": 5,
+    "allure": "5:11",
+    "fc": 156
+   },
+   {
+    "km": 6,
+    "allure": "5:02",
+    "fc": 159
+   },
+   {
+    "km": 7,
+    "allure": "5:10",
+    "fc": 157
+   },
+   {
+    "km": 8,
+    "allure": "5:21",
+    "fc": 152
+   },
+   {
+    "km": 9,
+    "allure": "5:07",
+    "fc": 155
+   },
+   {
+    "km": 10,
+    "allure": "4:56",
+    "fc": 162
+   },
+   {
+    "km": 11,
+    "allure": "4:57",
+    "fc": 162
+   }
+  ],
+  "strava_id": "20980722126"
+ }
+}

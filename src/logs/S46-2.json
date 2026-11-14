@@ -1,0 +1,35 @@
+{
+ "seance": {
+  "chaussure_realise": "HOKA Clifton 10",
+  "date": "2026-11-12",
+  "titre": "Reprise avortée (1 km)",
+  "sous": "Jeudi 12/11 à Lyon : 1 km à 6:16/km, FC 125, arrêt volontaire, trop tôt après Nice."
+ },
+ "realise": {
+  "statut": "partiel",
+  "temp": 13,
+  "km": 1.05,
+  "temps": "6:36",
+  "allure": "6:16/km",
+  "fc_moy": 125,
+  "fc_max": 136,
+  "re": 1,
+  "cadence": 91,
+  "elevation_gain": 3,
+  "kcal": 78,
+  "rpe_ressenti": 3,
+  "terrain": "route",
+  "commentaire": "Realise : 1,05 km en 6:36 de deplacement, 6:16/km, FC 125 moy / 136 max, D+ 3 m, 13 °C, HOKA Clifton 10.",
+  "pr": 0,
+  "ach": 0,
+  "pr_detail": [],
+  "splits": [
+   {
+    "km": 1,
+    "allure": "6:16",
+    "fc": 124
+   }
+  ],
+  "strava_id": "20956360567"
+ }
+}

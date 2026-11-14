@@ -2207,6 +2207,42 @@ for n, arr in list(SEANCES_BY_WEEK.items()):
     _S45["3"]["realise"]={"statut":"skipped","reason":"option non retenue : l'allure marathon 3×1 km a été faite","km":0,"temps":"—","allure":"—","fc_moy":0,"fc_max":0,"re":0,"rpe_ressenti":0,"commentaire":"Option non retenue : les jambes étaient bonnes, le rappel d'allure marathon 3×1 km a été couru à la place le 04/11.","pr":0,"ach":0,"pr_detail":[]}
 
 
+for n, arr in list(SEANCES_BY_WEEK.items()):
+    if n != "46":
+        continue
+    _S46 = {str(x["id"]): x for x in arr}
+    # Semaine de recuperation apres Nice : pas de sortie lundi 09/11 ni mardi 10/11 (repos, marche),
+    # 1 km avorte le jeudi 12/11 (S46-2), vraie reprise le samedi 14/11 (S46-3). Pas de PPG.
+    _S46["1"]["realise"]={"statut":"skipped","reason":"J+1 après Nice : repos et marche","km":0,"temps":"—","allure":"—","fc_moy":0,"fc_max":0,"re":0,"rpe_ressenti":0,"commentaire":"Pas de sortie le lundi 09/11, au lendemain du marathon : repos et marche, comme conseillé (J+1 à J+3 sans course).","pr":0,"ach":0,"pr_detail":[]}
+    _S46["4"]["realise"]={"statut":"skipped","reason":"semaine de récupération","km":0,"temps":"—","allure":"—","fc_moy":0,"fc_max":0,"re":0,"rpe_ressenti":0,"commentaire":"Renforcement non fait cette semaine : récupération du marathon et déménagement le vendredi 13/11.","pr":0,"ach":0,"pr_detail":[]}
+
+
+for n, arr in list(SEANCES_BY_WEEK.items()):
+    if n != "47":
+        continue
+    _S47 = {str(x["id"]): x for x in arr}
+    # Lundi 16/11 : reconnaissance de la SaintExpress, de Sainte-Catherine a Soucieu-en-Jarrest (annoncee par Loic, ~25 km).
+    # D+ et D- calcules sur la trace GPX de la course (src/carto/saintexpress.json), km 0 a 24,7 de la trace.
+    _S47["1"].update({"titre":"Reco SaintExpress : Sainte-Catherine → Soucieu","type":"Spécifique trail","accent":"#F4561D",
+      "chaussure":"Brooks Cascadia 19","rpe":4.0,
+      "sous":"La première moitié du parcours, ~25 km : la montée, le cœur technique, la bosse du km 17. En reconnaissance, pas en course.",
+      "metriques":{"Distance":"~25 km","D+":"~690 m","D−":"~1 000 m","FC":"< 150","RPE":"4","Type":"Reco trail"},
+      "objectif":"Connaître le terrain qui décide de ta course (70 % du D+ avant Soucieu) et tester le matériel, sans entamer la récupération de Nice.",
+      "struct":[{"nom":"Km 0 → 8,7","txt":"La montée jusqu'au point haut (862 m) : marche tout ce qui dépasse 6-7 %, FC sous 150."},
+        {"nom":"Km 8,7 → 17","txt":"Les descentes raides (−17 % vers le km 10, −18 % vers le km 13,5) : foulée courte, repère les appuis, marche les passages gras."},
+        {"nom":"Km 17 → 25","txt":"La bosse du km 17 en marche franche, puis le roulant vers Soucieu, facile."}],
+      "vigilance":"Les quadriceps sortent d'un marathon il y a 8 jours : une douleur qui monte en descente, on marche jusqu'à Soucieu. Boire et prendre des électrolytes toutes les 30-40 min.",
+      "coach":[{"titre":"Repérer, pas performer","texte":"Le chrono de lundi ne dit rien du 28. Ce qui compte : savoir où marcher, où relancer et comment ton corps répond dans les descentes."}]})
+    # Mardi 17/11, lendemain de la reco : la sortie trail relief et descente devient une recuperation.
+    _S47["2"].update({"titre":"Récupération après la reco","type":"Récupération active","accent":"#16a34a",
+      "chaussure":"ASICS Gel Pulse 16","rpe":2.0,
+      "sous":"Lendemain des 25 km de reco : repos, marche, ou 30 min très faciles si les jambes le demandent.",
+      "metriques":{"Distance":"0-5 km","Durée":"≤ 30 min","FC":"< 140","RPE":"2","Type":"Récup"},
+      "objectif":"Absorber la reco : le relief et les descentes ont déjà été travaillés la veille.",
+      "struct":[{"nom":"Option","txt":"Repos complet ou marche si les cuisses sont raides ; sinon 30 min de trot sur le plat."}],
+      "vigilance":"Pas de descente ni de montée ce jour-là."})
+
+
 
 
 
@@ -2242,8 +2278,8 @@ COUL={p["id"]:p["c"] for p in PHASES}
 # Strava et alerte des que l'ecart depasse 5 km.
 # Derniere resynchronisation : 28/08/2026.
 GEAR=[
-  {"marque":"HOKA","modele":"Clifton 10","km":1284},
-  {"marque":"ASICS","modele":"Novablast 5 J","km":931},
+  {"marque":"HOKA","modele":"Clifton 10","km":1285},
+  {"marque":"ASICS","modele":"Novablast 5 J","km":942},
   {"marque":"ASICS","modele":"Novablast 5 V","km":245},
   {"marque":"ASICS","modele":"Gel Pulse 16","km":240},
   {"marque":"Brooks","modele":"Cascadia 19","km":259},
@@ -2769,6 +2805,11 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":302,"date":"14 novembre 2026","sha":"","tag":"Log S46 : reprise apres Nice (14/11) et reco SaintExpress au plan","items":[
+    "SEANCE : S46 seance 3 loggee depuis Strava : Vraie reprise : 11 km progressif, 11,04 km en 57:29 (5:12/km), FC 153/168, D+ 30 m, 7 °C, Novablast 5 J.",
+    "SEANCE : S46 seance 2, 1 km avorte le jeudi 12/11 a Lyon (6:16/km, FC 125), statut partiel. Seances 1 (J+1) et 4 (renforcement) marquees sautees.",
+    "PLAN S47 : lundi 16/11 devient la reco SaintExpress de Sainte-Catherine a Soucieu (~25 km, ~+690 m / -1 000 m sur la trace) ; mardi 17/11 passe en recuperation.",
+    "CHAUSSURES : Novablast 5 J a 942 km, Clifton 10 a 1 285 km."]},
   {"build":301,"date":"9 novembre 2026","sha":"","tag":"Palmares : MARATHON DE NICE-CANNES du 08/11 (3:45:26)","items":[
     "PALMARES : ajout du Marathon Nice-Cannes du 08/11/2026, chrono officiel 3:45:26 (5:21/km), 3086e au general, 431e en categorie M0H (sur 1113), dossard 8568. Donnees Strava : FC 168/183, D+ 130 m, 11 C, Novablast 5 V. Passages officiels : 10 km 53:48, semi 1:52:25, 30 km 2:40:56, 40 km 3:34:04.",
     "A SAVOIR : Strava affiche 3:45:06 (temps de deplacement), le chrono officiel de la puce est 3:45:26 ; c est ce dernier qui est enregistre dans le palmares."]},
