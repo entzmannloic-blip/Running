@@ -711,6 +711,10 @@ def run():
         # ── T23 : Rewind de séance (P4 lot 1) — annonce, bouton de la fiche, 9 images, Où j'en suis ──
         def rewind_parcours(pm):
             pm.evaluate("var o=document.getElementById('rwoverlay');if(o)o.classList.remove('on');")
+            # Date figee au 8/11 : les Rewinds de seances posterieures sont « dans le futur » et la carte du coach
+            # les ignore a juste titre. On garde ceux qui existaient a la date du test, puis on redessine la carte.
+            pm.evaluate("window.REWIND_SEANCE=REWIND_SEANCE.filter(c=>{const [w,i]=c.split('-');const s=(SEANCES_BY_WEEK[w]||[]).find(x=>String(x.id)===i);"
+                        "return s&&s.date&&(Date.now()-new Date(s.date.slice(0,10)+'T12:00:00'))/864e5>=-1;});RS.carte();")
             ann = pm.evaluate("(function(){var c=document.getElementById('ac-coach');return !!c&&!c.hidden&&/Le coach a analys/.test(c.innerText)&&!!c.querySelector('.ac-btn-o');})()")
             der = pm.evaluate("REWIND_SEANCE.map(c=>{const [w,i]=c.split('-');const s=SEANCES_BY_WEEK[w].find(x=>String(x.id)===i);return [s.date+'|'+c,c];}).sort().pop()[1]")
             w, i = der.split("-")
