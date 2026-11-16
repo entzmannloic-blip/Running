@@ -1,0 +1,161 @@
+{
+ "seance": {
+  "chaussure_realise": "Brooks Cascadia 19",
+  "titre": "Reco SaintExpress : 12 km aller-retour",
+  "sous": "Reco depuis Sainte-Catherine avec Yannis, 12 km du parcours puis retour, en mode tranquille : 23 km, +833 m.",
+  "segments": [
+   {
+    "nom": "Aller jusqu'au demi-tour",
+    "role": "12 km a 7:42/km, FC 144.",
+    "duree": 5542,
+    "couleur": "vert",
+    "bloc": "—",
+    "hauteur": 40
+   },
+   {
+    "nom": "Retour",
+    "role": "12 km a 7:41/km, FC 146.",
+    "duree": 5079,
+    "couleur": "vert",
+    "bloc": "—",
+    "hauteur": 40
+   }
+  ]
+ },
+ "realise": {
+  "statut": "fait",
+  "temp": 13,
+  "km": 23.02,
+  "temps": "2:57:02",
+  "allure": "7:41/km",
+  "fc_moy": 144,
+  "fc_max": 172,
+  "re": 222,
+  "cadence": 75,
+  "elevation_gain": 833,
+  "kcal": 1961,
+  "terrain": "trail",
+  "commentaire": "Realise : 23,02 km en 2:57:02 de deplacement (3:04:55 ecoulees), 7:41/km, FC 144 moy / 172 max, D+ 833 m, 13 °C, Brooks Cascadia 19.",
+  "pr": 0,
+  "ach": 0,
+  "pr_detail": [],
+  "splits": [
+   {
+    "km": 1,
+    "allure": "5:51",
+    "fc": 126
+   },
+   {
+    "km": 2,
+    "allure": "7:54",
+    "fc": 152
+   },
+   {
+    "km": 3,
+    "allure": "7:34",
+    "fc": 155
+   },
+   {
+    "km": 4,
+    "allure": "6:22",
+    "fc": 151
+   },
+   {
+    "km": 5,
+    "allure": "8:57",
+    "fc": 147
+   },
+   {
+    "km": 6,
+    "allure": "9:43",
+    "fc": 142
+   },
+   {
+    "km": 7,
+    "allure": "6:46",
+    "fc": 140
+   },
+   {
+    "km": 8,
+    "allure": "10:20",
+    "fc": 151
+   },
+   {
+    "km": 9,
+    "allure": "6:55",
+    "fc": 147
+   },
+   {
+    "km": 10,
+    "allure": "7:27",
+    "fc": 131
+   },
+   {
+    "km": 11,
+    "allure": "7:31",
+    "fc": 137
+   },
+   {
+    "km": 12,
+    "allure": "7:02",
+    "fc": 139
+   },
+   {
+    "km": 13,
+    "allure": "6:48",
+    "fc": 152
+   },
+   {
+    "km": 14,
+    "allure": "12:41",
+    "fc": 153
+   },
+   {
+    "km": 15,
+    "allure": "8:49",
+    "fc": 150
+   },
+   {
+    "km": 16,
+    "allure": "6:16",
+    "fc": 137
+   },
+   {
+    "km": 17,
+    "allure": "6:09",
+    "fc": 141
+   },
+   {
+    "km": 18,
+    "allure": "9:59",
+    "fc": 148
+   },
+   {
+    "km": 19,
+    "allure": "6:12",
+    "fc": 134
+   },
+   {
+    "km": 20,
+    "allure": "10:13",
+    "fc": 138
+   },
+   {
+    "km": 21,
+    "allure": "6:05",
+    "fc": 139
+   },
+   {
+    "km": 22,
+    "allure": "5:52",
+    "fc": 145
+   },
+   {
+    "km": 23,
+    "allure": "5:29",
+    "fc": 157
+   }
+  ],
+  "strava_id": "21009630362"
+ }
+}
