@@ -2282,7 +2282,7 @@ GEAR=[
   {"marque":"ASICS","modele":"Novablast 5 J","km":942},
   {"marque":"ASICS","modele":"Novablast 5 V","km":245},
   {"marque":"ASICS","modele":"Gel Pulse 16","km":240},
-  {"marque":"Brooks","modele":"Cascadia 19","km":259},
+  {"marque":"Brooks","modele":"Cascadia 19","km":282},
   {"marque":"ASICS","modele":"Magic Speed 4","km":93},
 ]
 RACES=[{"nom":"Run In Lyon — Semi","date":"2026-10-04","dossier":"runinlyon"},{"nom":"Marathon de Nice","date":"2026-11-08","dossier":"nice"},{"nom":"SaintExpress","date":"2026-11-28","dossier":"saintexpress"}]
@@ -2805,6 +2805,9 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":303,"date":"16 novembre 2026","sha":"","tag":"Log S47 seance 1 : Reco SaintExpress : 12 km aller-retour du 16/11","items":[
+    "SEANCE : S47 seance 1 loggee depuis Strava : Reco SaintExpress : 12 km aller-retour, 23,02 km en 2:57:02 (7:41/km), FC 144/172, D+ 833 m, 13 °C, Cascadia 19.",
+    "CHAUSSURES : Cascadia 19 a 282 km."]},
   {"build":302,"date":"14 novembre 2026","sha":"","tag":"Log S46 : reprise apres Nice (14/11) et reco SaintExpress au plan","items":[
     "SEANCE : S46 seance 3 loggee depuis Strava : Vraie reprise : 11 km progressif, 11,04 km en 57:29 (5:12/km), FC 153/168, D+ 30 m, 7 °C, Novablast 5 J.",
     "SEANCE : S46 seance 2, 1 km avorte le jeudi 12/11 a Lyon (6:16/km, FC 125), statut partiel. Seances 1 (J+1) et 4 (renforcement) marquees sautees.",
