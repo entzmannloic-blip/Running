@@ -2241,6 +2241,10 @@ for n, arr in list(SEANCES_BY_WEEK.items()):
       "objectif":"Absorber la reco : le relief et les descentes ont déjà été travaillés la veille.",
       "struct":[{"nom":"Option","txt":"Repos complet ou marche si les cuisses sont raides ; sinon 30 min de trot sur le plat."}],
       "vigilance":"Pas de descente ni de montée ce jour-là."})
+    # Semaine reelle (annoncee par Loic le 22/11) : seulement 2 sorties, lundi 16/11 (S47-1) et samedi 21/11 (S47-4,
+    # 2e reco SaintExpress avec Edwige). Mardi et mercredi non courus : energie en baisse, pas recupere du marathon.
+    _S47["2"]["realise"]={"statut":"skipped","reason":"fatigue : pas encore récupéré du marathon","km":0,"temps":"—","allure":"—","fc_moy":0,"fc_max":0,"re":0,"rpe_ressenti":0,"commentaire":"Pas de sortie le mardi 17/11 : énergie en baisse depuis le marathon, sensation de ne pas avoir récupéré.","pr":0,"ach":0,"pr_detail":[]}
+    _S47["3"]["realise"]={"statut":"skipped","reason":"fatigue : pas encore récupéré du marathon","km":0,"temps":"—","allure":"—","fc_moy":0,"fc_max":0,"re":0,"rpe_ressenti":0,"commentaire":"Footing du mercredi 18/11 non couru : énergie en baisse depuis le marathon. Seules sorties de la semaine : la reco du lundi et celle du samedi 21/11.","pr":0,"ach":0,"pr_detail":[]}
 
 
 
@@ -2282,7 +2286,7 @@ GEAR=[
   {"marque":"ASICS","modele":"Novablast 5 J","km":942},
   {"marque":"ASICS","modele":"Novablast 5 V","km":245},
   {"marque":"ASICS","modele":"Gel Pulse 16","km":240},
-  {"marque":"Brooks","modele":"Cascadia 19","km":282},
+  {"marque":"Brooks","modele":"Cascadia 19","km":305},
   {"marque":"ASICS","modele":"Magic Speed 4","km":93},
 ]
 RACES=[{"nom":"Run In Lyon — Semi","date":"2026-10-04","dossier":"runinlyon"},{"nom":"Marathon de Nice","date":"2026-11-08","dossier":"nice"},{"nom":"SaintExpress","date":"2026-11-28","dossier":"saintexpress"}]
@@ -2805,6 +2809,11 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":304,"date":"21 novembre 2026","sha":"","tag":"Log S47 seance 4 : Reco SaintExpress avec Edwige : Saint-Genou → Chaponost du 21/11","items":[
+    "SEANCE : S47 seance 4 loggee depuis Strava : Reco SaintExpress avec Edwige : Saint-Genou → Chaponost, 23,01 km en 2:31:45 (6:36/km), FC 160/182, D+ 574 m, Cascadia 19.",
+    "SEANCES : S47 seances 2 (recuperation du mardi) et 3 (footing du mercredi) marquees sautees : energie en baisse, pas encore recupere du marathon.",
+    "REVUES : revue de la seance S47-4 et revue de la semaine 47 (2 sorties, 46 km, +1 407 m).",
+    "CHAUSSURES : Cascadia 19 a 305 km."]},
   {"build":303,"date":"16 novembre 2026","sha":"","tag":"Log S47 seance 1 : Reco SaintExpress : 12 km aller-retour du 16/11","items":[
     "SEANCE : S47 seance 1 loggee depuis Strava : Reco SaintExpress : 12 km aller-retour, 23,02 km en 2:57:02 (7:41/km), FC 144/172, D+ 833 m, 13 °C, Cascadia 19.",
     "CHAUSSURES : Cascadia 19 a 282 km."]},
