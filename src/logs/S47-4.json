@@ -1,0 +1,143 @@
+{
+ "seance": {
+  "chaussure_realise": "Brooks Cascadia 19",
+  "date": "2026-11-21",
+  "titre": "Reco SaintExpress avec Edwige : Saint-Genou → Chaponost",
+  "sous": "Deuxième reco, avec Edwige : du ravito de Saint-Genou (~km 12) jusqu'après Chaponost (~km 35), 23 km, +574 m."
+ },
+ "realise": {
+  "statut": "fait",
+  "km": 23.01,
+  "temps": "2:31:45",
+  "allure": "6:36/km",
+  "fc_moy": 160,
+  "fc_max": 182,
+  "re": 384,
+  "cadence": 82,
+  "elevation_gain": 574,
+  "kcal": 1979,
+  "terrain": "trail",
+  "commentaire": "Realise : 23,01 km en 2:31:45 de deplacement (2:39:33 ecoulees), 6:36/km, FC 160 moy / 182 max, D+ 574 m, Brooks Cascadia 19.",
+  "pr": 1,
+  "ach": 2,
+  "pr_detail": [],
+  "splits": [
+   {
+    "km": 1,
+    "allure": "7:11",
+    "fc": 161
+   },
+   {
+    "km": 2,
+    "allure": "8:12",
+    "fc": 168
+   },
+   {
+    "km": 3,
+    "allure": "5:36",
+    "fc": 163
+   },
+   {
+    "km": 4,
+    "allure": "7:15",
+    "fc": 163
+   },
+   {
+    "km": 5,
+    "allure": "6:20",
+    "fc": 169
+   },
+   {
+    "km": 6,
+    "allure": "6:19",
+    "fc": 160
+   },
+   {
+    "km": 7,
+    "allure": "7:46",
+    "fc": 159
+   },
+   {
+    "km": 8,
+    "allure": "8:31",
+    "fc": 169
+   },
+   {
+    "km": 9,
+    "allure": "6:18",
+    "fc": 162
+   },
+   {
+    "km": 10,
+    "allure": "5:54",
+    "fc": 153
+   },
+   {
+    "km": 11,
+    "allure": "7:13",
+    "fc": 161
+   },
+   {
+    "km": 12,
+    "allure": "5:41",
+    "fc": 151
+   },
+   {
+    "km": 13,
+    "allure": "8:16",
+    "fc": 155
+   },
+   {
+    "km": 14,
+    "allure": "5:17",
+    "fc": 154
+   },
+   {
+    "km": 15,
+    "allure": "5:47",
+    "fc": 159
+   },
+   {
+    "km": 16,
+    "allure": "5:49",
+    "fc": 159
+   },
+   {
+    "km": 17,
+    "allure": "5:44",
+    "fc": 159
+   },
+   {
+    "km": 18,
+    "allure": "5:27",
+    "fc": 155
+   },
+   {
+    "km": 19,
+    "allure": "5:45",
+    "fc": 159
+   },
+   {
+    "km": 20,
+    "allure": "9:32",
+    "fc": 164
+   },
+   {
+    "km": 21,
+    "allure": "6:06",
+    "fc": 158
+   },
+   {
+    "km": 22,
+    "allure": "6:13",
+    "fc": 159
+   },
+   {
+    "km": 23,
+    "allure": "5:30",
+    "fc": 156
+   }
+  ],
+  "strava_id": "21070043634"
+ }
+}
