@@ -2250,6 +2250,16 @@ for n, arr in list(SEANCES_BY_WEEK.items()):
 
 
 
+for n, arr in list(SEANCES_BY_WEEK.items()):
+    if n != "48":
+        continue
+    _S48 = {str(x["id"]): x for x in arr}
+    # Semaine de la SaintExpress (annoncee par Loic le 25/11) : pas de sortie le lundi 23/11 ; le footing a ete couru le
+    # mardi 24/11 au soir (S48-1, 7,66 km a plat, FC 142) a la place de l'activation trail de nuit (S48-2), comme conseille
+    # dans la revue S47-4 (sorties courtes a plat, FC sous 145). Bonnes sensations, aucune douleur.
+    _S48["2"]["realise"]={"statut":"skipped","reason":"remplacée par le footing à plat du mardi soir (S48-1)","km":0,"temps":"—","allure":"—","fc_moy":0,"fc_max":0,"re":0,"rpe_ressenti":0,"commentaire":"Activation trail de nuit non courue : le mardi 24/11, footing court sur le plat à la place (S48-1), pour arriver frais à la SaintExpress.","pr":0,"ach":0,"pr_detail":[]}
+
+
 _charge_logs(SEANCES_BY_WEEK)
 _charge_revues_semaines(SEMAINES)
 
@@ -2284,7 +2294,7 @@ COUL={p["id"]:p["c"] for p in PHASES}
 GEAR=[
   {"marque":"HOKA","modele":"Clifton 10","km":1285},
   {"marque":"ASICS","modele":"Novablast 5 J","km":942},
-  {"marque":"ASICS","modele":"Novablast 5 V","km":245},
+  {"marque":"ASICS","modele":"Novablast 5 V","km":253},
   {"marque":"ASICS","modele":"Gel Pulse 16","km":240},
   {"marque":"Brooks","modele":"Cascadia 19","km":305},
   {"marque":"ASICS","modele":"Magic Speed 4","km":93},
@@ -2809,6 +2819,11 @@ for _wk,_ss in SEANCES_BY_WEEK.items():
         if _r.get("statut") in ("fait","partiel") and _r.get("km") and _se.get("date"):
             HEATMAP[_se["date"]]=HEATMAP.get(_se["date"],0)+_r["km"]
 CHANGELOG=[
+  {"build":305,"date":"24 novembre 2026","sha":"","tag":"Log S48 seance 1 : Footing facile de nuit, sur le plat du 24/11","items":[
+    "SEANCE : S48 seance 1 loggee depuis Strava : Footing facile de nuit, sur le plat, 7,66 km en 44:15 (5:47/km), FC 142/159, D+ 32 m, Novablast 5 V.",
+    "SEANCES : S48 seance 2 (activation trail de nuit) marquee remplacee par ce footing a plat.",
+    "REVUES : revue de la seance S48-1 (feu vert pour la SaintExpress).",
+    "CHAUSSURES : Novablast 5 V a 253 km."]},
   {"build":304,"date":"21 novembre 2026","sha":"","tag":"Log S47 seance 4 : Reco SaintExpress avec Edwige : Saint-Genou → Chaponost du 21/11","items":[
     "SEANCE : S47 seance 4 loggee depuis Strava : Reco SaintExpress avec Edwige : Saint-Genou → Chaponost, 23,01 km en 2:31:45 (6:36/km), FC 160/182, D+ 574 m, Cascadia 19.",
     "SEANCES : S47 seances 2 (recuperation du mardi) et 3 (footing du mercredi) marquees sautees : energie en baisse, pas encore recupere du marathon.",
