@@ -1,0 +1,64 @@
+{
+ "seance": {
+  "chaussure_realise": "ASICS Novablast 5 V",
+  "date": "2026-11-24",
+  "titre": "Footing facile de nuit, sur le plat",
+  "sous": "Décalé au mardi soir et préféré à l'activation trail : 44 min à plat, cœur sous 150, comme conseillé après la reco du 21/11."
+ },
+ "realise": {
+  "statut": "fait",
+  "km": 7.66,
+  "temps": "44:15",
+  "allure": "5:47/km",
+  "fc_moy": 142,
+  "fc_max": 159,
+  "re": 54,
+  "cadence": 86,
+  "elevation_gain": 32,
+  "kcal": 571,
+  "rpe_ressenti": 3,
+  "terrain": "route",
+  "commentaire": "Realise : 7,66 km en 44:15 de deplacement (55:32 ecoulees), 5:47/km, FC 142 moy / 159 max, D+ 32 m, ASICS Novablast 5 V.",
+  "pr": 0,
+  "ach": 0,
+  "pr_detail": [],
+  "splits": [
+   {
+    "km": 1,
+    "allure": "5:55",
+    "fc": 127
+   },
+   {
+    "km": 2,
+    "allure": "6:06",
+    "fc": 140
+   },
+   {
+    "km": 3,
+    "allure": "5:48",
+    "fc": 145
+   },
+   {
+    "km": 4,
+    "allure": "5:33",
+    "fc": 145
+   },
+   {
+    "km": 5,
+    "allure": "5:46",
+    "fc": 143
+   },
+   {
+    "km": 6,
+    "allure": "5:57",
+    "fc": 142
+   },
+   {
+    "km": 7,
+    "allure": "5:34",
+    "fc": 146
+   }
+  ],
+  "strava_id": "21110659558"
+ }
+}
